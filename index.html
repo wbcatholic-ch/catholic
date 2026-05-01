@@ -1712,6 +1712,25 @@ function openCoreExternalUrl(url, extra){
   saveCoreReturnState(extra);
   location.href = url;
 }
+
+function clearRouteNoFocus(){
+  // 외부링크 복귀용: 경로 상태만 조용히 제거하고, 도착지로 이동/노란마커 복원은 하지 않는다.
+  try{
+    if(_mode==='shrine'){
+      if(_rS&&_rS.idx>=0&&_markers[_rS.idx]) _markers[_rS.idx].marker.setImage(_mkrImg(_typeColor(_markers[_rS.idx].shrine.type),false));
+      if(_rE&&_rE.idx>=0&&_markers[_rE.idx]) _markers[_rE.idx].marker.setImage(_mkrImg(_typeColor(_markers[_rE.idx].shrine.type),false));
+    }
+    _rS=null; _rE=null; _routeMode=false;
+    if(typeof _setRouteLabel==='function'){ _setRouteLabel('start',''); _setRouteLabel('end',''); }
+    var rs=document.getElementById('rs-result'); if(rs) rs.style.display='none';
+    var hint=document.getElementById('rs-hint'); if(hint) hint.style.display='block';
+    var sBtn=document.getElementById('rs-search-btn'); if(sBtn) sBtn.style.display='none';
+    if(_polyline){ _polyline.setMap(null); _polyline=null; }
+    if(typeof _clearRouteTmpMarkers==='function') _clearRouteTmpMarkers();
+    if(typeof _showJukrimgulParkingMkr==='function') _showJukrimgulParkingMkr(false);
+    var guide=document.getElementById('route-guide'); if(guide) guide.classList.remove('on');
+  }catch(e){}
+}
 function restoreCoreReturnState(){
   let raw=null;
   try{ raw=sessionStorage.getItem(CORE_RETURN_KEY); }catch(e){}
@@ -1729,14 +1748,21 @@ function restoreCoreReturnState(){
   document.documentElement.classList.toggle('parish-mode',_mode==='parish');
   document.documentElement.classList.toggle('retreat-mode',_mode==='retreat');
   const cover=$('cover'); if(cover) cover.style.display='none';
+  document.documentElement.classList.add('oai-returning');
   closeAllTabs();
   closeInfoCard();
-  resetRoute();
-  _resetMapState();
-  _mapInited=true;
+  clearRouteNoFocus();
   window._noAutoNearby = true;
+  // 외부링크 복귀 시 이미 살아있는 지도는 다시 초기화하지 않는다.
+  const mapEl=$('map');
+  const needMapLoad = (!_map || !mapEl || !mapEl.children || !mapEl.children.length);
+  if(needMapLoad){
+    _resetMapState();
+    _mapInited=true;
+    _loadMap();
+  }
+  const restoreDelay = needMapLoad ? 650 : 30;
   // 지도 복원 후 center/level/tab/infocard 복원
-  _loadMap();
   setTimeout(()=>{
     // 저장된 지도 위치로 복귀
     if(state.mapCenter && _map){
@@ -1777,7 +1803,8 @@ function restoreCoreReturnState(){
       // 탭이 열려 있던 경우 복원
       setTimeout(()=>{ try{ openTab(state.activeTab); }catch(e){} },300);
     }
-  },700);
+    setTimeout(()=>{ document.documentElement.classList.remove('oai-returning'); }, 120);
+  },restoreDelay);
   return true;
 }
 window.addEventListener('pageshow', function(e){
@@ -5828,30 +5855,8 @@ html.retreat-mode #sm-tab-bar .sm-tab.active {
 </style>
 
 <script>
-/* 길찾기 뒤로가기 후 마커 노랑 복원 */
+/* OAI removed duplicate route-sheet observer: 경로삭제가 아닌 닫기/복귀에서 노란마커로 강제 이동하지 않도록 제거. */
 (function(){
-  // route sheet가 닫힐 때 (sheet-route close 감지) 선택 마커를 금색으로 복원
-  var routeSheet = document.getElementById('sheet-route');
-  if(!routeSheet) return;
-  var obs = new MutationObserver(function(muts){
-    muts.forEach(function(m){
-      if(m.attributeName === 'class' && !routeSheet.classList.contains('open')){
-        // 기존에 선택된 마커(선택 마커 dot)를 금색으로 강조
-        var sel = document.querySelector('.li-dot[style*="background"]');
-        if(sel && window._selectedMarker && typeof window._selectedMarker.setImage === 'function'){
-          try{
-            // 카카오 마커 이미지를 금색으로 복원 시도
-            var imgSrc = 'https://t1.daumcdn.net/mapjsapi/images/markerY.png';
-            var imgSize = new kakao.maps.Size(32,40);
-            var markerImg = new kakao.maps.MarkerImage(imgSrc, imgSize);
-            window._selectedMarker.setImage(markerImg);
-          }catch(e){}
-        }
-      }
-    });
-  });
-  obs.observe(routeSheet, {attributes:true, attributeFilter:['class']});
-
   // 설치 버튼: standalone 감지 즉시 숨김 (CSS 외 JS 보강)
   function hideInstallIfStandalone(){
     var isStandalone =
