@@ -4203,7 +4203,7 @@ function _fmtTime(s){
     webState.built = true;
     const wrap = ig$('web-cats');
     if(!wrap) return;
-    const cats = ['⭐', '전체'];
+    const cats = ['⭐ 즐겨찾기', '전체'];
     WEB_SITES.forEach(s => { if(!cats.includes(s.cat)&&s.cat!=='⭐ 즐겨찾기') cats.push(s.cat); });
     cats.forEach(c => {
       const btn = document.createElement('button');
