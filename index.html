@@ -6039,5 +6039,212 @@ html.app-active #pwa-install-btn{display:none!important;}
   });
 })();
 </script>
+
+<!-- ====== 최종 통합 패치 ====== -->
+<style id="final-patch">
+/* ① 앱(standalone/app-active)에서는 설치 버튼 완전 숨김 */
+html.app-active #pwa-install-btn { display:none!important; }
+@media (display-mode: standalone) { #pwa-install-btn { display:none!important; } }
+
+/* ② 설치 버튼 - 완전히 새 디자인 (이모지 없음, 심플+임팩트) */
+#pwa-install-btn {
+  display: none;
+  width: calc(100% - 28px);
+  max-width: 400px;
+  margin: 18px auto 0;
+  height: 64px;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  color: #fff;
+  border: 1.5px solid rgba(255,255,255,.18);
+  border-radius: 18px;
+  font-size: 17px;
+  font-weight: 900;
+  font-family: inherit;
+  letter-spacing: -0.2px;
+  cursor: pointer;
+  box-shadow:
+    0 0 0 3px rgba(212,170,106,.30),
+    0 8px 28px rgba(14,21,53,.50),
+    inset 0 1px 0 rgba(255,255,255,.12);
+  -webkit-tap-highlight-color: transparent;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  animation: install-glow 2.8s ease-in-out infinite;
+}
+#pwa-install-btn::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -60%; width: 40%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.18), transparent);
+  animation: install-shimmer 2.8s ease-in-out infinite;
+}
+@keyframes install-glow {
+  0%,100% { box-shadow: 0 0 0 3px rgba(212,170,106,.25), 0 8px 24px rgba(14,21,53,.45), inset 0 1px 0 rgba(255,255,255,.12); }
+  50%      { box-shadow: 0 0 0 4px rgba(212,170,106,.55), 0 12px 36px rgba(14,21,53,.55), inset 0 1px 0 rgba(255,255,255,.12); }
+}
+@keyframes install-shimmer {
+  0%   { left: -60%; }
+  60%,100% { left: 130%; }
+}
+
+/* ③ sm-tab (내주변·성지찾기·지역검색·길찾기) - 높이·글자크기 통일 */
+/* 여러 !important 레이어를 모두 이기도록 최고 특이도로 작성 */
+#sm-tab-bar {
+  display: flex !important;
+  gap: 6px !important;
+  padding: 8px 10px !important;
+  height: auto !important;
+  min-height: 52px !important;
+  max-height: 52px !important;
+  align-items: center !important;
+  box-sizing: border-box !important;
+  flex-shrink: 0 !important;
+  overflow: visible !important;
+}
+html #sm-tab-bar .sm-tab,
+html.parish-mode #sm-tab-bar .sm-tab,
+html.retreat-mode #sm-tab-bar .sm-tab {
+  flex: 1 1 0 !important;
+  min-width: 0 !important;
+  height: 36px !important;
+  min-height: 36px !important;
+  max-height: 36px !important;
+  padding: 0 6px !important;
+  font-size: 13px !important;
+  font-weight: 800 !important;
+  border-radius: 10px !important;
+  border: 1.5px solid !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  box-sizing: border-box !important;
+  cursor: pointer !important;
+  font-family: inherit !important;
+  line-height: 1 !important;
+  transition: background .14s, color .14s, border-color .14s !important;
+}
+/* 비활성 탭 */
+html:not(.parish-mode):not(.retreat-mode) #sm-tab-bar .sm-tab:not(.active) {
+  background: #f0f2f8 !important;
+  color: #526274 !important;
+  border-color: rgba(31,47,107,.22) !important;
+}
+html.parish-mode #sm-tab-bar .sm-tab:not(.active) {
+  background: #eef4f9 !important;
+  color: #4a6480 !important;
+  border-color: rgba(53,92,125,.22) !important;
+}
+html.retreat-mode #sm-tab-bar .sm-tab:not(.active) {
+  background: #edf5f0 !important;
+  color: #3f7560 !important;
+  border-color: rgba(63,117,96,.22) !important;
+}
+/* 활성 탭 */
+html:not(.parish-mode):not(.retreat-mode) #sm-tab-bar .sm-tab.active {
+  background: linear-gradient(135deg,#243a83,#1f2f6b) !important;
+  color: #fff !important;
+  border-color: transparent !important;
+  box-shadow: 0 3px 10px rgba(31,47,107,.30) !important;
+}
+html.parish-mode #sm-tab-bar .sm-tab.active {
+  background: linear-gradient(135deg,#355c7d,#446e93) !important;
+  color: #fff !important;
+  border-color: transparent !important;
+  box-shadow: 0 3px 10px rgba(53,92,125,.28) !important;
+}
+html.retreat-mode #sm-tab-bar .sm-tab.active {
+  background: linear-gradient(135deg,#3f7e5b,#4f8f6a) !important;
+  color: #fff !important;
+  border-color: transparent !important;
+  box-shadow: 0 3px 10px rgba(63,126,91,.28) !important;
+}
+
+/* filter-btn (성지순례 내부 카테고리 버튼)도 높이 통일 */
+.filter-btn {
+  height: 30px !important;
+  padding: 0 12px !important;
+  font-size: 12px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-sizing: border-box !important;
+}
+
+/* region-search-btn 높이 통일 */
+.region-search-btn {
+  height: 34px !important;
+  padding: 0 14px !important;
+  font-size: 12px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-sizing: border-box !important;
+}
+
+/* ④ 길찾기 후 뒤로가기 → 기존 선택 마커 노랑(금색)으로 복원 */
+/* route-mode 중 선택된 마커 강조 표시 */
+.route-restore-marker {
+  background: var(--gold, #d4aa6a) !important;
+  border-color: var(--gold2, #b8965a) !important;
+}
+</style>
+
+<script>
+/* 길찾기 뒤로가기 후 마커 노랑 복원 */
+(function(){
+  // route sheet가 닫힐 때 (sheet-route close 감지) 선택 마커를 금색으로 복원
+  var routeSheet = document.getElementById('sheet-route');
+  if(!routeSheet) return;
+  var obs = new MutationObserver(function(muts){
+    muts.forEach(function(m){
+      if(m.attributeName === 'class' && !routeSheet.classList.contains('open')){
+        // 기존에 선택된 마커(선택 마커 dot)를 금색으로 강조
+        var sel = document.querySelector('.li-dot[style*="background"]');
+        if(sel && window._selectedMarker && typeof window._selectedMarker.setImage === 'function'){
+          try{
+            // 카카오 마커 이미지를 금색으로 복원 시도
+            var imgSrc = 'https://t1.daumcdn.net/mapjsapi/images/markerY.png';
+            var imgSize = new kakao.maps.Size(32,40);
+            var markerImg = new kakao.maps.MarkerImage(imgSrc, imgSize);
+            window._selectedMarker.setImage(markerImg);
+          }catch(e){}
+        }
+      }
+    });
+  });
+  obs.observe(routeSheet, {attributes:true, attributeFilter:['class']});
+
+  // 설치 버튼: standalone 감지 즉시 숨김 (CSS 외 JS 보강)
+  function hideInstallIfStandalone(){
+    var isStandalone =
+      window.matchMedia('(display-mode: standalone)').matches ||
+      window.navigator.standalone === true ||
+      document.documentElement.classList.contains('app-active');
+    if(isStandalone){
+      var btn = document.getElementById('pwa-install-btn');
+      if(btn) btn.style.setProperty('display','none','important');
+    }
+  }
+  hideInstallIfStandalone();
+  // app-active 클래스 변화 감지
+  var htmlEl = document.documentElement;
+  var htmlObs = new MutationObserver(function(){ hideInstallIfStandalone(); });
+  htmlObs.observe(htmlEl, {attributes:true, attributeFilter:['class']});
+  // matchMedia 변화 감지
+  try{
+    window.matchMedia('(display-mode: standalone)').addEventListener('change', hideInstallIfStandalone);
+  }catch(e){}
+  // load 후 한번 더
+  window.addEventListener('load', hideInstallIfStandalone);
+  window.addEventListener('pageshow', hideInstallIfStandalone);
+})();
+</script>
 </body>
 </html>
