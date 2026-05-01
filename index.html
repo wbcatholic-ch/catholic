@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="ko" class="oai-font-global">
 <head>
+<script id="cache-bust">
+(function(){
+  // 서비스워커 캐시 강제 갱신 (새로고침 시 현재 화면 반영)
+  if('serviceWorker' in navigator && navigator.serviceWorker.controller){
+    navigator.serviceWorker.controller.postMessage({type:'SKIP_WAITING'});
+  }
+})();
+</script>
 
 <script>
 (function(){
@@ -1486,7 +1494,31 @@ function hideCoverAndRun(callback) {
 
 /* ── 뒤로가기 핸들러는 principle-back-controller-20260424 에서 통합 관리 ── */
 function _doBack() {} // 하위호환용 stub
-function handleBack() {} // 하위호환용 stub
+function handleBack(){
+  // 1. 길찾기 결과 표시 중 → 리셋
+  if(typeof _routeMode!=='undefined' && _routeMode){
+    if(typeof resetRoute==='function') resetRoute();
+    return;
+  }
+  // 2. 인포카드 열림 → 닫기
+  if(typeof closeInfoCard==='function'){
+    const ic=$('info-card');
+    if(ic && ic.classList.contains('open')){ closeInfoCard(); return; }
+  }
+  // 3. 탭(nearby/list/region/route) 열림 → 닫기
+  if(typeof closeAllTabs==='function'){
+    const anyOpen=document.querySelector('.sheet.open,.tab-panel.open');
+    if(anyOpen){ closeAllTabs(); return; }
+  }
+  // 4. 기도문 상세 → 목록으로
+  if(typeof showPrayerList==='function' && typeof isPrayerDetail==='function'){
+    if(isPrayerDetail()){ showPrayerList(); return; }
+  }
+  // 5. 기도문 열림 → 닫기
+  if(typeof closePrayer==='function' && typeof isPrayerOpen==='function'){
+    if(isPrayerOpen()){ closePrayer(); return; }
+  }
+}
 
 </script>
 <div id="app"><div id="tabbar"><button class="tab-btn" data-tab="nearby" onclick="toggleTab('nearby')"><span class="tab-icon">📍</span><span id="tab-nearby-lbl">내주변</span></button><button class="tab-btn" data-tab="list" onclick="toggleTab('list')"><span class="tab-icon">📋</span><span id="tab-list-lbl">목록</span></button><button class="tab-btn" data-tab="region" onclick="toggleTab('region')"><span class="tab-icon">🔍</span>지역검색
@@ -1674,18 +1706,17 @@ function restoreCoreReturnState(){
   return true;
 }
 window.addEventListener('pageshow', function(e){
-  // 기도문에서 복귀 → 커버로
+  // 1. 기도문에서 복귀 → 커버로
   try{
     if(sessionStorage.getItem('_prayerReturn')==='1'){
       sessionStorage.removeItem('_prayerReturn');
-      // 커버 표시, 앱 비활성화
       document.documentElement.classList.remove('app-active','parish-mode','retreat-mode');
       const cv=document.getElementById('cover');
       if(cv){ cv.style.display=''; cv.style.opacity='1'; }
       return;
     }
   }catch(ex){}
-  // sessionStorage 플래그 확인 → _noAutoNearby 세팅
+  // 2. _noAutoNearby 플래그
   try{
     if(sessionStorage.getItem('_noAutoNearby_flag')==='1'){
       window._noAutoNearby = true;
@@ -1693,8 +1724,19 @@ window.addEventListener('pageshow', function(e){
     }
   }catch(ex){}
   setTimeout(()=>{
-    if(restoreCoreReturnState()) return;
-    if(_screen==='map' && (!_map || !$('map')?.children.length)){
+    // 3. 통합 복귀: 웹·순례길(RETURN_KEY) 먼저, 없으면 성지·성당(CORE_RETURN_KEY)
+    if(typeof restoreIntegratedState==='function'){
+      try{
+        var _raw=sessionStorage.getItem('catholic_integrated_return_v2');
+        if(_raw){ restoreIntegratedState(); return; }
+      }catch(_e){}
+    }
+    // 4. 성지·성당·피정 복귀
+    if(typeof restoreCoreReturnState==='function'){
+      if(restoreCoreReturnState()) return;
+    }
+    // 5. 지도 미초기화 시 재초기화
+    if(typeof _screen!=='undefined' && _screen==='map' && (!_map || !$('map')?.children.length)){
       const reopenTab=_activeTab||'';
       _resetMapState();
       _mapInited=true;
@@ -2320,16 +2362,16 @@ function _showInfoCard(item, idx){
   const hp=$('ic-hp');
   if(item.hp){
     hp.href=item.hp;
-    hp.onclick=(e)=>{e.preventDefault(); openCoreExternalUrl(item.hp,{infoIdx:idx});};
+    hp.onclick=(e)=>{e.preventDefault(); openCoreExternalUrl(item.hp,{infoIdx:idx, mode:_mode, activeTab:_activeTab||''});};
     _show(hp);
   }
   else _hide(hp);
   const guide=$('ic-guide');
   if(_mode==='shrine'){
-    if(item.seq){ guide.onclick=()=>openCoreExternalUrl(_SU+item.seq,{infoIdx:idx}); guide.textContent='✝ 성지 상세페이지'; _show(guide);}
+    if(item.seq){ guide.onclick=()=>openCoreExternalUrl(_SU+item.seq,{infoIdx:idx, mode:_mode, activeTab:_activeTab||\'\'}); guide.textContent='✝ 성지 상세페이지'; _show(guide);}
     else _hide(guide);
   } else {
-    if(item.url){ guide.onclick=()=>openCoreExternalUrl(item.url,{infoIdx:idx}); guide.textContent=(_mode==='retreat'?'🏔 피정의 집 상세페이지':'⛪ 성당 상세페이지'); _show(guide);}
+    if(item.url){ guide.onclick=()=>openCoreExternalUrl(item.url,{infoIdx:idx, mode:_mode, activeTab:_activeTab||\'\'}); guide.textContent=(_mode==='retreat'?'🏔 피정의 집 상세페이지':'⛪ 성당 상세페이지'); _show(guide);}
     else _hide(guide);
   }
   const linksRow=$('ic-links-row');
@@ -3201,7 +3243,7 @@ function clearRoute(role){
   _setRouteLabel('end','');
   _hide($('rs-result'));
   _restoreMapMarkers();
-  [40,160,420].forEach(function(ms){
+  [20,80,250].forEach(function(ms){
     setTimeout(function(){ _restoreRouteDestinationSelection(destItem, false); }, ms);
   });
   }
@@ -3283,7 +3325,7 @@ function resetRoute(){
   // 4) 지도 기본 마커 복원 후, 마지막 도착지만 노란 마커로 다시 선택
   _restoreMapMarkers();
   if(destItem && destItem.lat && _map){
-    [40,160,420].forEach(function(ms){
+    [20,80,250].forEach(function(ms){
       setTimeout(function(){ _restoreRouteDestinationSelection(destItem, true); }, ms);
     });
   }
@@ -4225,9 +4267,16 @@ function _fmtTime(s){
   }
 
   window.addEventListener('pageshow', function(){
-    setTimeout(restoreIntegratedState, 0);
+    // 지도 레이아웃 복원 (순례길)
     setTimeout(function(){ relayoutTrailMap(0); }, 180);
     setTimeout(function(){ relayoutTrailMap(0); }, 420);
+    // restoreIntegratedState는 첫 번째 pageshow(통합핸들러)에서 처리
+    // 단, 여기서도 호출해야 하는 경우(웹·순례길 뷰)에만 실행
+    setTimeout(function(){
+      var _raw=null;
+      try{ _raw=sessionStorage.getItem('catholic_integrated_return_v2'); }catch(_e){}
+      if(_raw && typeof restoreIntegratedState==='function') restoreIntegratedState();
+    }, 50);
   });
 
   function initWebModule(){
@@ -5445,7 +5494,27 @@ function applyFont(){var s=scale();document.documentElement.classList.add('oai-f
 window.__OAI_applyGlobalFont=applyFont;window.prAdjustFont=function(delta){var cur=px(),i=SIZES.indexOf(cur);if(i<0)i=SIZES.indexOf(DEFAULT);i+=delta>0?1:-1;if(i<0)i=0;if(i>=SIZES.length)i=SIZES.length-1;setPx(SIZES[i]);applyFont()};
 function ensureQna(){var cover=el('cover');if(!cover)return;if(!el('qna-cover-btn')){var b=document.createElement('button');b.id='qna-cover-btn';b.type='button';b.innerHTML='<span>💬</span><span>문의·건의</span>';b.onclick=function(e){e.stopPropagation();if(typeof window.openQnaView==='function')window.openQnaView()};cover.appendChild(b)}}
 function openTopUrl(url){if(!url)return;try{window.top.location.href=url}catch(_){location.href=url}}
-document.addEventListener('click',function(e){var a=e.target&&e.target.closest&&e.target.closest('a[href]');if(a&&a.closest('#web-view,#trail-view,#diocese-view,#qna-view')){e.preventDefault();openTopUrl(a.href);return false}},true);
+document.addEventListener('click',function(e){
+  var a=e.target&&e.target.closest&&e.target.closest('a[href]');
+  if(!a) return;
+  var h=a.getAttribute('href')||'';
+  if(!h||h==='#'||/^javascript:/i.test(h)) return;
+  var inDiocese=a.closest('#diocese-view');
+  var inModule=a.closest('#web-view,#trail-view,#diocese-view,#qna-view');
+  if(inModule){
+    e.preventDefault();
+    // 관구교구: 상태 저장 후 이동 (복귀 가능하도록)
+    if(inDiocese){
+      if(typeof saveCoreReturnState==='function') saveCoreReturnState({});
+      if(/^https?:\/\//i.test(h)) window.open(h,'_blank','noopener,noreferrer');
+      else location.href=h;
+      return false;
+    }
+    // 웹·순례길: openExternalUrl or openTopUrl
+    if(typeof openTopUrl==='function') openTopUrl(h);
+    return false;
+  }
+},true);
 function isPrayerOpen(){var p=el('prayer-view');return!!(p&&p.classList.contains('open'))}function isPrayerDetail(){var d=el('prayer-detail');return!!(d&&d.classList.contains('show'))}function showPrayerList(){blur();var d=el('prayer-detail');if(d)d.classList.remove('show');var lv=el('prayer-list-view');if(lv){try{lv.style.scrollBehavior='auto';lv.scrollTop=0;lv.style.scrollBehavior=''}catch(_){}}applyFont()}function closePrayer(){blur();var d=el('prayer-detail');if(d)d.classList.remove('show');var p=el('prayer-view');if(p)p.classList.remove('open');if(typeof window.goToCover==='function')window.goToCover();else{document.documentElement.classList.remove('app-active','parish-mode','retreat-mode');var c=el('cover');if(c){c.style.display='';c.style.opacity='';c.style.pointerEvents=''}}applyFont()}
 window.__OAI_prayerBack=function(){if(!isPrayerOpen())return false;if(isPrayerDetail()){showPrayerList();try{history.pushState({oai_prayer_list:1},'',base())}catch(_){}}else{closePrayer();try{history.pushState({oai_cover:1},'',base())}catch(_){}}return true};
 var oldOpenPrayer=window.openPrayerBook;if(typeof oldOpenPrayer==='function'&&!oldOpenPrayer.__oaiTrueFinal){window.openPrayerBook=function(){var r=oldOpenPrayer.apply(this,arguments);setTimeout(function(){showPrayerList();try{history.pushState({oai_prayer_list:1},'',base())}catch(_){}} ,80);return r};window.openPrayerBook.__oaiTrueFinal=true}var oldDetail=window.prOpenDetail;if(typeof oldDetail==='function'&&!oldDetail.__oaiTrueFinal){window.prOpenDetail=function(){var r=oldDetail.apply(this,arguments);setTimeout(function(){applyFont();try{history.pushState({oai_prayer_detail:1},'',base())}catch(_){}} ,30);return r};window.prOpenDetail.__oaiTrueFinal=true}
