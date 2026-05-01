@@ -1497,7 +1497,7 @@ html.retreat-mode .tab-btn.active{
         </button>
         <button id="cc-5" class="cover-card" onclick="hideCoverAndRun(function(){ if(typeof startApp === 'function') startApp('retreat'); })">
             <div class="cover-icon-wrap"><span class="cover-emoji" aria-hidden="true">🌿</span></div>
-            <span class="cover-name">피정의 집 찾기</span>
+            <span class="cover-name oai-retreat-cover-label"><span>피정의 집</span><span>찾기</span></span>
         </button>
         <button id="cc-6" class="cover-card" onclick="hideCoverAndRun(function(){ if(typeof openTrailView === 'function') openTrailView(); })">
             <div class="cover-icon-wrap"><span class="cover-emoji" aria-hidden="true">🥾</span></div>
@@ -6383,5 +6383,98 @@ html.app-active #cover #qna-cover-btn{display:none!important;}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',installCoverBackGuard,{once:true});else installCoverBackGuard();
 })();
 </script>
+
+<!-- OAI PATCH 20260502-8: retreat find box width/text fit -->
+<style id="oai-retreat-find-box-text-20260502-8">
+/* 커버의 피정의 집 찾기: 카드 가로폭은 다른 카드와 동일, 긴 글자만 두 줄 처리 */
+#cc-5.cover-card{
+  width:100%!important;
+  min-width:0!important;
+  box-sizing:border-box!important;
+}
+#cc-5 .oai-retreat-cover-label{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:1px!important;
+  white-space:normal!important;
+  text-align:center!important;
+  line-height:1.08!important;
+  font-size:13px!important;
+  letter-spacing:-.04em!important;
+  word-break:keep-all!important;
+}
+#cc-5 .oai-retreat-cover-label span{
+  display:block!important;
+  line-height:1.08!important;
+}
+
+/* 피정의집찾기 화면: 가로 박스는 통일, 긴 글자는 박스를 늘리지 않고 내부에서 줄바꿈/축소 */
+html.retreat-mode .region-row{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto!important;
+  align-items:center!important;
+  gap:8px!important;
+  width:100%!important;
+}
+html.retreat-mode .region-row .srch-inner{
+  width:100%!important;
+  min-width:0!important;
+  height:42px!important;
+  box-sizing:border-box!important;
+}
+html.retreat-mode .region-search-btn{
+  width:74px!important;
+  min-width:74px!important;
+  max-width:74px!important;
+  height:42px!important;
+  padding:0 6px!important;
+  box-sizing:border-box!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  text-align:center!important;
+  white-space:normal!important;
+  word-break:keep-all!important;
+  line-height:1.08!important;
+  font-size:11px!important;
+  letter-spacing:-.04em!important;
+  border-radius:21px!important;
+}
+
+/* 피정 리스트 카드: 오른쪽 배지/거리 때문에 본문 박스가 밀리지 않게 고정 */
+html.retreat-mode .nearby-item,
+html.retreat-mode .list-item,
+html.retreat-mode .region-item{
+  width:100%!important;
+  min-width:0!important;
+  box-sizing:border-box!important;
+  align-items:flex-start!important;
+}
+html.retreat-mode .nearby-info,
+html.retreat-mode .li-info{
+  flex:1 1 auto!important;
+  min-width:0!important;
+}
+html.retreat-mode .nearby-meta{
+  width:74px!important;
+  min-width:74px!important;
+  max-width:74px!important;
+  flex:0 0 74px!important;
+}
+html.retreat-mode .nearby-type,
+html.retreat-mode .nearby-dist,
+html.retreat-mode .li-badge{
+  font-size:10.5px!important;
+  line-height:1.12!important;
+  white-space:normal!important;
+  text-align:center!important;
+  padding:3px 5px!important;
+  max-width:74px!important;
+  box-sizing:border-box!important;
+}
+</style>
+
 </body>
 </html>
