@@ -1481,6 +1481,11 @@ html.retreat-mode .tab-btn.active{
         </button>
     </div>
 
+<!-- 문의·건의 버튼 (커버 전용) -->
+<button id="qna-cover-btn" type="button" onclick="openQnaView()" aria-label="문의·건의">
+  💬 문의·건의
+</button>
+
 <!-- PWA 설치 버튼 (커버 전용) -->
 <button id="pwa-install-btn" onclick="triggerPwaInstall()" aria-label="앱 설치하기">
   📲 홈 화면에 앱 설치하기
@@ -1628,7 +1633,7 @@ function openMissa(){
   const link=$('missa-open-link');
   if(link) link.href=url;
   try{ localStorage.setItem('oai_last_missa_url', url); }catch(e){}
-  if(view) view.classList.add('open');
+  if(view) view.classList.remove('open');// 매일미사 팝업삭제: 내부 안내창은 열지 않음
   try{ window.open(url,'_blank','noopener'); }catch(e){ if(link) link.click(); }
   // 외부 저작권 페이지는 iframe으로 삽입하지 않음
 }
@@ -6736,6 +6741,30 @@ html,body{overflow-x:hidden!important;overscroll-behavior-x:none!important;}
   window.addEventListener('load', init);
   window.addEventListener('pageshow', init);
   try{ new MutationObserver(init).observe(document.documentElement, {childList:true, subtree:true}); }catch(e){}
+})();
+</script>
+
+<!-- OAI PATCH 20260502-4: missa popup removed + cover qna button restore -->
+<style id="oai-missa-qna-fix-20260502-4">
+#cover #qna-cover-btn{position:fixed!important;right:14px!important;bottom:calc(14px + env(safe-area-inset-bottom,0px))!important;z-index:10020!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:7px!important;min-height:42px!important;padding:0 15px!important;border:0!important;border-radius:999px!important;background:linear-gradient(135deg,#1f2a44,#31446c)!important;color:#fff!important;font-family:inherit!important;font-size:13px!important;font-weight:900!important;line-height:1!important;box-shadow:0 10px 24px rgba(31,42,68,.25)!important;opacity:1!important;visibility:visible!important;pointer-events:auto!important;}
+html.app-active #cover #qna-cover-btn{display:none!important;}
+#cover #pwa-install-btn{left:14px!important;right:auto!important;bottom:calc(14px + env(safe-area-inset-bottom,0px))!important;}
+@media (max-width:380px){#cover #qna-cover-btn{right:10px!important;padding:0 12px!important;font-size:12px!important;}#cover #pwa-install-btn{left:10px!important;font-size:12px!important;}}
+</style>
+<script id="oai-missa-qna-fix-20260502-4">
+(function(){
+  function $(id){return document.getElementById(id);}
+  function restoreQnaButton(){
+    var cover=$('cover');
+    if(!cover) return;
+    var btn=$('qna-cover-btn');
+    if(!btn){btn=document.createElement('button');btn.id='qna-cover-btn';btn.type='button';btn.setAttribute('aria-label','문의·건의');btn.textContent='💬 문의·건의';cover.appendChild(btn);}
+    btn.onclick=function(ev){if(ev) ev.preventDefault();if(typeof window.openQnaView === 'function') window.openQnaView();else location.href='qa-firebase.html';};
+  }
+  function removeMissaPopupState(){var mv=$('missa-view');if(mv) mv.classList.remove('open');}
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', function(){restoreQnaButton();removeMissaPopupState();});
+  else {restoreQnaButton();removeMissaPopupState();}
+  window.addEventListener('pageshow', function(){restoreQnaButton();removeMissaPopupState();});
 })();
 </script>
 
