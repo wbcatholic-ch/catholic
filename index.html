@@ -6316,5 +6316,172 @@ html,body{overflow-x:hidden!important;overscroll-behavior-x:none!important;}
 })();
 </script>
 
+
+
+<!-- OAI FINAL PATCH 20260502-2: unified follow-swipe, keyboard autocomplete off, stronger yellow-marker focus -->
+<style id="oai-unified-follow-swipe-marker-20260502-2">
+/* 모든 모듈의 탭 이동 액션을 성지/성당/피정 시트처럼 좌우로 따라오는 느낌으로 통일 */
+@keyframes oaiFollowSwipeFromRight20260502{
+  0%{opacity:.72;transform:translate3d(42px,0,0);filter:brightness(1.03)}
+  72%{opacity:1;transform:translate3d(-6px,0,0);filter:brightness(1.01)}
+  100%{opacity:1;transform:translate3d(0,0,0);filter:none}
+}
+@keyframes oaiFollowSwipeFromLeft20260502{
+  0%{opacity:.72;transform:translate3d(-42px,0,0);filter:brightness(1.03)}
+  72%{opacity:1;transform:translate3d(6px,0,0);filter:brightness(1.01)}
+  100%{opacity:1;transform:translate3d(0,0,0);filter:none}
+}
+.oai-swipe-left{animation:oaiFollowSwipeFromRight20260502 .30s cubic-bezier(.2,.8,.2,1) both!important;will-change:transform,opacity,filter!important;}
+.oai-swipe-right{animation:oaiFollowSwipeFromLeft20260502 .30s cubic-bezier(.2,.8,.2,1) both!important;will-change:transform,opacity,filter!important;}
+#pr-list-ul.oai-swipe-left,#pr-list-ul.oai-swipe-right,
+#prayer-list-view.oai-swipe-left,#prayer-list-view.oai-swipe-right,
+#web-list.oai-swipe-left,#web-list.oai-swipe-right,
+#trail-list.oai-swipe-left,#trail-list.oai-swipe-right,
+#trail-view .trail-panel.oai-swipe-left,#trail-view .trail-panel.oai-swipe-right,
+.sheet-body.oai-swipe-left,.sheet-body.oai-swipe-right{overflow:hidden!important;backface-visibility:hidden!important;}
+#prayer-view,#web-view,#trail-view,.module-view,.sheet{overflow-x:hidden!important;overscroll-behavior-x:none!important;}
+</style>
+<script id="oai-unified-follow-swipe-marker-20260502-2">
+(function(){
+  'use strict';
+  if(window.__OAI_UNIFIED_SWIPE_KEYBOARD_MARKER_20260502_2__) return;
+  window.__OAI_UNIFIED_SWIPE_KEYBOARD_MARKER_20260502_2__ = true;
+  function byId(id){return document.getElementById(id);}
+  function flash(el, dir){
+    if(!el) return;
+    try{
+      el.classList.remove('oai-swipe-left','oai-swipe-right');
+      void el.offsetWidth;
+      el.classList.add(dir === 'right' ? 'oai-swipe-right' : 'oai-swipe-left');
+      setTimeout(function(){try{el.classList.remove('oai-swipe-left','oai-swipe-right');}catch(e){}}, 340);
+    }catch(e){}
+  }
+  window.oaiSwipeAction = function(el, dir){
+    if(!el){
+      el = byId('pr-list-ul') || byId('prayer-list-view');
+      if(byId('web-view') && byId('web-view').classList.contains('open')) el = byId('web-list');
+      if(byId('trail-view') && byId('trail-view').classList.contains('open')) el = byId('trail-list') || document.querySelector('#trail-view .trail-panel.on');
+    }
+    flash(el, dir);
+  };
+
+  /* 모든 키보드 자동완성/자동수정/자동대문자/맞춤법 제안 끄기 */
+  function disableKeyboardSuggestions(root){
+    root = root || document;
+    try{
+      root.querySelectorAll('input, textarea, [contenteditable="true"]').forEach(function(el){
+        el.setAttribute('autocomplete','off');
+        el.setAttribute('autocorrect','off');
+        el.setAttribute('autocapitalize','off');
+        el.setAttribute('spellcheck','false');
+        el.setAttribute('data-form-type','other');
+        el.setAttribute('data-lpignore','true');
+      });
+    }catch(e){}
+  }
+
+  /* 노랑마커가 인포카드 뒤에 숨지 않도록 실제 화면 좌표 기준으로 위쪽(셀카 카메라 방향) 보정 */
+  function focusAboveInfoCard(item){
+    if(!item || !item.lat || !item.lng) return;
+    try{
+      if(typeof _map === 'undefined' || !_map || typeof _LL !== 'function') return;
+      var pos = new _LL(Number(item.lat), Number(item.lng));
+      var mapEl = byId('map-wrap') || byId('map');
+      var cardEl = byId('info-card');
+      if(!mapEl) return;
+      try{ if(_map.relayout) _map.relayout(); }catch(e){}
+      // 먼저 원래 좌표로 이동한 뒤, 카드가 열린 실제 높이를 기준으로 다시 계산한다.
+      try{ _map.setCenter(pos); }catch(e){}
+      [80,220,460,760].forEach(function(delay){
+        setTimeout(function(){
+          try{
+            cardEl = byId('info-card');
+            mapEl = byId('map-wrap') || byId('map');
+            if(!_map || !mapEl || !cardEl || !cardEl.classList.contains('open')) return;
+            var proj = _map.getProjection && _map.getProjection();
+            if(!proj || !proj.containerPointFromCoords || !proj.coordsFromContainerPoint) return;
+            var mapH = mapEl.clientHeight || mapEl.offsetHeight || window.innerHeight;
+            var mapW = mapEl.clientWidth || mapEl.offsetWidth || window.innerWidth;
+            var cardH = Math.min(cardEl.offsetHeight || Math.round(mapH * 0.52), Math.round(mapH * 0.58));
+            var tabH = (byId('tabbar') && byId('tabbar').offsetHeight) || 0;
+            var topSafe = Math.max(tabH + 24, 78);
+            var bottomLimit = Math.max(topSafe + 120, mapH - cardH - 42);
+            var visibleH = Math.max(130, bottomLimit - topSafe);
+            // 보이는 지도 영역의 위쪽 28% 지점으로 마커를 올려 카드와 겹치지 않게 한다.
+            var targetX = mapW / 2;
+            var targetY = topSafe + visibleH * 0.28;
+            var pt = proj.containerPointFromCoords(pos);
+            var centerX = mapW / 2;
+            var centerY = mapH / 2;
+            var qx = pt.x + (centerX - targetX);
+            var qy = pt.y + (centerY - targetY);
+            var newCenter = proj.coordsFromContainerPoint({x:qx, y:qy});
+            if(newCenter) _map.setCenter(newCenter);
+          }catch(e){}
+        }, delay);
+      });
+    }catch(e){}
+  }
+  window.oaiFocusMarkerAboveInfoCard = focusAboveInfoCard;
+  try{
+    var oldFocus = window._focusMarkerAboveInfoCard || (typeof _focusMarkerAboveInfoCard === 'function' ? _focusMarkerAboveInfoCard : null);
+    window._focusMarkerAboveInfoCard = _focusMarkerAboveInfoCard = function(item){ focusAboveInfoCard(item); };
+  }catch(e){}
+
+  // 인포카드가 올라올 때마다 자동으로 보정해서, 다른 setCenter 호출이 뒤에 와도 다시 잡는다.
+  function wrapShowInfoCard(){
+    try{
+      if(typeof _showInfoCard !== 'function' || _showInfoCard.__oaiMarkerFocusWrapped) return;
+      var old = _showInfoCard;
+      _showInfoCard = function(item, idx){
+        var r = old.apply(this, arguments);
+        try{ focusAboveInfoCard(item); }catch(e){}
+        return r;
+      };
+      _showInfoCard.__oaiMarkerFocusWrapped = true;
+      window._showInfoCard = _showInfoCard;
+    }catch(e){}
+  }
+
+  // resetRoute 내부/외부에서 원좌표 setCenter가 뒤늦게 실행되는 경우를 다시 보정한다.
+  function wrapResetRoute(){
+    try{
+      if(typeof resetRoute !== 'function' || resetRoute.__oaiMarkerFocusResetWrapped) return;
+      var old = resetRoute;
+      resetRoute = function(){
+        var destItem = null;
+        try{
+          if(typeof _rE !== 'undefined' && _rE && _rE.lat){
+            var items = (typeof _getCurrentItems === 'function') ? _getCurrentItems() : [];
+            var idx = (typeof _rE.idx === 'number' && _rE.idx >= 0) ? _rE.idx : items.findIndex(function(p){return Number(p.lat)===Number(_rE.lat)&&Number(p.lng)===Number(_rE.lng);});
+            destItem = idx >= 0 ? items[idx] : {lat:_rE.lat,lng:_rE.lng,name:_rE.name};
+          } else if(typeof _curInfoItem !== 'undefined' && _curInfoItem && _curInfoItem.item){
+            destItem = _curInfoItem.item;
+          }
+        }catch(e){}
+        var r = old.apply(this, arguments);
+        if(destItem) setTimeout(function(){ focusAboveInfoCard(destItem); }, 120);
+        return r;
+      };
+      resetRoute.__oaiMarkerFocusResetWrapped = true;
+      window.resetRoute = resetRoute;
+    }catch(e){}
+  }
+
+  function init(){
+    disableKeyboardSuggestions(document);
+    wrapShowInfoCard();
+    wrapResetRoute();
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+  window.addEventListener('load', init);
+  window.addEventListener('pageshow', init);
+  try{
+    new MutationObserver(function(){ disableKeyboardSuggestions(document); wrapShowInfoCard(); wrapResetRoute(); })
+      .observe(document.documentElement, {childList:true, subtree:true});
+  }catch(e){}
+})();
+</script>
+
 </body>
 </html>
