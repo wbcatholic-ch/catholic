@@ -15,6 +15,8 @@
 
 <meta charset="UTF-8">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover,interactive-widget=resizes-visual">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -3795,6 +3797,7 @@ function _fmtTime(s){
         ? (ci < btns.length - 1 ? ci + 1 : 0)
         : (ci > 0 ? ci - 1 : btns.length - 1);
       btns[ni]?.click();
+      if(typeof window.oaiSwipeAction === 'function') window.oaiSwipeAction(document.getElementById('web-list'), dx < 0 ? 'left' : 'right');
       return;
     }
 
@@ -4047,7 +4050,7 @@ function _fmtTime(s){
   const TRAIL_COLORS = {d:'#1D4ED8', l:'#2A8040'};
   const RETURN_KEY = 'catholic_integrated_return_v2';
   const trailState = {inited:false, map:null, markers:[], selected:-1, myOverlay:null, view:'map', pendingOpenIndex:null, restoreCenter:null, restoreLevel:null, needsHardReset:false, pendingFitBounds:false};
-  const webState = {built:false, curCat:'전체'};
+  const webState = {built:false, curCat:'⭐ 즐겨찾기'};
   const WEB_FAV_KEY = 'web_favorites_v1';
   let webFavs = [];
   function wfLoad(){ try{ webFavs=JSON.parse(localStorage.getItem(WEB_FAV_KEY)||'[]'); }catch(e){ webFavs=[]; } }
@@ -4058,8 +4061,8 @@ function _fmtTime(s){
     else webFavs.push(url);
     wfSave();
     // ⭐ 탭 카운트 업데이트
-    var favBtn = document.getElementById('web-cat_⭐');
-    if(favBtn){ var cnt = webFavs.length; favBtn.innerHTML = '⭐'; }
+    var favBtn = document.getElementById('web-cat_⭐ 즐겨찾기');
+    if(favBtn){ favBtn.innerHTML = '⭐ 즐겨찾기'; }
   }
   wfLoad();
 
@@ -4084,7 +4087,7 @@ function _fmtTime(s){
       }catch(e){}
     }
     if(payload.module==='web'){
-      payload.cat = payload.cat || webState.curCat || '전체';
+      payload.cat = payload.cat || webState.curCat || '⭐ 즐겨찾기';
     }
     saveReturnState(payload);
     location.href = url;
@@ -4110,14 +4113,14 @@ function _fmtTime(s){
     const restore = !!(opts && opts.restore);
     if(!restore){
       // 새로 진입 시만 전체 탭 리셋
-      webState.curCat = '전체';
+      webState.curCat = (webFavs && webFavs.length) ? '⭐ 즐겨찾기' : '중앙기구';
       const list = ig$('web-list');
       if(list) list.scrollTop = 0;
     }
     // restore 시: curCat 유지 (restoreIntegratedState에서 setWebCat 호출)
     enterIntegratedView('web-view');
     initWebModule();
-    scheduleWebCatSync(webState.curCat || '전체');
+    scheduleWebCatSync(webState.curCat || '⭐ 즐겨찾기');
   };
 
   window.openTrailView = function(opts){
@@ -4200,8 +4203,8 @@ function _fmtTime(s){
     webState.built = true;
     const wrap = ig$('web-cats');
     if(!wrap) return;
-    const cats = ['⭐', '전체'];
-    WEB_SITES.forEach(s => { if(!cats.includes(s.cat)&&s.cat!=='⭐ 즐겨찾기') cats.push(s.cat); });
+    const cats = ['⭐ 즐겨찾기'];
+    WEB_SITES.forEach(s => { if(!cats.includes(s.cat)) cats.push(s.cat); });
     cats.forEach(c => {
       const btn = document.createElement('button');
       btn.className = 'web-cat-btn' + (c===webState.curCat ? ' on' : '');
@@ -4209,8 +4212,8 @@ function _fmtTime(s){
       btn.dataset.webCat = c;
       btn.dataset.catColor = c; // CSS 선택자용
       btn.setAttribute('aria-pressed', c===webState.curCat ? 'true' : 'false');
-      const count = c==='전체' ? WEB_SITES.length : c==='⭐' ? WEB_SITES.filter(s => wfHas(s.url)).length : WEB_SITES.filter(s => s.cat===c).length;
-      btn.innerHTML = esc(c) + (c==='⭐' ? '' : '<span class="cnt">' + count + '</span>');
+      const count = c==='⭐ 즐겨찾기' ? WEB_SITES.filter(s => wfHas(s.url)).length : WEB_SITES.filter(s => s.cat===c).length;
+      btn.innerHTML = esc(c) + (c==='⭐ 즐겨찾기' ? '' : '<span class="cnt">' + count + '</span>');
       btn.addEventListener('click', function(){ setWebCat(c); });
       wrap.appendChild(btn);
     });
@@ -4219,7 +4222,7 @@ function _fmtTime(s){
   }
 
   function applyWebCatState(cat){
-    webState.curCat = cat || '전체';
+    webState.curCat = cat || ((webFavs && webFavs.length) ? '⭐ 즐겨찾기' : '중앙기구');
     const btns = document.querySelectorAll('#web-cats .web-cat-btn');
     if(!btns.length) return false;
     btns.forEach(btn => {
@@ -4237,14 +4240,14 @@ function _fmtTime(s){
   }
 
   function scheduleWebCatSync(cat){
-    const nextCat = cat || webState.curCat || '전체';
+    const nextCat = cat || webState.curCat || ((webFavs && webFavs.length) ? '⭐ 즐겨찾기' : '중앙기구');
     applyWebCatState(nextCat);
     requestAnimationFrame(function(){ applyWebCatState(nextCat); });
     setTimeout(function(){ applyWebCatState(nextCat); }, 60);
   }
 
   function setWebCat(cat){
-    applyWebCatState(cat || '전체');
+    applyWebCatState(cat || ((webFavs && webFavs.length) ? '⭐ 즐겨찾기' : '중앙기구'));
     renderWebList();
     const list = ig$('web-list');
     if(list){
@@ -4254,7 +4257,7 @@ function _fmtTime(s){
     }
     // 활성 탭을 가로 중앙으로 스크롤
     requestAnimationFrame(function(){
-      const activeBtn = ig$('web-cat_' + (cat||'전체'));
+      const activeBtn = ig$('web-cat_' + (cat || webState.curCat || '중앙기구'));
       if(activeBtn) activeBtn.scrollIntoView({behavior:'instant', block:'nearest', inline:'center'});
     });
   }
@@ -4265,7 +4268,7 @@ function _fmtTime(s){
     if(!wrap || !empty) return;
     applyWebCatState(webState.curCat || '전체');
     Array.from(wrap.querySelectorAll('.web-card')).forEach(el => el.remove());
-    const filtered = webState.curCat==='전체' ? WEB_SITES : webState.curCat==='⭐' ? WEB_SITES.filter(s => wfHas(s.url)) : WEB_SITES.filter(s => s.cat===webState.curCat);
+    const filtered = webState.curCat==='⭐ 즐겨찾기' ? WEB_SITES.filter(s => wfHas(s.url)) : WEB_SITES.filter(s => s.cat===webState.curCat);
     const countEl = ig$('web-count');
     if(countEl) countEl.textContent = filtered.length + '개';
     empty.classList.toggle('show', filtered.length===0);
@@ -4309,7 +4312,7 @@ function _fmtTime(s){
           wfToggle(s.url);
           fb.classList.toggle('on', wfHas(s.url));
           // 즐겨찾기 탭에서 삭제하면 목록 갱신
-          if(webState.curCat==='⭐') renderWebList();
+          if(webState.curCat==='⭐ 즐겨찾기') renderWebList();
           return;
         }
         openExternalUrl(s.url, {
@@ -4918,17 +4921,13 @@ window.prCloseDetail = window.prCloseDetail;
     var idx = getIdx(prCurCat);
     var next = (idx + 1) % PR_CATS.length; // 순환
     prSwitchCat(PR_CATS[next]);
-    el.style.animation = 'none';
-    el.offsetWidth;
-    el.style.animation = 'prSlideLeft .2s ease-out';
+    if(typeof window.oaiSwipeAction === 'function') window.oaiSwipeAction(document.getElementById('pr-list-ul'), 'left');
   }
   function goPrev() {
     var idx = getIdx(prCurCat);
     var prev = (idx - 1 + PR_CATS.length) % PR_CATS.length; // 순환
     prSwitchCat(PR_CATS[prev]);
-    el.style.animation = 'none';
-    el.offsetWidth;
-    el.style.animation = 'prSlideRight .2s ease-out';
+    if(typeof window.oaiSwipeAction === 'function') window.oaiSwipeAction(document.getElementById('pr-list-ul'), 'right');
   }
 
   el.addEventListener('touchstart', function(e) {
@@ -4957,6 +4956,7 @@ lyTabColors = prApplyTabColors;
 
 window.initPrayerView = function(){
   prLoadPrefs();
+  prCurCat = (prFavorites && prFavorites.length) ? 'favorites' : 'aim';
   prBuildTabs();
   prApplyFont();
   prApplyTabColors();
@@ -5157,14 +5157,7 @@ window.initPrayerView = function(){
 
 })();
 
-(function(){
-  try{
-    var url = new URL(window.location.href);
-    if(url.searchParams.get("v")) return;
-    url.searchParams.set("v", Date.now());
-    window.location.href = url.toString();
-  }catch(e){}
-})();
+/* removed auto ?v=Date.now redirect for no-cache mode */
 
 (function(){
   try{
@@ -5268,50 +5261,7 @@ window.initPrayerView = function(){
 
 /* removed unstable duplicate patch: OAI_FINAL_STABILITY_20260428__ */
 
-(function(){
-  if(window.__OAI_MODULE_STANDARD_20260428__) return;
-  window.__OAI_MODULE_STANDARD_20260428__ = true;
-
-  function injectDioceseStandard(){
-    var f=document.getElementById('diocese-frame');
-    if(!f || !f.contentWindow) return;
-    var doc;
-    try{ doc=f.contentWindow.document; }catch(e){ return; }
-    if(!doc || !doc.documentElement) return;
-
-    var scale = getComputedStyle(document.documentElement).getPropertyValue('--app-font-scale') || '1';
-    doc.documentElement.style.setProperty('--app-font-scale', scale.trim() || '1');
-
-    var st=doc.getElementById('oai-diocese-standard-style-20260428');
-    if(!st){
-      st=doc.createElement('style');
-      st.id='oai-diocese-standard-style-20260428';
-      st.textContent = `
-:root{--app-font-scale:1;--std-header-h:72px;--std-title-fs:calc(20px*var(--app-font-scale));--std-sub-fs:calc(11px*var(--app-font-scale));--std-tab-h:48px;--std-btn-h:42px;--std-btn-fs:calc(15px*var(--app-font-scale));--std-radius:14px;}
-html,body{width:100%!important;height:100%!important;overflow:hidden!important;}
-body{display:flex!important;flex-direction:column!important;}
-.hd,.header,.topbar{min-height:calc(var(--std-header-h) + env(safe-area-inset-top,0px))!important;height:calc(var(--std-header-h) + env(safe-area-inset-top,0px))!important;padding:calc(10px + env(safe-area-inset-top,0px)) 16px 10px!important;box-sizing:border-box!important;display:flex!important;align-items:center!important;justify-content:space-between!important;flex-shrink:0!important;}
-.hd h1,.header h1,.title,.hd-title{font-size:var(--std-title-fs)!important;font-weight:800!important;line-height:1.25!important;letter-spacing:-.02em!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;margin:0!important;}
-.hd-sub,.subtitle,.sub,.hd .small{font-size:var(--std-sub-fs)!important;font-weight:600!important;line-height:1.25!important;opacity:.76!important;margin-top:3px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;}
-.tabs,.tabbar,.seg,.mode-tabs{min-height:calc(var(--std-tab-h) + 16px)!important;height:calc(var(--std-tab-h) + 16px)!important;padding:8px 14px!important;display:flex!important;align-items:center!important;gap:8px!important;overflow-x:auto!important;overflow-y:hidden!important;flex-shrink:0!important;box-sizing:border-box!important;}
-.tab,.qbtn,.tabs button,.tabbar button,.seg button,.mode-tabs button,.btn,.card button,.card a,.home-btn,.link-btn{min-height:var(--std-btn-h)!important;height:var(--std-btn-h)!important;border-radius:var(--std-radius)!important;font-size:var(--std-btn-fs)!important;font-weight:800!important;font-family:inherit!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:6px!important;box-sizing:border-box!important;white-space:nowrap!important;}
-.tab,.tabs button,.tabbar button,.seg button,.mode-tabs button{min-height:var(--std-tab-h)!important;height:var(--std-tab-h)!important;padding:0 16px!important;}
-.list,.content,.map-wrap,.body,.main{flex:1 1 auto!important;min-height:0!important;}
-.lv-name,.lv-nm,.sd,.c-nm,.sot{font-size:calc(16px*var(--app-font-scale))!important;}
-.lv-rg,.lv-full,.sg,.c-rg,.se,.lv-url,.si-r-url{font-size:calc(12px*var(--app-font-scale))!important;}
-.card h3{font-size:calc(17px*var(--app-font-scale))!important;}
-`;
-      (doc.head||doc.documentElement).appendChild(st);
-    }
-  }
-
-  window.__OAI_injectDioceseStandard = injectDioceseStandard;
-  var fr=document.getElementById('diocese-frame');
-  if(fr) fr.addEventListener('load', function(){ setTimeout(injectDioceseStandard,60); setTimeout(injectDioceseStandard,350); });
-  setInterval(function(){ var v=document.getElementById('diocese-view'); if(v && v.classList.contains('open')) injectDioceseStandard(); }, 1000);
-  document.addEventListener('DOMContentLoaded', injectDioceseStandard);
-  setTimeout(injectDioceseStandard, 300);
-})();
+/* removed unstable duplicate diocese iframe style injector: original diocese.html style is authoritative */
 
 /* removed unstable duplicate patch: OAI_TRUE_FINAL_CATCHUP_20260428__ */
 
@@ -5528,14 +5478,7 @@ body{display:flex!important;flex-direction:column!important;}
 })();
 </script>
 <script>
-// 서비스 워커: 실제 배포 환경에서만 등록
-if('serviceWorker' in navigator && location.protocol === 'https:' && !location.hostname.includes('claudeusercontent')){
-  window.addEventListener('load', function(){
-    navigator.serviceWorker.register('./sw.js', {scope: './'})
-      .then(function(r){ console.log('[SW]', r.scope); })
-      .catch(function(e){ console.warn('[SW] 실패', e); });
-  });
-}
+// no-cache mode: service worker registration disabled; existing caches are cleared by oai-no-cache-runtime-20260501.
 </script>
 <script>
 // ── PWA 설치 버튼 로직 ──
@@ -5960,6 +5903,42 @@ html.retreat-mode #sm-tab-bar .sm-tab.active {
       });
     }
   });
+})();
+</script>
+
+
+<script id="oai-stable-module-return-and-swipe-20260501">
+(function(){
+  'use strict';
+  window.oaiSwipeAction = function(el, dir){
+    if(!el) return;
+    el.classList.remove('oai-swipe-left','oai-swipe-right');
+    void el.offsetWidth;
+    el.classList.add(dir === 'right' ? 'oai-swipe-right' : 'oai-swipe-left');
+    setTimeout(function(){ try{ el.classList.remove('oai-swipe-left','oai-swipe-right'); }catch(e){} }, 240);
+  };
+  var DIO_KEY = 'oai_diocese_return_state_v3';
+  window.openDioceseExternal = function(url, state){
+    if(!url) return;
+    var payload = state || {};
+    try{ var frame = document.getElementById('diocese-frame'); if(frame && frame.contentWindow && typeof frame.contentWindow.getDioceseReturnState === 'function'){ payload = frame.contentWindow.getDioceseReturnState(payload.source || 'link') || payload; } }catch(e){}
+    try{ sessionStorage.setItem(DIO_KEY, JSON.stringify(payload)); }catch(e){}
+    location.href = url;
+  };
+  function restoreDioceseIfNeeded(){
+    var raw=null; try{ raw=sessionStorage.getItem(DIO_KEY); }catch(e){}
+    if(!raw) return;
+    var state=null; try{ state=JSON.parse(raw); }catch(e){}
+    try{ sessionStorage.removeItem(DIO_KEY); }catch(e){}
+    if(!state) return;
+    if(typeof window.openDioceseView === 'function') window.openDioceseView();
+    var tries=0, timer=setInterval(function(){
+      tries++; var frame=document.getElementById('diocese-frame');
+      try{ if(frame && frame.contentWindow && typeof frame.contentWindow.restoreDioceseReturnState === 'function'){ frame.contentWindow.restoreDioceseReturnState(state); clearInterval(timer); } }catch(e){}
+      if(tries>25) clearInterval(timer);
+    },120);
+  }
+  window.addEventListener('pageshow', function(){ setTimeout(restoreDioceseIfNeeded,80); });
 })();
 </script>
 
