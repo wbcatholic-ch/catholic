@@ -12,8 +12,8 @@
 <meta name="apple-mobile-web-app-title" content="한국천주교">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0e1535">
-<link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjoi7ZWc6rWtIOyynOyjvOq1kCDsiJzroYAg7KeA64+EIiwic2hvcnRfbmFtZSI6IuyynOyjvOq1kOyInOuhgCIsImRlc2NyaXB0aW9uIjoi7ISx7KeAIDE2N+qzsyDCtyDshLHri7kgMTY5NuqwnCDCtyDqsr3roZztg5Dsg4kiLCJzdGFydF91cmwiOiIuIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiIzBlMTUzNSIsInRoZW1lX2NvbG9yIjoiIzBlMTUzNSIsIm9yaWVudGF0aW9uIjoicG9ydHJhaXQtcHJpbWFyeSIsImljb25zIjpbeyJzcmMiOiJkYXRhOmltYWdlL3N2Zyt4bWwsPHN2ZyB4bWxucz1cImh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnXCIgdmlld0JveD1cIjAgMCA1MTIgNTEyXCI+PHJlY3Qgd2lkdGg9XCI1MTJcIiBoZWlnaHQ9XCI1MTJcIiByeD1cIjgwXCIgZmlsbD1cIiUyMzBlMTUzNVwiLz48cmVjdCB4PVwiMjI2XCIgeT1cIjgwXCIgd2lkdGg9XCI2MFwiIGhlaWdodD1cIjM1MlwiIHJ4PVwiMTBcIiBmaWxsPVwiJTIzZDRhYTZhXCIvPjxyZWN0IHg9XCIxMzBcIiB5PVwiMTYwXCIgd2lkdGg9XCIyNTJcIiBoZWlnaHQ9XCI2MFwiIHJ4PVwiMTBcIiBmaWxsPVwiJTIzZDRhYTZhXCIvPjwvc3ZnPiIsInNpemVzIjoiYW55IiwidHlwZSI6ImltYWdlL3N2Zyt4bWwiLCJwdXJwb3NlIjoiYW55In0seyJzcmMiOiJkYXRhOmltYWdlL3N2Zyt4bWwsPHN2ZyB4bWxucz1cImh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnXCIgdmlld0JveD1cIjAgMCA1MTIgNTEyXCI+PHJlY3Qgd2lkdGg9XCI1MTJcIiBoZWlnaHQ9XCI1MTJcIiBmaWxsPVwiJTIzMGUxNTM1XCIvPjxyZWN0IHg9XCIyMDZcIiB5PVwiMTAwXCIgd2lkdGg9XCIxMDBcIiBoZWlnaHQ9XCIzMTJcIiByeD1cIjEyXCIgZmlsbD1cIiUyM2Q0YWE2YVwiLz48cmVjdCB4PVwiMTEwXCIgeT1cIjE5NlwiIHdpZHRoPVwiMjkyXCIgaGVpZ2h0PVwiMTAwXCIgcng9XCIxMlwiIGZpbGw9XCIlMjNkNGFhNmFcIi8+PC9zdmc+Iiwic2l6ZXMiOiJhbnkiLCJ0eXBlIjoiaW1hZ2Uvc3ZnK3htbCIsInB1cnBvc2UiOiJtYXNrYWJsZSJ9XX0=">
-<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22 viewBox%3D%220 0 180 180%22%3E%3Crect width%3D%22180%22 height%3D%22180%22 rx%3D%2238%22 fill%3D%22%230e1535%22%2F%3E%3Crect x%3D%2280%22 y%3D%2228%22 width%3D%2220%22 height%3D%22124%22 rx%3D%224%22 fill%3D%22%23d4aa6a%22%2F%3E%3Crect x%3D%2244%22 y%3D%2256%22 width%3D%2292%22 height%3D%2220%22 rx%3D%224%22 fill%3D%22%23d4aa6a%22%2F%3E%3C%2Fsvg%3E">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192x192.png">
 <meta name="format-detection" content="telephone=no">
 <meta name="description" content="가톨릭 신앙의 여정을 함께 합니다">
 <title>한국 천주교</title>
@@ -1270,6 +1270,18 @@ html.retreat-mode .tab-btn.active{
 .pr-tab.on[data-cat="bong2"]{background:#7E22CE!important;}
 .pr-tab.on[data-cat="bong3"]{background:#C2410C!important;}
 .pr-tab.on{background:var(--gold,#c9a227)!important;}
+
+/* 활성 탭 항상 보이기 - overflow scroll 보장 */
+#prayer-tabs, #web-cats, #trail-tabs, .sm-tabs {
+  overflow-x: auto !important;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+#prayer-tabs::-webkit-scrollbar,
+#web-cats::-webkit-scrollbar,
+#trail-tabs::-webkit-scrollbar,
+.sm-tabs::-webkit-scrollbar { display: none; }
 </style>
 <style id="prayer-swipe-anim">@keyframes prSlideLeft{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}@keyframes prSlideRight{from{opacity:0;transform:translateX(-40px)}to{opacity:1;transform:translateX(0)}}</style>
 
@@ -4175,7 +4187,7 @@ cats.push('⭐');
     // 활성 탭을 가로 중앙으로 스크롤
     requestAnimationFrame(function(){
       const activeBtn = ig$('web-cat_' + (cat||'전체'));
-      if(activeBtn) activeBtn.scrollIntoView({behavior:'smooth', block:'nearest', inline:'center'});
+      if(activeBtn) activeBtn.scrollIntoView({behavior:'instant', block:'nearest', inline:'center'});
     });
   }
 
@@ -4723,9 +4735,13 @@ function prBuildTabs(){
 }
 
 function prApplyTabColors(){
+  let activeBtn = null;
   document.querySelectorAll('.pr-tab').forEach(btn=>{
-    btn.classList.toggle('on', btn.dataset.cat===prCurCat);
+    const on = btn.dataset.cat===prCurCat;
+    btn.classList.toggle('on', on);
+    if(on) activeBtn = btn;
   });
+  if(activeBtn) activeBtn.scrollIntoView({behavior:'instant', block:'nearest', inline:'center'});
 }
 function prSwitchCat(cat){
   prCurCat = cat;
@@ -5763,6 +5779,19 @@ function init(){ensureQna();applyFont();injectDioceseAll();relayoutAll()}documen
   window.QNA_FORM_URL=QA_URL;
   window.goQaFirebase=function(){ location.href=QA_URL; };
 })();
+</script>
+<script>
+if('serviceWorker' in navigator){
+    window.addEventListener('load', function(){
+      navigator.serviceWorker.register('./sw.js', {scope: './'})
+        .then(function(reg){
+          console.log('[SW] 등록 성공:', reg.scope);
+        })
+        .catch(function(err){
+          console.warn('[SW] 등록 실패:', err);
+        });
+    });
+  }
 </script>
 </body>
 </html>
