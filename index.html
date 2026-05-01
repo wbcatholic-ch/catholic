@@ -1301,27 +1301,49 @@ html.retreat-mode .tab-btn.active{
 /* PWA 설치 버튼 - 커버 하단 */
 #pwa-install-btn {
   display: none;
-  width: calc(100% - 48px);
-  max-width: 340px;
-  margin: 18px auto 0;
-  padding: 16px 24px;
-  background: linear-gradient(135deg, #1a9e50, #16a34a, #15803d);
-  color: #fff;
+  width: calc(100% - 32px);
+  max-width: 380px;
+  margin: 20px auto 0;
+  padding: 0 20px;
+  height: 72px;
+  background: linear-gradient(135deg, #ff6b35 0%, #f7931e 40%, #ffcc02 100%);
+  color: #1a0a00;
   border: none;
-  border-radius: 18px;
-  font-size: 17px;
-  font-weight: 800;
+  border-radius: 22px;
+  font-size: 18px;
+  font-weight: 900;
   font-family: inherit;
-  letter-spacing: 0.2px;
+  letter-spacing: -0.3px;
   cursor: pointer;
-  box-shadow: 0 8px 28px rgba(22,163,74,0.50), 0 2px 8px rgba(22,163,74,0.30);
+  box-shadow: 0 6px 0 rgba(180,80,0,.35), 0 12px 32px rgba(255,107,53,.55), 0 4px 12px rgba(255,107,53,.30);
   -webkit-tap-highlight-color: transparent;
-  animation: pwa-pulse 2.5s ease-in-out infinite;
+  animation: pwa-install-bounce 2s ease-in-out infinite;
   text-align: center;
+  position: relative;
+  overflow: hidden;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
 }
-@keyframes pwa-pulse {
-  0%,100% { box-shadow: 0 8px 28px rgba(22,163,74,0.45), 0 2px 8px rgba(22,163,74,0.25); }
-  50%      { box-shadow: 0 12px 36px rgba(22,163,74,0.70), 0 4px 14px rgba(22,163,74,0.40); transform: scale(1.025); }
+#pwa-install-btn::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 50%;
+  background: linear-gradient(180deg, rgba(255,255,255,.28), transparent);
+  border-radius: 22px 22px 0 0;
+  pointer-events: none;
+}
+#pwa-install-btn::after {
+  content: '📲';
+  font-size: 24px;
+  margin-right: 4px;
+}
+@keyframes pwa-install-bounce {
+  0%,100% { transform: translateY(0); box-shadow: 0 6px 0 rgba(180,80,0,.35), 0 12px 32px rgba(255,107,53,.55); }
+  45%      { transform: translateY(-5px); box-shadow: 0 11px 0 rgba(180,80,0,.20), 0 20px 44px rgba(255,107,53,.65); }
+  55%      { transform: translateY(-5px); }
 }
 </style>
 <style id="prayer-swipe-anim">@keyframes prSlideLeft{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}@keyframes prSlideRight{from{opacity:0;transform:translateX(-40px)}to{opacity:1;transform:translateX(0)}}</style>
@@ -1330,7 +1352,6 @@ html.retreat-mode .tab-btn.active{
 <div id="missa-view">
   <div id="missa-bar">
     <span id="missa-bar-title">✝ 매일미사</span>
-    <button id="missa-close" onclick="closeMissa()">×</button>
   </div>
   <div id="missa-loading">
     <div class="missa-spinner"></div>
@@ -1343,7 +1364,6 @@ html.retreat-mode .tab-btn.active{
 <div id="diocese-view">
   <div id="diocese-bar" style="display:none!important;">
     <span id="diocese-bar-title">✝ 한국 천주교 교구 지도</span>
-    <button id="diocese-close" onclick="closeDioceseView()">×</button>
   </div>
   <div id="diocese-loading">
     <div class="missa-spinner"></div>
@@ -1360,8 +1380,7 @@ html.retreat-mode .tab-btn.active{
         <div id="prayer-bar-sub">CATHOLIC PRAYERS</div>
       </div>
     </div>
-    <a id="goodnews-prayer-btn" href="https://maria.catholic.or.kr/mobile/prayer/" target="_blank" rel="noopener" aria-label="굿뉴스 기도문 바로가기">굿뉴스기도문</a>
-    <button id="prayer-close" onclick="closePrayerView()">×</button>
+    <a id="goodnews-prayer-btn" href="https://maria.catholic.or.kr/mobile/prayer/" target="_blank" rel="noopener" aria-label="굿뉴스 기도문 바로가기">🙏 굿뉴스기도문</a>
   </div>
   <div id="prayer-tabs"></div>
   <div id="prayer-search-bar">
@@ -3828,7 +3847,6 @@ function _fmtTime(s){
         <div class="module-bar-sub">가톨릭 신앙과 정보를 한곳에서 만나보세요</div>
       </div>
     </div>
-    <button class="module-close" onclick="goToCover()">×</button>
   </div>
   <div class="web-body">
     <div class="web-cats" id="web-cats"></div>
@@ -3844,7 +3862,6 @@ function _fmtTime(s){
         <div class="module-bar-sub">신앙의 길을 따라 순례를 시작하세요</div>
       </div>
     </div>
-    <button class="module-close" onclick="goToCover()">×</button>
   </div>
   <div class="trail-body">
     <div class="trail-tabs">
@@ -4040,6 +4057,9 @@ function _fmtTime(s){
     if(wfHas(url)) webFavs=webFavs.filter(u=>u!==url);
     else webFavs.push(url);
     wfSave();
+    // ⭐ 탭 카운트 업데이트
+    var favBtn = document.getElementById('web-cat_⭐');
+    if(favBtn){ var cnt = webFavs.length; favBtn.innerHTML = '⭐'; }
   }
   wfLoad();
 
@@ -4180,9 +4200,8 @@ function _fmtTime(s){
     webState.built = true;
     const wrap = ig$('web-cats');
     if(!wrap) return;
-    const cats = ['전체'];
+    const cats = ['⭐', '전체'];
     WEB_SITES.forEach(s => { if(!cats.includes(s.cat)&&s.cat!=='⭐ 즐겨찾기') cats.push(s.cat); });
-cats.push('⭐');
     cats.forEach(c => {
       const btn = document.createElement('button');
       btn.className = 'web-cat-btn' + (c===webState.curCat ? ' on' : '');
@@ -4190,8 +4209,8 @@ cats.push('⭐');
       btn.dataset.webCat = c;
       btn.dataset.catColor = c; // CSS 선택자용
       btn.setAttribute('aria-pressed', c===webState.curCat ? 'true' : 'false');
-      const count = c==='전체' ? WEB_SITES.length : WEB_SITES.filter(s => s.cat===c).length;
-      btn.innerHTML = esc(c) + '<span class="cnt">' + count + '</span>';
+      const count = c==='전체' ? WEB_SITES.length : c==='⭐' ? WEB_SITES.filter(s => wfHas(s.url)).length : WEB_SITES.filter(s => s.cat===c).length;
+      btn.innerHTML = esc(c) + (c==='⭐' ? '' : '<span class="cnt">' + count + '</span>');
       btn.addEventListener('click', function(){ setWebCat(c); });
       wrap.appendChild(btn);
     });
@@ -4957,7 +4976,7 @@ window.initPrayerView = function(){
 </script>
 
 <!-- OAI FINAL STABILITY PATCH 20260428 -->
-<div id="qna-view" class="module-view"><div class="module-bar web"><div class="module-bar-main"><div class="module-bar-ico" style="font-size:22px;background:rgba(255,255,255,.15);">💬</div><div class="module-bar-txt"><div class="module-bar-title">문의·건의 / Q&A</div><div class="module-bar-sub">질문, 오류, 수정요청을 남기고 답변을 확인하세요</div></div></div><button class="module-close" onclick="goToCover()">×</button></div><div class="qna-body"><div class="qna-tabs"><button class="qna-tab on" type="button" onclick="qnaShowTab('write')">작성</button><button class="qna-tab" type="button" onclick="qnaShowTab('answers')">답변</button></div><div class="qna-list" id="qna-list"></div></div></div>
+<div id="qna-view" class="module-view"><div class="module-bar web"><div class="module-bar-main"><div class="module-bar-ico" style="font-size:22px;background:rgba(255,255,255,.15);">💬</div><div class="module-bar-txt"><div class="module-bar-title">문의·건의 / Q&A</div><div class="module-bar-sub">질문, 오류, 수정요청을 남기고 답변을 확인하세요</div></div></div></div><div class="qna-body"><div class="qna-tabs"><button class="qna-tab on" type="button" onclick="qnaShowTab('write')">작성</button><button class="qna-tab" type="button" onclick="qnaShowTab('answers')">답변</button></div><div class="qna-list" id="qna-list"></div></div></div>
 
 <!-- OAI TRUE FINAL CATCHUP PATCH 20260428 -->
 
@@ -5830,8 +5849,8 @@ function init(){ensureQna();applyFont();injectDioceseAll();relayoutAll()}documen
 })();
 </script>
 <script>
-// 서비스 워커 등록 (PWA - 크롬 주소창에서 자동 설치 아이콘 표시)
-if('serviceWorker' in navigator){
+// 서비스 워커: 실제 배포 환경에서만 등록
+if('serviceWorker' in navigator && location.protocol === 'https:' && !location.hostname.includes('claudeusercontent')){
   window.addEventListener('load', function(){
     navigator.serviceWorker.register('./sw.js', {scope: './'})
       .then(function(r){ console.log('[SW]', r.scope); })
@@ -5858,7 +5877,7 @@ if('serviceWorker' in navigator){
     e.preventDefault();
     prompt = e;
     var b = getBtn();
-    if(b) b.style.display = 'inline-block';
+    if(b) b.style.display = 'flex';
   });
 
   // 설치 완료 시 버튼 숨김
@@ -5914,9 +5933,50 @@ if('serviceWorker' in navigator){
 #cover .cover-card,#cover .cv-btn{transform:none!important;transform-origin:unset!important;}
 
 /* 7) 설치 버튼 표시 영역 보장 */
+#pwa-install-btn[style*="flex"],
+#pwa-install-btn[style*="inline-flex"],
 #pwa-install-btn[style*="inline-block"],
 #pwa-install-btn[style*="block"]{
-  display:block!important;
+  display:flex!important;
+}
+html.app-active #pwa-install-btn{display:none!important;}
+
+/* 웹사이트 카드 즐겨찾기 별 버튼 - 기도문 pr-star와 동일한 스타일 */
+.web-fav-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  color: #ccccdd;
+  font-size: 20px;
+  line-height: 1;
+  transition: color .14s, transform .14s;
+  border-radius: 8px;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+.web-fav-btn:active { transform: scale(0.88); }
+.web-fav-btn.on { color: #F59E0B; }
+
+/* 웹사이트 즐겨찾기 탭 버튼 - 기도문 favorites 탭과 동일한 위치/스타일 */
+/* ⭐ 탭은 탭 행 맨 앞에 위치 (JS에서 cats 배열 앞에 push하도록 변경 필요시 CSS로 보완) */
+.web-cat-btn[data-web-cat="⭐"] {
+  order: -1;
+  color: #E8780C !important;
+  border-color: rgba(232,120,12,.35) !important;
+  background: #fff8f0 !important;
+}
+.web-cat-btn[data-web-cat="⭐"].on {
+  background: #E8780C !important;
+  color: #fff !important;
+  border-color: #E8780C !important;
+  box-shadow: 0 4px 14px rgba(232,120,12,.35) !important;
 }
 
 /* 굿뉴스기도문 링크 버튼 */
@@ -5926,18 +5986,20 @@ if('serviceWorker' in navigator){
   justify-content: center;
   flex-shrink: 0;
   margin-left: auto;
-  margin-right: 8px;
-  padding: 5px 9px;
-  background: #FEE500;
+  padding: 9px 16px;
+  background: linear-gradient(135deg, #FEE500, #FFD700);
   color: #3A1D1D;
-  font-size: 12px;
-  font-weight: 700;
+  font-size: 14px;
+  font-weight: 800;
   font-family: inherit;
   text-decoration: none;
-  border-radius: 6px;
+  border-radius: 12px;
   white-space: nowrap;
   line-height: 1.2;
+  gap: 5px;
+  box-shadow: 0 3px 10px rgba(180,130,0,.30);
   -webkit-tap-highlight-color: transparent;
+  border: 1px solid rgba(180,130,0,.20);
 }
 #goodnews-prayer-btn:active {
   opacity: 0.82;
