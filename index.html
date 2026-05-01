@@ -1702,8 +1702,17 @@ function saveCoreReturnState(extra){
 }
 function openCoreExternalUrl(url, extra){
   if(!url) return;
+  url = String(url).trim();
+  if(!url) return;
+  url = url.replace(/^http\/\//i,'http://').replace(/^https\/\//i,'https://');
+  if(!/^[a-z][a-z0-9+.-]*:/i.test(url)) url = 'https://' + url.replace(/^\/+/,'');
   saveCoreReturnState(extra);
-  location.href = url;
+  try{
+    var w = window.open(url, '_blank', 'noopener');
+    if(!w) location.href = url;
+  }catch(e){
+    location.href = url;
+  }
 }
 function restoreCoreReturnState(){
   let raw=null;
@@ -5346,7 +5355,7 @@ window.initPrayerView = function(){
 (function(){'use strict';if(window.__OAI_FINAL_STABILITY_20260428__)return;window.__OAI_FINAL_STABILITY_20260428__=true;var FONT_KEY='prayer_font_size',DEFAULT=16,SIZES=[15,16,17,18,19,20,21,22,24,26,28];function el(id){return document.getElementById(id)}function baseHref(){return location.href.split('#')[0]}function getPx(){var px=parseInt(localStorage.getItem(FONT_KEY)||DEFAULT,10);if(!px||px<15||px>28)px=DEFAULT;return px}function setPx(px){px=parseInt(px,10)||DEFAULT;var best=SIZES[0],diff=999;SIZES.forEach(function(v){var d=Math.abs(v-px);if(d<diff){diff=d;best=v}});try{localStorage.setItem(FONT_KEY,String(best))}catch(_){}return best}function applyScale(){var scale=getPx()/DEFAULT;document.documentElement.classList.add('oai-font-global');document.documentElement.style.setProperty('--app-font-scale',String(scale));var pv=el('prayer-view');if(pv){pv.style.setProperty('--pr-item-fs',getPx()+'px');pv.style.setProperty('--pr-body-fs',getPx()+'px');pv.style.setProperty('--pr-detail-fs',(getPx()+1)+'px')}injectDioceseFont()}function adjustFont(delta){var px=getPx(),i=SIZES.indexOf(px);if(i<0)i=SIZES.indexOf(DEFAULT);i+=(delta>0?1:-1);if(i<0)i=0;if(i>=SIZES.length)i=SIZES.length-1;setPx(SIZES[i]);applyScale()}window.prAdjustFont=function(delta){adjustFont(delta)};window.__OAI_applyGlobalFont=applyScale;
 function ensureQnaButton(){var cover=el('cover');if(!cover)return;if(!el('qna-cover-btn')){var b=document.createElement('button');b.id='qna-cover-btn';b.type='button';b.innerHTML='<span>💬</span><span>문의·건의</span>';b.onclick=function(e){e.stopPropagation();openQnaView()};cover.appendChild(b)}}window.QNA_FORM_URL=window.QNA_FORM_URL||'qa-firebase.html';;window.openQnaView=function(){try{if(typeof hideIntegratedViews==='function')hideIntegratedViews()}catch(_){}document.documentElement.classList.add('app-active');document.documentElement.classList.remove('parish-mode','retreat-mode');var cover=el('cover');if(cover)cover.style.display='none';var v=el('qna-view');if(v)v.classList.add('open');qnaShowTab('write');try{history.pushState({oai_qna:1},'',baseHref())}catch(_){}applyScale()};window.qnaShowTab=function(tab){document.querySelectorAll('#qna-view .qna-tab').forEach(function(b,i){b.classList.toggle('on',(tab==='write'?i===0:i===1))});var list=el('qna-list');if(!list)return;if(tab==='answers'){list.innerHTML='<div class="qna-card"><div class="qna-kicker">답변 목록</div><div class="qna-title">답변 공개 주소 연결 준비</div><div class="qna-text">관리자가 Google Sheet 또는 공개 페이지에 답변을 작성한 뒤, 파일 안의 <b>QNA_ANSWER_URL</b>에 주소를 넣으면 이 버튼으로 확인할 수 있습니다.</div><div class="qna-actions"><button class="primary" type="button" onclick="qnaOpenAnswerUrl()">답변 목록 열기</button></div></div>'}else{list.innerHTML='<div class="qna-card"><div class="qna-kicker">질문 · 오류 · 수정요청</div><div class="qna-title">Google Form 연결 방식</div><div class="qna-text">개인 연락처 없이 구분과 내용만 받는 구조입니다. Google Form 주소를 만든 뒤 파일 안의 <b>QNA_FORM_URL</b>에 넣으면 바로 연결됩니다.</div><div class="qna-actions"><button class="primary" type="button" onclick="qnaOpenFormUrl()">문의 작성하기</button><button type="button" onclick="qnaShowTab(\'answers\')">답변 보기</button></div></div>'}applyScale()};window.qnaOpenFormUrl=function(){if(window.QNA_FORM_URL){location.href=window.QNA_FORM_URL}else{alert('Google Form 주소가 아직 연결되지 않았습니다.')}};window.qnaOpenAnswerUrl=function(){if(window.QNA_ANSWER_URL){location.href=window.QNA_ANSWER_URL}else{alert('답변 목록 주소가 아직 연결되지 않았습니다.')}};
 function isPrayerOpen(){var p=el('prayer-view');return!!(p&&p.classList.contains('open'))}function isPrayerDetailOpen(){var d=el('prayer-detail');return!!(d&&d.classList.contains('show'))}function armState(state){try{history.pushState(state||{oai:1},'',baseHref())}catch(_){}}function showPrayerList(){var d=el('prayer-detail');if(d)d.classList.remove('show');var lv=el('prayer-list-view');if(lv){try{lv.style.scrollBehavior='auto';lv.scrollTop=0;lv.style.scrollBehavior=''}catch(_){}}}function closePrayerCover(){var d=el('prayer-detail');if(d)d.classList.remove('show');var p=el('prayer-view');if(p)p.classList.remove('open');if(typeof window.goToCover==='function')window.goToCover();else{document.documentElement.classList.remove('app-active','parish-mode','retreat-mode');var c=el('cover');if(c){c.style.display='';c.style.opacity=''}}}function prayerBackHandler(e){if(!isPrayerOpen())return false;try{e&&e.preventDefault&&e.preventDefault();e&&e.stopPropagation&&e.stopPropagation();e&&e.stopImmediatePropagation&&e.stopImmediatePropagation()}catch(_){}if(isPrayerDetailOpen()){showPrayerList();setTimeout(function(){armState({oai_prayer_list:1})},10)}else{closePrayerCover();setTimeout(function(){armState({oai_cover:1})},10)}return true}/* OAI disabled duplicate final capture prayer handler */function wrapPrayerHistory(){var op=window.openPrayerBook;if(typeof op==='function'&&!op.__oaiFinalBack){window.openPrayerBook=function(){var r=op.apply(this,arguments);setTimeout(function(){showPrayerList();armState({oai_prayer_list:1});applyScale()},40);return r};window.openPrayerBook.__oaiFinalBack=true}var od=window.prOpenDetail;if(typeof od==='function'&&!od.__oaiFinalBack){window.prOpenDetail=function(){var r=od.apply(this,arguments);setTimeout(function(){armState({oai_prayer_detail:1});applyScale()},20);return r};window.prOpenDetail.__oaiFinalBack=true}}
-function injectDioceseFont(){var f=el('diocese-frame');if(!f||!f.contentWindow)return;var doc;try{doc=f.contentWindow.document}catch(_){return}if(!doc||!doc.documentElement)return;var scale=getPx()/DEFAULT;doc.documentElement.style.setProperty('--app-font-scale',String(scale));var st=doc.getElementById('oai-final-diocese-font-link-20260428');if(!st){st=doc.createElement('style');st.id='oai-final-diocese-font-link-20260428';st.textContent=':root{--app-font-scale:1}.hd h1{font-size:calc(22px*var(--app-font-scale))!important}.hd-sub{font-size:calc(11px*var(--app-font-scale))!important}.tab,.qbtn{font-size:calc(15px*var(--app-font-scale))!important}.lv-name,.lv-nm,.sd,.c-nm,.sot{font-size:calc(16px*var(--app-font-scale))!important}.lv-rg,.lv-full,.sg,.c-rg,.se,.lv-url,.si-r-url{font-size:calc(12px*var(--app-font-scale))!important}.lv-bdg,.lv-op{font-size:calc(11px*var(--app-font-scale))!important}.lv-parish-count,.oai-parish-count{font-size:calc(8px*var(--app-font-scale))!important;font-weight:400!important;letter-spacing:0!important;gap:0!important;white-space:nowrap!important}.lv-parish-count b,.oai-parish-count b{font-weight:400!important;margin:0!important}.card h3{font-size:calc(17px*var(--app-font-scale))!important}.card .c-r,.card button,.card a{font-size:calc(13px*var(--app-font-scale))!important}';(doc.head||doc.documentElement).appendChild(st)}try{doc.querySelectorAll('a[href]').forEach(function(a){a.setAttribute('target','_top');a.setAttribute('rel','noopener')})}catch(_){}}
+function injectDioceseFont(){var f=el('diocese-frame');if(!f||!f.contentWindow)return;var doc;try{doc=f.contentWindow.document}catch(_){return}if(!doc||!doc.documentElement)return;var scale=getPx()/DEFAULT;doc.documentElement.style.setProperty('--app-font-scale',String(scale));var st=doc.getElementById('oai-final-diocese-font-link-20260428');if(!st){st=doc.createElement('style');st.id='oai-final-diocese-font-link-20260428';st.textContent=':root{--app-font-scale:1}.hd h1{font-size:calc(22px*var(--app-font-scale))!important}.hd-sub{font-size:calc(11px*var(--app-font-scale))!important}.tab,.qbtn{font-size:calc(15px*var(--app-font-scale))!important}.lv-name,.lv-nm,.sd,.c-nm,.sot{font-size:calc(16px*var(--app-font-scale))!important}.lv-rg,.lv-full,.sg,.c-rg,.se,.lv-url,.si-r-url{font-size:calc(12px*var(--app-font-scale))!important}.lv-bdg,.lv-op{font-size:calc(11px*var(--app-font-scale))!important}.lv-parish-count,.oai-parish-count{font-size:calc(8px*var(--app-font-scale))!important;font-weight:400!important;letter-spacing:0!important;gap:0!important;white-space:nowrap!important}.lv-parish-count b,.oai-parish-count b{font-weight:400!important;margin:0!important}.card h3{font-size:calc(17px*var(--app-font-scale))!important}.card .c-r,.card button,.card a{font-size:calc(13px*var(--app-font-scale))!important}';(doc.head||doc.documentElement).appendChild(st)}try{doc.querySelectorAll('a[href]').forEach(function(a){a.setAttribute('target','_blank');a.setAttribute('rel','noopener')})}catch(_){}}
 var oldOpenDiocese=window.openDioceseView;if(typeof oldOpenDiocese==='function'&&!oldOpenDiocese.__oaiFinalStable){window.openDioceseView=function(){var r=oldOpenDiocese.apply(this,arguments);[80,200,500,1000,1600].forEach(function(ms){setTimeout(injectDioceseFont,ms)});return r};window.openDioceseView.__oaiFinalStable=true}
 function relayout(){try{if(typeof relayoutTrailMap==='function'){relayoutTrailMap(0);relayoutTrailMap(180);relayoutTrailMap(420)}}catch(_){}applyScale()}var ow=window.openWebView;if(typeof ow==='function'&&!ow.__oaiFull){window.openWebView=function(){var r=ow.apply(this,arguments);setTimeout(relayout,60);setTimeout(relayout,300);return r};window.openWebView.__oaiFull=true}var ot=window.openTrailView;if(typeof ot==='function'&&!ot.__oaiFull){window.openTrailView=function(){var r=ot.apply(this,arguments);setTimeout(relayout,60);setTimeout(relayout,300);setTimeout(relayout,700);return r};window.openTrailView.__oaiFull=true}document.addEventListener('click',function(e){
   var a=e.target&&e.target.closest&&e.target.closest('a[href]');
@@ -5428,7 +5437,7 @@ function el(id){return document.getElementById(id)}function base(){return locati
 function applyFont(){var s=scale();document.documentElement.classList.add('oai-font-global');document.documentElement.style.setProperty('--app-font-scale',String(s));var p=el('prayer-view');if(p){p.style.setProperty('--pr-item-fs',px()+'px');p.style.setProperty('--pr-body-fs',px()+'px');p.style.setProperty('--pr-detail-fs',(px()+1)+'px')}injectDioceseAll()}
 window.__OAI_applyGlobalFont=applyFont;window.prAdjustFont=function(delta){var cur=px(),i=SIZES.indexOf(cur);if(i<0)i=SIZES.indexOf(DEFAULT);i+=delta>0?1:-1;if(i<0)i=0;if(i>=SIZES.length)i=SIZES.length-1;setPx(SIZES[i]);applyFont()};
 function ensureQna(){var cover=el('cover');if(!cover)return;if(!el('qna-cover-btn')){var b=document.createElement('button');b.id='qna-cover-btn';b.type='button';b.innerHTML='<span>💬</span><span>문의·건의</span>';b.onclick=function(e){e.stopPropagation();if(typeof window.openQnaView==='function')window.openQnaView()};cover.appendChild(b)}}
-function openTopUrl(url){if(!url)return;try{window.top.location.href=url}catch(_){location.href=url}}
+function openTopUrl(url){if(!url)return;url=String(url).trim().replace(/^http\/\//i,'http://').replace(/^https\/\//i,'https://');if(!/^[a-z][a-z0-9+.-]*:/i.test(url))url='https://'+url.replace(/^\/+/,'');try{var w=window.open(url,'_blank','noopener');if(!w)location.href=url}catch(_){location.href=url}}
 document.addEventListener('click',function(e){var a=e.target&&e.target.closest&&e.target.closest('a[href]');if(a&&a.closest('#web-view,#trail-view,#diocese-view,#qna-view')){e.preventDefault();openTopUrl(a.href);return false}},true);
 function isPrayerOpen(){var p=el('prayer-view');return!!(p&&p.classList.contains('open'))}function isPrayerDetail(){var d=el('prayer-detail');return!!(d&&d.classList.contains('show'))}function showPrayerList(){blur();var d=el('prayer-detail');if(d)d.classList.remove('show');var lv=el('prayer-list-view');if(lv){try{lv.style.scrollBehavior='auto';lv.scrollTop=0;lv.style.scrollBehavior=''}catch(_){}}applyFont()}function closePrayer(){blur();var d=el('prayer-detail');if(d)d.classList.remove('show');var p=el('prayer-view');if(p)p.classList.remove('open');if(typeof window.goToCover==='function')window.goToCover();else{document.documentElement.classList.remove('app-active','parish-mode','retreat-mode');var c=el('cover');if(c){c.style.display='';c.style.opacity='';c.style.pointerEvents=''}}applyFont()}
 window.__OAI_prayerBack=function(){if(!isPrayerOpen())return false;if(isPrayerDetail()){showPrayerList();try{history.pushState({oai_prayer_list:1},'',base())}catch(_){}}else{closePrayer();try{history.pushState({oai_cover:1},'',base())}catch(_){}}return true};
@@ -6277,5 +6286,80 @@ html.retreat-mode #sm-tab-bar .sm-tab.active {
   window.addEventListener('pageshow', hideInstallIfStandalone);
 })();
 </script>
+
+<script id="oai-diocese-website-restore-fix-20260501">
+(function(){
+  'use strict';
+  if(window.__OAI_DIOCESE_WEBSITE_RESTORE_FIX_20260501__) return;
+  window.__OAI_DIOCESE_WEBSITE_RESTORE_FIX_20260501__ = true;
+  function normUrl(url){
+    url = String(url || '').trim();
+    if(!url || url === '#' || /^javascript:/i.test(url)) return '';
+    url = url.replace(/^http\/\//i,'http://').replace(/^https\/\//i,'https://');
+    if(!/^[a-z][a-z0-9+.-]*:/i.test(url)) url = 'https://' + url.replace(/^\/+/, '');
+    return url;
+  }
+  function keepDioceseOnMap(){
+    try{
+      var view = document.getElementById('diocese-view');
+      if(view) view.classList.add('open');
+      document.documentElement.classList.add('app-active');
+      document.documentElement.classList.remove('parish-mode','retreat-mode');
+    }catch(e){}
+  }
+  window.__OAI_openExternalKeepApp = function(url){
+    url = normUrl(url);
+    if(!url) return false;
+    keepDioceseOnMap();
+    try{
+      var w = window.open(url, '_blank', 'noopener');
+      if(!w) location.href = url;
+    }catch(e){
+      location.href = url;
+    }
+    return false;
+  };
+  function patchDioceseFrameLinks(){
+    var f = document.getElementById('diocese-frame');
+    if(!f || !f.contentWindow) return;
+    var d;
+    try{ d = f.contentWindow.document; }catch(e){ return; }
+    if(!d || !d.documentElement) return;
+    if(d.__oaiDioceseWebsiteRestoreFixed) return;
+    d.__oaiDioceseWebsiteRestoreFixed = true;
+    try{
+      d.querySelectorAll('a[href]').forEach(function(a){
+        var href = a.getAttribute('href') || '';
+        if(!href || href === '#' || /^javascript:/i.test(href)) return;
+        a.setAttribute('target','_blank');
+        a.setAttribute('rel','noopener');
+        a.addEventListener('click', function(ev){
+          ev.preventDefault();
+          ev.stopPropagation();
+          var u = normUrl(a.getAttribute('href') || a.href);
+          if(u) window.__OAI_openExternalKeepApp(u);
+          return false;
+        }, true);
+      });
+    }catch(e){}
+  }
+  var fr = document.getElementById('diocese-frame');
+  if(fr && !fr.__oaiDioceseWebsiteRestoreLoad){
+    fr.__oaiDioceseWebsiteRestoreLoad = true;
+    fr.addEventListener('load', function(){
+      setTimeout(patchDioceseFrameLinks, 80);
+      setTimeout(patchDioceseFrameLinks, 300);
+      setTimeout(patchDioceseFrameLinks, 800);
+    });
+  }
+  document.addEventListener('DOMContentLoaded', function(){ setTimeout(patchDioceseFrameLinks, 100); });
+  setTimeout(patchDioceseFrameLinks, 300);
+  setInterval(function(){
+    var v = document.getElementById('diocese-view');
+    if(v && v.classList.contains('open')) patchDioceseFrameLinks();
+  }, 1000);
+})();
+</script>
+
 </body>
 </html>
