@@ -6349,5 +6349,39 @@ html.app-active #cover #qna-cover-btn{display:none!important;}
 })();
 </script>
 
+
+<!-- OAI PATCH 20260502-7: cover double-back exit + full list text display -->
+<style id="oai-cover-back-list-text-20260502-7">
+.li-info,.nearby-info,.sm-info,.sm-place-info,.region-item .li-info,.list-item .li-info{min-width:0!important;overflow:visible!important;}
+.li-name,.li-sub,.nearby-name,.nearby-addr,.sm-name,.sm-sub,.sm-place-name,.sm-place-addr,.region-item .li-name,.region-item .li-sub,.list-item .li-name,.list-item .li-sub{white-space:normal!important;overflow:visible!important;text-overflow:clip!important;display:block!important;-webkit-line-clamp:unset!important;-webkit-box-orient:unset!important;word-break:keep-all!important;overflow-wrap:anywhere!important;line-height:1.38!important;max-height:none!important;}
+.nearby-item,.list-item,.region-item,.sm-item,.sm-place-item{align-items:flex-start!important;}
+.nearby-meta,.li-badge,.sm-badge{flex-shrink:0!important;margin-top:2px!important;}
+#oai-cover-exit-toast{position:fixed!important;left:50%!important;bottom:calc(92px + env(safe-area-inset-bottom,0px))!important;transform:translateX(-50%) translateY(10px)!important;z-index:10080!important;min-height:42px!important;padding:0 18px!important;border-radius:999px!important;background:rgba(31,42,68,.94)!important;color:#fff!important;display:flex!important;align-items:center!important;justify-content:center!important;font-size:13px!important;font-weight:900!important;line-height:1!important;white-space:nowrap!important;box-shadow:0 10px 24px rgba(31,42,68,.28)!important;opacity:0!important;pointer-events:none!important;transition:opacity .16s ease,transform .16s ease!important;}
+#oai-cover-exit-toast.show{opacity:1!important;transform:translateX(-50%) translateY(0)!important;}
+</style>
+<script id="oai-cover-back-list-text-20260502-7">
+(function(){
+  'use strict';
+  if(window.__OAI_COVER_BACK_LIST_TEXT_20260502_7__) return;
+  window.__OAI_COVER_BACK_LIST_TEXT_20260502_7__=true;
+  function $(id){return document.getElementById(id);}
+  function coverVisible(){var h=document.documentElement,c=$('cover');return !!(c && !h.classList.contains('app-active') && c.offsetParent!==null && getComputedStyle(c).display!=='none');}
+  function forceCleanCover(){try{document.querySelectorAll('.module-view.open,#prayer-view.open,#diocese-view.open,#missa-view.open,.sheet.open,.trail-sheet.open,#srch-modal.open,#info-card.open,#exit-dlg.open').forEach(function(v){v.classList.remove('open','show');});}catch(e){}try{document.documentElement.classList.remove('app-active','parish-mode','retreat-mode');}catch(e){}try{var c=$('cover'); if(c){c.style.display='';c.style.opacity='';c.scrollTop=0;}}catch(e){}}
+  function toast(){var t=$('oai-cover-exit-toast');if(!t){t=document.createElement('div');t.id='oai-cover-exit-toast';t.textContent='한 번 더 누르면 종료됩니다';document.body.appendChild(t);}t.classList.add('show');clearTimeout(t.__tm);t.__tm=setTimeout(function(){try{t.classList.remove('show');}catch(e){}},1300);}
+  var lastBack=0;
+  function installCoverBackGuard(){
+    try{if(!history.state||!history.state.__oaiCoverExitBase){history.replaceState(Object.assign({},history.state||{},{__oaiCoverExitBase:true}),document.title,location.href);}history.pushState({__oaiCoverExitGuard:true},document.title,location.href);}catch(e){}
+    window.addEventListener('popstate',function(e){
+      if(!coverVisible()) return;
+      try{e.stopImmediatePropagation&&e.stopImmediatePropagation();}catch(_){}
+      forceCleanCover();
+      var now=Date.now();
+      if(now-lastBack<1600){lastBack=0;try{var t=$('oai-cover-exit-toast');if(t)t.classList.remove('show');}catch(_){}setTimeout(function(){try{history.back();}catch(err){}},0);return;}
+      lastBack=now;toast();try{history.pushState({__oaiCoverExitGuard:true},document.title,location.href);}catch(err){}
+    },true);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',installCoverBackGuard,{once:true});else installCoverBackGuard();
+})();
+</script>
 </body>
 </html>
