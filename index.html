@@ -1360,6 +1360,7 @@ html.retreat-mode .tab-btn.active{
         <div id="prayer-bar-sub">CATHOLIC PRAYERS</div>
       </div>
     </div>
+    <a id="goodnews-prayer-btn" href="https://maria.catholic.or.kr/mobile/prayer/" target="_blank" rel="noopener" aria-label="굿뉴스 기도문 바로가기">굿뉴스기도문</a>
     <button id="prayer-close" onclick="closePrayerView()">×</button>
   </div>
   <div id="prayer-tabs"></div>
@@ -5916,6 +5917,31 @@ if('serviceWorker' in navigator){
 #pwa-install-btn[style*="inline-block"],
 #pwa-install-btn[style*="block"]{
   display:block!important;
+}
+
+/* 굿뉴스기도문 링크 버튼 */
+#goodnews-prayer-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-left: auto;
+  margin-right: 8px;
+  padding: 5px 9px;
+  background: #FEE500;
+  color: #3A1D1D;
+  font-size: 12px;
+  font-weight: 700;
+  font-family: inherit;
+  text-decoration: none;
+  border-radius: 6px;
+  white-space: nowrap;
+  line-height: 1.2;
+  -webkit-tap-highlight-color: transparent;
+}
+#goodnews-prayer-btn:active {
+  opacity: 0.82;
+  transform: scale(0.97);
 }
 </style>
 
