@@ -3,6 +3,10 @@
 <html lang="ko" class="oai-font-global">
 <head>
 
+<!-- OAI PATCH 20260501: boot refresh shake lock -->
+<script>(function(){try{document.documentElement.classList.add('oai-boot-lock');}catch(e){}})();</script>
+<style id="oai-boot-lock-style">html.oai-boot-lock #cover,html.oai-boot-lock #cover *,html.oai-boot-lock .cv-stage,html.oai-boot-lock .cv-extra-row{transition:none!important;animation:none!important;transform:none!important;}html.oai-boot-lock #cover{contain:layout paint style!important;will-change:auto!important;}</style>
+
 <script>
 (function(){
   var ua = navigator.userAgent.toLowerCase();
@@ -3946,7 +3950,7 @@ function _fmtTime(s){
   {cat:"중앙기구", ico:"🏛️", name:"한국천주교주교회의 (CBCK)",
    op:"한국천주교주교회의", url:"https://cbck.or.kr",
    desc:"한국 천주교 공식 문헌·교리·전례·교회법·발표 자료 제공"},
-  {cat:"중앙기구", ico:"⛪", name:"시복시성 특별위원회",
+  {cat:"중앙기구", ico:"⛪", name:"주교회의 시복시성 특별위원회",
    op:"한국천주교주교회의", url:"https://cbck.or.kr/koreanmartyrs",
    desc:"시복·시성, 한국 순교자와 교회사 관련 자료 제공"},
 
@@ -4246,7 +4250,7 @@ function _fmtTime(s){
     webState.built = true;
     const wrap = ig$('web-cats');
     if(!wrap) return;
-    const cats = ['⭐', '전체'];
+    const cats = ['⭐'];
     WEB_SITES.forEach(s => { if(!cats.includes(s.cat)&&s.cat!=='⭐ 즐겨찾기') cats.push(s.cat); });
     cats.forEach(c => {
       const btn = document.createElement('button');
@@ -6350,5 +6354,23 @@ html.retreat-mode #sm-tab-bar .sm-tab.active {
   window.addEventListener('pageshow', hideInstallIfStandalone);
 })();
 </script>
+
+
+<!-- OAI PATCH 20260501: website tab cleanup + refresh stability -->
+<style id="oai-refresh-stability-20260501">#web-cat_전체,.web-cat-btn[data-web-cat="전체"]{display:none!important;}html.oai-boot-lock #cover,html.oai-boot-lock #cover *,html.oai-start-stable #cover,html.oai-start-stable #cover *{transition:none!important;animation:none!important;}html.oai-start-stable #cover{transform:none!important;will-change:auto!important;}html,body{overscroll-behavior-y:none;}html.oai-refresh-allowed,html.oai-refresh-allowed body{overscroll-behavior-y:auto!important;}#map,#map-wrap{overscroll-behavior:none!important;touch-action:pan-x pan-y!important;}</style>
+<script id="oai-refresh-stability-script-20260501">
+(function(){
+  function $(id){return document.getElementById(id);}
+  function removeAllWebTab(){try{var b=$('web-cat_전체');if(b&&b.parentNode)b.parentNode.removeChild(b);document.querySelectorAll('#web-cats .web-cat-btn[data-web-cat="전체"]').forEach(function(x){x.remove();});}catch(e){}}
+  function updateRefreshMode(){var html=document.documentElement;var nonMapOpen=false;['missa-view','prayer-view','diocese-view','web-view','trail-view','qna-view'].forEach(function(id){var v=$(id);if(v&&v.classList.contains('open'))nonMapOpen=true;});var coverVisible=!html.classList.contains('app-active');html.classList.toggle('oai-refresh-allowed',coverVisible||nonMapOpen);}
+  function stabilizeStart(){var html=document.documentElement;html.classList.add('oai-start-stable');removeAllWebTab();updateRefreshMode();setTimeout(function(){html.classList.remove('oai-boot-lock');},700);setTimeout(function(){html.classList.remove('oai-start-stable');},1100);}
+  var mo=new MutationObserver(function(){updateRefreshMode();removeAllWebTab();});
+  function observeViews(){['missa-view','prayer-view','diocese-view','web-view','trail-view','qna-view','app','cover'].forEach(function(id){var v=$(id);if(v)try{mo.observe(v,{attributes:true,attributeFilter:['class','style']});}catch(e){}});try{mo.observe(document.documentElement,{attributes:true,attributeFilter:['class']});}catch(e){}}
+  document.addEventListener('DOMContentLoaded',function(){observeViews();stabilizeStart();});window.addEventListener('pageshow',function(){stabilizeStart();});setTimeout(stabilizeStart,0);setTimeout(stabilizeStart,300);setTimeout(stabilizeStart,900);
+  var ow=window.openWebView;if(typeof ow==='function'&&!ow.__oaiNoAllTab){window.openWebView=function(){var r=ow.apply(this,arguments);[0,60,200,500].forEach(function(ms){setTimeout(function(){removeAllWebTab();try{var list=$('web-list');if(list)list.scrollTop=0;}catch(e){}},ms);});return r;};window.openWebView.__oaiNoAllTab=true;}
+  var swc=window.setWebCat;if(typeof swc==='function'&&!swc.__oaiNoAllTab){window.setWebCat=function(cat){var r=swc.apply(this,arguments);removeAllWebTab();try{var list=$('web-list');if(list)list.scrollTop=0;}catch(e){}return r;};window.setWebCat.__oaiNoAllTab=true;}
+})();
+</script>
+
 </body>
 </html>
