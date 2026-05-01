@@ -6330,5 +6330,59 @@ html.retreat-mode #sm-tab-bar .sm-tab.active {
   window.addEventListener('pageshow', hideInstallIfStandalone);
 })();
 </script>
+
+<script id="oai-diocese-stable-runtime-clean-20260501">
+(function(){
+  'use strict';
+  if(window.__OAI_DIOCESE_STABLE_RUNTIME_CLEAN_20260501__) return;
+  window.__OAI_DIOCESE_STABLE_RUNTIME_CLEAN_20260501__ = true;
+  var OLD_IDS = [
+    'oai-diocese-font-sync-style',
+    'oai-true-final-diocese-style-20260428',
+    'oai-final-diocese-header-align-20260428',
+    'oai-diocese-cross-icon-20260428',
+    'oai-diocese-button-80pct-20260428',
+    'oai-final-diocese-font-20260429'
+  ];
+  function frameDoc(){
+    var f=document.getElementById('diocese-frame');
+    if(!f) return null;
+    try{return f.contentDocument || (f.contentWindow && f.contentWindow.document) || null;}catch(e){return null;}
+  }
+  function stableDiocese(){
+    var d=frameDoc();
+    if(!d || !d.documentElement) return;
+    OLD_IDS.forEach(function(id){
+      var n=d.getElementById(id);
+      if(n && n.parentNode) n.parentNode.removeChild(n);
+    });
+    var st=d.getElementById('oai-diocese-single-stable-style-20260501');
+    if(!st){
+      st=d.createElement('style');
+      st.id='oai-diocese-single-stable-style-20260501';
+      st.textContent='header{height:70px!important;min-height:70px!important;padding:0 16px!important;display:flex!important;align-items:center!important;flex-shrink:0!important}.hd{height:70px!important;min-height:70px!important;display:flex!important;align-items:center!important}.hd-left{display:flex!important;align-items:center!important;gap:10px!important}.hd-icon{width:35px!important;height:35px!important;min-width:35px!important;flex:0 0 35px!important;font-size:22px!important;line-height:1!important;background:rgba(255,255,255,.18)!important;border:1px solid rgba(255,255,255,.28)!important;border-radius:12px!important;box-shadow:none!important;text-shadow:none!important}.hd h1{font-size:22px!important;line-height:1.2!important;margin:0!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}.hd-sub{font-size:10px!important;line-height:1.25!important;margin-top:1px!important}.tab-bar{height:55px!important;min-height:55px!important;padding:0 10px!important;flex-shrink:0!important}.tab{height:40px!important;min-height:40px!important;font-size:15px!important;border-radius:10px!important}.lv-name,.sd,.c-nm{font-size:16px!important}.lv-rg,.sg,.c-rg,.lv-url,.si-r-url{font-size:12px!important}';
+      (d.head || d.documentElement).appendChild(st);
+    }
+    try{d.querySelectorAll('.hd-icon').forEach(function(x){ if(x.textContent.trim()!=='⛪') x.textContent='⛪'; });}catch(e){}
+  }
+  window.__oaiStableDioceseFrame = stableDiocese;
+  var oldOpen = window.openDioceseView;
+  if(typeof oldOpen==='function' && !oldOpen.__oaiStableRuntimeClean){
+    window.openDioceseView=function(){
+      var r=oldOpen.apply(this,arguments);
+      [60,180,420,900].forEach(function(ms){setTimeout(stableDiocese,ms);});
+      return r;
+    };
+    window.openDioceseView.__oaiStableRuntimeClean=true;
+  }
+  window.addEventListener('load',function(){
+    var f=document.getElementById('diocese-frame');
+    if(f && !f.__oaiStableRuntimeClean){
+      f.__oaiStableRuntimeClean=true;
+      f.addEventListener('load',function(){[40,160,380].forEach(function(ms){setTimeout(stableDiocese,ms);});});
+    }
+  });
+})();
+</script>
 </body>
 </html>

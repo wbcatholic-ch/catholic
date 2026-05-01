@@ -190,65 +190,28 @@ header{flex-shrink:0;background:var(--d);border-bottom:none;z-index:30;
   #gw-bar{flex-direction:row;flex-wrap:wrap;}
 }
 </style>
-<style id="oai-final-tabbar-height-fix-20260430">
-#tabbar{
-  display:flex!important;
-  align-items:center!important;
-  justify-content:space-between!important;
-  gap:6px!important;
-  padding-left:6px!important;
-  padding-right:6px!important;
-  overflow:hidden!important;
-  box-sizing:border-box!important;
-}
-#tabbar .tab-btn{
-  flex:1 1 0!important;
-  min-width:0!important;
-  height:48px!important;
-  min-height:48px!important;
-  max-height:48px!important;
-  margin:0!important;
-  padding:0 2px!important;
-  display:flex!important;
-  flex-direction:column!important;
-  align-items:center!important;
-  justify-content:center!important;
-  gap:2px!important;
-  line-height:1.1!important;
-  box-sizing:border-box!important;
-  white-space:nowrap!important;
-  overflow:hidden!important;
-}
-#tabbar .tab-btn .tab-icon{
-  display:block!important;
-  flex:0 0 auto!important;
-  font-size:17px!important;
-  line-height:1!important;
-  margin:0!important;
-  padding:0!important;
-}
-#tabbar .tab-btn span{
-  display:block!important;
-  max-width:100%!important;
-  overflow:hidden!important;
-  text-overflow:ellipsis!important;
-  white-space:nowrap!important;
-  line-height:1.1!important;
-  font-size:12px!important;
-  margin:0!important;
-  padding:0!important;
-}
-</style>
 
 <script id="oai-diocese-parent-return-20260501">
 function oaiOpenDioceseExternal(url){
   if(!url) return;
+  var state = {};
+  try{
+    var on = document.querySelector('.tab.on');
+    state.tab = on && on.dataset ? on.dataset.tab : '';
+    var lv = document.getElementById('list-view');
+    var sv = document.getElementById('search-view');
+    state.listScroll = lv ? lv.scrollTop : 0;
+    state.searchScroll = sv ? sv.scrollTop : 0;
+    var si = document.getElementById('si');
+    state.search = si ? si.value : '';
+  }catch(e){}
   try{
     if(parent && parent!==window && typeof parent.openDioceseExternalUrl==='function'){
-      parent.openDioceseExternalUrl(url);
+      parent.openDioceseExternalUrl(url, state);
       return;
     }
   }catch(e){}
+  try{ sessionStorage.setItem('diocese_standalone_return_v1', JSON.stringify(state)); }catch(e){}
   try{ location.href=url; }catch(e){}
 }
 document.addEventListener('click',function(e){
