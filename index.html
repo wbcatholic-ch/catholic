@@ -5476,7 +5476,7 @@ window.initPrayerView = function(){
   window.__OAI_applyGlobalFont=applyScale;
   window.prAdjustFont=function(delta){var cur=getPx(),i=SIZES.indexOf(cur);if(i<0)i=SIZES.indexOf(BASE);i+=(delta>0?1:-1);if(i<0)i=0;if(i>=SIZES.length)i=SIZES.length-1;setPx(SIZES[i]);applyScale();setTimeout(applyScale,80);setTimeout(applyScale,220);};
   function ensureCoverControls(){var cover=el('cover');if(!cover)return;var box=el('cover-font-controls');if(!box){box=document.createElement('div');box.id='cover-font-controls';cover.appendChild(box);}box.className='pr-font-ctrl';box.innerHTML='<button class="pr-font-btn pr-sm" type="button" aria-label="글자 작게">가</button><div class="pr-font-divider"></div><button class="pr-font-btn pr-lg" type="button" aria-label="글자 크게">가</button>';var sm=box.querySelector('.pr-sm'),lg=box.querySelector('.pr-lg');if(sm)sm.onclick=function(e){e.preventDefault();e.stopPropagation();window.prAdjustFont(-1)};if(lg)lg.onclick=function(e){e.preventDefault();e.stopPropagation();window.prAdjustFont(1)};}
-  function setEmojiIcons(){var icons={'cc-1':'✝️','cc-2':'🙏','cc-3':'📍','cc-4':'⛪','cc-5':'🌿','cc-6':'🥾','cc-7':'🌐','cc-8':'🧭'};Object.keys(icons).forEach(function(id){var btn=el(id);if(!btn)return;var wrap=btn.querySelector('.cover-icon-wrap');if(wrap)wrap.innerHTML='<span class="cover-emoji" aria-hidden="true">'+icons[id]+'</span>';});}
+  function setEmojiIcons(){var icons={'cc-1':'✝️','cc-2':'📖','cc-3':'🙏','cc-4':'⛪','cc-5':'🌿','cc-6':'🥾','cc-7':'🌐','cc-8':'🧭'};Object.keys(icons).forEach(function(id){var btn=el(id);if(!btn)return;var wrap=btn.querySelector('.cover-icon-wrap');if(wrap)wrap.innerHTML='<span class="cover-emoji" aria-hidden="true">'+icons[id]+'</span>';});}
   function normalizeLabels(root){root=root||document;try{root.querySelectorAll('button,a,span,div').forEach(function(n){if(!n||!n.childNodes||n.childNodes.length!==1||n.childNodes[0].nodeType!==3)return;var t=n.textContent,nt=t;nt=nt.replace(/카카오\s*맵/g,'카카오내비').replace(/카카오\s*나비/g,'카카오내비').replace(/Kakao\s*Map/gi,'카카오내비').replace(/Kakao\s*Navi/gi,'카카오내비');nt=nt.replace(/상장예식\s*\(\s*위령기도1\s*\)/g,'위령기도1(상장예식)').replace(/^위령기도1$/g,'위령기도1(상장예식)').replace(/Memorial Prayer 1\s*\(\s*Courting Ceremony\s*\)/gi,'위령기도1(상장예식)');nt=nt.replace(/위령\s*기도2\s*\(\s*짧은\s*위령기도\s*\)/g,'위령기도2 (짧은 위령기도)').replace(/^위령기도2$/g,'위령기도2 (짧은 위령기도)').replace(/Memorial Prayer 2\s*\(\s*short Memorial Prayer\s*\)/gi,'위령기도2 (짧은 위령기도)');if(nt!==t)n.textContent=nt;});}catch(e){}}
   function configureQna(){window.QNA_FORM_URL=SHEET_URL;window.QNA_ANSWER_URL=SHEET_URL;var q=el('qna-list');if(q&&q.innerHTML.indexOf('Google Form')>=0){q.innerHTML='<div class="qna-card"><div class="qna-kicker">문의 · 수정건의</div><div class="qna-title">Google Sheet 연결</div><div class="qna-text">문의와 수정건의는 연결된 Google Sheet에 남길 수 있습니다. 비밀 작성은 시트 권한 설정 또는 Google Form/Apps Script 연결이 필요합니다.</div><div class="qna-actions"><button class="primary" type="button" onclick="qnaOpenFormUrl()">문의 작성하기</button><button type="button" onclick="qnaOpenAnswerUrl()">답변 보기</button></div></div>';}}
   window.qnaOpenFormUrl=function(){try{var w=window.open(SHEET_URL,'_blank','noopener'); if(w)return;}catch(_){} alert('새창 열기가 차단되었습니다. 브라우저의 팝업 허용을 확인해 주세요.');};window.qnaOpenAnswerUrl=function(){try{var w=window.open(SHEET_URL,'_blank','noopener'); if(w)return;}catch(_){} alert('새창 열기가 차단되었습니다. 브라우저의 팝업 허용을 확인해 주세요.');};
@@ -6419,7 +6419,7 @@ html.app-active #cover #qna-cover-btn{display:none!important;}
       try{e.stopImmediatePropagation&&e.stopImmediatePropagation();}catch(_){}
       forceCleanCover();
       var now=Date.now();
-      if(now-lastBack<1600){lastBack=0;try{var t=$('oai-cover-exit-toast');if(t)t.classList.remove('show');}catch(_){}setTimeout(function(){try{history.back();}catch(err){}},0);return;}
+      if(now-lastBack<1600){lastBack=0;try{var t=$("oai-cover-exit-toast");if(t)t.classList.remove("show");}catch(_){}try{sessionStorage.setItem("oai_force_cover_after_reload","1");sessionStorage.removeItem("oai_last_open_module");sessionStorage.removeItem("lastCategory");sessionStorage.removeItem("oai_restore_action");sessionStorage.removeItem("oai_last_action");}catch(_){}try{history.replaceState({__oaiExitNow:true},document.title,location.href);}catch(_){}setTimeout(function(){try{if(navigator.app&&typeof navigator.app.exitApp==="function"){navigator.app.exitApp();return;}}catch(err){}try{window.close();}catch(err){}setTimeout(function(){try{history.go(-2);}catch(err){try{history.back();}catch(e){}}},80);},0);return;}
       lastBack=now;toast();try{history.pushState({__oaiCoverExitGuard:true},document.title,location.href);}catch(err){}
     },true);
   }
@@ -6519,5 +6519,129 @@ html.retreat-mode .li-badge{
 }
 </style>
 
+
+
+<!-- OAI FINAL PATCH 20260502-9: emojis + retreat tab width + refresh finalization -->
+<style id="oai-final-emoji-retreat-refresh-20260502-9">
+/* 커버 이모지: 런타임 덮어쓰기 후에도 최종값 유지 */
+#cc-2 .cover-emoji::before{content:'📖';}
+#cc-3 .cover-emoji::before{content:'🙏';}
+#cc-2 .cover-emoji,#cc-3 .cover-emoji{font-size:0!important;}
+#cc-2 .cover-emoji::before,#cc-3 .cover-emoji::before{font-size:var(--cover-emoji-size,32px)!important;line-height:1!important;}
+
+/* 성지·성당·피정 상단 탭: 가로폭 균등 + 피정의집찾기 긴 글자 대응 */
+#tabbar{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;column-gap:8px!important;}
+#tabbar .tab-btn{width:100%!important;min-width:0!important;max-width:none!important;box-sizing:border-box!important;overflow:hidden!important;}
+#tabbar .tab-btn span:not(.tab-icon){white-space:normal!important;text-align:center!important;word-break:keep-all!important;overflow-wrap:normal!important;line-height:1.12!important;letter-spacing:-.05em!important;}
+html.retreat-mode #tab-list-lbl{font-size:13px!important;line-height:1.08!important;}
+html.retreat-mode #tabbar .tab-btn{padding-left:2px!important;padding-right:2px!important;}
+
+/* 피정의집찾기 지역검색 박스: 검색칸과 찾기 버튼 높이/가로 정렬 최종 보정 */
+html.retreat-mode .region-row{display:grid!important;grid-template-columns:minmax(0,1fr) 82px!important;width:100%!important;gap:8px!important;align-items:center!important;}
+html.retreat-mode .region-row .srch-inner{width:100%!important;min-width:0!important;height:52px!important;min-height:52px!important;box-sizing:border-box!important;}
+html.retreat-mode .region-search-btn{width:82px!important;min-width:82px!important;max-width:82px!important;height:52px!important;min-height:52px!important;padding:0 6px!important;box-sizing:border-box!important;display:flex!important;align-items:center!important;justify-content:center!important;text-align:center!important;white-space:normal!important;line-height:1.08!important;font-size:12px!important;letter-spacing:-.04em!important;}
+
+/* 새로고침: 문의·건의 버튼과 같은 고정형 표시, 화면은 절대 이동 금지 */
+#cover,#cover.pulling,#cover.refreshing{transform:none!important;top:0!important;}
+#cv-pull-modern{position:fixed!important;left:50%!important;top:50%!important;right:auto!important;bottom:auto!important;transform:translate(-50%,-50%) scale(.96)!important;z-index:10050!important;opacity:0!important;pointer-events:none!important;transition:opacity .12s ease,transform .12s ease!important;background:linear-gradient(135deg,#1f2a44,#31446c)!important;color:#fff!important;border:0!important;border-radius:999px!important;box-shadow:0 10px 24px rgba(31,42,68,.25)!important;min-height:46px!important;padding:0 18px!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:8px!important;}
+#cv-pull-modern.show{opacity:1!important;transform:translate(-50%,-50%) scale(1)!important;}
+#cv-pull-modern.ready{opacity:1!important;transform:translate(-50%,-50%) scale(1.035)!important;}
+#cv-pull-modern.refreshing{opacity:1!important;transform:translate(-50%,-50%) scale(1)!important;}
+#cv-pull-modern .cv-pull-ring{width:24px!important;height:46px!important;display:flex!important;align-items:center!important;justify-content:center!important;background:transparent!important;}
+#cv-pull-modern .cv-pull-icon{width:22px!important;height:22px!important;color:#fff!important;}
+#cv-pull-modern::after{content:'새로고침';font-family:inherit!important;font-size:13px!important;font-weight:900!important;line-height:1!important;color:#fff!important;white-space:nowrap!important;}
+#cv-pull-modern.ready::after{content:'놓으면 새로고침';}
+#cv-pull-modern.refreshing::after{content:'새로고침 중';}
+</style>
+<script id="oai-final-emoji-retreat-refresh-20260502-9">
+(function(){
+  'use strict';
+  if(window.__OAI_FINAL_EMOJI_RETREAT_REFRESH_20260502_9__) return;
+  window.__OAI_FINAL_EMOJI_RETREAT_REFRESH_20260502_9__=true;
+  function $(id){return document.getElementById(id);} 
+  function setCoverEmojis(){
+    var pairs={'cc-2':'📖','cc-3':'🙏'};
+    Object.keys(pairs).forEach(function(id){
+      var btn=$(id); if(!btn) return;
+      var wrap=btn.querySelector('.cover-icon-wrap'); if(!wrap) return;
+      wrap.innerHTML='<span class="cover-emoji" aria-hidden="true">'+pairs[id]+'</span>';
+    });
+  }
+  function fixRetreatTabLabel(){
+    var lbl=$('tab-list-lbl');
+    if(!lbl) return;
+    var html=document.documentElement;
+    if(html.classList.contains('retreat-mode')) lbl.innerHTML='피정의집<br>찾기';
+  }
+  function resetBeforeRefresh(){
+    try{sessionStorage.setItem('oai_force_cover_after_reload','1');}catch(e){}
+    try{sessionStorage.removeItem('oai_last_open_module');sessionStorage.removeItem('lastCategory');sessionStorage.removeItem('oai_restore_action');}catch(e){}
+  }
+  function hardenRefresh(){
+    var cover=$('cover'), ind=$('cv-pull-modern');
+    if(!cover||!ind||cover.__oaiRefreshFinal9) return;
+    cover.__oaiRefreshFinal9=true;
+    var sy=0,sx=0,active=false,ready=false,refreshing=false,TH=96;
+    function coverVisible(){return !!(cover && !document.documentElement.classList.contains('app-active') && getComputedStyle(cover).display!=='none');}
+    function show(cls){ind.classList.add('show');ind.classList.toggle('ready',cls==='ready');ind.classList.toggle('refreshing',cls==='refreshing');}
+    function hide(){ind.classList.remove('show','ready','refreshing');}
+    cover.addEventListener('touchstart',function(e){
+      if(refreshing||!coverVisible()||cover.scrollTop>0||!e.touches||!e.touches[0]) return;
+      sx=e.touches[0].clientX; sy=e.touches[0].clientY; active=true; ready=false;
+      if(e.stopImmediatePropagation)e.stopImmediatePropagation();
+    },{capture:true,passive:true});
+    cover.addEventListener('touchmove',function(e){
+      if(!active||refreshing||!e.touches||!e.touches[0]) return;
+      var dx=e.touches[0].clientX-sx, dy=e.touches[0].clientY-sy;
+      if(Math.abs(dx)>Math.abs(dy)*1.2) return;
+      if(dy<=0){ready=false;hide();return;}
+      if(e.cancelable)e.preventDefault();
+      if(e.stopImmediatePropagation)e.stopImmediatePropagation();
+      ready=dy>=TH; show(ready?'ready':'show');
+    },{capture:true,passive:false});
+    cover.addEventListener('touchend',function(e){
+      if(!active) return;
+      active=false;
+      if(e.stopImmediatePropagation)e.stopImmediatePropagation();
+      if(ready){
+        ready=false; refreshing=true; show('refreshing');
+        try{navigator.vibrate&&navigator.vibrate(80);}catch(ex){}
+        resetBeforeRefresh();
+        setTimeout(function(){location.reload();},260);
+      }else{ready=false;hide();}
+    },{capture:true,passive:true});
+    cover.addEventListener('touchcancel',function(e){active=false;ready=false;hide();if(e.stopImmediatePropagation)e.stopImmediatePropagation();},{capture:true,passive:true});
+  }
+  function boot(){setCoverEmojis();fixRetreatTabLabel();hardenRefresh();}
+  var oldStart=window.startApp;
+  if(typeof oldStart==='function'){
+    window.startApp=function(mode){
+      var r=oldStart.apply(this,arguments);
+      setTimeout(function(){setCoverEmojis();fixRetreatTabLabel();},0);
+      setTimeout(fixRetreatTabLabel,80);
+      return r;
+    };
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+  window.addEventListener('load',function(){boot();setTimeout(boot,250);setTimeout(boot,900);},{once:true});
+})();
+</script>
+
+<!-- OAI PATCH 20260502-10: cover back must never restore previous step, double-back exits -->
+<script id="oai-cover-back-exit-only-20260502-10">
+(function(){
+  'use strict';
+  if(window.__OAI_COVER_BACK_EXIT_ONLY_20260502_10__) return;
+  window.__OAI_COVER_BACK_EXIT_ONLY_20260502_10__=true;
+  var last=0;
+  function $(id){return document.getElementById(id);}
+  function isCover(){var c=$('cover'),h=document.documentElement;return !!(c&&!h.classList.contains('app-active')&&getComputedStyle(c).display!=='none');}
+  function cleanCover(){try{document.querySelectorAll('.module-view.open,#prayer-view.open,#diocese-view.open,#missa-view.open,.sheet.open,.trail-sheet.open,#srch-modal.open,#info-card.open,#exit-dlg.open').forEach(function(v){v.classList.remove('open','show');});}catch(e){}try{document.documentElement.classList.remove('app-active','parish-mode','retreat-mode');}catch(e){}try{var c=$('cover');if(c){c.style.display='';c.style.opacity='';c.style.pointerEvents='';}}catch(e){}}
+  function toast(){var t=$('oai-cover-exit-toast');if(!t){t=document.createElement('div');t.id='oai-cover-exit-toast';t.textContent='한 번 더 누르면 종료됩니다';document.body.appendChild(t);}t.classList.add('show');clearTimeout(t.__tm);t.__tm=setTimeout(function(){try{t.classList.remove('show');}catch(e){}},1300);}
+  function exitApp(){try{sessionStorage.setItem('oai_force_cover_after_reload','1');sessionStorage.removeItem('oai_last_open_module');sessionStorage.removeItem('lastCategory');sessionStorage.removeItem('oai_restore_action');sessionStorage.removeItem('oai_last_action');}catch(e){}try{if(navigator.app&&typeof navigator.app.exitApp==='function'){navigator.app.exitApp();return;}}catch(e){}try{window.close();}catch(e){}setTimeout(function(){try{history.go(-2);}catch(e){try{history.back();}catch(_){}}},80);}
+  function handle(e){if(!isCover()) return;try{e.preventDefault&&e.preventDefault();e.stopPropagation&&e.stopPropagation();e.stopImmediatePropagation&&e.stopImmediatePropagation();}catch(_){}cleanCover();var now=Date.now();if(now-last<1600){last=0;exitApp();return;}last=now;toast();try{history.pushState({__oaiCoverExitGuard:true},document.title,location.href);}catch(_){} }
+  document.addEventListener('backbutton',handle,true);
+})();
+</script>
 </body>
 </html>
