@@ -2249,7 +2249,15 @@ function closeTab(name){
       const idx = (typeof _routeDest.idx==='number' && _routeDest.idx>=0)
         ? _routeDest.idx
         : items.findIndex(p=>p.lat===_routeDest.lat && p.lng===_routeDest.lng);
-      if(idx>=0){ const item=items[idx]; if(item) setTimeout(()=>{_showInfoCard(item,idx);_focusMarkerAboveInfoCard(item);}, 80); }
+      if(idx>=0){ const item=items[idx]; if(item) setTimeout(()=>{
+        try{
+          if(_mode==='shrine') _selectShrineMarker(idx);
+          else if(_mode==='parish') _selectParishMarker(item);
+          else if(_mode==='retreat') _selectRetreatMarker(item);
+        }catch(e){}
+        _showInfoCard(item,idx);
+        _focusMarkerAboveInfoCard(item);
+      }, 80); }
     }
   } else {
     _restoreMapMarkers();
@@ -3331,7 +3339,14 @@ function resetRoute(){
     try{
       const _items=_getCurrentItems();
       const _idx=(typeof destItem.idx==='number' && destItem.idx>=0) ? destItem.idx : _items.findIndex(p=>p.lat===destItem.lat && p.lng===destItem.lng);
-      if(_idx>=0 && _items[_idx]) setTimeout(()=>_showInfoCard(_items[_idx], _idx), 60);
+      if(_idx>=0 && _items[_idx]) setTimeout(()=>{
+        try{
+          if(_mode==='shrine') _selectShrineMarker(_idx);
+          else if(_mode==='parish') _selectParishMarker(_items[_idx]);
+          else if(_mode==='retreat') _selectRetreatMarker(_items[_idx]);
+        }catch(e){}
+        _showInfoCard(_items[_idx], _idx);
+      }, 60);
     }catch(e){}
   }
 }
@@ -3904,9 +3919,9 @@ function _fmtTime(s){
   {cat:"중앙기구", ico:"🏛️", name:"한국천주교주교회의 (CBCK)",
    op:"한국천주교주교회의", url:"https://cbck.or.kr",
    desc:"한국 천주교 공식 문헌·교리·전례·교회법·발표 자료 제공"},
-  {cat:"중앙기구", ico:"⛪", name:"한국 천주교 순교자 현양",
+  {cat:"중앙기구", ico:"⛪", name:"시복시성 특별위원회",
    op:"한국천주교주교회의", url:"https://cbck.or.kr/koreanmartyrs",
-   desc:"한국 순교자·성지·교회사 관련 자료 제공"},
+   desc:"시복·시성, 한국 순교자와 교회사 관련 자료 제공"},
 
   /* 신앙 포털 */
   {cat:"신앙 포털", ico:"✝️", name:"가톨릭인터넷 굿뉴스",
@@ -4053,13 +4068,16 @@ function _fmtTime(s){
   function wfLoad(){ try{ webFavs=JSON.parse(localStorage.getItem(WEB_FAV_KEY)||'[]'); }catch(e){ webFavs=[]; } }
   function wfSave(){ try{ localStorage.setItem(WEB_FAV_KEY, JSON.stringify(webFavs)); }catch(e){} }
   function wfHas(url){ return webFavs.includes(url); }
+  function webFavTabHtml(count){
+    return '⭐ 즐겨찾기<span class=\"cnt\">' + Number(count||0) + '</span>';
+  }
   function wfToggle(url){
     if(wfHas(url)) webFavs=webFavs.filter(u=>u!==url);
     else webFavs.push(url);
     wfSave();
-    // ⭐ 탭 카운트 업데이트
+    // ⭐ 즐겨찾기 탭 카운트와 이름 업데이트
     var favBtn = document.getElementById('web-cat_⭐');
-    if(favBtn){ var cnt = webFavs.length; favBtn.innerHTML = '⭐'; }
+    if(favBtn){ favBtn.innerHTML = webFavTabHtml(webFavs.length); }
   }
   wfLoad();
 
@@ -4118,6 +4136,7 @@ function _fmtTime(s){
     enterIntegratedView('web-view');
     initWebModule();
     scheduleWebCatSync(webState.curCat || '전체');
+    if(!restore){ setWebCat('전체'); }
   };
 
   window.openTrailView = function(opts){
@@ -4210,7 +4229,7 @@ function _fmtTime(s){
       btn.dataset.catColor = c; // CSS 선택자용
       btn.setAttribute('aria-pressed', c===webState.curCat ? 'true' : 'false');
       const count = c==='전체' ? WEB_SITES.length : c==='⭐' ? WEB_SITES.filter(s => wfHas(s.url)).length : WEB_SITES.filter(s => s.cat===c).length;
-      btn.innerHTML = esc(c) + (c==='⭐' ? '' : '<span class="cnt">' + count + '</span>');
+      btn.innerHTML = c==='⭐' ? webFavTabHtml(count) : esc(c) + '<span class="cnt">' + count + '</span>';
       btn.addEventListener('click', function(){ setWebCat(c); });
       wrap.appendChild(btn);
     });
@@ -4250,12 +4269,17 @@ function _fmtTime(s){
     if(list){
       list.style.scrollBehavior = 'auto';
       list.scrollTop = 0;
+      const first = list.querySelector('.web-card');
+      if(first) first.scrollIntoView({behavior:'instant', block:'start'});
+      list.scrollTop = 0;
       list.style.scrollBehavior = '';
     }
-    // 활성 탭을 가로 중앙으로 스크롤
+    // 활성 탭을 항상 보이게 가로 중앙으로 스크롤
     requestAnimationFrame(function(){
       const activeBtn = ig$('web-cat_' + (cat||'전체'));
       if(activeBtn) activeBtn.scrollIntoView({behavior:'instant', block:'nearest', inline:'center'});
+      const list2 = ig$('web-list');
+      if(list2) list2.scrollTop = 0;
     });
   }
 
