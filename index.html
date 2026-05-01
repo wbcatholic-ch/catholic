@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ko" class="oai-font-global">
 <head>
@@ -1391,7 +1390,6 @@ html.retreat-mode .tab-btn.active{
   <div id="prayer-search-bar">
     <div id="prayer-search-wrap">
       <i class="fa-solid fa-magnifying-glass" id="prayer-search-ico"></i>
-      <span id="prayer-search-label">기도 검색</span>
       <input type="text" id="prayer-search-inp" placeholder="기도 제목을 입력하세요"
         oninput="prRenderList()" autocomplete="off" autocorrect="off" spellcheck="false">
     </div>
@@ -1450,7 +1448,7 @@ html.retreat-mode .tab-btn.active{
             <span class="cover-name">주요기도문</span>
         </button>
         <button id="cc-3" class="cover-card" onclick="hideCoverAndRun(function(){ if(typeof startApp === 'function') startApp('shrine'); })">
-            <div class="cover-icon-wrap"><span class="cover-emoji" aria-hidden="true">📍</span></div>
+            <div class="cover-icon-wrap"><span class="cover-emoji" aria-hidden="true">🙏</span></div>
             <span class="cover-name">성지순례 167곳</span>
         </button>
         <button id="cc-4" class="cover-card" onclick="hideCoverAndRun(function(){ if(typeof startApp === 'function') startApp('parish'); })">
@@ -1532,7 +1530,7 @@ function handleBack() {} // 하위호환용 stub
     currentY = startY;
     pulling = true;
     ready = false;
-    cover.style.transition = 'none';
+    /* 화면 흔들림 방지: 커버 자체는 움직이지 않고 표시 아이콘만 사용 */
   }, { passive:true });
 
   cover.addEventListener('touchmove', function(e){
@@ -1540,14 +1538,11 @@ function handleBack() {} // 하위호환용 stub
     currentY = e.touches[0].clientY;
     let dy = currentY - startY;
     if(dy <= 0){
-      cover.style.transform = 'translateY(0)';
       resetIndicator();
       ready = false;
       return;
     }
     dy = Math.min(dy, MAX_PULL);
-    const visualPull = dy * 0.42;
-    cover.style.transform = 'translateY(' + visualPull + 'px)';
     indicator.classList.add('show');
     if(dy >= THRESHOLD){
       if(!ready){
@@ -1562,8 +1557,7 @@ function handleBack() {} // 하위호환용 stub
   }, { passive:true });
 
   function finishPull(){
-    cover.style.transition = 'transform .28s cubic-bezier(.4,0,.2,1)';
-    cover.style.transform = 'translateY(0)';
+    /* 화면 흔들림 방지: transform 복귀 애니메이션 사용 안 함 */
   }
 
   cover.addEventListener('touchend', function(){
@@ -3301,7 +3295,9 @@ function clearRoute(role){
   _setRouteLabel('end','');
   _hide($('rs-result'));
   _restoreMapMarkers();
-  setTimeout(()=>_restoreRouteDestinationSelection(destItem, false), 30);
+  [40,160,420].forEach(function(ms){
+    setTimeout(function(){ _restoreRouteDestinationSelection(destItem, false); }, ms);
+  });
   }
 }
 
@@ -3345,7 +3341,9 @@ function resetRoute(){
   // 4) 지도 기본 마커 복원 후, 마지막 도착지만 노란 마커로 다시 선택
   _restoreMapMarkers();
   if(destItem && destItem.lat && _map){
-    setTimeout(()=>_restoreRouteDestinationSelection(destItem, true), 30);
+    [40,160,420].forEach(function(ms){
+      setTimeout(function(){ _restoreRouteDestinationSelection(destItem, true); }, ms);
+    });
   }
 }
 
@@ -3777,9 +3775,11 @@ function _fmtTime(s){
   return Math.floor(m/60)+'시간'+(m%60?' '+m%60+'분':'');
 }
 (function(){
+  if(document.getElementById('cv-pull-modern')) return;
   const cover=$('cover');
   const pull=$('cv-pull');
   const txt=$('cv-pull-txt');
+  if(!cover || !pull || !txt) return;
   let startY=0, curY=0, active=false;
   const THRESHOLD=80;
   cover.addEventListener('touchstart',e=>{
@@ -5861,7 +5861,7 @@ function init(){ensureQna();applyFont();injectDioceseAll();relayoutAll()}documen
   window.__OAI_applyGlobalFont=applyScale;
   window.prAdjustFont=function(delta){var cur=getPx(),i=SIZES.indexOf(cur);if(i<0)i=SIZES.indexOf(BASE);i+=(delta>0?1:-1);if(i<0)i=0;if(i>=SIZES.length)i=SIZES.length-1;setPx(SIZES[i]);applyScale();setTimeout(applyScale,80);setTimeout(applyScale,220);};
   function ensureCoverControls(){var cover=el('cover');if(!cover)return;var box=el('cover-font-controls');if(!box){box=document.createElement('div');box.id='cover-font-controls';cover.appendChild(box);}box.className='pr-font-ctrl';box.innerHTML='<button class="pr-font-btn pr-sm" type="button" aria-label="글자 작게">가</button><div class="pr-font-divider"></div><button class="pr-font-btn pr-lg" type="button" aria-label="글자 크게">가</button>';var sm=box.querySelector('.pr-sm'),lg=box.querySelector('.pr-lg');if(sm)sm.onclick=function(e){e.preventDefault();e.stopPropagation();window.prAdjustFont(-1)};if(lg)lg.onclick=function(e){e.preventDefault();e.stopPropagation();window.prAdjustFont(1)};}
-  function setEmojiIcons(){var icons={'cc-1':'✝️','cc-2':'📖','cc-3':'📍','cc-4':'⛪','cc-5':'🌿','cc-6':'🙏','cc-7':'🌐','cc-8':'🧭'};Object.keys(icons).forEach(function(id){var btn=el(id);if(!btn)return;var wrap=btn.querySelector('.cover-icon-wrap');if(wrap)wrap.innerHTML='<span class="cover-emoji" aria-hidden="true">'+icons[id]+'</span>';});}
+  function setEmojiIcons(){var icons={'cc-1':'✝️','cc-2':'📖','cc-3':'🙏','cc-4':'⛪','cc-5':'🌿','cc-6':'🥾','cc-7':'🌐','cc-8':'🧭'};Object.keys(icons).forEach(function(id){var btn=el(id);if(!btn)return;var wrap=btn.querySelector('.cover-icon-wrap');if(wrap)wrap.innerHTML='<span class="cover-emoji" aria-hidden="true">'+icons[id]+'</span>';});}
   function normalizeLabels(root){root=root||document;try{root.querySelectorAll('button,a,span,div').forEach(function(n){if(!n||!n.childNodes||n.childNodes.length!==1||n.childNodes[0].nodeType!==3)return;var t=n.textContent,nt=t;nt=nt.replace(/카카오\s*맵/g,'카카오내비').replace(/카카오\s*나비/g,'카카오내비').replace(/Kakao\s*Map/gi,'카카오내비').replace(/Kakao\s*Navi/gi,'카카오내비');nt=nt.replace(/상장예식\s*\(\s*위령기도1\s*\)/g,'위령기도1(상장예식)').replace(/^위령기도1$/g,'위령기도1(상장예식)').replace(/Memorial Prayer 1\s*\(\s*Courting Ceremony\s*\)/gi,'위령기도1(상장예식)');nt=nt.replace(/위령\s*기도2\s*\(\s*짧은\s*위령기도\s*\)/g,'위령기도2 (짧은 위령기도)').replace(/^위령기도2$/g,'위령기도2 (짧은 위령기도)').replace(/Memorial Prayer 2\s*\(\s*short Memorial Prayer\s*\)/gi,'위령기도2 (짧은 위령기도)');if(nt!==t)n.textContent=nt;});}catch(e){}}
   function configureQna(){window.QNA_FORM_URL=SHEET_URL;window.QNA_ANSWER_URL=SHEET_URL;var q=el('qna-list');if(q&&q.innerHTML.indexOf('Google Form')>=0){q.innerHTML='<div class="qna-card"><div class="qna-kicker">문의 · 수정건의</div><div class="qna-title">Google Sheet 연결</div><div class="qna-text">문의와 수정건의는 연결된 Google Sheet에 남길 수 있습니다. 비밀 작성은 시트 권한 설정 또는 Google Form/Apps Script 연결이 필요합니다.</div><div class="qna-actions"><button class="primary" type="button" onclick="qnaOpenFormUrl()">문의 작성하기</button><button type="button" onclick="qnaOpenAnswerUrl()">답변 보기</button></div></div>';}}
   window.qnaOpenFormUrl=function(){try{window.open(SHEET_URL,'_blank','noopener');}catch(_){location.href=SHEET_URL;}};window.qnaOpenAnswerUrl=function(){try{window.open(SHEET_URL,'_blank','noopener');}catch(_){location.href=SHEET_URL;}};
@@ -6055,57 +6055,55 @@ html.app-active #pwa-install-btn{display:none!important;}
 }
 
 
-/* 주요기도문 검색창 식별 강화 */
+/* 주요기도문 검색창 식별: 과한 배지 제거, 기존 글자/구조 유지 + 살짝만 선명하게 */
 #prayer-search-bar{
-  background:#E7DED2 !important;
-  border-bottom:1px solid #D6CABA !important;
+  background:#EDE8E0 !important;
+  border-bottom:1px solid #DDD5C8 !important;
+  min-height:58px !important;
+  padding:8px 14px !important;
 }
 #prayer-search-wrap{
+  position:relative !important;
   display:flex !important;
   align-items:center !important;
-  gap:7px !important;
-  background:#FFFDF8 !important;
-  border:2px solid #B7791F !important;
-  border-radius:13px !important;
-  box-shadow:0 2px 8px rgba(183,121,31,.16) !important;
-  padding:0 12px !important;
+  background:#F7F2EA !important;
+  border:1.5px solid #CDBFAE !important;
+  border-radius:12px !important;
+  box-shadow:none !important;
+  padding:0 !important;
+  height:44px !important;
+  min-height:44px !important;
 }
 #prayer-search-ico{
-  position:static !important;
-  transform:none !important;
-  color:#B7791F !important;
+  position:absolute !important;
+  left:12px !important;
+  top:50% !important;
+  transform:translateY(-50%) !important;
+  color:#8A765F !important;
   font-size:14px !important;
-  flex:0 0 auto !important;
+  pointer-events:none !important;
 }
-#prayer-search-label{
-  display:inline-flex !important;
-  align-items:center !important;
-  justify-content:center !important;
-  height:26px !important;
-  padding:0 9px !important;
-  border-radius:999px !important;
-  background:#B7791F !important;
-  color:#fff !important;
-  font-size:12px !important;
-  font-weight:900 !important;
-  white-space:nowrap !important;
-  line-height:1 !important;
-}
+#prayer-search-label{display:none !important;}
 #prayer-search-inp{
-  flex:1 !important;
-  min-width:0 !important;
+  width:100% !important;
+  height:44px !important;
+  min-height:44px !important;
   border:none !important;
   background:transparent !important;
-  padding:0 !important;
-  color:#1F2937 !important;
-  font-weight:700 !important;
+  padding:0 12px 0 36px !important;
+  color:#1A1A2E !important;
+  font-weight:500 !important;
+  font-size:14px !important;
 }
 #prayer-search-inp::placeholder{
-  color:#8A765F !important;
-  opacity:.9 !important;
-  font-weight:700 !important;
+  color:#9B9288 !important;
+  font-weight:500 !important;
+  opacity:1 !important;
 }
-
+#prayer-view .pr-font-ctrl,#prayer-view .pr-font-btn{
+  height:44px !important;
+  min-height:44px !important;
+}
 /* 굿뉴스기도문 링크 버튼 */
 #goodnews-prayer-btn {
   display: inline-flex;
@@ -6133,39 +6131,6 @@ html.app-active #pwa-install-btn{display:none!important;}
   transform: scale(0.97);
 }
 </style>
-
-<script>
-/* ====== 성능 최적화 JS 패치 ====== */
-(function(){
-  // 중복 setTimeout 래핑으로 인한 함수 실행 누적 방지
-  // relayoutAll 류 함수의 과도한 setTimeout 체인 제한
-  var _raf = requestAnimationFrame;
-  
-  // cover의 pull-to-refresh: 불필요한 transform 제거
-  var coverEl = document.getElementById('cover');
-  if(coverEl) coverEl.style.willChange = 'auto';
-  
-  // 모듈뷰 열릴 때 contain 해제, 닫힐 때 재적용
-  var observer = new MutationObserver(function(mutations){
-    mutations.forEach(function(m){
-      if(m.attributeName === 'class'){
-        var el = m.target;
-        if(el.classList.contains('open')){
-          el.style.contain = 'none';
-        } else {
-          // 닫힌 후 짧은 딜레이로 contain 복구
-          setTimeout(function(){ el.style.contain = ''; }, 300);
-        }
-      }
-    });
-  });
-  
-  ['missa-view','diocese-view','prayer-view','web-view','trail-view','qna-view'].forEach(function(id){
-    var el = document.getElementById(id);
-    if(el) observer.observe(el, {attributes:true, attributeFilter:['class']});
-  });
-})();
-</script>
 
 <!-- ====== 최종 통합 패치 ====== -->
 <style id="final-patch">
@@ -6375,19 +6340,42 @@ html.retreat-mode #sm-tab-bar .sm-tab.active {
 </script>
 
 
-<!-- OAI PATCH 20260501: website tab cleanup + refresh stability -->
-<style id="oai-refresh-stability-20260501">#web-cat_전체,.web-cat-btn[data-web-cat="전체"]{display:none!important;}html.oai-boot-lock #cover,html.oai-boot-lock #cover *,html.oai-start-stable #cover,html.oai-start-stable #cover *{transition:none!important;animation:none!important;}html.oai-start-stable #cover{transform:none!important;will-change:auto!important;}html,body{overscroll-behavior-y:none;}html.oai-refresh-allowed,html.oai-refresh-allowed body{overscroll-behavior-y:auto!important;}#map,#map-wrap{overscroll-behavior:none!important;touch-action:pan-x pan-y!important;}</style>
-<script id="oai-refresh-stability-script-20260501">
+<!-- OAI PATCH 20260501: website all-tab cleanup only + cover no-rattle -->
+<style id="oai-webtab-cover-spacing-20260501">
+#web-cat_전체,.web-cat-btn[data-web-cat="전체"]{display:none!important;}
+#cover{transform:none!important;will-change:auto!important;}
+#cover .cover-grid{box-sizing:border-box!important;}
+@media (max-width:430px){#cover .cover-grid{padding-left:16px!important;padding-right:16px!important;gap:10px!important;}}
+</style>
+<script id="oai-webtab-only-script-20260501">
 (function(){
   function $(id){return document.getElementById(id);}
   function removeAllWebTab(){try{var b=$('web-cat_전체');if(b&&b.parentNode)b.parentNode.removeChild(b);document.querySelectorAll('#web-cats .web-cat-btn[data-web-cat="전체"]').forEach(function(x){x.remove();});}catch(e){}}
-  function updateRefreshMode(){var html=document.documentElement;var nonMapOpen=false;['missa-view','prayer-view','diocese-view','web-view','trail-view','qna-view'].forEach(function(id){var v=$(id);if(v&&v.classList.contains('open'))nonMapOpen=true;});var coverVisible=!html.classList.contains('app-active');html.classList.toggle('oai-refresh-allowed',coverVisible||nonMapOpen);}
-  function stabilizeStart(){var html=document.documentElement;html.classList.add('oai-start-stable');removeAllWebTab();updateRefreshMode();setTimeout(function(){html.classList.remove('oai-boot-lock');},700);setTimeout(function(){html.classList.remove('oai-start-stable');},1100);}
-  var mo=new MutationObserver(function(){updateRefreshMode();removeAllWebTab();});
-  function observeViews(){['missa-view','prayer-view','diocese-view','web-view','trail-view','qna-view','app','cover'].forEach(function(id){var v=$(id);if(v)try{mo.observe(v,{attributes:true,attributeFilter:['class','style']});}catch(e){}});try{mo.observe(document.documentElement,{attributes:true,attributeFilter:['class']});}catch(e){}}
-  document.addEventListener('DOMContentLoaded',function(){observeViews();stabilizeStart();});window.addEventListener('pageshow',function(){stabilizeStart();});setTimeout(stabilizeStart,0);setTimeout(stabilizeStart,300);setTimeout(stabilizeStart,900);
+  document.addEventListener('DOMContentLoaded',removeAllWebTab);
+  window.addEventListener('pageshow',removeAllWebTab);
+  setTimeout(removeAllWebTab,0);setTimeout(removeAllWebTab,300);
   var ow=window.openWebView;if(typeof ow==='function'&&!ow.__oaiNoAllTab){window.openWebView=function(){var r=ow.apply(this,arguments);[0,60,200,500].forEach(function(ms){setTimeout(function(){removeAllWebTab();try{var list=$('web-list');if(list)list.scrollTop=0;}catch(e){}},ms);});return r;};window.openWebView.__oaiNoAllTab=true;}
   var swc=window.setWebCat;if(typeof swc==='function'&&!swc.__oaiNoAllTab){window.setWebCat=function(cat){var r=swc.apply(this,arguments);removeAllWebTab();try{var list=$('web-list');if(list)list.scrollTop=0;}catch(e){}return r;};window.setWebCat.__oaiNoAllTab=true;}
+})();
+</script>
+
+<!-- OAI PATCH 20260501: route yellow marker final safety -->
+<script id="oai-route-yellow-final-safety-20260501">
+(function(){
+  function hardClear(){
+    try{ if(window._polyline){ window._polyline.setMap(null); window._polyline=null; } }catch(e){}
+    try{ if(typeof _clearRouteTmpMarkers==='function') _clearRouteTmpMarkers(); }catch(e){}
+  }
+  var oldRestore=window._restoreRouteDestinationSelection;
+  if(typeof oldRestore==='function' && !oldRestore.__oaiYellowSafety){
+    window._restoreRouteDestinationSelection=function(destItem, showCard){
+      hardClear();
+      var r=oldRestore.apply(this, arguments);
+      [80,260].forEach(function(ms){setTimeout(function(){try{hardClear();oldRestore.call(window,destItem,showCard);}catch(e){}},ms);});
+      return r;
+    };
+    window._restoreRouteDestinationSelection.__oaiYellowSafety=true;
+  }
 })();
 </script>
 
