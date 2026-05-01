@@ -280,12 +280,17 @@ html.app-active #qna-cover-btn{display:none!important;}
 
 /* 5) 본문/리스트 영역은 헤더+탭 높이에 맞춰 자연스럽게 채움 */
 #prayer-list-view,
-#prayer-detail-body,
 #web-view .web-body,
 #trail-view .trail-body{
   flex:1 1 auto!important;
   min-height:0!important;
   overflow:hidden!important;
+}
+#prayer-detail-body{
+  flex:1 1 auto!important;
+  min-height:0!important;
+  overflow-y:auto!important;
+  -webkit-overflow-scrolling:touch!important;
 }
 #prayer-list-view,
 #web-view .web-list,
@@ -1230,6 +1235,9 @@ html.retreat-mode .tab-btn.active{
 .trail-tab.on{background:#2563eb !important;}
 .prayer-cat-btn.on,.prayer-tab.on{background:#1f2a44 !important;}
 .dio-tab.on,.tab.on{background:var(--d, #1F2A44) !important;}
+
+/* FIX2 */
+#cover{padding-top:calc(10vh + env(safe-area-inset-top,0px))!important;padding-bottom:calc(10vh + env(safe-area-inset-bottom,0px))!important;}
 </style>
 <style id="prayer-swipe-anim">@keyframes prSlideLeft{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}@keyframes prSlideRight{from{opacity:0;transform:translateX(-40px)}to{opacity:1;transform:translateX(0)}}</style>
 
@@ -3795,7 +3803,7 @@ function _fmtTime(s){
    op:"천주교 서울대교구", url:"https://m.catholic.or.kr/web/addr/",
    desc:"교구·본당·기관 연락처와 주소를 모바일에서 빠르게 확인"},
   {cat:"신앙 포털", ico:"📘", name:"가톨릭 용어사전",
-   op:"Q&A 정보마당", url:"http://qainfo.catholic.or.kr/mobile/dictionary/",
+   op:"Q&A 정보마당", url:"https://qainfo.catholic.or.kr/mobile/dictionary/",
    desc:"가톨릭 교리·전례·성경 용어를 모바일 사전으로 조회"},
   {cat:"신앙 포털", ico:"🌟", name:"가톨릭 성인",
    op:"가톨릭인터넷 굿뉴스", url:"https://maria.catholic.or.kr/mobile/sa_ho/list/list.asp?menugubun=saint&today=on",
@@ -3845,19 +3853,19 @@ function _fmtTime(s){
    op:"천주교 서울대교구", url:"https://aos.catholic.or.kr",
    desc:"교구 공지·교육·사목 자료·기관 정보 제공"},
   {cat:"교구", ico:"⛪", prov:"서울관구", name:"인천교구",
-   op:"천주교 인천교구", url:"http://www.caincheon.or.kr/",
+   op:"천주교 인천교구", url:"https://www.caincheon.or.kr/",
    desc:"교구 공지·사목 자료·기관 정보 제공"},
   {cat:"교구", ico:"⛪", prov:"서울관구", name:"수원교구",
    op:"천주교 수원교구", url:"https://www.casuwon.or.kr/",
    desc:"교구 소식·교육·행사·사목 자료 제공"},
   {cat:"교구", ico:"⛪", prov:"서울관구", name:"의정부교구",
-   op:"천주교 의정부교구", url:"http://ucatholic.or.kr/",
+   op:"천주교 의정부교구", url:"https://ucatholic.or.kr/",
    desc:"교구 공지·본당 안내·사목 자료 제공"},
   {cat:"교구", ico:"⛪", prov:"서울관구", name:"춘천교구",
    op:"천주교 춘천교구", url:"https://www.cccatholic.or.kr/",
    desc:"교구 공지·기관 안내·행사 정보 제공"},
   {cat:"교구", ico:"⛪", prov:"서울관구", name:"원주교구",
-   op:"천주교 원주교구", url:"http://www.wjcatholic.or.kr/",
+   op:"천주교 원주교구", url:"https://www.wjcatholic.or.kr/",
    desc:"교구 소식·교육 자료·공지 제공"},
   {cat:"교구", ico:"⛪", prov:"서울관구", name:"대전교구",
    op:"천주교 대전교구", url:"https://www.djcatholic.or.kr/home/",
@@ -3928,6 +3936,17 @@ function _fmtTime(s){
   const RETURN_KEY = 'catholic_integrated_return_v2';
   const trailState = {inited:false, map:null, markers:[], selected:-1, myOverlay:null, view:'map', pendingOpenIndex:null, restoreCenter:null, restoreLevel:null, needsHardReset:false, pendingFitBounds:false};
   const webState = {built:false, curCat:'전체'};
+  const WEB_FAV_KEY = 'web_favorites_v1';
+  let webFavs = [];
+  function wfLoad(){ try{ webFavs=JSON.parse(localStorage.getItem(WEB_FAV_KEY)||'[]'); }catch(e){ webFavs=[]; } }
+  function wfSave(){ try{ localStorage.setItem(WEB_FAV_KEY, JSON.stringify(webFavs)); }catch(e){} }
+  function wfHas(url){ return webFavs.includes(url); }
+  function wfToggle(url){
+    if(wfHas(url)) webFavs=webFavs.filter(u=>u!==url);
+    else webFavs.push(url);
+    wfSave();
+  }
+  wfLoad();
 
   function ig$(id){ return document.getElementById(id); }
   function esc(s){ return String(s ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
@@ -4066,7 +4085,7 @@ function _fmtTime(s){
     webState.built = true;
     const wrap = ig$('web-cats');
     if(!wrap) return;
-    const cats = ['전체'];
+    const cats = ['전체', '⭐ 즐겨찾기'];
     WEB_SITES.forEach(s => { if(!cats.includes(s.cat)) cats.push(s.cat); });
     cats.forEach(c => {
       const btn = document.createElement('button');
@@ -4131,7 +4150,7 @@ function _fmtTime(s){
     if(!wrap || !empty) return;
     applyWebCatState(webState.curCat || '전체');
     Array.from(wrap.querySelectorAll('.web-card')).forEach(el => el.remove());
-    const filtered = webState.curCat==='전체' ? WEB_SITES : WEB_SITES.filter(s => s.cat===webState.curCat);
+    const filtered = webState.curCat==='전체' ? WEB_SITES : webState.curCat==='⭐ 즐겨찾기' ? WEB_SITES.filter(s => wfHas(s.url)) : WEB_SITES.filter(s => s.cat===webState.curCat);
     const countEl = ig$('web-count');
     if(countEl) countEl.textContent = filtered.length + '개';
     empty.classList.toggle('show', filtered.length===0);
@@ -4166,9 +4185,18 @@ function _fmtTime(s){
         </div>
         <div class="web-card-foot">
           <span class="web-card-url">${esc(shortUrl(s.url))}</span>
-          <span class="web-card-arrow">›</span>
+          <span class="web-fav-btn ${wfHas(s.url)?'on':''}" data-url="${esc(s.url)}" title="즐겨찾기">★</span>
         </div>`;
-      card.addEventListener('click', function(){
+      card.addEventListener('click', function(e){
+        const fb = e.target.closest('.web-fav-btn');
+        if(fb){
+          e.stopPropagation();
+          wfToggle(s.url);
+          fb.classList.toggle('on', wfHas(s.url));
+          // 즐겨찾기 탭에서 삭제하면 목록 갱신
+          if(webState.curCat==='⭐ 즐겨찾기') renderWebList();
+          return;
+        }
         openExternalUrl(s.url, {
           module:'web',
           cat:webState.curCat,
@@ -5178,7 +5206,31 @@ function ensureQnaButton(){var cover=el('cover');if(!cover)return;if(!el('qna-co
 function isPrayerOpen(){var p=el('prayer-view');return!!(p&&p.classList.contains('open'))}function isPrayerDetailOpen(){var d=el('prayer-detail');return!!(d&&d.classList.contains('show'))}function armState(state){try{history.pushState(state||{oai:1},'',baseHref())}catch(_){}}function showPrayerList(){var d=el('prayer-detail');if(d)d.classList.remove('show');var lv=el('prayer-list-view');if(lv){try{lv.style.scrollBehavior='auto';lv.scrollTop=0;lv.style.scrollBehavior=''}catch(_){}}}function closePrayerCover(){var d=el('prayer-detail');if(d)d.classList.remove('show');var p=el('prayer-view');if(p)p.classList.remove('open');if(typeof window.goToCover==='function')window.goToCover();else{document.documentElement.classList.remove('app-active','parish-mode','retreat-mode');var c=el('cover');if(c){c.style.display='';c.style.opacity=''}}}function prayerBackHandler(e){if(!isPrayerOpen())return false;try{e&&e.preventDefault&&e.preventDefault();e&&e.stopPropagation&&e.stopPropagation();e&&e.stopImmediatePropagation&&e.stopImmediatePropagation()}catch(_){}if(isPrayerDetailOpen()){showPrayerList();setTimeout(function(){armState({oai_prayer_list:1})},10)}else{closePrayerCover();setTimeout(function(){armState({oai_cover:1})},10)}return true}/* OAI disabled duplicate final capture prayer handler */function wrapPrayerHistory(){var op=window.openPrayerBook;if(typeof op==='function'&&!op.__oaiFinalBack){window.openPrayerBook=function(){var r=op.apply(this,arguments);setTimeout(function(){showPrayerList();armState({oai_prayer_list:1});applyScale()},40);return r};window.openPrayerBook.__oaiFinalBack=true}var od=window.prOpenDetail;if(typeof od==='function'&&!od.__oaiFinalBack){window.prOpenDetail=function(){var r=od.apply(this,arguments);setTimeout(function(){armState({oai_prayer_detail:1});applyScale()},20);return r};window.prOpenDetail.__oaiFinalBack=true}}
 function injectDioceseFont(){var f=el('diocese-frame');if(!f||!f.contentWindow)return;var doc;try{doc=f.contentWindow.document}catch(_){return}if(!doc||!doc.documentElement)return;var scale=getPx()/DEFAULT;doc.documentElement.style.setProperty('--app-font-scale',String(scale));var st=doc.getElementById('oai-final-diocese-font-link-20260428');if(!st){st=doc.createElement('style');st.id='oai-final-diocese-font-link-20260428';st.textContent=':root{--app-font-scale:1}.hd h1{font-size:calc(22px*var(--app-font-scale))!important}.hd-sub{font-size:calc(11px*var(--app-font-scale))!important}.tab,.qbtn{font-size:calc(15px*var(--app-font-scale))!important}.lv-name,.lv-nm,.sd,.c-nm,.sot{font-size:calc(16px*var(--app-font-scale))!important}.lv-rg,.lv-full,.sg,.c-rg,.se,.lv-url,.si-r-url{font-size:calc(12px*var(--app-font-scale))!important}.lv-bdg,.lv-op{font-size:calc(11px*var(--app-font-scale))!important}.lv-parish-count,.oai-parish-count{font-size:calc(8px*var(--app-font-scale))!important;font-weight:400!important;letter-spacing:0!important;gap:0!important;white-space:nowrap!important}.lv-parish-count b,.oai-parish-count b{font-weight:400!important;margin:0!important}.card h3{font-size:calc(17px*var(--app-font-scale))!important}.card .c-r,.card button,.card a{font-size:calc(13px*var(--app-font-scale))!important}';(doc.head||doc.documentElement).appendChild(st)}try{doc.querySelectorAll('a[href]').forEach(function(a){a.setAttribute('target','_top');a.setAttribute('rel','noopener')})}catch(_){}}
 var oldOpenDiocese=window.openDioceseView;if(typeof oldOpenDiocese==='function'&&!oldOpenDiocese.__oaiFinalStable){window.openDioceseView=function(){var r=oldOpenDiocese.apply(this,arguments);[80,200,500,1000,1600].forEach(function(ms){setTimeout(injectDioceseFont,ms)});return r};window.openDioceseView.__oaiFinalStable=true}
-function relayout(){try{if(typeof relayoutTrailMap==='function'){relayoutTrailMap(0);relayoutTrailMap(180);relayoutTrailMap(420)}}catch(_){}applyScale()}var ow=window.openWebView;if(typeof ow==='function'&&!ow.__oaiFull){window.openWebView=function(){var r=ow.apply(this,arguments);setTimeout(relayout,60);setTimeout(relayout,300);return r};window.openWebView.__oaiFull=true}var ot=window.openTrailView;if(typeof ot==='function'&&!ot.__oaiFull){window.openTrailView=function(){var r=ot.apply(this,arguments);setTimeout(relayout,60);setTimeout(relayout,300);setTimeout(relayout,700);return r};window.openTrailView.__oaiFull=true}document.addEventListener('click',function(e){var a=e.target&&e.target.closest&&e.target.closest('a[href]');if(a&&a.closest('#web-view,#trail-view,#diocese-view,#qna-view'))a.setAttribute('target','_top')},true);
+function relayout(){try{if(typeof relayoutTrailMap==='function'){relayoutTrailMap(0);relayoutTrailMap(180);relayoutTrailMap(420)}}catch(_){}applyScale()}var ow=window.openWebView;if(typeof ow==='function'&&!ow.__oaiFull){window.openWebView=function(){var r=ow.apply(this,arguments);setTimeout(relayout,60);setTimeout(relayout,300);return r};window.openWebView.__oaiFull=true}var ot=window.openTrailView;if(typeof ot==='function'&&!ot.__oaiFull){window.openTrailView=function(){var r=ot.apply(this,arguments);setTimeout(relayout,60);setTimeout(relayout,300);setTimeout(relayout,700);return r};window.openTrailView.__oaiFull=true}document.addEventListener('click',function(e){
+  var a=e.target&&e.target.closest&&e.target.closest('a[href]');
+  if(!a) return;
+  var h=a.getAttribute('href')||'';
+  if(!h||h==='#'||/^javascript:/i.test(h)) return;
+  // 내부 모듈 뷰 내 링크 클릭 → 상태 저장 후 이동
+  var inModule=a.closest('#diocese-view,#web-view,#trail-view');
+  if(inModule){
+    e.preventDefault();
+    e.stopPropagation();
+    // 상태 저장 (openExternalUrl 또는 saveCoreReturnState)
+    if(typeof saveReturnState==='function'){
+      var mod=inModule.id.replace('-view','');
+      saveReturnState({module:mod,cat:(typeof webState!=='undefined'?webState.curCat:'전체')});
+    } else if(typeof saveCoreReturnState==='function'){
+      saveCoreReturnState({});
+    }
+    // 외부 링크는 새탭, 내부(diocese.html 등)은 현재창
+    if(/^https?:\/\//i.test(h)){
+      window.open(h,'_blank','noopener,noreferrer');
+    } else {
+      location.href=h;
+    }
+  }
+},true);
 document.addEventListener('DOMContentLoaded',function(){ensureQnaButton();wrapPrayerHistory();applyScale()});setTimeout(function(){ensureQnaButton();wrapPrayerHistory();applyScale()},0);setInterval(function(){var v=el('diocese-view');if(v&&v.classList.contains('open'))injectDioceseFont()},1200)})();
 
 (function(){
