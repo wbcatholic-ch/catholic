@@ -629,18 +629,6 @@ async function submitPost() {
     errEl.textContent = '저장 실패: ' + e.message; errEl.style.display = 'block';
   }
 }
-
-/* ═══════════════════ 유틸 ═══════════════════ */
-function escHtml(str) {
-  return (str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-    .replace(/"/g,'&quot;').replace(/\n/g,'<br>');
-}
-
-/* ═══════════════════ 초기화 ═══════════════════ */
-buildFilterBar();
-buildCatRow();
-subscribeList();
-</script>
 <div style="
   font-size:11px;
   color:#666;
@@ -652,6 +640,18 @@ subscribeList();
   개인정보는 수집하지 않으며,<br>
   문의 시 입력된 내용은 Firebase를 통해 저장됩니다.
 </div>
+/* ═══════════════════ 유틸 ═══════════════════ */
+function escHtml(str) {
+  return (str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/\n/g,'<br>');
+}
+
+/* ═══════════════════ 초기화 ═══════════════════ */
+buildFilterBar();
+buildCatRow();
+subscribeList();
+</script>
+
 
   
 </body>
