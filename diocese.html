@@ -1469,11 +1469,9 @@ function makeRow(disp,diocese,overlapDongs){
   const ico=document.createElement('div');ico.className='lv-ico';
   ico.textContent='⛪';
   const info=document.createElement('div');info.className='lv-info';
-  const nm=document.createElement('div');nm.className='lv-name';nm.textContent=(diocese==='군종교구')?diocese:(diocese+' · '+(m.parishes||0)+'개 본당');
+  const nm=document.createElement('div');nm.className='lv-name';nm.textContent=diocese;
   const rg=document.createElement('div');rg.className='lv-rg';rg.innerHTML='📍 '+(disp||m.region);
   info.appendChild(nm);info.appendChild(rg);
-  const pc=document.createElement('div');pc.className='lv-parish-count';
-      pc.innerHTML='<span>본당</span><b>'+(m.parishes||0)+'</b><span>개</span>';
   // 세부지역: 중복지역일 때만 표시
   if(overlapDongs&&overlapDongs.length){
     const dt=document.createElement('div');dt.className='lv-det';
