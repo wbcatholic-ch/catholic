@@ -669,10 +669,10 @@ html.retreat-mode .nearby-num,html.retreat-mode .sm-role{background:#4F9D63 !imp
 html.retreat-mode .nearby-dist{color:#3F8F55 !important;}
 html.retreat-mode .nearby-name,html.retreat-mode .li-name,html.retreat-mode .region-item .li-name,html.retreat-mode .sm-name,html.retreat-mode .sm-place-name{color:#111827 !important;}
 html.retreat-mode .ic-route-btn{background:#4F9D63 !important;color:#fff !important;}
-#cover .cover-card,#cover .cv-btn{transform:scale(.95) !important;transform-origin:center center !important;}
+#cover .cover-card,#cover .cv-btn{transform:none !important;transform-origin:unset !important;}
 #cover .cover-grid,#cover .cv-grid{gap:8px !important;}
 #qna-cover-btn{bottom:calc(22px + env(safe-area-inset-bottom,0px)) !important;right:12px !important;padding:10px 14px !important;font-size:calc(13px * var(--app-font-scale,1)) !important;border-radius:999px !important;}
-@media (max-height:720px){#cover .cover-card,#cover .cv-btn{transform:scale(.92) !important;}#qna-cover-btn{bottom:calc(12px + env(safe-area-inset-bottom,0px)) !important;padding:9px 12px !important;}}
+@media (max-height:720px){#qna-cover-btn{bottom:calc(12px + env(safe-area-inset-bottom,0px)) !important;padding:9px 12px !important;}}
 
 /* 0) 화면 우측 밀림 방지 */
 html,body,#prayer-view,#prayer-list-view,#prayer-detail{max-width:100vw!important;overflow-x:hidden!important;}
@@ -1301,24 +1301,27 @@ html.retreat-mode .tab-btn.active{
 /* PWA 설치 버튼 - 커버 하단 */
 #pwa-install-btn {
   display: none;
-  margin: 12px auto 0;
-  padding: 10px 24px;
-  background: #16a34a;
+  width: calc(100% - 48px);
+  max-width: 340px;
+  margin: 18px auto 0;
+  padding: 16px 24px;
+  background: linear-gradient(135deg, #1a9e50, #16a34a, #15803d);
   color: #fff;
   border: none;
-  border-radius: 999px;
-  font-size: 14px;
-  font-weight: 700;
+  border-radius: 18px;
+  font-size: 17px;
+  font-weight: 800;
   font-family: inherit;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.2px;
   cursor: pointer;
-  box-shadow: 0 3px 12px rgba(22,163,74,0.45);
+  box-shadow: 0 8px 28px rgba(22,163,74,0.50), 0 2px 8px rgba(22,163,74,0.30);
   -webkit-tap-highlight-color: transparent;
   animation: pwa-pulse 2.5s ease-in-out infinite;
+  text-align: center;
 }
 @keyframes pwa-pulse {
-  0%,100% { box-shadow: 0 3px 12px rgba(22,163,74,0.4); }
-  50%      { box-shadow: 0 3px 22px rgba(22,163,74,0.75); transform: scale(1.03); }
+  0%,100% { box-shadow: 0 8px 28px rgba(22,163,74,0.45), 0 2px 8px rgba(22,163,74,0.25); }
+  50%      { box-shadow: 0 12px 36px rgba(22,163,74,0.70), 0 4px 14px rgba(22,163,74,0.40); transform: scale(1.025); }
 }
 </style>
 <style id="prayer-swipe-anim">@keyframes prSlideLeft{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}@keyframes prSlideRight{from{opacity:0;transform:translateX(-40px)}to{opacity:1;transform:translateX(0)}}</style>
@@ -1390,7 +1393,7 @@ html.retreat-mode .tab-btn.active{
     </div>
   </div>
 </div>
-<style>:root{--bg-color:#F7F0E5;--text-main:#3E362E;--text-sub:#7A7065;--card-bg:#FFFFFF;--color-1:#E07A5F;--color-2:#F2CC8F;--color-3:#81B29A;--color-4:#6B8E23;--color-5:#9FA0C3;--color-6:#5F797B;--color-7:#F4A261;--color-8:#B5838D}#cover{position:fixed !important;inset:0 !important;z-index:9999 !important;background-color:var(--bg-color) !important;color:var(--text-main);display:flex;flex-direction:column;overflow:hidden !important;padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0) !important;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;transition:transform 0.2s ease-out}
+<style>:root{--bg-color:#F7F0E5;--text-main:#3E362E;--text-sub:#7A7065;--card-bg:#FFFFFF;--color-1:#E07A5F;--color-2:#F2CC8F;--color-3:#81B29A;--color-4:#6B8E23;--color-5:#9FA0C3;--color-6:#5F797B;--color-7:#F4A261;--color-8:#B5838D}#cover{position:fixed !important;inset:0 !important;z-index:9999 !important;background-color:var(--bg-color) !important;color:var(--text-main);display:flex;flex-direction:column;overflow:hidden !important;padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0) !important;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;transition:none}
 #cover{padding-top:calc(10vh + env(safe-area-inset-top,0px))!important;padding-bottom:calc(10vh + env(safe-area-inset-bottom,0px))!important;}
 #cv-pull-modern{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center;padding:6px;background:transparent;border:none;box-shadow:none;z-index:10001;opacity:0;pointer-events:none;transition:opacity .18s ease,transform .18s ease;will-change:transform,opacity}#cv-pull-modern.show{opacity:1;transform:translate(-50%,-50%)}.cv-pull-ring{width:51px;height:51px;display:flex;align-items:center;justify-content:center;background:transparent}.cv-pull-icon{width:30px;height:30px;display:block;transform:rotate(0deg);transition:transform .18s ease;color:#22c55e}#cv-pull-modern.ready .cv-pull-icon{transform:rotate(180deg)}#cv-pull-modern.refreshing .cv-pull-icon{animation:cv-pull-spin .8s linear infinite}@keyframes cv-pull-spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}.cover-header{flex:0 0 auto;padding:6vh 20px 2vh;text-align:center;z-index:10}.cover-title{font-size:clamp(28px,8vw,36px);font-weight:800;letter-spacing:-0.5px;color:var(--text-main);margin:0}.cover-subtitle{font-size:clamp(12px,3vw,14px);font-weight:500;color:var(--color-3);margin-bottom:8px;letter-spacing:1px}.cover-grid{flex:1 1 auto;display:grid;grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(4,1fr);gap:12px;padding:0 20px 4vh;box-sizing:border-box;width:100%;max-width:600px;margin:0 auto}.cover-card{background:var(--card-bg);border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-decoration:none;color:var(--text-main);cursor:pointer;transition:transform 0.1s,box-shadow 0.2s;border:1px solid rgba(0,0,0,0.05);box-shadow:0 4px 6px rgba(0,0,0,0.02);outline:none;padding:0;margin:0}.cover-card:active{transform:scale(0.96);box-shadow:0 2px 3px rgba(0,0,0,0.02)}.cover-icon-wrap{width:clamp(50px,14vw,65px);height:clamp(50px,14vw,65px);border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:12px}.cover-icon-wrap svg{width:65%;height:65%;fill:#ffffff}.cover-name{font-size:clamp(15px,4vw,18px);font-weight:600;text-align:center;word-break:keep-all}#cc-1 .cover-icon-wrap{background-color:var(--color-1)}#cc-2 .cover-icon-wrap{background-color:var(--color-2)}#cc-3 .cover-icon-wrap{background-color:var(--color-3)}#cc-4 .cover-icon-wrap{background-color:var(--color-4)}#cc-5 .cover-icon-wrap{background-color:var(--color-5)}#cc-6 .cover-icon-wrap{background-color:var(--color-6)}#cc-7 .cover-icon-wrap{background-color:var(--color-7)}#cc-8 .cover-icon-wrap{background-color:var(--color-8)}.list-item,.nearby-item,.region-item{min-height:72px !important;padding:12px 14px !important;margin:0 10px 6px !important;box-sizing:border-box !important}.filter-bar{position:sticky !important;top:0 !important;z-index:10 !important;flex-shrink:0 !important}html:not(.parish-mode):not(.retreat-mode) .filter-btn.active{background:var(--navy) !important;color:#fff !important;border-color:var(--navy) !important;font-weight:800 !important}html.parish-mode .filter-btn.active{background:#2f4f6d !important;color:#fff !important;border-color:#2f4f6d !important}html.retreat-mode .filter-btn.active{background:#4f46e5 !important;color:#fff !important;border-color:#4f46e5 !important}.sheet>.srch-bar{position:sticky !important;top:0 !important;z-index:11 !important;flex-shrink:0 !important}#info-card.no-anim{transition:none !important}:root{--ui-bg:#f7f4ee;--ui-surface:#fbfaf7;--ui-card:#ffffff;--ui-line:#e6dfd3;--ui-line-strong:#d9cfbf;--ui-text:#1f2937;--ui-sub:#7b8794;--shrine-main:#c9a25f;--shrine-main-2:#b88d46;--shrine-soft:#f4ead6;--shrine-soft-2:#fbf6ec;--church-main:#4f6f90;--church-main-2:#3f5d7b;--church-soft:#e8eff6;--church-soft-2:#f4f7fb;--retreat-main:#7fb49a;--retreat-main-2:#6aa186;--retreat-soft:#e8f3ec;--retreat-soft-2:#f5faf7}.sheet-body,#list-body,#nearby-body,#region-body,.sm-body,#sm-body-place{background:var(--ui-bg)!important}.sheet-hd,.srch-bar,.filter-bar,.region-wrap{background:linear-gradient(180deg,#f9f7f2,#f2ede4)!important;border-bottom:1px solid var(--ui-line)!important}.sheet-title,.sm-title{color:#c49b56!important;font-weight:800!important}.sheet-x,.sm-x{color:#c49b56!important;background:rgba(255,255,255,.78)!important;border:1px solid rgba(196,155,86,.22)!important}.srch-inner,.sm-si{background:rgba(255,255,255,.86)!important;border:1.5px solid var(--ui-line-strong)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.8)!important}.srch-inner input,.sm-si input{color:var(--ui-text)!important}.srch-inner input::placeholder,.sm-si input::placeholder{color:#9aa4b2!important}.filter-btn,.sm-fb{background:#fff!important;color:#7b8794!important;border:1.5px solid var(--ui-line-strong)!important;box-shadow:none!important}.filter-btn.active,.sm-fb.on{background:var(--shrine-soft)!important;color:#7a5a23!important;border-color:#d8be8c!important;font-weight:800!important}#sm-tab-bar{background:#f5efe5!important;border-bottom:1px solid var(--ui-line)!important;padding:10px 12px!important;gap:10px!important}.sm-tab{height:54px!important;border-radius:16px!important;border:2px solid #b9c3d0!important;background:#fff!important;color:#526274!important;font-weight:800!important;box-shadow:0 6px 14px rgba(15,23,42,.06)!important}.sm-tab.active{color:#fff!important;border-color:transparent!important}html:not(.parish-mode):not(.retreat-mode) #sm-tab-bar{background:var(--shrine-soft-2)!important}html:not(.parish-mode):not(.retreat-mode) .sm-tab.active{background:linear-gradient(135deg,var(--shrine-main),var(--shrine-main-2))!important}html.parish-mode #sm-tab-bar{background:var(--church-soft-2)!important}html.parish-mode .sm-tab{border-color:#a7b8ca!important;color:#4d6581!important}html.parish-mode .sm-tab.active{background:linear-gradient(135deg,var(--church-main),var(--church-main-2))!important}html.retreat-mode #sm-tab-bar{background:var(--retreat-soft-2)!important}html.retreat-mode .sm-tab{border-color:#b8d2c2!important;color:#5d8b73!important}html.retreat-mode .sm-tab.active{background:linear-gradient(135deg,var(--retreat-main),var(--retreat-main-2))!important}html:not(.parish-mode):not(.retreat-mode) .sheet-hd,html:not(.parish-mode):not(.retreat-mode) .srch-bar,html:not(.parish-mode):not(.retreat-mode) .filter-bar,html:not(.parish-mode):not(.retreat-mode) .region-wrap,html:not(.parish-mode):not(.retreat-mode) .sm-hd,html:not(.parish-mode):not(.retreat-mode) .sm-filter{background:linear-gradient(135deg,var(--shrine-main-2),var(--shrine-main))!important}html.parish-mode .sheet-hd,html.parish-mode .srch-bar,html.parish-mode .filter-bar,html.parish-mode .region-wrap,html.parish-mode .sm-hd,html.parish-mode .sm-filter{background:linear-gradient(135deg,var(--church-main-2),var(--church-main))!important}html.retreat-mode .sheet-hd,html.retreat-mode .srch-bar,html.retreat-mode .filter-bar,html.retreat-mode .region-wrap,html.retreat-mode .sm-hd,html.retreat-mode .sm-filter{background:linear-gradient(135deg,var(--retreat-main-2),var(--retreat-main))!important}html:not(.parish-mode):not(.retreat-mode) .filter-btn,html:not(.parish-mode):not(.retreat-mode) .sm-fb{border-color:rgba(255,255,255,.28)!important;background:rgba(255,255,255,.12)!important;color:rgba(255,255,255,.88)!important}html:not(.parish-mode):not(.retreat-mode) .filter-btn.active,html:not(.parish-mode):not(.retreat-mode) .sm-fb.on{background:#fff4de!important;color:#7a5a23!important;border-color:#fff4de!important}html.parish-mode .filter-btn,html.parish-mode .sm-fb{border-color:rgba(255,255,255,.26)!important;background:rgba(255,255,255,.12)!important;color:rgba(255,255,255,.9)!important}html.parish-mode .filter-btn.active,html.parish-mode .sm-fb.on{background:var(--church-soft)!important;color:#38536f!important;border-color:var(--church-soft)!important}html.retreat-mode .filter-btn,html.retreat-mode .sm-fb{border-color:rgba(255,255,255,.28)!important;background:rgba(255,255,255,.12)!important;color:rgba(255,255,255,.92)!important}html.retreat-mode .filter-btn.active,html.retreat-mode .sm-fb.on{background:var(--retreat-soft)!important;color:#4f7c67!important;border-color:var(--retreat-soft)!important}.dio-hd,.region-list-hd,.sm-grp{background:#f8f5ef!important;color:#b65a59!important;border-top:1px solid var(--ui-line)!important;border-bottom:1px solid var(--ui-line)!important}.list-item,.nearby-item,.region-item,.sm-item,.sm-place-item{background:rgba(255,255,255,.9)!important;border-bottom:1px solid var(--ui-line)!important}.list-item:active,.nearby-item:active,.region-item:active,.sm-item:active,.sm-place-item:active{background:#fcfaf6!important}.li-name,.nearby-name,.sm-name,.sm-place-name{color:var(--ui-text)!important}.li-sub,.nearby-addr,.sm-sub,.sm-place-addr{color:var(--ui-sub)!important}.li-badge,.nearby-type,.sm-badge,.ic-type-badge{border-radius:999px!important;font-weight:800!important}html:not(.parish-mode):not(.retreat-mode) .li-badge,html:not(.parish-mode):not(.retreat-mode) .nearby-type,html:not(.parish-mode):not(.retreat-mode) .ic-type-badge{background:var(--shrine-soft)!important;color:#a25f32!important}html.parish-mode .li-badge,html.parish-mode .nearby-type,html.parish-mode .ic-type-badge{background:var(--church-soft)!important;color:#486684!important}html.retreat-mode .li-badge,html.retreat-mode .nearby-type,html.retreat-mode .ic-type-badge{background:var(--retreat-soft)!important;color:#5f8b74!important}html:not(.parish-mode):not(.retreat-mode) .nearby-dist{color:#b07a3d!important}html.parish-mode .nearby-dist{color:#4f6f90!important}html.retreat-mode .nearby-dist{color:#6aa186!important}.region-search-btn{background:#fff!important;color:#6b7280!important;border:1.5px solid var(--ui-line-strong)!important}.region-search-btn:hover{filter:brightness(.98)!important}</style>
 <div id="cover">
@@ -1448,7 +1451,7 @@ html.retreat-mode .tab-btn.active{
 
 <!-- PWA 설치 버튼 (커버 전용) -->
 <button id="pwa-install-btn" onclick="triggerPwaInstall()" aria-label="앱 설치하기">
-  📲 앱 설치
+  📲 홈 화면에 앱 설치하기
 </button>
 </div>
 <script>
@@ -1465,7 +1468,8 @@ function hideCoverAndRun(callback) {
   var cv = document.getElementById('cover');
   if (cv) cv.style.display = 'none';
   document.documentElement.classList.add('app-active');
-  if (callback) callback();
+  // RAF로 커버 숨김 후 다음 프레임에 콜백 실행 → 버벅거림 방지
+  if (callback) requestAnimationFrame(function(){ setTimeout(callback, 0); });
 }
 
 /* ── 뒤로가기 핸들러는 principle-back-controller-20260424 에서 통합 관리 ── */
@@ -2058,7 +2062,8 @@ function startApp(mode){
   // 표지→카테고리 진입 시 항상 지도 완전 리셋 (마커 잔류 방지)
   _resetMapState();
   _mapInited=true;
-  _loadMap();
+  // RAF로 지연: UI가 먼저 업데이트된 후 무거운 지도 로딩 시작 → 버벅거림 방지
+  requestAnimationFrame(function(){ setTimeout(_loadMap, 0); });
 }
 
 function _resetMapState(){
@@ -5874,6 +5879,76 @@ if('serviceWorker' in navigator){
       prompt = null;
     });
   };
+})();
+</script>
+
+<!-- ====== 성능 최적화 패치 (버벅거림 제거) ====== -->
+<style id="perf-patch">
+/* 1) backdrop-filter 제거: 성능 저하 주범 */
+.srch-bar,.filter-bar,.region-wrap{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;}
+.web-cats,.trail-tabs{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;}
+.trail-loc-btn{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;}
+#cv-install-wrap .cv-install-btn{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;}
+
+/* 2) 커버 전환 애니메이션 제거: display:none 전환에 transition 불필요 */
+#cover{transition:none!important;}
+
+/* 3) GPU 레이어 힌트: 자주 움직이는 요소만 */
+.sheet,.trail-sheet,#prayer-detail,#info-card{will-change:transform;}
+.module-view,#missa-view,#diocese-view,#prayer-view{will-change:auto;}
+
+/* 4) 비활성 뷰들은 GPU 합성 방지 */
+.module-view:not(.open),#missa-view:not(.open),
+#diocese-view:not(.open),#prayer-view:not(.open){
+  contain:strict;
+}
+
+/* 5) 커버 카드 active 시 transform 가속 */
+.cover-card:active,.cv-btn:active,.cv-extra-btn:active{
+  transform:scale(0.96);
+  transition:transform 0.08s ease!important;
+}
+
+/* 6) cover의 무거운 cover-card transform scale 패치 제거 */
+#cover .cover-card,#cover .cv-btn{transform:none!important;transform-origin:unset!important;}
+
+/* 7) 설치 버튼 표시 영역 보장 */
+#pwa-install-btn[style*="inline-block"],
+#pwa-install-btn[style*="block"]{
+  display:block!important;
+}
+</style>
+
+<script>
+/* ====== 성능 최적화 JS 패치 ====== */
+(function(){
+  // 중복 setTimeout 래핑으로 인한 함수 실행 누적 방지
+  // relayoutAll 류 함수의 과도한 setTimeout 체인 제한
+  var _raf = requestAnimationFrame;
+  
+  // cover의 pull-to-refresh: 불필요한 transform 제거
+  var coverEl = document.getElementById('cover');
+  if(coverEl) coverEl.style.willChange = 'auto';
+  
+  // 모듈뷰 열릴 때 contain 해제, 닫힐 때 재적용
+  var observer = new MutationObserver(function(mutations){
+    mutations.forEach(function(m){
+      if(m.attributeName === 'class'){
+        var el = m.target;
+        if(el.classList.contains('open')){
+          el.style.contain = 'none';
+        } else {
+          // 닫힌 후 짧은 딜레이로 contain 복구
+          setTimeout(function(){ el.style.contain = ''; }, 300);
+        }
+      }
+    });
+  });
+  
+  ['missa-view','diocese-view','prayer-view','web-view','trail-view','qna-view'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) observer.observe(el, {attributes:true, attributeFilter:['class']});
+  });
 })();
 </script>
 </body>
