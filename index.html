@@ -2440,47 +2440,22 @@ function _focusMarkerAboveInfoCard(item){
   if(!_map || !item || !item.lat || !item.lng) return;
   try{
     const pos = new _LL(item.lat,item.lng);
+    const mapEl = $('map-wrap') || $('map');
+    const mapH = (mapEl && (mapEl.clientHeight || mapEl.offsetHeight)) || window.innerHeight || 700;
+    const proj = _map.getProjection && _map.getProjection();
+    // 핵심: 인포카드 높이를 매번 계산하지 않고, 처음부터 화면 정중앙보다 조금 위를 중심으로 둔다.
+    // 반복 panTo / setTimeout 제거 → 버벅임 방지.
+    if(proj && proj.containerPointFromCoords && proj.coordsFromContainerPoint){
+      const p = proj.containerPointFromCoords(pos);
+      const centerY = Math.round(mapH / 2);
+      const targetY = Math.round(mapH * 0.34); // 화면 위쪽 34% 지점에 노랑마커 배치
+      const point = (window.kakao && kakao.maps && kakao.maps.Point)
+        ? new kakao.maps.Point(p.x, p.y + (centerY - targetY))
+        : {x:p.x, y:p.y + (centerY - targetY)};
+      const newCenter = proj.coordsFromContainerPoint(point);
+      if(newCenter){ _map.setCenter(newCenter); return; }
+    }
     _map.setCenter(pos);
-    // 인포카드가 올라온 뒤 노랑마커가 카드에 가리지 않도록
-    // 휴대폰 셀카 카메라 방향(화면 위쪽)으로 충분히 올려 보정한다.
-    setTimeout(()=>{
-      try{
-        const cardEl=$('info-card');
-        const mapEl=$('map-wrap') || $('map');
-        if(!cardEl||!mapEl||!_map||!cardEl.classList.contains('open')) return;
-        const cardH=cardEl.offsetHeight||0;
-        const mapH=mapEl.offsetHeight||window.innerHeight;
-        if(cardH<10 || mapH<160) return;
-        const proj=_map.getProjection();
-        if(!proj || !proj.containerPointFromCoords || !proj.coordsFromContainerPoint) return;
-        const pt=proj.containerPointFromCoords(pos);
-        const tabH=($('tabbar')?.offsetHeight)||0;
-        const safeTop=Math.max(54, tabH+18);
-        const safeBottom=Math.max(safeTop+150, mapH-cardH-34);
-        const visibleH=Math.max(150, safeBottom-safeTop);
-        // 마커를 보이는 영역의 위쪽 30% 지점에 둔다.
-        const targetY=safeTop + visibleH*0.30;
-        const centerY=mapH/2;
-        const newCenter=proj.coordsFromContainerPoint({x:pt.x,y:pt.y+(centerY-targetY)});
-        _map.setCenter(newCenter);
-      }catch(e){}
-    }, 220);
-    setTimeout(()=>{
-      try{
-        const cardEl=$('info-card');
-        if(cardEl&&cardEl.classList.contains('open')){
-          const proj=_map.getProjection();
-          const mapEl=$('map-wrap') || $('map');
-          const mapH=mapEl.offsetHeight||window.innerHeight;
-          const tabH=($('tabbar')?.offsetHeight)||0;
-          const cardH=cardEl.offsetHeight||0;
-          const pt=proj.containerPointFromCoords(pos);
-          const targetY=Math.max(60, tabH+24) + Math.max(150, mapH-cardH-Math.max(60,tabH+24)-34)*0.30;
-          const newCenter=proj.coordsFromContainerPoint({x:pt.x,y:pt.y+(mapH/2-targetY)});
-          _map.setCenter(newCenter);
-        }
-      }catch(e){}
-    }, 520);
   }catch(e){}
 }
 
@@ -3465,7 +3440,6 @@ function resetRoute(){
 
   // 도착지(노란 마커 위치)가 있으면 그 위치로 이동 + 노란 마커 표시
   if(destItem && destItem.lat && _map){
-    try{ _map.setCenter(new _LL(destItem.lat, destItem.lng)); }catch(e){}
     // 노란 선택 마커 복원
     if(_mode==='shrine' && destItem.idx>=0 && _markers[destItem.idx]){
       _markers[destItem.idx].marker.setImage(_mkrImg('#FFE500', true));
@@ -3483,7 +3457,7 @@ function resetRoute(){
     try{
       const _items=_getCurrentItems();
       const _idx=(typeof destItem.idx==='number' && destItem.idx>=0) ? destItem.idx : _items.findIndex(p=>p.lat===destItem.lat && p.lng===destItem.lng);
-      if(_idx>=0 && _items[_idx]) setTimeout(()=>_showInfoCard(_items[_idx], _idx), 60);
+      if(_idx>=0 && _items[_idx]) { _showInfoCard(_items[_idx], _idx); _focusMarkerAboveInfoCard(_items[_idx]); }
     }catch(e){}
   }
 }
@@ -5554,20 +5528,6 @@ window.initPrayerView = function(){
   },true);
 })();
 
-(function(){
-  if(window.__OAI_SAFE_MAP_UX_20260428__) return;
-  window.__OAI_SAFE_MAP_UX_20260428__ = true;
-  function byId(id){return document.getElementById(id);}
-  function getLL(lat,lng){try{if(typeof _LL==='function')return new _LL(lat,lng);}catch(_){} try{if(window.kakao&&kakao.maps)return new kakao.maps.LatLng(lat,lng);}catch(_){} return null;}
-  function panMap(map,latlng){if(!map||!latlng)return;try{if(typeof map.panTo==='function')map.panTo(latlng);else map.setCenter(latlng);}catch(_){try{map.setCenter(latlng);}catch(__){}}}
-  function softZoom(map,item){try{if(!map||!item)return;var cur=typeof map.getLevel==='function'?map.getLevel():0;if(cur&&cur>6){try{map.setLevel(6,{animate:true,anchor:getLL(item.lat,item.lng)});}catch(_){try{map.setLevel(6);}catch(__){}}}}catch(_){}}
-  window._focusMarkerAboveInfoCard=function(item){
-    if(!window._map||!item||!item.lat||!item.lng)return;
-    var map=window._map;var pos=getLL(item.lat,item.lng);if(!pos)return;
-    try{softZoom(map,item);panMap(map,pos);setTimeout(function(){try{var cardEl=byId('info-card');var mapEl=byId('map-wrap');if(!cardEl||!mapEl||!map||!cardEl.classList.contains('open'))return;var cardH=cardEl.offsetHeight||0;var mapH=mapEl.offsetHeight||window.innerHeight;if(cardH<10||mapH<120)return;var proj=map.getProjection&&map.getProjection();if(!proj)return;var pt=proj.containerPointFromCoords(pos);var centerY=mapH/2;var tb=byId('tabbar');var visibleTop=(tb&&tb.offsetHeight)||60;var visibleBottom=Math.max(visibleTop+90,mapH-cardH-28);var targetY=visibleTop+Math.max(58,(visibleBottom-visibleTop)*0.30);var newCenter=proj.coordsFromContainerPoint({x:pt.x,y:pt.y+(centerY-targetY)});panMap(map,newCenter);}catch(_){}},220);}catch(_){}
-  };
-  if(typeof window._showInfoCard==='function'&&!window._showInfoCard.__oaiUxWrapped){var oldShow=window._showInfoCard;window._showInfoCard=function(item,idx){var r=oldShow.apply(this,arguments);try{setTimeout(function(){window._focusMarkerAboveInfoCard(item);},120);}catch(_){}return r;};window._showInfoCard.__oaiUxWrapped=true;}
-})();
 
 /* removed unstable duplicate patch: OAI_VERIFIED_PRAYER_SWIPE_CROSS_20260428__ */
 
@@ -5597,10 +5557,6 @@ window.initPrayerView = function(){
   function getMap(){try{if(typeof _map!=='undefined'&&_map)return _map;}catch(e){}return window._map||null;}
   function getLatLng(item){if(!item)return null;var lat=item.lat,lng=item.lng;if((lat==null||lng==null)&&item.coords){lat=item.coords.latitude||item.coords.lat;lng=item.coords.longitude||item.coords.lng;}lat=Number(lat);lng=Number(lng);return(isFinite(lat)&&isFinite(lng))?{lat:lat,lng:lng}:null;}
   function pan(map,pos){try{if(map&&typeof map.panTo==='function')map.panTo(pos);else if(map)map.setCenter(pos);}catch(e){try{map.setCenter(pos)}catch(_){}}}
-  function focusYellow(item){var map=getMap(),c=getLatLng(item);if(!map||!c)return;var pos=ll(c.lat,c.lng);if(!pos)return;try{map.setCenter(pos)}catch(_){pan(map,pos)}setTimeout(function(){try{var mapEl=el('map-wrap')||el('map'),card=el('info-card');if(!mapEl||!map||!map.getProjection)return;var proj=map.getProjection();if(!proj||!proj.containerPointFromCoords||!proj.coordsFromContainerPoint)return;var h=mapEl.offsetHeight||window.innerHeight||700;var tabH=(el('tabbar')&&el('tabbar').offsetHeight)||0;var cardH=(card&&card.classList.contains('open'))?(card.offsetHeight||0):0;var visibleTop=tabH;var visibleBottom=Math.max(visibleTop+240,h-cardH);var visibleH=Math.max(240,visibleBottom-visibleTop);var targetY=Math.round(visibleTop+visibleH*0.30);var centerY=Math.round(h/2);var pt=proj.containerPointFromCoords(pos);var newCenter=proj.coordsFromContainerPoint({x:pt.x,y:pt.y+(centerY-targetY)});pan(map,newCenter);}catch(e){}},180);}
-  try{_focusMarkerAboveInfoCard=focusYellow;}catch(e){window._focusMarkerAboveInfoCard=focusYellow;}
-  if(typeof window._showInfoCard==='function'&&!window._showInfoCard.__oaiPreciseV3){var oldShow=window._showInfoCard;window._showInfoCard=function(item,idx){var r=oldShow.apply(this,arguments);setTimeout(function(){focusYellow(item);},120);setTimeout(function(){focusYellow(item);},420);return r;};window._showInfoCard.__oaiPreciseV3=true;}
-  if(typeof window.selectItem==='function'&&!window.selectItem.__oaiPreciseV3){var oldSel=window.selectItem;window.selectItem=function(idx,opts){var r=oldSel.apply(this,arguments);try{var arr=(typeof _getCurrentItems==='function')?_getCurrentItems():null;var item=arr&&arr[idx];setTimeout(function(){focusYellow(item);},180);}catch(e){}return r;};window.selectItem.__oaiPreciseV3=true;}
   function ensureMilitaryParish(){try{if(typeof _RAW!=='undefined'&&Array.isArray(_RAW)&&!_RAW.some(function(r){return r&&r[1]==='ML';})){_RAW.push(['천주교 국군중앙주교좌성당','ML','서울 용산구 한강대로40길 46','02-798-2457','','https://www.gunjong.or.kr/',37.5295394,126.9717368]);}}catch(e){}}
   function boot(){ensureMilitaryParish();ensureCoverControls();setEmojiIcons();normalizeLabels(document);configureQna();applyScale();}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();window.addEventListener('load',function(){boot();setTimeout(boot,250);setTimeout(boot,900);},{once:true});document.addEventListener('click',function(){setTimeout(function(){normalizeLabels(document);configureQna();},80);},true);
@@ -6212,10 +6168,7 @@ html,body{overflow-x:hidden!important;overscroll-behavior-x:none!important;}
           else if(_mode==='retreat' && item && typeof _selectRetreatMarker==='function') _selectRetreatMarker(item);
         }
         if(item && typeof _showInfoCard==='function') _showInfoCard(item, idx);
-        if(item && typeof _focusMarkerAboveInfoCard==='function') setTimeout(function(){_focusMarkerAboveInfoCard(item);},80);
-        if(typeof _map!=='undefined' && _map && typeof _LL==='function'){
-          try{ _map.setCenter(new _LL(dest.lat,dest.lng)); }catch(e){}
-        }
+        if(item && typeof _focusMarkerAboveInfoCard==='function') _focusMarkerAboveInfoCard(item);
       }catch(e){}
     },90);
   }
@@ -6292,7 +6245,7 @@ html,body{overflow-x:hidden!important;overscroll-behavior-x:none!important;}
   function openNewTab(url){ if(!url) return; try{ var w=window.open(url,'_blank','noopener'); if(w) return; }catch(e){} try{ var a=document.createElement('a'); a.href=url; a.target='_blank'; a.rel='noopener'; document.body.appendChild(a); a.click(); setTimeout(function(){try{a.remove();}catch(e){}},300); }catch(e){ alert('새창 열기가 차단되었습니다. 브라우저의 팝업 허용을 확인해 주세요.'); } }
   window.openDioceseExternal=function(url,state){ if(!url) return; try{sessionStorage.setItem('oai_diocese_return_state_v3',JSON.stringify(state||{}));}catch(e){} openNewTab(url); };
   function rememberRouteDest(){ try{ if(_rE&&_rE.lat) return {lat:_rE.lat,lng:_rE.lng,idx:_rE.idx,name:_rE.name}; if(_curInfoItem&&_curInfoItem.item) return {lat:_curInfoItem.item.lat,lng:_curInfoItem.item.lng,idx:_curInfoItem.idx,item:_curInfoItem.item,name:_curInfoItem.item.name}; }catch(e){} return null; }
-  function restoreDest(dest){ if(!dest||!dest.lat) return; setTimeout(function(){ try{ var items=(typeof _getCurrentItems==='function')?_getCurrentItems():[]; var idx=(typeof dest.idx==='number'&&dest.idx>=0)?dest.idx:items.findIndex(function(p){return Number(p.lat)===Number(dest.lat)&&Number(p.lng)===Number(dest.lng);}); var item=idx>=0?items[idx]:dest.item; if(_map&&typeof _LL==='function') _map.setCenter(new _LL(dest.lat,dest.lng)); if(item&&typeof _showInfoCard==='function') _showInfoCard(item,idx); if(item&&typeof _focusMarkerAboveInfoCard==='function') setTimeout(function(){_focusMarkerAboveInfoCard(item);},70); }catch(e){} },80); }
+  function restoreDest(dest){ if(!dest||!dest.lat) return; setTimeout(function(){ try{ var items=(typeof _getCurrentItems==='function')?_getCurrentItems():[]; var idx=(typeof dest.idx==='number'&&dest.idx>=0)?dest.idx:items.findIndex(function(p){return Number(p.lat)===Number(dest.lat)&&Number(p.lng)===Number(dest.lng);}); var item=idx>=0?items[idx]:dest.item; if(item&&typeof _showInfoCard==='function') _showInfoCard(item,idx); if(item&&typeof _focusMarkerAboveInfoCard==='function') _focusMarkerAboveInfoCard(item); }catch(e){} },80); }
   window.oaiResetRouteThenClose=function(){ var dest=rememberRouteDest(); try{ if(typeof window.resetRoute==='function') window.resetRoute(); }catch(e){} try{_routeMode=false;}catch(e){} var rs=byId('sheet-route'); if(rs) rs.classList.remove('open'); restoreDest(dest); };
   function guardHorizontal(el){ if(!el||el.__oaiPreciseGuard) return; el.__oaiPreciseGuard=true; var sx=0,sy=0,h=false; el.addEventListener('touchstart',function(e){if(!e.touches||!e.touches[0])return; sx=e.touches[0].clientX; sy=e.touches[0].clientY; h=false;},{passive:true}); el.addEventListener('touchmove',function(e){if(!e.touches||!e.touches[0])return; var dx=e.touches[0].clientX-sx,dy=e.touches[0].clientY-sy; if(Math.abs(dx)>10&&Math.abs(dx)>Math.abs(dy)*1.15) h=true; if(h&&e.cancelable)e.preventDefault();},{passive:false}); }
   function init(){ ['prayer-view','prayer-list-view','prayer-detail','web-view','web-list'].forEach(function(id){guardHorizontal(byId(id));}); try{var active=document.querySelector('#web-cats .web-cat-btn.on'); if(active) active.scrollIntoView({behavior:'instant',block:'nearest',inline:'center'});}catch(e){} }
@@ -6355,368 +6308,10 @@ html,body{overflow-x:hidden!important;overscroll-behavior-x:none!important;}
 
 
 <!-- OAI FINAL PATCH 20260502-2: unified follow-swipe, keyboard autocomplete off, stronger yellow-marker focus -->
-<style id="oai-unified-follow-swipe-marker-20260502-2">
-/* 모든 모듈의 탭 이동 액션을 성지/성당/피정 시트처럼 좌우로 따라오는 느낌으로 통일 */
-@keyframes oaiFollowSwipeFromRight20260502{
-  0%{opacity:.72;transform:translate3d(42px,0,0);filter:brightness(1.03)}
-  72%{opacity:1;transform:translate3d(-6px,0,0);filter:brightness(1.01)}
-  100%{opacity:1;transform:translate3d(0,0,0);filter:none}
-}
-@keyframes oaiFollowSwipeFromLeft20260502{
-  0%{opacity:.72;transform:translate3d(-42px,0,0);filter:brightness(1.03)}
-  72%{opacity:1;transform:translate3d(6px,0,0);filter:brightness(1.01)}
-  100%{opacity:1;transform:translate3d(0,0,0);filter:none}
-}
-.oai-swipe-left{animation:oaiFollowSwipeFromRight20260502 .30s cubic-bezier(.2,.8,.2,1) both!important;will-change:transform,opacity,filter!important;}
-.oai-swipe-right{animation:oaiFollowSwipeFromLeft20260502 .30s cubic-bezier(.2,.8,.2,1) both!important;will-change:transform,opacity,filter!important;}
-#pr-list-ul.oai-swipe-left,#pr-list-ul.oai-swipe-right,
-#prayer-list-view.oai-swipe-left,#prayer-list-view.oai-swipe-right,
-#web-list.oai-swipe-left,#web-list.oai-swipe-right,
-#trail-list.oai-swipe-left,#trail-list.oai-swipe-right,
-#trail-view .trail-panel.oai-swipe-left,#trail-view .trail-panel.oai-swipe-right,
-.sheet-body.oai-swipe-left,.sheet-body.oai-swipe-right{overflow:hidden!important;backface-visibility:hidden!important;}
-#prayer-view,#web-view,#trail-view,.module-view,.sheet{overflow-x:hidden!important;overscroll-behavior-x:none!important;}
-</style>
-<script id="oai-unified-follow-swipe-marker-20260502-2">
-(function(){
-  'use strict';
-  if(window.__OAI_UNIFIED_SWIPE_KEYBOARD_MARKER_20260502_2__) return;
-  window.__OAI_UNIFIED_SWIPE_KEYBOARD_MARKER_20260502_2__ = true;
-  function byId(id){return document.getElementById(id);}
-  function flash(el, dir){
-    if(!el) return;
-    try{
-      el.classList.remove('oai-swipe-left','oai-swipe-right');
-      void el.offsetWidth;
-      el.classList.add(dir === 'right' ? 'oai-swipe-right' : 'oai-swipe-left');
-      setTimeout(function(){try{el.classList.remove('oai-swipe-left','oai-swipe-right');}catch(e){}}, 340);
-    }catch(e){}
-  }
-  window.oaiSwipeAction = function(el, dir){
-    if(!el){
-      el = byId('pr-list-ul') || byId('prayer-list-view');
-      if(byId('web-view') && byId('web-view').classList.contains('open')) el = byId('web-list');
-      if(byId('trail-view') && byId('trail-view').classList.contains('open')) el = byId('trail-list') || document.querySelector('#trail-view .trail-panel.on');
-    }
-    flash(el, dir);
-  };
-
-  /* 모든 키보드 자동완성/자동수정/자동대문자/맞춤법 제안 끄기 */
-  function disableKeyboardSuggestions(root){
-    root = root || document;
-    try{
-      root.querySelectorAll('input, textarea, [contenteditable="true"]').forEach(function(el){
-        el.setAttribute('autocomplete','off');
-        el.setAttribute('autocorrect','off');
-        el.setAttribute('autocapitalize','off');
-        el.setAttribute('spellcheck','false');
-        el.setAttribute('data-form-type','other');
-        el.setAttribute('data-lpignore','true');
-      });
-    }catch(e){}
-  }
-
-  /* 노랑마커가 인포카드 뒤에 숨지 않도록 실제 화면 좌표 기준으로 위쪽(셀카 카메라 방향) 보정 */
-  function focusAboveInfoCard(item){
-    if(!item || !item.lat || !item.lng) return;
-    try{
-      if(typeof _map === 'undefined' || !_map || typeof _LL !== 'function') return;
-      var pos = new _LL(Number(item.lat), Number(item.lng));
-      var mapEl = byId('map-wrap') || byId('map');
-      var cardEl = byId('info-card');
-      if(!mapEl) return;
-      try{ if(_map.relayout) _map.relayout(); }catch(e){}
-      // OAI disabled: old immediate centering caused visible jank. Final patch handles one-shot centering.
-      [].forEach(function(delay){
-        setTimeout(function(){
-          try{
-            cardEl = byId('info-card');
-            mapEl = byId('map-wrap') || byId('map');
-            if(!_map || !mapEl || !cardEl || !cardEl.classList.contains('open')) return;
-            var proj = _map.getProjection && _map.getProjection();
-            if(!proj || !proj.containerPointFromCoords || !proj.coordsFromContainerPoint) return;
-            var mapH = mapEl.clientHeight || mapEl.offsetHeight || window.innerHeight;
-            var mapW = mapEl.clientWidth || mapEl.offsetWidth || window.innerWidth;
-            var cardH = Math.min(cardEl.offsetHeight || Math.round(mapH * 0.52), Math.round(mapH * 0.58));
-            var tabH = (byId('tabbar') && byId('tabbar').offsetHeight) || 0;
-            var topSafe = Math.max(tabH + 24, 78);
-            var bottomLimit = Math.max(topSafe + 120, mapH - cardH - 42);
-            var visibleH = Math.max(130, bottomLimit - topSafe);
-            // 보이는 지도 영역의 위쪽 28% 지점으로 마커를 올려 카드와 겹치지 않게 한다.
-            var targetX = mapW / 2;
-            var targetY = topSafe + visibleH * 0.28;
-            var pt = proj.containerPointFromCoords(pos);
-            var centerX = mapW / 2;
-            var centerY = mapH / 2;
-            var qx = pt.x + (centerX - targetX);
-            var qy = pt.y + (centerY - targetY);
-            var newCenter = proj.coordsFromContainerPoint({x:qx, y:qy});
-            if(newCenter) _map.setCenter(newCenter);
-          }catch(e){}
-        }, delay);
-      });
-    }catch(e){}
-  }
-  window.oaiFocusMarkerAboveInfoCard = focusAboveInfoCard;
-  try{
-    var oldFocus = window._focusMarkerAboveInfoCard || (typeof _focusMarkerAboveInfoCard === 'function' ? _focusMarkerAboveInfoCard : null);
-    window._focusMarkerAboveInfoCard = _focusMarkerAboveInfoCard = function(item){ focusAboveInfoCard(item); };
-  }catch(e){}
-
-  // 인포카드가 올라올 때마다 자동으로 보정해서, 다른 setCenter 호출이 뒤에 와도 다시 잡는다.
-  function wrapShowInfoCard(){
-    try{
-      if(typeof _showInfoCard !== 'function' || _showInfoCard.__oaiMarkerFocusWrapped) return;
-      var old = _showInfoCard;
-      _showInfoCard = function(item, idx){
-        var r = old.apply(this, arguments);
-        try{ focusAboveInfoCard(item); }catch(e){}
-        return r;
-      };
-      _showInfoCard.__oaiMarkerFocusWrapped = true;
-      window._showInfoCard = _showInfoCard;
-    }catch(e){}
-  }
-
-  // resetRoute 내부/외부에서 원좌표 setCenter가 뒤늦게 실행되는 경우를 다시 보정한다.
-  function wrapResetRoute(){
-    try{
-      if(typeof resetRoute !== 'function' || resetRoute.__oaiMarkerFocusResetWrapped) return;
-      var old = resetRoute;
-      resetRoute = function(){
-        var destItem = null;
-        try{
-          if(typeof _rE !== 'undefined' && _rE && _rE.lat){
-            var items = (typeof _getCurrentItems === 'function') ? _getCurrentItems() : [];
-            var idx = (typeof _rE.idx === 'number' && _rE.idx >= 0) ? _rE.idx : items.findIndex(function(p){return Number(p.lat)===Number(_rE.lat)&&Number(p.lng)===Number(_rE.lng);});
-            destItem = idx >= 0 ? items[idx] : {lat:_rE.lat,lng:_rE.lng,name:_rE.name};
-          } else if(typeof _curInfoItem !== 'undefined' && _curInfoItem && _curInfoItem.item){
-            destItem = _curInfoItem.item;
-          }
-        }catch(e){}
-        var r = old.apply(this, arguments);
-        if(destItem) setTimeout(function(){ focusAboveInfoCard(destItem); }, 120);
-        return r;
-      };
-      resetRoute.__oaiMarkerFocusResetWrapped = true;
-      window.resetRoute = resetRoute;
-    }catch(e){}
-  }
-
-  function init(){
-    disableKeyboardSuggestions(document);
-    wrapShowInfoCard();
-    wrapResetRoute();
-  }
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
-  window.addEventListener('load', init);
-  window.addEventListener('pageshow', init);
-  try{
-    new MutationObserver(function(){ disableKeyboardSuggestions(document); wrapShowInfoCard(); wrapResetRoute(); })
-      .observe(document.documentElement, {childList:true, subtree:true});
-  }catch(e){}
-})();
-</script>
 
 
 
 <!-- OAI FINAL USER PATCH 20260502-3: info-card box uniform + qna-style refresh + all-non-map refresh + marker focus fix -->
-<style id="oai-final-box-refresh-marker-20260502-3">
-/* 인포카드 내부 구조/기능은 기준 파일 원본 동작 유지: 과수정 CSS 제거 */
-/* 커버 새로고침 표시: 문의·건의 버튼 계열 스타일로 변경 */
-#cv-pull-modern{
-  position:fixed!important;
-  top:50%!important;
-  left:50%!important;
-  transform:translate(-50%,-50%) scale(.96)!important;
-  min-width:152px!important;
-  height:48px!important;
-  padding:0 18px!important;
-  border-radius:999px!important;
-  background:linear-gradient(135deg,#1f2a44,#31446c)!important;
-  color:#fff!important;
-  border:1px solid rgba(255,255,255,.16)!important;
-  box-shadow:0 10px 24px rgba(31,42,68,.28)!important;
-  display:flex!important;
-  align-items:center!important;
-  justify-content:center!important;
-  gap:8px!important;
-  opacity:0!important;
-  pointer-events:none!important;
-  z-index:10001!important;
-  transition:opacity .18s ease, transform .18s ease!important;
-}
-#cv-pull-modern.show{
-  opacity:1!important;
-  transform:translate(-50%,-50%) scale(1)!important;
-}
-#cv-pull-modern .cv-pull-ring{
-  width:22px!important;
-  height:22px!important;
-  background:transparent!important;
-  flex:0 0 22px!important;
-}
-#cv-pull-modern .cv-pull-icon{
-  width:22px!important;
-  height:22px!important;
-  color:#fff!important;
-}
-#cv-pull-modern::after{
-  content:'당겨서 새로고침';
-  font-size:13px!important;
-  font-weight:800!important;
-  line-height:1!important;
-  letter-spacing:-.02em!important;
-  white-space:nowrap!important;
-}
-#cv-pull-modern.ready::after{content:'놓으면 새로고침';}
-#cv-pull-modern.refreshing::after{content:'새로고침 중';}
-</style>
-<script id="oai-final-box-refresh-marker-20260502-3">
-(function(){
-  'use strict';
-  if(window.__OAI_FINAL_BOX_REFRESH_MARKER_20260502_3__) return;
-  window.__OAI_FINAL_BOX_REFRESH_MARKER_20260502_3__ = true;
-  function $(id){return document.getElementById(id);}
-  function isEditable(t){return !!(t && (t.closest && t.closest('input,textarea,[contenteditable="true"')));}
-  function isMapArea(t){return !!(t && t.closest && (t.closest('#map-wrap') || t.closest('#map') || t.closest('#trail-map')));}
-  function visible(el){return !!(el && (el.offsetWidth || el.offsetHeight || el.getClientRects().length));}
-  function topScrollableFrom(target){
-    var n = target;
-    while(n && n !== document.body && n !== document.documentElement){
-      try{
-        var st = getComputedStyle(n);
-        var oy = st.overflowY;
-        if((oy === 'auto' || oy === 'scroll') && n.scrollHeight > n.clientHeight + 2) return n;
-      }catch(e){}
-      n = n.parentElement;
-    }
-    return document.scrollingElement || document.documentElement;
-  }
-  function canRefreshFrom(target){
-    if(isEditable(target) || isMapArea(target)) return false;
-    if($('srch-modal') && $('srch-modal').classList.contains('open')) return false;
-    // 지도 자체는 제외. 단, 모듈/목록/검색/기도문/웹사이트/관구교구 등 화면은 허용.
-    var inAllowed = target && target.closest && target.closest('#cover,.module-view,.sheet,#missa-view,#diocese-view,#prayer-view,#qna-view,#web-view,#trail-view');
-    if(!inAllowed) return false;
-    var sc = topScrollableFrom(target);
-    try{ if(sc && sc.scrollTop > 2) return false; }catch(e){}
-    return true;
-  }
-  function showIndicator(state){
-    var ind = $('cv-pull-modern');
-    if(!ind) return;
-    ind.classList.add('show');
-    ind.classList.toggle('ready', state === 'ready');
-    ind.classList.toggle('refreshing', state === 'refreshing');
-  }
-  function hideIndicator(){
-    var ind = $('cv-pull-modern');
-    if(!ind) return;
-    ind.classList.remove('show','ready','refreshing');
-  }
-  function bindUniversalPullRefresh(){
-    if(document.__oaiUniversalPullRefresh20260502_3) return;
-    document.__oaiUniversalPullRefresh20260502_3 = true;
-    var startY=0, startX=0, active=false, ready=false, refreshing=false;
-    var TH=92;
-    document.addEventListener('touchstart', function(e){
-      if(refreshing || !e.touches || !e.touches[0]) return;
-      if(!canRefreshFrom(e.target)) return;
-      startY = e.touches[0].clientY;
-      startX = e.touches[0].clientX;
-      active = true; ready = false;
-    }, {passive:true});
-    document.addEventListener('touchmove', function(e){
-      if(!active || refreshing || !e.touches || !e.touches[0]) return;
-      var dy = e.touches[0].clientY - startY;
-      var dx = e.touches[0].clientX - startX;
-      if(Math.abs(dx) > Math.abs(dy) * 1.25) { active=false; hideIndicator(); return; }
-      if(dy > 14){
-        ready = dy >= TH;
-        showIndicator(ready ? 'ready' : 'pull');
-      }
-    }, {passive:true});
-    document.addEventListener('touchend', function(){
-      if(!active) return;
-      active = false;
-      if(ready){
-        refreshing = true;
-        showIndicator('refreshing');
-        try{navigator.vibrate && navigator.vibrate(35);}catch(e){}
-        setTimeout(function(){ location.reload(); }, 360);
-      }else{
-        hideIndicator();
-      }
-      ready = false;
-    }, {passive:true});
-    document.addEventListener('touchcancel', function(){ active=false; ready=false; hideIndicator(); }, {passive:true});
-  }
-
-  // 노랑마커 위치 보정: Kakao projection에 반드시 kakao.maps.Point를 넘겨 실제 반영되도록 재정의.
-  function focusMarkerAboveInfoCardFixed(item){
-    if(!item || item.lat == null || item.lng == null) return;
-    try{
-      if(typeof _map === 'undefined' || !_map || typeof _LL !== 'function') return;
-      var pos = new _LL(Number(item.lat), Number(item.lng));
-      var mapEl = $('map-wrap') || $('map');
-      var cardEl = $('info-card');
-      if(!mapEl) return;
-      try{ if(_map.relayout) _map.relayout(); }catch(e){}
-      try{ _map.setCenter(pos); }catch(e){}
-      [].forEach(function(delay){
-        setTimeout(function(){
-          try{
-            mapEl = $('map-wrap') || $('map');
-            cardEl = $('info-card');
-            if(!_map || !mapEl) return;
-            var proj = _map.getProjection && _map.getProjection();
-            if(!proj || !proj.containerPointFromCoords || !proj.coordsFromContainerPoint) return;
-            var mapH = mapEl.clientHeight || mapEl.offsetHeight || window.innerHeight;
-            var mapW = mapEl.clientWidth || mapEl.offsetWidth || window.innerWidth;
-            var cardOpen = cardEl && cardEl.classList.contains('open') && visible(cardEl);
-            var cardH = cardOpen ? Math.min(cardEl.offsetHeight || Math.round(mapH*.52), Math.round(mapH*.60)) : 0;
-            var tabH = ($('tabbar') && $('tabbar').offsetHeight) || 0;
-            var topSafe = Math.max(tabH + 26, 82);
-            var bottomSafe = cardOpen ? Math.max(topSafe + 140, mapH - cardH - 54) : Math.round(mapH * .58);
-            var visibleH = Math.max(150, bottomSafe - topSafe);
-            // 인포카드가 열렸을 때 마커를 보이는 영역의 위쪽 30% 정도로 올림.
-            var targetX = mapW / 2;
-            var targetY = Math.round(topSafe + visibleH * 0.30);
-            var pt = proj.containerPointFromCoords(pos);
-            if(!pt) return;
-            var centerX = mapW / 2;
-            var centerY = mapH / 2;
-            var newCenterPoint = new kakao.maps.Point(pt.x + (centerX - targetX), pt.y + (centerY - targetY));
-            var newCenter = proj.coordsFromContainerPoint(newCenterPoint);
-            if(newCenter) _map.setCenter(newCenter);
-          }catch(e){}
-        }, delay);
-      });
-    }catch(e){}
-  }
-  window.oaiFocusMarkerAboveInfoCard = focusMarkerAboveInfoCardFixed;
-  try{ window._focusMarkerAboveInfoCard = _focusMarkerAboveInfoCard = focusMarkerAboveInfoCardFixed; }catch(e){}
-  function wrapShowInfoCardAgain(){
-    try{
-      if(typeof _showInfoCard !== 'function' || _showInfoCard.__oaiFinalFocusWrapped20260502_3) return;
-      var old = _showInfoCard;
-      _showInfoCard = function(item, idx){
-        var r = old.apply(this, arguments);
-        focusMarkerAboveInfoCardFixed(item);
-        return r;
-      };
-      _showInfoCard.__oaiFinalFocusWrapped20260502_3 = true;
-      window._showInfoCard = _showInfoCard;
-    }catch(e){}
-  }
-  function init(){ bindUniversalPullRefresh(); wrapShowInfoCardAgain(); }
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
-  window.addEventListener('load', init);
-  window.addEventListener('pageshow', init);
-  try{ new MutationObserver(init).observe(document.documentElement, {childList:true, subtree:true}); }catch(e){}
-})();
-</script>
 
 <!-- OAI PATCH 20260502-4: missa popup removed + cover qna button restore -->
 <style id="oai-missa-qna-fix-20260502-4">
@@ -6744,226 +6339,288 @@ html.app-active #cover #qna-cover-btn{display:none!important;}
 
 
 <!-- OAI PATCH 20260502-5: refresh one-vibration, no-screen-shake, tab height consistency, marker de-lag -->
-<style id="oai-refresh-tabs-marker-fix-20260502-5">
-/* 새로고침: 화면은 고정, 표시 버튼만 움직임 */
-#cover{transform:none!important;}
-#cv-pull-modern{will-change:transform,opacity!important;}
-
-/* 성지/성당/피정/내주변/지역검색 계열 탭 높이 통일 */
-#tabbar .tab-btn{height:48px!important;min-height:48px!important;padding:6px 0!important;box-sizing:border-box!important;}
-.filter-bar .filter-btn,.sm-filter .sm-fb{height:38px!important;min-height:38px!important;padding:0 13px!important;display:flex!important;align-items:center!important;justify-content:center!important;box-sizing:border-box!important;}
-#sm-tab-bar{height:50px!important;min-height:50px!important;padding:7px 12px!important;box-sizing:border-box!important;}
-#sm-tab-bar .sm-tab{height:36px!important;min-height:36px!important;padding:0 10px!important;box-sizing:border-box!important;border-radius:12px!important;}
-.region-search-btn{height:38px!important;min-height:38px!important;padding:0 14px!important;box-sizing:border-box!important;}
-</style>
 
 
 
 <!-- OAI PATCH 20260502-6: one-shot above-center marker, fixed refresh indicator, stronger module swipe -->
-<style id="oai-final-stabilize-refresh-swipe-marker-20260502-6">
-/* 새로고침 표시는 화면 중앙 고정: 화면/커버가 움직이지 않고 버튼 내부만 반응 */
-#cover{transform:none!important;transition:none!important;}
-#cv-pull-modern,
-#cv-pull-modern.show,
-#cv-pull-modern.ready,
-#cv-pull-modern.refreshing{
-  position:fixed!important;
-  top:50%!important;
-  left:50%!important;
-  bottom:auto!important;
-  right:auto!important;
-  margin:0!important;
-  transform:translate(-50%,-50%) scale(1)!important;
-  transition:opacity .14s ease!important;
-  will-change:opacity!important;
-}
-#cv-pull-modern:not(.show){opacity:0!important;pointer-events:none!important;}
-#cv-pull-modern.show{opacity:1!important;}
-#cv-pull-modern .cv-pull-ring,
-#cv-pull-modern .cv-pull-icon{transition:transform .12s ease!important;}
-#cv-pull-modern.ready .cv-pull-ring,
-#cv-pull-modern.ready .cv-pull-icon{transform:scale(1.16)!important;}
-#cv-pull-modern.refreshing .cv-pull-ring,
-#cv-pull-modern.refreshing .cv-pull-icon{animation:oaiRefreshSpin20260502 0.65s linear infinite!important;}
-@keyframes oaiRefreshSpin20260502{to{transform:rotate(360deg)}}
 
-/* 웹사이트/기도문 탭 이동 체감 강화: 성지·성당·피정처럼 컨텐츠가 옆에서 따라오는 느낌 */
-@keyframes oaiModuleSlideInLeft20260502{0%{transform:translateX(-42px);opacity:.72}100%{transform:translateX(0);opacity:1}}
-@keyframes oaiModuleSlideInRight20260502{0%{transform:translateX(42px);opacity:.72}100%{transform:translateX(0);opacity:1}}
-.oai-swipe-right{animation:oaiModuleSlideInLeft20260502 .26s cubic-bezier(.22,.9,.25,1) both!important;}
-.oai-swipe-left{animation:oaiModuleSlideInRight20260502 .26s cubic-bezier(.22,.9,.25,1) both!important;}
-#web-list.oai-swipe-left,#web-list.oai-swipe-right,
-#pr-list-ul.oai-swipe-left,#pr-list-ul.oai-swipe-right,
-#prayer-list-view.oai-swipe-left,#prayer-list-view.oai-swipe-right,
-#trail-list.oai-swipe-left,#trail-list.oai-swipe-right{will-change:transform,opacity!important;overflow:hidden!important;}
+
+
+
+<!-- OAI FINAL PATCH 20260502-USER: taller tabs + true one-shot marker focus + qna-style refresh + cover double-back exit -->
+
+
+<!-- OAI CLEAN FINAL PATCH 20260502: taller tabs + stable upper-center marker + qna-style refresh + cover double-back -->
+<style id="oai-clean-final-tabs-refresh-marker-back-20260502">
+:root{--tab-h:78px!important;}
+#tabbar{height:calc(78px + env(safe-area-inset-top,0px))!important;min-height:calc(78px + env(safe-area-inset-top,0px))!important;padding-left:6px!important;padding-right:6px!important;gap:6px!important;align-items:center!important;}
+#map-wrap{top:calc(78px + env(safe-area-inset-top,0px))!important;}
+#tabbar .tab-btn{height:64px!important;min-height:64px!important;padding:8px 2px 9px!important;gap:5px!important;justify-content:center!important;border-radius:14px!important;font-size:14px!important;line-height:1.22!important;}
+#tabbar .tab-icon{font-size:25px!important;line-height:1!important;}
+#tabbar .tab-btn.active .tab-icon{font-size:27px!important;}
+#tabbar .tab-btn span:not(.tab-icon){display:block!important;line-height:1.25!important;white-space:nowrap!important;}
+.sheet{top:calc(78px + env(safe-area-inset-top,0px))!important;}
+#sheet-route{top:auto!important;}
+.filter-bar{min-height:62px!important;padding:10px 12px!important;align-items:center!important;}
+.filter-btn,.sm-fb{min-height:42px!important;padding:9px 16px!important;font-size:13px!important;border-radius:20px!important;}
+.region-wrap{padding-top:13px!important;padding-bottom:13px!important;}
+.region-search-btn{height:46px!important;min-height:46px!important;padding:0 18px!important;border-radius:23px!important;font-size:13px!important;}
+.srch-inner{height:46px!important;min-height:46px!important;}
+#sm-tab-bar{height:74px!important;min-height:74px!important;padding:12px!important;gap:10px!important;}
+#sm-tab-bar .sm-tab{height:50px!important;min-height:50px!important;padding:0 10px!important;font-size:16px!important;line-height:1.2!important;border-radius:16px!important;display:flex!important;align-items:center!important;justify-content:center!important;}
+#cv-pull-modern{position:fixed!important;left:50%!important;top:50%!important;transform:translate(-50%,-50%) scale(.96)!important;z-index:10030!important;opacity:0!important;pointer-events:none!important;transition:opacity .16s ease,transform .16s ease!important;background:linear-gradient(135deg,#1f2a44,#31446c)!important;color:#fff!important;border-radius:999px!important;box-shadow:0 10px 24px rgba(31,42,68,.25)!important;padding:0 18px!important;min-height:44px!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:8px!important;}
+#cv-pull-modern.show{opacity:1!important;transform:translate(-50%,-50%) scale(1)!important;}
+#cv-pull-modern.ready{transform:translate(-50%,-50%) scale(1.04)!important;}
+#cv-pull-modern .cv-pull-ring{width:auto!important;height:44px!important;background:transparent!important;display:flex!important;align-items:center!important;justify-content:center!important;}
+#cv-pull-modern .cv-pull-icon{width:22px!important;height:22px!important;color:#fff!important;}
+#cv-pull-modern::after{content:'새로고침';font-family:inherit!important;font-size:13px!important;font-weight:900!important;line-height:1!important;color:#fff!important;white-space:nowrap!important;}
+#cv-pull-modern.ready::after{content:'놓으면 새로고침';}
+#cv-pull-modern.refreshing::after{content:'새로고침 중';}
+#cv-pull-modern.refreshing .cv-pull-icon{animation:cv-pull-spin .75s linear infinite!important;}
+#cover #qna-cover-btn{display:flex!important;align-items:center!important;justify-content:center!important;background:linear-gradient(135deg,#1f2a44,#31446c)!important;color:#fff!important;border-radius:999px!important;box-shadow:0 10px 24px rgba(31,42,68,.25)!important;font-weight:900!important;}
 </style>
-<script id="oai-final-stabilize-refresh-swipe-marker-20260502-6">
+<script id="oai-clean-final-tabs-refresh-marker-back-20260502">
 (function(){
   'use strict';
-  if(window.__OAI_FINAL_STABILIZE_20260502_6__) return;
-  window.__OAI_FINAL_STABILIZE_20260502_6__ = true;
-  function byId(id){return document.getElementById(id);}
-  function kakaoPoint(x,y){
-    try{ if(window.kakao && kakao.maps && kakao.maps.Point) return new kakao.maps.Point(x,y); }catch(e){}
-    return {x:x,y:y};
-  }
-  function currentInfoItem(){
-    try{ if(typeof _curInfoItem !== 'undefined' && _curInfoItem){ return _curInfoItem.item || _curInfoItem; } }catch(e){}
-    return null;
-  }
-  function itemLatLng(item){
-    if(!item) return null;
-    var lat = item.lat, lng = item.lng;
-    if((lat == null || lng == null) && item.item){ lat = item.item.lat; lng = item.item.lng; }
-    lat = Number(lat); lng = Number(lng);
-    if(!isFinite(lat) || !isFinite(lng)) return null;
-    try{ if(typeof _LL === 'function') return new _LL(lat,lng); }catch(e){}
-    try{ return new kakao.maps.LatLng(lat,lng); }catch(e){}
-    return null;
-  }
-
-  // 노랑마커 보정: 카드 높이 반복계산 대신, 화면 정중앙보다 약간 위(약 38%)에 마커가 오도록 한 번만 이동.
-  var focusTimer = 0;
-  function focusMarkerSlightlyAboveCenter(item){
-    var pos = itemLatLng(item);
-    if(!pos) return;
-    clearTimeout(focusTimer);
-    focusTimer = setTimeout(function(){
-      try{
-        if(typeof _map === 'undefined' || !_map) return;
-        var mapEl = byId('map-wrap') || byId('map');
-        if(!mapEl) return;
-        try{ if(_map.relayout) _map.relayout(); }catch(e){}
-        var proj = _map.getProjection && _map.getProjection();
-        var h = mapEl.clientHeight || mapEl.offsetHeight || window.innerHeight || 700;
-        var w = mapEl.clientWidth || mapEl.offsetWidth || window.innerWidth || 390;
-        var targetX = Math.round(w / 2);
-        var targetY = Math.round(h * 0.38); // 중앙보다 살짝 위: 인포카드가 올라와도 보이는 위치
-        if(proj && proj.containerPointFromCoords && proj.coordsFromContainerPoint){
-          var p = proj.containerPointFromCoords(pos);
-          if(p && isFinite(p.x) && isFinite(p.y)){
-            var centerX = Math.round(w / 2), centerY = Math.round(h / 2);
-            var newCenter = proj.coordsFromContainerPoint(kakaoPoint(p.x + (centerX - targetX), p.y + (centerY - targetY)));
-            if(newCenter){ _map.setCenter(newCenter); return; }
-          }
+  if(window.__OAI_CLEAN_FINAL_TABS_REFRESH_MARKER_BACK_20260502__) return;
+  window.__OAI_CLEAN_FINAL_TABS_REFRESH_MARKER_BACK_20260502__=true;
+  function $(id){return document.getElementById(id);}
+  function isCoverVisible(){var html=document.documentElement, cover=$('cover');return !!(cover && !html.classList.contains('app-active') && cover.style.display!=='none');}
+  function ll(item){try{if(!item) return null;var lat=Number(item.lat),lng=Number(item.lng);if(!isFinite(lat)||!isFinite(lng)) return null;if(typeof _LL==='function') return new _LL(lat,lng);if(window.kakao&&kakao.maps) return new kakao.maps.LatLng(lat,lng);}catch(e){}return null;}
+  function point(x,y){try{if(window.kakao&&kakao.maps&&kakao.maps.Point) return new kakao.maps.Point(x,y);}catch(e){}return {x:x,y:y};}
+  window._focusMarkerAboveInfoCard=function(item){
+    try{
+      if(typeof _map==='undefined'||!_map) return;
+      var pos=ll(item); if(!pos) return;
+      var mapEl=$('map-wrap')||$('map');
+      var h=(mapEl&&(mapEl.clientHeight||mapEl.offsetHeight))||window.innerHeight||700;
+      var proj=_map.getProjection&&_map.getProjection();
+      if(proj&&proj.containerPointFromCoords&&proj.coordsFromContainerPoint){
+        var p=proj.containerPointFromCoords(pos);
+        if(p&&isFinite(p.x)&&isFinite(p.y)){
+          var centerY=Math.round(h/2);
+          var targetY=Math.round(h*0.34);
+          var nc=proj.coordsFromContainerPoint(point(p.x,p.y+(centerY-targetY)));
+          if(nc){_map.setCenter(nc);return;}
         }
-        // projection 실패 시에도 최소한 원위치로 한 번만 이동
-        _map.setCenter(pos);
-      }catch(e){}
-    }, 140); // 인포카드 표시 직후 한 번만
-  }
-  window.oaiFocusMarkerAboveInfoCard = focusMarkerSlightlyAboveCenter;
-  try{ window._focusMarkerAboveInfoCard = _focusMarkerAboveInfoCard = focusMarkerSlightlyAboveCenter; }catch(e){}
-
-  function wrapShowInfoCardOnce(){
-    try{
-      if(typeof _showInfoCard !== 'function' || _showInfoCard.__oaiOneShotAboveCenter20260502) return;
-      var old = _showInfoCard;
-      _showInfoCard = function(item, idx){
-        var result = old.apply(this, arguments);
-        focusMarkerSlightlyAboveCenter(item || currentInfoItem());
-        return result;
-      };
-      _showInfoCard.__oaiOneShotAboveCenter20260502 = true;
-      window._showInfoCard = _showInfoCard;
+      }
+      _map.setCenter(pos);
     }catch(e){}
+  };
+  function installRefresh(){
+    var cover=$('cover'), ind=$('cv-pull-modern'); if(!cover||!ind||cover.__oaiCleanFinalRefresh) return; cover.__oaiCleanFinalRefresh=true;
+    var sx=0, sy=0, active=false, ready=false, refreshing=false, TH=92, MAX=138;
+    function show(state){ind.classList.add('show');ind.classList.toggle('ready',state==='ready');ind.classList.toggle('refreshing',state==='refreshing');}
+    function hide(){ind.classList.remove('show','ready','refreshing');}
+    cover.addEventListener('touchstart',function(e){if(refreshing||!isCoverVisible()||cover.scrollTop>0||!e.touches||!e.touches[0]) return;sx=e.touches[0].clientX;sy=e.touches[0].clientY;active=true;ready=false;},{passive:true,capture:true});
+    cover.addEventListener('touchmove',function(e){if(!active||refreshing||!e.touches||!e.touches[0]) return;var dx=e.touches[0].clientX-sx,dy=e.touches[0].clientY-sy;if(Math.abs(dx)>Math.abs(dy)*1.2) return;if(dy<=0){ready=false;hide();return;}if(e.cancelable)e.preventDefault();var p=Math.min(dy,MAX);ready=p>=TH;show(ready?'ready':'show');},{passive:false,capture:true});
+    cover.addEventListener('touchend',function(){if(!active) return;active=false;if(ready){refreshing=true;show('refreshing');try{navigator.vibrate&&navigator.vibrate(55);}catch(e){}setTimeout(function(){location.reload();},380);}else hide();ready=false;},{passive:true,capture:true});
+    cover.addEventListener('touchcancel',function(){active=false;ready=false;hide();},{passive:true,capture:true});
   }
-
-  // 새로고침 진동: 당길 때는 진동 없음, 놓고 새로고침 확정될 때 한 번만.
-  var lastVibe = 0;
-  function oneVibration(){
-    try{
-      var now = Date.now();
-      if(now - lastVibe < 1200) return;
-      lastVibe = now;
-      if(navigator.vibrate) navigator.vibrate([70]);
-    }catch(e){}
-  }
-  document.addEventListener('touchend', function(){
-    var ind = byId('cv-pull-modern');
-    if(ind && ind.classList.contains('ready')) oneVibration();
-  }, {capture:true, passive:true});
-
-  // 탭 이동 액션이 너무 약할 때도 웹사이트/기도문 컨텐츠에 확실히 적용.
-  var lastCat = '';
-  function flashModule(el, dir){
-    if(!el) return;
-    try{
-      el.classList.remove('oai-swipe-left','oai-swipe-right');
-      void el.offsetWidth;
-      el.classList.add(dir === 'right' ? 'oai-swipe-right' : 'oai-swipe-left');
-      setTimeout(function(){ try{ el.classList.remove('oai-swipe-left','oai-swipe-right'); }catch(e){} }, 300);
-    }catch(e){}
-  }
-  document.addEventListener('click', function(e){
-    var webBtn = e.target && e.target.closest && e.target.closest('.web-cat-btn');
-    if(webBtn){
-      var now = webBtn.getAttribute('data-web-cat') || webBtn.textContent || '';
-      var dir = lastCat && now < lastCat ? 'right' : 'left';
-      lastCat = now;
-      setTimeout(function(){ flashModule(byId('web-list'), dir); }, 0);
-    }
-    var prBtn = e.target && e.target.closest && e.target.closest('.pr-cat-btn,.pr-tab,.prayer-cat-btn');
-    if(prBtn){ setTimeout(function(){ flashModule(byId('pr-list-ul') || byId('prayer-list-view'), 'left'); }, 0); }
-  }, true);
-
-  function init(){ wrapShowInfoCardOnce(); }
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
-  window.addEventListener('load', init);
-  window.addEventListener('pageshow', init);
-  try{ new MutationObserver(init).observe(document.documentElement,{childList:true,subtree:true}); }catch(e){}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',installRefresh,{once:true});else installRefresh();
+  var exitReady=false, exitTimer=0;
+  window._showBackToast=function(){
+    if(!isCoverVisible()) return;
+    if(exitReady){exitReady=false;clearTimeout(exitTimer);try{var old=$('_bt');if(old) old.remove();}catch(e){}try{if(typeof doExit==='function')doExit();else if(typeof attemptAppExit==='function')attemptAppExit();else history.go(-2);}catch(e){try{history.go(-2);}catch(_){}}return;}
+    exitReady=true;try{var prev=$('_bt');if(prev)prev.remove();}catch(e){}
+    var t=document.createElement('div');t.id='_bt';t.textContent='한 번 더 누르면 앱을 종료합니다';t.style.cssText='position:fixed;bottom:calc(env(safe-area-inset-bottom,0px)+32px);left:50%;transform:translateX(-50%);background:rgba(14,21,53,.92);color:#fff;padding:10px 22px;border-radius:22px;font-size:13px;font-weight:700;z-index:99999;white-space:nowrap;pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,.3);';document.body.appendChild(t);
+    clearTimeout(exitTimer);exitTimer=setTimeout(function(){exitReady=false;try{if(t.parentNode)t.remove();}catch(e){}},2500);
+  };
 })();
 </script>
 
 
-<script id="oai-final-one-shot-marker-center-20260502">
+
+<!-- OAI STABILITY PATCH 20260502-USER-FINAL: taller shrine/parish/retreat tabs + qna-style refresh + stable upper marker -->
+<style id="oai-user-final-tabs-refresh-marker-20260502">
+/* 성지·성당·피정 상단 탭: 찌그러짐 방지용 최종 확대 */
+:root{--tab-h:88px!important;}
+#tabbar{
+  height:calc(88px + env(safe-area-inset-top,0px))!important;
+  min-height:calc(88px + env(safe-area-inset-top,0px))!important;
+  padding:calc(env(safe-area-inset-top,0px) + 7px) 8px 7px!important;
+  gap:7px!important;
+  align-items:center!important;
+}
+#map-wrap{top:calc(88px + env(safe-area-inset-top,0px))!important;}
+.sheet{top:calc(88px + env(safe-area-inset-top,0px))!important;}
+#sheet-route{top:auto!important;}
+#tabbar .tab-btn{
+  height:72px!important;
+  min-height:72px!important;
+  padding:9px 3px 10px!important;
+  gap:6px!important;
+  justify-content:center!important;
+  border-radius:16px!important;
+  font-size:15px!important;
+  line-height:1.24!important;
+  white-space:normal!important;
+}
+#tabbar .tab-icon{font-size:27px!important;line-height:1!important;}
+#tabbar .tab-btn.active .tab-icon{font-size:29px!important;}
+#tabbar .tab-btn span:not(.tab-icon){display:block!important;line-height:1.25!important;white-space:nowrap!important;}
+/* 피정의집/내주변/지역검색 등 내부 탭과 검색 버튼도 같은 높이감으로 확대 */
+.filter-bar{
+  min-height:70px!important;
+  height:auto!important;
+  padding:12px 12px!important;
+  align-items:center!important;
+  gap:8px!important;
+}
+.filter-btn,.sm-fb{
+  min-height:48px!important;
+  height:48px!important;
+  padding:0 18px!important;
+  border-radius:24px!important;
+  font-size:14px!important;
+  font-weight:800!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+}
+.region-wrap{padding-top:15px!important;padding-bottom:15px!important;}
+.region-row{gap:9px!important;}
+.region-search-btn{
+  height:50px!important;
+  min-height:50px!important;
+  padding:0 20px!important;
+  border-radius:25px!important;
+  font-size:14px!important;
+}
+.srch-bar{padding:10px 12px 9px!important;}
+.srch-inner{height:50px!important;min-height:50px!important;border-radius:25px!important;}
+#sm-tab-bar{
+  height:82px!important;
+  min-height:82px!important;
+  padding:14px 12px!important;
+  gap:10px!important;
+  align-items:center!important;
+}
+#sm-tab-bar .sm-tab{
+  height:54px!important;
+  min-height:54px!important;
+  padding:0 12px!important;
+  font-size:16px!important;
+  line-height:1.25!important;
+  border-radius:17px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+}
+/* 새로고침: 문의·건의와 같은 알약형 디자인, 화면은 고정/표시만 반응 */
+#cv-pull-modern{
+  position:fixed!important;
+  left:50%!important;
+  top:50%!important;
+  right:auto!important;
+  bottom:auto!important;
+  transform:translate(-50%,-50%) scale(.96)!important;
+  z-index:10030!important;
+  opacity:0!important;
+  pointer-events:none!important;
+  transition:opacity .14s ease,transform .14s ease!important;
+  background:linear-gradient(135deg,#1f2a44,#31446c)!important;
+  color:#fff!important;
+  border:0!important;
+  border-radius:999px!important;
+  box-shadow:0 10px 24px rgba(31,42,68,.25)!important;
+  padding:0 19px!important;
+  min-height:46px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:8px!important;
+}
+#cv-pull-modern.show{opacity:1!important;transform:translate(-50%,-50%) scale(1)!important;}
+#cv-pull-modern.ready{transform:translate(-50%,-50%) scale(1.035)!important;}
+#cv-pull-modern.refreshing{opacity:1!important;transform:translate(-50%,-50%) scale(1)!important;}
+#cv-pull-modern .cv-pull-ring{width:24px!important;height:46px!important;background:transparent!important;display:flex!important;align-items:center!important;justify-content:center!important;}
+#cv-pull-modern .cv-pull-icon{width:23px!important;height:23px!important;color:#fff!important;}
+#cv-pull-modern::after{content:'새로고침';font-family:inherit!important;font-size:13px!important;font-weight:900!important;line-height:1!important;color:#fff!important;white-space:nowrap!important;}
+#cv-pull-modern.ready::after{content:'놓으면 새로고침';}
+#cv-pull-modern.refreshing::after{content:'새로고침 중';}
+#cv-pull-modern.refreshing .cv-pull-icon{animation:cv-pull-spin .75s linear infinite!important;}
+#cover{transform:none!important;}
+#cover.refreshing,#cover.pulling{transform:none!important;}
+</style>
+<script id="oai-user-final-tabs-refresh-marker-20260502">
 (function(){
   'use strict';
-  if(window.__OAI_FINAL_ONE_SHOT_MARKER_CENTER_20260502__) return;
-  window.__OAI_FINAL_ONE_SHOT_MARKER_CENTER_20260502__ = true;
-  var pendingTimer = 0, pendingKey = '', lastKey = '', lastRunAt = 0;
-  function getMap(){ try{ if(typeof _map !== 'undefined' && _map) return _map; }catch(e){} return window._map || null; }
-  function makeLatLng(lat,lng){ lat=Number(lat); lng=Number(lng); if(!isFinite(lat)||!isFinite(lng)) return null; try{ if(typeof _LL==='function') return new _LL(lat,lng); }catch(e){} try{ if(window.kakao&&kakao.maps) return new kakao.maps.LatLng(lat,lng); }catch(e){} return null; }
-  function itemPos(item){ if(!item) return null; var lat=item.lat, lng=item.lng; if((lat==null||lng==null)&&item.coords){ lat=item.coords.lat||item.coords.latitude; lng=item.coords.lng||item.coords.longitude; } return makeLatLng(lat,lng); }
-  function kakaoPoint(x,y){ try{ if(window.kakao&&kakao.maps&&kakao.maps.Point) return new kakao.maps.Point(x,y); }catch(e){} return {x:x,y:y}; }
-  function keyFromItem(item){ if(!item) return ''; return String(item.lat)+','+String(item.lng)+','+String(item.name||item.title||''); }
-  function focusMarkerOneShot(item){
-    var map=getMap(), pos=itemPos(item); if(!map||!pos) return;
-    var k=keyFromItem(item), now=Date.now();
-    if(k && (k===pendingKey || (k===lastKey && now-lastRunAt<900))) return;
-    clearTimeout(pendingTimer); pendingKey=k;
-    pendingTimer=setTimeout(function(){
-      pendingTimer=0; pendingKey='';
-      try{
-        map=getMap(); if(!map) return;
-        var mapEl=document.getElementById('map-wrap')||document.getElementById('map');
-        var h=(mapEl&&(mapEl.clientHeight||mapEl.offsetHeight))||window.innerHeight||700;
-        var w=(mapEl&&(mapEl.clientWidth||mapEl.offsetWidth))||window.innerWidth||390;
-        var targetY=Math.round(h*0.36), centerY=Math.round(h/2);
-        var targetX=Math.round(w/2), centerX=Math.round(w/2);
-        var proj=map.getProjection&&map.getProjection();
-        if(proj&&proj.containerPointFromCoords&&proj.coordsFromContainerPoint){
-          var p=proj.containerPointFromCoords(pos);
-          if(p&&isFinite(p.x)&&isFinite(p.y)){
-            var newCenter=proj.coordsFromContainerPoint(kakaoPoint(p.x+(centerX-targetX), p.y+(centerY-targetY)));
-            if(newCenter) map.setCenter(newCenter); else map.setCenter(pos);
-          }else map.setCenter(pos);
-        }else map.setCenter(pos);
-        lastKey=k; lastRunAt=Date.now();
-      }catch(e){ try{ map.setCenter(pos); }catch(_){} }
-    },160);
-  }
-  window.oaiFocusMarkerAboveInfoCard=focusMarkerOneShot;
-  try{ window._focusMarkerAboveInfoCard=_focusMarkerAboveInfoCard=focusMarkerOneShot; }catch(e){ window._focusMarkerAboveInfoCard=focusMarkerOneShot; }
-  function wrapShowInfoCard(){
+  if(window.__OAI_USER_FINAL_TABS_REFRESH_MARKER_20260502__) return;
+  window.__OAI_USER_FINAL_TABS_REFRESH_MARKER_20260502__=true;
+  function $(id){return document.getElementById(id);}
+  function isCoverVisible(){var h=document.documentElement,c=$('cover');return !!(c && !h.classList.contains('app-active') && c.style.display!=='none');}
+  function makeLL(item){try{var lat=Number(item&&item.lat), lng=Number(item&&item.lng);if(!isFinite(lat)||!isFinite(lng))return null;if(typeof _LL==='function')return new _LL(lat,lng);if(window.kakao&&kakao.maps)return new kakao.maps.LatLng(lat,lng);}catch(e){}return null;}
+  function makePoint(x,y){try{if(window.kakao&&kakao.maps&&kakao.maps.Point)return new kakao.maps.Point(x,y);}catch(e){}return {x:x,y:y};}
+  var lastFocusKey='', lastFocusAt=0;
+  window._focusMarkerAboveInfoCard=function(item){
     try{
-      if(typeof _showInfoCard!=='function'||_showInfoCard.__oaiOneShotFinalCenter20260502) return;
-      var oldShow=_showInfoCard;
-      _showInfoCard=function(item,idx){ var result=oldShow.apply(this,arguments); focusMarkerOneShot(item); return result; };
-      _showInfoCard.__oaiOneShotFinalCenter20260502=true; window._showInfoCard=_showInfoCard;
+      if(typeof _map==='undefined'||!_map||!item) return;
+      var pos=makeLL(item); if(!pos) return;
+      var key=String(Number(item.lat).toFixed(6))+','+String(Number(item.lng).toFixed(6));
+      var now=Date.now();
+      if(key===lastFocusKey && now-lastFocusAt<220) return;
+      lastFocusKey=key; lastFocusAt=now;
+      var mapEl=$('map-wrap')||$('map');
+      var h=(mapEl&&(mapEl.clientHeight||mapEl.offsetHeight))||window.innerHeight||700;
+      var proj=_map.getProjection&&_map.getProjection();
+      if(proj&&proj.containerPointFromCoords&&proj.coordsFromContainerPoint){
+        var p=proj.containerPointFromCoords(pos);
+        if(p&&isFinite(p.x)&&isFinite(p.y)){
+          /* 마커가 화면 정중앙보다 위쪽 31% 지점에 오도록 처음부터 중심을 잡는다. */
+          var centerY=Math.round(h/2);
+          var targetY=Math.round(h*0.31);
+          var newCenter=proj.coordsFromContainerPoint(makePoint(p.x, p.y+(centerY-targetY)));
+          if(newCenter){_map.setCenter(newCenter);return;}
+        }
+      }
+      _map.setCenter(pos);
     }catch(e){}
+  };
+  /* 일부 기존 코드가 인포카드 표시 직후 다른 중심 이동을 해도 최종 1회만 위쪽 기준으로 고정 */
+  if(typeof window._showInfoCard==='function' && !window._showInfoCard.__oaiFinalWrapped){
+    var oldShow=window._showInfoCard;
+    window._showInfoCard=function(item,idx){
+      var ret=oldShow.apply(this,arguments);
+      try{ if(item) window._focusMarkerAboveInfoCard(item); }catch(e){}
+      return ret;
+    };
+    window._showInfoCard.__oaiFinalWrapped=true;
   }
-  wrapShowInfoCard(); window.addEventListener('load',function(){setTimeout(wrapShowInfoCard,80);});
+  function installQnaStyleRefresh(){
+    var cover=$('cover'), ind=$('cv-pull-modern');
+    if(!cover||!ind||cover.__oaiUserFinalRefresh) return;
+    cover.__oaiUserFinalRefresh=true;
+    var sx=0, sy=0, active=false, ready=false, refreshing=false;
+    var TH=96, MAX=150;
+    function show(state){ind.classList.add('show');ind.classList.toggle('ready',state==='ready');ind.classList.toggle('refreshing',state==='refreshing');}
+    function hide(){ind.classList.remove('show','ready','refreshing');}
+    cover.addEventListener('touchstart',function(e){
+      if(refreshing||!isCoverVisible()||cover.scrollTop>0||!e.touches||!e.touches[0]) return;
+      sx=e.touches[0].clientX; sy=e.touches[0].clientY; active=true; ready=false;
+    },{passive:true,capture:true});
+    cover.addEventListener('touchmove',function(e){
+      if(!active||refreshing||!e.touches||!e.touches[0]) return;
+      var dx=e.touches[0].clientX-sx, dy=e.touches[0].clientY-sy;
+      if(Math.abs(dx)>Math.abs(dy)*1.2) return;
+      if(dy<=0){ready=false;hide();return;}
+      if(e.cancelable)e.preventDefault();
+      var p=Math.min(dy,MAX);
+      ready=p>=TH;
+      show(ready?'ready':'show');
+    },{passive:false,capture:true});
+    cover.addEventListener('touchend',function(){
+      if(!active) return;
+      active=false;
+      if(ready){
+        ready=false; refreshing=true; show('refreshing');
+        try{navigator.vibrate&&navigator.vibrate(70);}catch(e){}
+        setTimeout(function(){location.reload();},360);
+      }else{ready=false;hide();}
+    },{passive:true,capture:true});
+    cover.addEventListener('touchcancel',function(){active=false;ready=false;hide();},{passive:true,capture:true});
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',installQnaStyleRefresh,{once:true});else installQnaStyleRefresh();
 })();
 </script>
 
