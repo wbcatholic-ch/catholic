@@ -3294,39 +3294,58 @@ function swapRoute(){
 
 function clearRoute(role){
   if(role==='end'&&_rE){
-  if(_mode==='shrine'&&_rE.idx>=0&&_markers[_rE.idx]) _markers[_rE.idx].marker.setImage(_mkrImg(_typeColor(_markers[_rE.idx].shrine.type),false));
+  const destItem={lat:_rE.lat,lng:_rE.lng,idx:_rE.idx,name:_rE.name};
+  _hardClearRouteVisuals();
+  _restoreRouteRoleMarkersToNormal();
   _rE=null;
   _setRouteLabel('end','');
   _hide($('rs-result'));
-  if(_polyline){_polyline.setMap(null);_polyline=null;}
-  _refreshRouteTmpMarkers();
   _restoreMapMarkers();
+  setTimeout(()=>_restoreRouteDestinationSelection(destItem, false), 30);
   }
+}
+
+function _hardClearRouteVisuals(){
+  // 경로 종료 순서 고정: 경로선/임시 출·도착 마커/죽림굴 주차장 마커를 먼저 완전히 제거
+  try{ if(_polyline){ _polyline.setMap(null); _polyline=null; } }catch(e){ _polyline=null; }
+  try{ _clearRouteTmpMarkers(); }catch(e){}
+  try{ _showJukrimgulParkingMkr(false); }catch(e){}
+}
+
+function _restoreRouteRoleMarkersToNormal(){
+  // 출발/도착으로 바뀐 기존 마커를 원래 색으로 먼저 되돌림
+  try{
+    if(_mode==='shrine'){
+      if(_rS&&_rS.idx>=0&&_markers[_rS.idx]) _markers[_rS.idx].marker.setImage(_mkrImg(_typeColor(_markers[_rS.idx].shrine.type),false));
+      if(_rE&&_rE.idx>=0&&_markers[_rE.idx]) _markers[_rE.idx].marker.setImage(_mkrImg(_typeColor(_markers[_rE.idx].shrine.type),false));
+    }
+  }catch(e){}
 }
 
 function resetRoute(){
   // 도착지 위치·인덱스 기억 (리셋 전에 저장)
   const destItem = _rE ? {lat:_rE.lat, lng:_rE.lng, idx:_rE.idx, name:_rE.name} : null;
 
-  if(_mode==='shrine'){
-    if(_rS&&_rS.idx>=0&&_markers[_rS.idx]) _markers[_rS.idx].marker.setImage(_mkrImg(_typeColor(_markers[_rS.idx].shrine.type),false));
-    if(_rE&&_rE.idx>=0&&_markers[_rE.idx]) _markers[_rE.idx].marker.setImage(_mkrImg(_typeColor(_markers[_rE.idx].shrine.type),false));
-  }
+  // 1) 길찾기 표시물 삭제: 경로선, route, 출·도 임시마커를 먼저 제거
+  _hardClearRouteVisuals();
+
+  // 2) 출·도착으로 바뀐 기존 마커를 기본 상태로 복구
+  _restoreRouteRoleMarkersToNormal();
+
+  // 3) 경로 상태값 삭제
   _rS=_rE=null;
   _setRouteLabel('start','');_setRouteLabel('end','');
   _hide($('rs-result'));
   $('rs-hint').style.display='block';
   const sBtn=$('rs-search-btn');
   if(sBtn) sBtn.style.display='none';
-  if(_polyline){_polyline.setMap(null);_polyline=null;}
-  _clearRouteTmpMarkers();
-  _showJukrimgulParkingMkr(false);
   $('route-guide').classList.remove('on');
-  _restoreMapMarkers();
+  _routeMode=false;
 
-  // 도착지(노란 마커 위치)가 있으면 경로선을 지운 뒤 반드시 노란 마커로 복귀
+  // 4) 지도 기본 마커 복원 후, 마지막 도착지만 노란 마커로 다시 선택
+  _restoreMapMarkers();
   if(destItem && destItem.lat && _map){
-    _restoreRouteDestinationSelection(destItem, true);
+    setTimeout(()=>_restoreRouteDestinationSelection(destItem, true), 30);
   }
 }
 
@@ -3950,7 +3969,7 @@ function _fmtTime(s){
   {cat:"중앙기구", ico:"🏛️", name:"한국천주교주교회의 (CBCK)",
    op:"한국천주교주교회의", url:"https://cbck.or.kr",
    desc:"한국 천주교 공식 문헌·교리·전례·교회법·발표 자료 제공"},
-  {cat:"중앙기구", ico:"⛪", name:"주교회의 시복시성 특별위원회",
+  {cat:"중앙기구", ico:"⛪", name:"시복시성 주교특별위원회",
    op:"한국천주교주교회의", url:"https://cbck.or.kr/koreanmartyrs",
    desc:"시복·시성, 한국 순교자와 교회사 관련 자료 제공"},
 
