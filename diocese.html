@@ -190,39 +190,56 @@ header{flex-shrink:0;background:var(--d);border-bottom:none;z-index:30;
   #gw-bar{flex-direction:row;flex-wrap:wrap;}
 }
 </style>
-
-<script id="oai-diocese-parent-return-20260501">
-function oaiOpenDioceseExternal(url){
-  if(!url) return;
-  var state = {};
-  try{
-    var on = document.querySelector('.tab.on');
-    state.tab = on && on.dataset ? on.dataset.tab : '';
-    var lv = document.getElementById('list-view');
-    var sv = document.getElementById('search-view');
-    state.listScroll = lv ? lv.scrollTop : 0;
-    state.searchScroll = sv ? sv.scrollTop : 0;
-    var si = document.getElementById('si');
-    state.search = si ? si.value : '';
-  }catch(e){}
-  try{
-    if(parent && parent!==window && typeof parent.openDioceseExternalUrl==='function'){
-      parent.openDioceseExternalUrl(url, state);
-      return;
-    }
-  }catch(e){}
-  try{ sessionStorage.setItem('diocese_standalone_return_v1', JSON.stringify(state)); }catch(e){}
-  try{ location.href=url; }catch(e){}
+<style id="oai-final-tabbar-height-fix-20260430">
+#tabbar{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:6px!important;
+  padding-left:6px!important;
+  padding-right:6px!important;
+  overflow:hidden!important;
+  box-sizing:border-box!important;
 }
-document.addEventListener('click',function(e){
-  var a=e.target&&e.target.closest&&e.target.closest('a[href]');
-  if(!a) return;
-  var href=a.getAttribute('href');
-  if(!href || href==='#') return;
-  e.preventDefault();
-  oaiOpenDioceseExternal(href);
-},true);
-</script>
+#tabbar .tab-btn{
+  flex:1 1 0!important;
+  min-width:0!important;
+  height:48px!important;
+  min-height:48px!important;
+  max-height:48px!important;
+  margin:0!important;
+  padding:0 2px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:2px!important;
+  line-height:1.1!important;
+  box-sizing:border-box!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+}
+#tabbar .tab-btn .tab-icon{
+  display:block!important;
+  flex:0 0 auto!important;
+  font-size:17px!important;
+  line-height:1!important;
+  margin:0!important;
+  padding:0!important;
+}
+#tabbar .tab-btn span{
+  display:block!important;
+  max-width:100%!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  white-space:nowrap!important;
+  line-height:1.1!important;
+  font-size:12px!important;
+  margin:0!important;
+  padding:0!important;
+}
+</style>
+
 </head>
 <body>
 <header>
@@ -1190,7 +1207,7 @@ function buildListView(){
       card.appendChild(top);card.appendChild(body);card.appendChild(foot);
       if(m.url){card.addEventListener('click',(function(u){return function(){
         sessionStorage.setItem('listScroll',document.getElementById('list-view').scrollTop);
-        oaiOpenDioceseExternal(u);
+        window.oaiOpenDioceseUrl ? window.oaiOpenDioceseUrl(u,'list') : (location.href=u);
       };})(m.url));}
       wrap.appendChild(card);
     });
@@ -1418,7 +1435,7 @@ function showCard(el){
   document.getElementById('c-dtbtn').textContent='▶ 상세 지역 보기';
   const url=el.dataset.url;
   document.getElementById('c-act').innerHTML=url
-    ?`<a class="c-btn" href="${url}" style="background:${c}">↗ 홈페이지 방문</a>`
+    ?`<button type="button" class="c-btn" style="background:${c}" onclick="window.oaiOpenDioceseUrl ? window.oaiOpenDioceseUrl('${url}','map') : (location.href='${url}')">↗ 홈페이지 방문</button>`
     :'<div class="c-nurl">홈페이지 없음</div>';
   const card=document.getElementById('card');
   const diocese=el.dataset.d||'';
@@ -1495,7 +1512,7 @@ function makeRow(disp,diocese,overlapDongs){
   const arr=document.createElement('span');arr.className='lv-arr';arr.textContent='›';
   foot.appendChild(urlEl);foot.appendChild(arr);
   card.appendChild(top);card.appendChild(body);card.appendChild(foot);
-  if(url){card.addEventListener('click',function(){oaiOpenDioceseExternal(url);});}
+  if(url){card.addEventListener('click',function(){window.oaiOpenDioceseUrl ? window.oaiOpenDioceseUrl(url,'search') : (location.href=url);});}
   return card;
 }
 
@@ -1630,6 +1647,17 @@ window.addEventListener('pageshow',function(){
 })();
 
 
+</script>
+
+<script id="oai-diocese-link-state-only-20260501">
+(function(){
+  'use strict';
+  if(window.__OAI_DIOCESE_LINK_STATE_ONLY_20260501__) return;
+  window.__OAI_DIOCESE_LINK_STATE_ONLY_20260501__=true;
+  function activeTab(){var on=document.querySelector('.tab.on');return on&&on.dataset?on.dataset.tab:'gwangu';}
+  function saveState(source){try{var st={tab:activeTab(),source:source||activeTab()};var lv=document.getElementById('list-view'),sv=document.getElementById('search-view'),si=document.getElementById('si');if(lv)st.listScroll=lv.scrollTop||0;if(sv)st.searchScroll=sv.scrollTop||0;if(si)st.searchValue=si.value||'';sessionStorage.setItem('dioceseReturnState',JSON.stringify(st));}catch(e){}}
+  window.oaiOpenDioceseUrl=function(url,source){if(!url)return;saveState(source);location.href=url;};
+})();
 </script>
 </body>
 </html>
