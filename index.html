@@ -1543,7 +1543,7 @@ function handleBack() {} // 하위호환용 stub
     currentY = startY;
     pulling = true;
     ready = false;
-    cover.style.transition = 'none';
+    /* 화면 전체는 움직이지 않음: 새로고침 표시만 움직임 */
   }, { passive:true });
 
   cover.addEventListener('touchmove', function(e){
@@ -1551,18 +1551,18 @@ function handleBack() {} // 하위호환용 stub
     currentY = e.touches[0].clientY;
     let dy = currentY - startY;
     if(dy <= 0){
-      cover.style.transform = 'translateY(0)';
+      /* 화면 이동 없음 */
       resetIndicator();
       ready = false;
       return;
     }
     dy = Math.min(dy, MAX_PULL);
     const visualPull = dy * 0.42;
-    cover.style.transform = 'translateY(' + visualPull + 'px)';
+    try{ indicator.style.transform = 'translate(-50%, calc(-50% + ' + Math.round(visualPull * 0.55) + 'px)) scale(1)'; }catch(ex){}
     indicator.classList.add('show');
     if(dy >= THRESHOLD){
       if(!ready){
-        try{ navigator.vibrate && navigator.vibrate(30); }catch(ex){}
+        /* 준비 단계 진동 제거: 놓을 때 한 번만 진동 */
       }
       ready = true;
       indicator.classList.add('ready');
@@ -1573,8 +1573,7 @@ function handleBack() {} // 하위호환용 stub
   }, { passive:true });
 
   function finishPull(){
-    cover.style.transition = 'transform .28s cubic-bezier(.4,0,.2,1)';
-    cover.style.transform = 'translateY(0)';
+    try{ indicator.style.transform = ''; }catch(ex){}
   }
 
   cover.addEventListener('touchend', function(){
@@ -1585,7 +1584,7 @@ function handleBack() {} // 하위호환용 stub
       refreshing = true;
       indicator.classList.remove('ready');
       indicator.classList.add('show','refreshing');
-      try{ navigator.vibrate && navigator.vibrate([40,30,60]); }catch(ex){}
+      try{ navigator.vibrate && navigator.vibrate(35); }catch(ex){}
       setTimeout(function(){ location.reload(); }, 420);
     } else {
       resetIndicator();
@@ -6492,63 +6491,7 @@ html,body{overflow-x:hidden!important;overscroll-behavior-x:none!important;}
 
 <!-- OAI FINAL USER PATCH 20260502-3: info-card box uniform + qna-style refresh + all-non-map refresh + marker focus fix -->
 <style id="oai-final-box-refresh-marker-20260502-3">
-/* 성지/성당/피정 인포카드 내부 박스: 높이·가로·정렬 완전 통일 */
-#info-card .ic-btn-row,
-#info-card .ic-links,
-#info-card #ic-links-row{
-  display:flex!important;
-  align-items:stretch!important;
-  gap:8px!important;
-  padding-left:14px!important;
-  padding-right:14px!important;
-  box-sizing:border-box!important;
-  width:100%!important;
-}
-#info-card .ic-btn-row > *,
-#info-card .ic-links > *,
-#info-card #ic-links-row > *,
-#info-card .ic-tel-btn,
-#info-card .ic-route-btn,
-#info-card .ic-link-btn,
-#info-card .btn-kakao-nav,
-#info-card .ic-hp-btn,
-#info-card .ic-guide-btn{
-  flex:1 1 0!important;
-  width:auto!important;
-  min-width:0!important;
-  max-width:none!important;
-  height:46px!important;
-  min-height:46px!important;
-  max-height:46px!important;
-  padding:0 10px!important;
-  margin:0!important;
-  box-sizing:border-box!important;
-  border-radius:10px!important;
-  display:flex!important;
-  align-items:center!important;
-  justify-content:center!important;
-  text-align:center!important;
-  font-size:14px!important;
-  font-weight:700!important;
-  line-height:1!important;
-  white-space:nowrap!important;
-  overflow:hidden!important;
-  text-overflow:ellipsis!important;
-}
-#info-card .ic-btn-row span,
-#info-card .ic-links span,
-#info-card #ic-links-row span,
-#info-card .ic-tel,
-#info-card .ic-tel-icon{
-  display:inline-flex!important;
-  align-items:center!important;
-  justify-content:center!important;
-  line-height:1!important;
-  min-height:0!important;
-}
-#info-card .ic-links,
-#info-card #ic-links-row{margin-top:8px!important;}
-
+/* 인포카드 내부 구조/기능은 기준 파일 원본 동작 유지: 과수정 CSS 제거 */
 /* 커버 새로고침 표시: 문의·건의 버튼 계열 스타일로 변경 */
 #cv-pull-modern{
   position:fixed!important;
@@ -6669,7 +6612,7 @@ html,body{overflow-x:hidden!important;overscroll-behavior-x:none!important;}
       if(ready){
         refreshing = true;
         showIndicator('refreshing');
-        try{navigator.vibrate && navigator.vibrate([35,25,45]);}catch(e){}
+        try{navigator.vibrate && navigator.vibrate(35);}catch(e){}
         setTimeout(function(){ location.reload(); }, 360);
       }else{
         hideIndicator();
@@ -6690,7 +6633,7 @@ html,body{overflow-x:hidden!important;overscroll-behavior-x:none!important;}
       if(!mapEl) return;
       try{ if(_map.relayout) _map.relayout(); }catch(e){}
       try{ _map.setCenter(pos); }catch(e){}
-      [60,180,360,700,1050].forEach(function(delay){
+      [80,260].forEach(function(delay){
         setTimeout(function(){
           try{
             mapEl = $('map-wrap') || $('map');
@@ -6767,6 +6710,21 @@ html.app-active #cover #qna-cover-btn{display:none!important;}
   window.addEventListener('pageshow', function(){restoreQnaButton();removeMissaPopupState();});
 })();
 </script>
+
+
+<!-- OAI PATCH 20260502-5: refresh one-vibration, no-screen-shake, tab height consistency, marker de-lag -->
+<style id="oai-refresh-tabs-marker-fix-20260502-5">
+/* 새로고침: 화면은 고정, 표시 버튼만 움직임 */
+#cover{transform:none!important;}
+#cv-pull-modern{will-change:transform,opacity!important;}
+
+/* 성지/성당/피정/내주변/지역검색 계열 탭 높이 통일 */
+#tabbar .tab-btn{height:48px!important;min-height:48px!important;padding:6px 0!important;box-sizing:border-box!important;}
+.filter-bar .filter-btn,.sm-filter .sm-fb{height:38px!important;min-height:38px!important;padding:0 13px!important;display:flex!important;align-items:center!important;justify-content:center!important;box-sizing:border-box!important;}
+#sm-tab-bar{height:50px!important;min-height:50px!important;padding:7px 12px!important;box-sizing:border-box!important;}
+#sm-tab-bar .sm-tab{height:36px!important;min-height:36px!important;padding:0 10px!important;box-sizing:border-box!important;border-radius:12px!important;}
+.region-search-btn{height:38px!important;min-height:38px!important;padding:0 14px!important;box-sizing:border-box!important;}
+</style>
 
 </body>
 </html>
