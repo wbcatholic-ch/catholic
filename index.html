@@ -6501,5 +6501,44 @@ html.retreat-mode #sm-tab-bar .sm-tab.active {
   var oldOpen=window.openDioceseView; if(typeof oldOpen==='function'&&!oldOpen.__oaiV3Open){window.openDioceseView=function(){var r=oldOpen.apply(this,arguments); scheduleFrame(); return r}; window.openDioceseView.__oaiV3Open=true;}
 })();
 </script>
+<script id="oai-route-diocese-link-fix-20260501-v4">
+/* OAI_ROUTE_DIOCESE_LINK_FIX_20260501_V4 */
+(function(){
+  'use strict';
+  if(window.__OAI_ROUTE_DIOCESE_LINK_FIX_20260501_V4__) return;
+  window.__OAI_ROUTE_DIOCESE_LINK_FIX_20260501_V4__ = true;
+  var MAP_KEY='oai_map_yellow_marker_v4';
+  function $(id){return document.getElementById(id)}
+  function arr(){try{return typeof _getCurrentItems==='function'?_getCurrentItems():[]}catch(e){return[]}}
+  function norm(u){u=String(u||'').trim();if(!u||u==='#'||/^javascript:/i.test(u))return'';if(/^\/\//.test(u))u=location.protocol+u;if(!/^[a-z][a-z0-9+.-]*:/i.test(u))u='https://'+u.replace(/^\/+/, '');return u}
+  function openNew(u){u=norm(u);if(!u)return false;try{var a=document.createElement('a');a.href=u;a.target='_blank';a.rel='noopener noreferrer';a.style.cssText='position:fixed;left:-9999px;top:-9999px;width:1px;height:1px;opacity:0;pointer-events:none';document.body.appendChild(a);a.click();setTimeout(function(){try{a.remove()}catch(e){}},300)}catch(e){try{window.open(u,'_blank','noopener,noreferrer')}catch(_){}}return false}
+  window.openTopUrl=openNew; window.__OAI_openExternalKeepApp=openNew; window.openCoreExternalUrl=function(u){return openNew(u)};
+  function saveItem(it,idx){if(!it||!isFinite(Number(it.lat))||!isFinite(Number(it.lng)))return null;var st={mode:typeof _mode!=='undefined'?_mode:'shrine',idx:typeof idx==='number'?idx:-1,name:it.name||'',lat:Number(it.lat),lng:Number(it.lng),t:Date.now()};window.__oaiMapYellowV4=st;try{sessionStorage.setItem(MAP_KEY,JSON.stringify(st))}catch(e){}return st}
+  function saveEnd(){try{if(typeof _rE==='undefined'||!_rE)return null;var a=arr(),ix=typeof _rE.idx==='number'?_rE.idx:-1,it=ix>=0?a[ix]:null;if(!it){for(var i=0;i<a.length;i++){var x=a[i];if(x&&Math.abs(Number(x.lat)-Number(_rE.lat))<0.000001&&Math.abs(Number(x.lng)-Number(_rE.lng))<0.000001){it=x;ix=i;break}}}return saveItem(it||_rE,ix)}catch(e){return null}}
+  function read(){if(window.__oaiMapYellowV4)return window.__oaiMapYellowV4;try{return JSON.parse(sessionStorage.getItem(MAP_KEY)||'null')}catch(e){return null}}
+  function find(st){if(!st)return null;var a=arr();if(st.idx>=0&&a[st.idx])return{item:a[st.idx],idx:st.idx};for(var i=0;i<a.length;i++){var it=a[i];if(!it)continue;if(st.name&&it.name===st.name)return{item:it,idx:i};if(Math.abs(Number(it.lat)-Number(st.lat))<0.000001&&Math.abs(Number(it.lng)-Number(st.lng))<0.000001)return{item:it,idx:i}}return null}
+  function routeOpen(){var r=$('sheet-route');return !!(r&&r.classList.contains('open'))}
+  function clearRouteOnly(){try{if(typeof _polyline!=='undefined'&&_polyline){_polyline.setMap(null);_polyline=null}}catch(e){}try{if(typeof _clearRouteTmpMarkers==='function')_clearRouteTmpMarkers()}catch(e){}try{if(typeof _showJukrimgulParkingMkr==='function')_showJukrimgulParkingMkr(false)}catch(e){}try{var g=$('route-guide');if(g)g.classList.remove('on')}catch(e){}try{if(typeof _setRouteLabel==='function'){_setRouteLabel('start','');_setRouteLabel('end','')}}catch(e){}try{var res=$('rs-result');if(res)res.style.display='none';var h=$('rs-hint');if(h)h.style.display='block';var b=$('rs-search-btn');if(b)b.style.display='none'}catch(e){}try{_rS=null;_rE=null;_routeMode=false}catch(e){}}
+  function yellow(card){if(routeOpen())return;var f=find(read());if(!f||!f.item)return;if(typeof _mode!=='undefined'&&read().mode&&read().mode!==_mode)return;try{if(typeof _restoreMapMarkers==='function')_restoreMapMarkers()}catch(e){}try{if(_mode==='shrine'&&typeof _selectShrineMarker==='function')_selectShrineMarker(f.idx);else if(_mode==='parish'&&typeof _selectParishMarker==='function')_selectParishMarker(f.item);else if(_mode==='retreat'&&typeof _selectRetreatMarker==='function')_selectRetreatMarker(f.item)}catch(e){}try{if(card&&typeof _showInfoCard==='function')_showInfoCard(f.item,f.idx)}catch(e){}try{if(card&&typeof _focusMarkerAboveInfoCard==='function')setTimeout(function(){_focusMarkerAboveInfoCard(f.item)},70)}catch(e){}}
+  function finish(card){saveEnd();clearRouteOnly();try{if(typeof _restoreMapMarkers==='function')_restoreMapMarkers()}catch(e){};[40,140,320,700].forEach(function(ms){setTimeout(function(){yellow(card)},ms)})}
+  function wrap(n,m,t){var o=window[n];if(typeof o!=='function'||o[t])return;window[n]=m(o);window[n][t]=true}
+  wrap('selectItem',function(o){return function(idx,opt){saveItem(arr()[idx],idx);return o.apply(this,arguments)}},'__oaiV4');
+  wrap('_showInfoCard',function(o){return function(it,idx){saveItem(it,idx);return o.apply(this,arguments)}},'__oaiV4');
+  wrap('openInAppRoute',function(o){return function(){try{if(typeof _curInfoItem!=='undefined'&&_curInfoItem)saveItem(_curInfoItem.item,_curInfoItem.idx)}catch(e){}return o.apply(this,arguments)}},'__oaiV4');
+  wrap('resetRoute',function(o){return function(){var had=saveEnd();var r=o.apply(this,arguments);clearRouteOnly();if(had)[70,220,520].forEach(function(ms){setTimeout(function(){yellow(false)},ms)});return r}},'__oaiV4');
+  wrap('closeTab',function(o){return function(name){if(name==='route'){var sh=$('sheet-route');if(sh)sh.classList.remove('open');finish(true);try{_activeTab=null;if(typeof _updateTabBtns==='function')_updateTabBtns(null)}catch(e){}return}return o.apply(this,arguments)}},'__oaiV4');
+  var rs=$('sheet-route');if(rs&&!rs.__oaiV4Obs){rs.__oaiV4Obs=true;new MutationObserver(function(){if(!routeOpen())finish(true)}).observe(rs,{attributes:true,attributeFilter:['class']})}
+  document.addEventListener('click',function(ev){var a=ev.target&&ev.target.closest&&ev.target.closest('a[href]');if(!a||!a.closest('#web-view,#trail-view,#diocese-view,#qna-view'))return;var h=a.getAttribute('href')||a.href||'';if(!h||h==='#'||/^javascript:/i.test(h))return;ev.preventDefault();ev.stopPropagation();try{ev.stopImmediatePropagation()}catch(e){}openNew(a.href||h);return false},true);
+  function keepDio(){var v=$('diocese-view');if(v&&v.classList.contains('open')){document.documentElement.classList.add('app-active');document.documentElement.classList.remove('parish-mode','retreat-mode');var c=$('cover');if(c)c.style.display='none'}}
+  function patchDio(){var f=$('diocese-frame');if(!f||!f.contentWindow)return;var d;try{d=f.contentWindow.document}catch(e){return}if(!d||!d.documentElement)return;try{d.documentElement.style.setProperty('--app-font-scale','1');var st=d.getElementById('oai-diocese-v4-stable-no-jump');if(!st){st=d.createElement('style');st.id='oai-diocese-v4-stable-no-jump';st.textContent='html,body{-webkit-text-size-adjust:100%!important;text-size-adjust:100%!important;overflow:hidden!important}.hd h1{font-size:20px!important;line-height:1.24!important;transition:none!important}.hd-sub{font-size:11px!important;line-height:1.25!important;transition:none!important}.hd,.header,header,.tab,.qbtn,button,a{transition:none!important}a[href]{touch-action:manipulation!important}';(d.head||d.documentElement).appendChild(st)}}catch(e){}try{d.querySelectorAll('a[href]').forEach(function(a){var h=a.getAttribute('href')||'';if(h&&h!=='#'&&!/^javascript:/i.test(h)){a.target='_blank';a.rel='noopener noreferrer'}})}catch(e){}if(!d.__oaiV4Capture){d.__oaiV4Capture=true;d.addEventListener('click',function(ev){var a=ev.target&&ev.target.closest&&ev.target.closest('a[href]');if(!a)return;var h=a.getAttribute('href')||a.href||'';if(!h||h==='#'||/^javascript:/i.test(h))return;ev.preventDefault();ev.stopPropagation();try{ev.stopImmediatePropagation()}catch(e){}keepDio();openNew(a.href||h);setTimeout(keepDio,80);setTimeout(keepDio,300);return false},true)}}
+  function sched(){[0,40,120,260,600,1000,1800].forEach(function(ms){setTimeout(function(){keepDio();patchDio()},ms)})}
+  var df=$('diocese-frame');if(df&&!df.__oaiV4Load){df.__oaiV4Load=true;df.addEventListener('load',sched)}
+  wrap('openDioceseView',function(o){return function(){var r=o.apply(this,arguments);sched();return r}},'__oaiV4');
+  document.addEventListener('visibilitychange',function(){if(!document.hidden){keepDio();setTimeout(function(){yellow(true);sched()},180)}});
+  window.addEventListener('pageshow',function(){keepDio();setTimeout(function(){yellow(true);sched()},220)});
+  setInterval(function(){var v=$('diocese-view');if(v&&v.classList.contains('open')){keepDio();patchDio()}},500);
+})();
+</script>
+
 </body>
 </html>
