@@ -6483,5 +6483,261 @@ html,body{overflow-x:hidden!important;overscroll-behavior-x:none!important;}
 })();
 </script>
 
+
+
+<!-- OAI FINAL USER PATCH 20260502-3: info-card box uniform + qna-style refresh + all-non-map refresh + marker focus fix -->
+<style id="oai-final-box-refresh-marker-20260502-3">
+/* 성지/성당/피정 인포카드 내부 박스: 높이·가로·정렬 완전 통일 */
+#info-card .ic-btn-row,
+#info-card .ic-links,
+#info-card #ic-links-row{
+  display:flex!important;
+  align-items:stretch!important;
+  gap:8px!important;
+  padding-left:14px!important;
+  padding-right:14px!important;
+  box-sizing:border-box!important;
+  width:100%!important;
+}
+#info-card .ic-btn-row > *,
+#info-card .ic-links > *,
+#info-card #ic-links-row > *,
+#info-card .ic-tel-btn,
+#info-card .ic-route-btn,
+#info-card .ic-link-btn,
+#info-card .btn-kakao-nav,
+#info-card .ic-hp-btn,
+#info-card .ic-guide-btn{
+  flex:1 1 0!important;
+  width:auto!important;
+  min-width:0!important;
+  max-width:none!important;
+  height:46px!important;
+  min-height:46px!important;
+  max-height:46px!important;
+  padding:0 10px!important;
+  margin:0!important;
+  box-sizing:border-box!important;
+  border-radius:10px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  text-align:center!important;
+  font-size:14px!important;
+  font-weight:700!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+#info-card .ic-btn-row span,
+#info-card .ic-links span,
+#info-card #ic-links-row span,
+#info-card .ic-tel,
+#info-card .ic-tel-icon{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  line-height:1!important;
+  min-height:0!important;
+}
+#info-card .ic-links,
+#info-card #ic-links-row{margin-top:8px!important;}
+
+/* 커버 새로고침 표시: 문의·건의 버튼 계열 스타일로 변경 */
+#cv-pull-modern{
+  position:fixed!important;
+  top:50%!important;
+  left:50%!important;
+  transform:translate(-50%,-50%) scale(.96)!important;
+  min-width:152px!important;
+  height:48px!important;
+  padding:0 18px!important;
+  border-radius:999px!important;
+  background:linear-gradient(135deg,#1f2a44,#31446c)!important;
+  color:#fff!important;
+  border:1px solid rgba(255,255,255,.16)!important;
+  box-shadow:0 10px 24px rgba(31,42,68,.28)!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:8px!important;
+  opacity:0!important;
+  pointer-events:none!important;
+  z-index:10001!important;
+  transition:opacity .18s ease, transform .18s ease!important;
+}
+#cv-pull-modern.show{
+  opacity:1!important;
+  transform:translate(-50%,-50%) scale(1)!important;
+}
+#cv-pull-modern .cv-pull-ring{
+  width:22px!important;
+  height:22px!important;
+  background:transparent!important;
+  flex:0 0 22px!important;
+}
+#cv-pull-modern .cv-pull-icon{
+  width:22px!important;
+  height:22px!important;
+  color:#fff!important;
+}
+#cv-pull-modern::after{
+  content:'당겨서 새로고침';
+  font-size:13px!important;
+  font-weight:800!important;
+  line-height:1!important;
+  letter-spacing:-.02em!important;
+  white-space:nowrap!important;
+}
+#cv-pull-modern.ready::after{content:'놓으면 새로고침';}
+#cv-pull-modern.refreshing::after{content:'새로고침 중';}
+</style>
+<script id="oai-final-box-refresh-marker-20260502-3">
+(function(){
+  'use strict';
+  if(window.__OAI_FINAL_BOX_REFRESH_MARKER_20260502_3__) return;
+  window.__OAI_FINAL_BOX_REFRESH_MARKER_20260502_3__ = true;
+  function $(id){return document.getElementById(id);}
+  function isEditable(t){return !!(t && (t.closest && t.closest('input,textarea,[contenteditable="true"')));}
+  function isMapArea(t){return !!(t && t.closest && (t.closest('#map-wrap') || t.closest('#map') || t.closest('#trail-map')));}
+  function visible(el){return !!(el && (el.offsetWidth || el.offsetHeight || el.getClientRects().length));}
+  function topScrollableFrom(target){
+    var n = target;
+    while(n && n !== document.body && n !== document.documentElement){
+      try{
+        var st = getComputedStyle(n);
+        var oy = st.overflowY;
+        if((oy === 'auto' || oy === 'scroll') && n.scrollHeight > n.clientHeight + 2) return n;
+      }catch(e){}
+      n = n.parentElement;
+    }
+    return document.scrollingElement || document.documentElement;
+  }
+  function canRefreshFrom(target){
+    if(isEditable(target) || isMapArea(target)) return false;
+    if($('srch-modal') && $('srch-modal').classList.contains('open')) return false;
+    // 지도 자체는 제외. 단, 모듈/목록/검색/기도문/웹사이트/관구교구 등 화면은 허용.
+    var inAllowed = target && target.closest && target.closest('#cover,.module-view,.sheet,#missa-view,#diocese-view,#prayer-view,#qna-view,#web-view,#trail-view');
+    if(!inAllowed) return false;
+    var sc = topScrollableFrom(target);
+    try{ if(sc && sc.scrollTop > 2) return false; }catch(e){}
+    return true;
+  }
+  function showIndicator(state){
+    var ind = $('cv-pull-modern');
+    if(!ind) return;
+    ind.classList.add('show');
+    ind.classList.toggle('ready', state === 'ready');
+    ind.classList.toggle('refreshing', state === 'refreshing');
+  }
+  function hideIndicator(){
+    var ind = $('cv-pull-modern');
+    if(!ind) return;
+    ind.classList.remove('show','ready','refreshing');
+  }
+  function bindUniversalPullRefresh(){
+    if(document.__oaiUniversalPullRefresh20260502_3) return;
+    document.__oaiUniversalPullRefresh20260502_3 = true;
+    var startY=0, startX=0, active=false, ready=false, refreshing=false;
+    var TH=92;
+    document.addEventListener('touchstart', function(e){
+      if(refreshing || !e.touches || !e.touches[0]) return;
+      if(!canRefreshFrom(e.target)) return;
+      startY = e.touches[0].clientY;
+      startX = e.touches[0].clientX;
+      active = true; ready = false;
+    }, {passive:true});
+    document.addEventListener('touchmove', function(e){
+      if(!active || refreshing || !e.touches || !e.touches[0]) return;
+      var dy = e.touches[0].clientY - startY;
+      var dx = e.touches[0].clientX - startX;
+      if(Math.abs(dx) > Math.abs(dy) * 1.25) { active=false; hideIndicator(); return; }
+      if(dy > 14){
+        ready = dy >= TH;
+        showIndicator(ready ? 'ready' : 'pull');
+      }
+    }, {passive:true});
+    document.addEventListener('touchend', function(){
+      if(!active) return;
+      active = false;
+      if(ready){
+        refreshing = true;
+        showIndicator('refreshing');
+        try{navigator.vibrate && navigator.vibrate([35,25,45]);}catch(e){}
+        setTimeout(function(){ location.reload(); }, 360);
+      }else{
+        hideIndicator();
+      }
+      ready = false;
+    }, {passive:true});
+    document.addEventListener('touchcancel', function(){ active=false; ready=false; hideIndicator(); }, {passive:true});
+  }
+
+  // 노랑마커 위치 보정: Kakao projection에 반드시 kakao.maps.Point를 넘겨 실제 반영되도록 재정의.
+  function focusMarkerAboveInfoCardFixed(item){
+    if(!item || item.lat == null || item.lng == null) return;
+    try{
+      if(typeof _map === 'undefined' || !_map || typeof _LL !== 'function') return;
+      var pos = new _LL(Number(item.lat), Number(item.lng));
+      var mapEl = $('map-wrap') || $('map');
+      var cardEl = $('info-card');
+      if(!mapEl) return;
+      try{ if(_map.relayout) _map.relayout(); }catch(e){}
+      try{ _map.setCenter(pos); }catch(e){}
+      [60,180,360,700,1050].forEach(function(delay){
+        setTimeout(function(){
+          try{
+            mapEl = $('map-wrap') || $('map');
+            cardEl = $('info-card');
+            if(!_map || !mapEl) return;
+            var proj = _map.getProjection && _map.getProjection();
+            if(!proj || !proj.containerPointFromCoords || !proj.coordsFromContainerPoint) return;
+            var mapH = mapEl.clientHeight || mapEl.offsetHeight || window.innerHeight;
+            var mapW = mapEl.clientWidth || mapEl.offsetWidth || window.innerWidth;
+            var cardOpen = cardEl && cardEl.classList.contains('open') && visible(cardEl);
+            var cardH = cardOpen ? Math.min(cardEl.offsetHeight || Math.round(mapH*.52), Math.round(mapH*.60)) : 0;
+            var tabH = ($('tabbar') && $('tabbar').offsetHeight) || 0;
+            var topSafe = Math.max(tabH + 26, 82);
+            var bottomSafe = cardOpen ? Math.max(topSafe + 140, mapH - cardH - 54) : Math.round(mapH * .58);
+            var visibleH = Math.max(150, bottomSafe - topSafe);
+            // 인포카드가 열렸을 때 마커를 보이는 영역의 위쪽 30% 정도로 올림.
+            var targetX = mapW / 2;
+            var targetY = Math.round(topSafe + visibleH * 0.30);
+            var pt = proj.containerPointFromCoords(pos);
+            if(!pt) return;
+            var centerX = mapW / 2;
+            var centerY = mapH / 2;
+            var newCenterPoint = new kakao.maps.Point(pt.x + (centerX - targetX), pt.y + (centerY - targetY));
+            var newCenter = proj.coordsFromContainerPoint(newCenterPoint);
+            if(newCenter) _map.setCenter(newCenter);
+          }catch(e){}
+        }, delay);
+      });
+    }catch(e){}
+  }
+  window.oaiFocusMarkerAboveInfoCard = focusMarkerAboveInfoCardFixed;
+  try{ window._focusMarkerAboveInfoCard = _focusMarkerAboveInfoCard = focusMarkerAboveInfoCardFixed; }catch(e){}
+  function wrapShowInfoCardAgain(){
+    try{
+      if(typeof _showInfoCard !== 'function' || _showInfoCard.__oaiFinalFocusWrapped20260502_3) return;
+      var old = _showInfoCard;
+      _showInfoCard = function(item, idx){
+        var r = old.apply(this, arguments);
+        focusMarkerAboveInfoCardFixed(item);
+        return r;
+      };
+      _showInfoCard.__oaiFinalFocusWrapped20260502_3 = true;
+      window._showInfoCard = _showInfoCard;
+    }catch(e){}
+  }
+  function init(){ bindUniversalPullRefresh(); wrapShowInfoCardAgain(); }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+  window.addEventListener('load', init);
+  window.addEventListener('pageshow', init);
+  try{ new MutationObserver(init).observe(document.documentElement, {childList:true, subtree:true}); }catch(e){}
+})();
+</script>
+
 </body>
 </html>
