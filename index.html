@@ -6643,5 +6643,129 @@ html.retreat-mode .region-search-btn{width:82px!important;min-width:82px!importa
   document.addEventListener('backbutton',handle,true);
 })();
 </script>
+
+
+<!-- OAI PATCH 20260502-11: robust cover-only double back exit, blocks previous-step restore -->
+<style id="oai-cover-exit-toast-style-20260502-11">
+#oai-cover-exit-toast{position:fixed!important;left:50%!important;bottom:calc(92px + env(safe-area-inset-bottom,0px))!important;transform:translateX(-50%) translateY(10px)!important;z-index:2147483647!important;min-height:42px!important;padding:0 18px!important;border-radius:999px!important;background:rgba(31,42,68,.94)!important;color:#fff!important;display:flex!important;align-items:center!important;justify-content:center!important;font-size:13px!important;font-weight:900!important;line-height:1!important;white-space:nowrap!important;box-shadow:0 10px 24px rgba(31,42,68,.28)!important;opacity:0!important;pointer-events:none!important;transition:opacity .16s ease,transform .16s ease!important}
+#oai-cover-exit-toast.show{opacity:1!important;transform:translateX(-50%) translateY(0)!important}
+</style>
+<script id="oai-cover-back-exit-robust-20260502-11">
+(function(){
+  'use strict';
+  if(window.__OAI_COVER_BACK_EXIT_ROBUST_20260502_11__) return;
+  window.__OAI_COVER_BACK_EXIT_ROBUST_20260502_11__ = true;
+
+  var lastBack = 0;
+  var exiting = false;
+  var guardReady = false;
+
+  function $(id){ return document.getElementById(id); }
+
+  function isCover(){
+    var h = document.documentElement;
+    var c = $('cover');
+    return !!(c && !h.classList.contains('app-active') && getComputedStyle(c).display !== 'none');
+  }
+
+  function cleanCoverOnly(){
+    try{
+      document.querySelectorAll('.module-view.open,#prayer-view.open,#diocese-view.open,#missa-view.open,.sheet.open,.trail-sheet.open,#srch-modal.open,#info-card.open,#exit-dlg.open').forEach(function(v){
+        v.classList.remove('open','show');
+      });
+    }catch(e){}
+    try{ document.documentElement.classList.remove('app-active','parish-mode','retreat-mode'); }catch(e){}
+    try{
+      var c = $('cover');
+      if(c){ c.style.display=''; c.style.opacity=''; c.style.pointerEvents=''; }
+    }catch(e){}
+  }
+
+  function toast(){
+    var t = $('oai-cover-exit-toast');
+    if(!t){
+      t = document.createElement('div');
+      t.id = 'oai-cover-exit-toast';
+      t.textContent = '뒤로가기를 한 번 더 누르면 종료됩니다';
+      document.body.appendChild(t);
+    }
+    t.classList.add('show');
+    clearTimeout(t.__tm);
+    t.__tm = setTimeout(function(){ try{ t.classList.remove('show'); }catch(e){} }, 1300);
+  }
+
+  function makeGuard(){
+    if(!isCover() || exiting || guardReady) return;
+    try{
+      history.pushState({__oaiCoverExitGuard11:true}, document.title, location.href);
+      guardReady = true;
+    }catch(e){}
+  }
+
+  function reallyExit(){
+    exiting = true;
+    try{ var t=$('oai-cover-exit-toast'); if(t) t.classList.remove('show'); }catch(e){}
+    try{
+      sessionStorage.setItem('oai_force_cover_after_reload','1');
+      sessionStorage.removeItem('oai_last_open_module');
+      sessionStorage.removeItem('lastCategory');
+      sessionStorage.removeItem('oai_restore_action');
+      sessionStorage.removeItem('oai_last_action');
+    }catch(e){}
+    try{ if(navigator.app && typeof navigator.app.exitApp === 'function'){ navigator.app.exitApp(); return; } }catch(e){}
+    try{ window.close(); }catch(e){}
+    setTimeout(function(){
+      try{ history.go(-2); }
+      catch(e){ try{ history.back(); }catch(_){} }
+    }, 20);
+  }
+
+  function coverBack(e){
+    if(exiting) return false;
+    if(!isCover()) { guardReady=false; return false; }
+
+    try{
+      e && e.preventDefault && e.preventDefault();
+      e && e.stopPropagation && e.stopPropagation();
+      e && e.stopImmediatePropagation && e.stopImmediatePropagation();
+    }catch(_){}
+
+    cleanCoverOnly();
+    var now = Date.now();
+    if(now - lastBack < 1700){
+      lastBack = 0;
+      reallyExit();
+      return true;
+    }
+
+    lastBack = now;
+    toast();
+    guardReady = false;
+    makeGuard();
+    return true;
+  }
+
+  window.addEventListener('popstate', function(e){
+    if(coverBack(e)) return;
+  }, true);
+
+  document.addEventListener('backbutton', function(e){
+    if(coverBack(e)) return;
+  }, true);
+
+  function watchCover(){
+    if(isCover()) makeGuard();
+    else guardReady=false;
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', watchCover);
+  else watchCover();
+
+  try{
+    new MutationObserver(watchCover).observe(document.documentElement,{attributes:true,attributeFilter:['class']});
+  }catch(e){}
+})();
+</script>
+
 </body>
 </html>
