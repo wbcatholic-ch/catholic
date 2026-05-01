@@ -1295,17 +1295,6 @@ html.retreat-mode .tab-btn.active{
   50%{ transform:translateY(-4px); }
 }
 
-/* PWA 설치 카드 - cover-card와 동일 스타일 */
-#pwa-install-btn {
-  /* cover-card 스타일 상속 (class 추가 대신 직접 선언) */
-  background: linear-gradient(135deg, #1a5c2a, #2e8b47) !important;
-  color: #fff !important;
-  border: none;
-  animation: pwa-pulse 2.5s infinite;
-}
-#pwa-install-btn .cover-emoji { filter: none; }
-@keyframes pwa-pulse {
-  0%,100%{ box-shadow: 0 2px 10px rgba(46,139,71,0.3); }
   50%{ box-shadow: 0 4px 20px rgba(46,139,71,0.6); }
 }
 </style>
@@ -1431,12 +1420,6 @@ html.retreat-mode .tab-btn.active{
         <button id="cc-8" class="cover-card" onclick="hideCoverAndRun(function(){ openDioceseView(); })">
             <div class="cover-icon-wrap"><span class="cover-emoji" aria-hidden="true">🧭</span></div>
             <span class="cover-name">관구·교구 알아보기</span>
-
-        <!-- PWA 설치 카드 (cover-grid 내) -->
-        <button id="pwa-install-btn" class="cover-card" onclick="triggerPwaInstall()" style="display:none;" aria-label="앱 설치">
-            <div class="cover-icon-wrap"><span class="cover-emoji" aria-hidden="true">📲</span></div>
-            <span class="cover-name">앱 설치</span>
-        </button>
         </button>
     </div>
 </div>
@@ -5813,40 +5796,14 @@ function init(){ensureQna();applyFont();injectDioceseAll();relayoutAll()}documen
 })();
 </script>
 <script>
-// ── 서비스 워커 등록 ──
+// 서비스 워커 등록 (PWA - 크롬 주소창에서 자동 설치 아이콘 표시)
 if('serviceWorker' in navigator){
   window.addEventListener('load', function(){
     navigator.serviceWorker.register('./sw.js', {scope: './'})
-      .then(function(reg){ console.log('[SW] 등록:', reg.scope); })
-      .catch(function(err){ console.warn('[SW] 실패:', err); });
+      .then(function(r){ console.log('[SW]', r.scope); })
+      .catch(function(e){ console.warn('[SW] 실패', e); });
   });
 }
-
-// ── PWA 설치 버튼 ──
-var _pwaPrompt = null;
-window.addEventListener('beforeinstallprompt', function(e){
-  e.preventDefault();
-  _pwaPrompt = e;
-  var btn = document.getElementById('pwa-install-btn');
-  if(btn) btn.style.display = 'flex';
-});
-window.addEventListener('appinstalled', function(){
-  var btn = document.getElementById('pwa-install-btn');
-  if(btn) btn.style.display = 'none';
-  _pwaPrompt = null;
-});
-window.triggerPwaInstall = function(){
-  if(_pwaPrompt){
-    _pwaPrompt.prompt();
-    _pwaPrompt.userChoice.then(function(r){
-      if(r.outcome==='accepted'){
-        var btn = document.getElementById('pwa-install-btn');
-        if(btn) btn.style.display = 'none';
-      }
-      _pwaPrompt = null;
-    });
-  }
-};
 </script>
 </body>
 </html>
