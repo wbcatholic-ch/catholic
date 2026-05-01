@@ -1545,94 +1545,7 @@ function hideCoverAndRun(callback) {
 function _doBack() {} // 하위호환용 stub
 function handleBack() {} // 하위호환용 stub
 
-(function(){
-  const cover = document.getElementById('cover');
-  const indicator = document.getElementById('cv-pull-modern');
-  let startY = 0;
-  let currentY = 0;
-  let pulling = false;
-  let ready = false;
-  let refreshing = false;
-
-  const THRESHOLD = 96;
-  const MAX_PULL = 140;
-
-  function canStartPull(){
-    if(refreshing) return false;
-    if(document.documentElement.classList.contains('app-active')) return false;
-    if(cover.style.display === 'none') return false;
-    if(cover.scrollTop > 0) return false;
-    return true;
-  }
-
-  function resetIndicator(){
-    indicator.classList.remove('show','ready','refreshing');
-  }
-
-  cover.addEventListener('touchstart', function(e){
-    if(!canStartPull()) return;
-    startY = e.touches[0].clientY;
-    currentY = startY;
-    pulling = true;
-    ready = false;
-    /* 화면 전체는 움직이지 않음: 새로고침 표시만 움직임 */
-  }, { passive:true });
-
-  cover.addEventListener('touchmove', function(e){
-    if(!pulling || refreshing) return;
-    currentY = e.touches[0].clientY;
-    let dy = currentY - startY;
-    if(dy <= 0){
-      /* 화면 이동 없음 */
-      resetIndicator();
-      ready = false;
-      return;
-    }
-    dy = Math.min(dy, MAX_PULL);
-    const visualPull = dy * 0.42;
-    try{ indicator.style.transform = 'translate(-50%, calc(-50% + ' + Math.round(visualPull * 0.55) + 'px)) scale(1)'; }catch(ex){}
-    indicator.classList.add('show');
-    if(dy >= THRESHOLD){
-      if(!ready){
-        /* 준비 단계 진동 제거: 놓을 때 한 번만 진동 */
-      }
-      ready = true;
-      indicator.classList.add('ready');
-    } else {
-      ready = false;
-      indicator.classList.remove('ready');
-    }
-  }, { passive:true });
-
-  function finishPull(){
-    try{ indicator.style.transform = ''; }catch(ex){}
-  }
-
-  cover.addEventListener('touchend', function(){
-    if(!pulling) return;
-    pulling = false;
-    finishPull();
-    if(ready){
-      refreshing = true;
-      indicator.classList.remove('ready');
-      indicator.classList.add('show','refreshing');
-      try{ navigator.vibrate && navigator.vibrate(35); }catch(ex){}
-      setTimeout(function(){ location.reload(); }, 420);
-    } else {
-      resetIndicator();
-    }
-    ready = false;
-    startY = 0;
-    currentY = 0;
-  });
-
-  cover.addEventListener('touchcancel', function(){
-    pulling = false;
-    ready = false;
-    finishPull();
-    resetIndicator();
-  });
-})();
+/* OAI removed old pull-to-refresh handler: unified final handler below */
 </script>
 <div id="app"><div id="tabbar"><button class="tab-btn" data-tab="nearby" onclick="toggleTab('nearby')"><span class="tab-icon">📍</span><span id="tab-nearby-lbl">내주변</span></button><button class="tab-btn" data-tab="list" onclick="toggleTab('list')"><span class="tab-icon">📋</span><span id="tab-list-lbl">목록</span></button><button class="tab-btn" data-tab="region" onclick="toggleTab('region')"><span class="tab-icon">🔍</span>지역검색
     </button><button class="tab-btn" data-tab="route" onclick="toggleTab('route')"><span class="tab-icon">🧭</span>길찾기
@@ -3837,36 +3750,7 @@ function _fmtTime(s){
   if(m<60) return m+'분';
   return Math.floor(m/60)+'시간'+(m%60?' '+m%60+'분':'');
 }
-(function(){
-  const cover=$('cover');
-  const pull=$('cv-pull');
-  const txt=$('cv-pull-txt');
-  let startY=0, curY=0, active=false;
-  const THRESHOLD=80;
-  cover.addEventListener('touchstart',e=>{
-  if(document.documentElement.classList.contains('app-active')) return;
-  startY=e.touches[0].clientY; active=true;
-  },{passive:true});
-  cover.addEventListener('touchmove',e=>{
-  if(!active) return;
-  curY=e.touches[0].clientY;
-  const dy=curY-startY;
-  if(dy>10){
-   pull.classList.add('visible');
-   if(dy>=THRESHOLD){pull.classList.add('ready');txt.textContent='놓으면 새로고침';}
-   else{pull.classList.remove('ready');txt.textContent='당겨서 새로고침';}
-  }
-  },{passive:true});
-  cover.addEventListener('touchend',()=>{
-  if(!active) return; active=false;
-  const dy=curY-startY;
-  pull.classList.remove('visible','ready');
-  txt.textContent='당겨서 새로고침';
-  if(dy>=THRESHOLD) setTimeout(()=>location.reload(),120);
-  startY=curY=0;
-  });
-})();
-
+/* OAI removed legacy cv-pull handler */
 // ── 스와이프 탭 이동 (v9-7) ──────────────────────────────────────
 (function(){
   const TABS = ['nearby','list','region','route'];
@@ -6351,186 +6235,39 @@ html.app-active #cover #qna-cover-btn{display:none!important;}
 
 
 <!-- OAI CLEAN FINAL PATCH 20260502: taller tabs + stable upper-center marker + qna-style refresh + cover double-back -->
-<style id="oai-clean-final-tabs-refresh-marker-back-20260502">
-:root{--tab-h:78px!important;}
-#tabbar{height:calc(78px + env(safe-area-inset-top,0px))!important;min-height:calc(78px + env(safe-area-inset-top,0px))!important;padding-left:6px!important;padding-right:6px!important;gap:6px!important;align-items:center!important;}
-#map-wrap{top:calc(78px + env(safe-area-inset-top,0px))!important;}
-#tabbar .tab-btn{height:64px!important;min-height:64px!important;padding:8px 2px 9px!important;gap:5px!important;justify-content:center!important;border-radius:14px!important;font-size:14px!important;line-height:1.22!important;}
-#tabbar .tab-icon{font-size:25px!important;line-height:1!important;}
-#tabbar .tab-btn.active .tab-icon{font-size:27px!important;}
-#tabbar .tab-btn span:not(.tab-icon){display:block!important;line-height:1.25!important;white-space:nowrap!important;}
-.sheet{top:calc(78px + env(safe-area-inset-top,0px))!important;}
-#sheet-route{top:auto!important;}
-.filter-bar{min-height:62px!important;padding:10px 12px!important;align-items:center!important;}
-.filter-btn,.sm-fb{min-height:42px!important;padding:9px 16px!important;font-size:13px!important;border-radius:20px!important;}
-.region-wrap{padding-top:13px!important;padding-bottom:13px!important;}
-.region-search-btn{height:46px!important;min-height:46px!important;padding:0 18px!important;border-radius:23px!important;font-size:13px!important;}
-.srch-inner{height:46px!important;min-height:46px!important;}
-#sm-tab-bar{height:74px!important;min-height:74px!important;padding:12px!important;gap:10px!important;}
-#sm-tab-bar .sm-tab{height:50px!important;min-height:50px!important;padding:0 10px!important;font-size:16px!important;line-height:1.2!important;border-radius:16px!important;display:flex!important;align-items:center!important;justify-content:center!important;}
-#cv-pull-modern{position:fixed!important;left:50%!important;top:50%!important;transform:translate(-50%,-50%) scale(.96)!important;z-index:10030!important;opacity:0!important;pointer-events:none!important;transition:opacity .16s ease,transform .16s ease!important;background:linear-gradient(135deg,#1f2a44,#31446c)!important;color:#fff!important;border-radius:999px!important;box-shadow:0 10px 24px rgba(31,42,68,.25)!important;padding:0 18px!important;min-height:44px!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:8px!important;}
-#cv-pull-modern.show{opacity:1!important;transform:translate(-50%,-50%) scale(1)!important;}
-#cv-pull-modern.ready{transform:translate(-50%,-50%) scale(1.04)!important;}
-#cv-pull-modern .cv-pull-ring{width:auto!important;height:44px!important;background:transparent!important;display:flex!important;align-items:center!important;justify-content:center!important;}
-#cv-pull-modern .cv-pull-icon{width:22px!important;height:22px!important;color:#fff!important;}
-#cv-pull-modern::after{content:'새로고침';font-family:inherit!important;font-size:13px!important;font-weight:900!important;line-height:1!important;color:#fff!important;white-space:nowrap!important;}
-#cv-pull-modern.ready::after{content:'놓으면 새로고침';}
-#cv-pull-modern.refreshing::after{content:'새로고침 중';}
-#cv-pull-modern.refreshing .cv-pull-icon{animation:cv-pull-spin .75s linear infinite!important;}
-#cover #qna-cover-btn{display:flex!important;align-items:center!important;justify-content:center!important;background:linear-gradient(135deg,#1f2a44,#31446c)!important;color:#fff!important;border-radius:999px!important;box-shadow:0 10px 24px rgba(31,42,68,.25)!important;font-weight:900!important;}
-</style>
-<script id="oai-clean-final-tabs-refresh-marker-back-20260502">
-(function(){
-  'use strict';
-  if(window.__OAI_CLEAN_FINAL_TABS_REFRESH_MARKER_BACK_20260502__) return;
-  window.__OAI_CLEAN_FINAL_TABS_REFRESH_MARKER_BACK_20260502__=true;
-  function $(id){return document.getElementById(id);}
-  function isCoverVisible(){var html=document.documentElement, cover=$('cover');return !!(cover && !html.classList.contains('app-active') && cover.style.display!=='none');}
-  function ll(item){try{if(!item) return null;var lat=Number(item.lat),lng=Number(item.lng);if(!isFinite(lat)||!isFinite(lng)) return null;if(typeof _LL==='function') return new _LL(lat,lng);if(window.kakao&&kakao.maps) return new kakao.maps.LatLng(lat,lng);}catch(e){}return null;}
-  function point(x,y){try{if(window.kakao&&kakao.maps&&kakao.maps.Point) return new kakao.maps.Point(x,y);}catch(e){}return {x:x,y:y};}
-  window._focusMarkerAboveInfoCard=function(item){
-    try{
-      if(typeof _map==='undefined'||!_map) return;
-      var pos=ll(item); if(!pos) return;
-      var mapEl=$('map-wrap')||$('map');
-      var h=(mapEl&&(mapEl.clientHeight||mapEl.offsetHeight))||window.innerHeight||700;
-      var proj=_map.getProjection&&_map.getProjection();
-      if(proj&&proj.containerPointFromCoords&&proj.coordsFromContainerPoint){
-        var p=proj.containerPointFromCoords(pos);
-        if(p&&isFinite(p.x)&&isFinite(p.y)){
-          var centerY=Math.round(h/2);
-          var targetY=Math.round(h*0.34);
-          var nc=proj.coordsFromContainerPoint(point(p.x,p.y+(centerY-targetY)));
-          if(nc){_map.setCenter(nc);return;}
-        }
-      }
-      _map.setCenter(pos);
-    }catch(e){}
-  };
-  function installRefresh(){
-    var cover=$('cover'), ind=$('cv-pull-modern'); if(!cover||!ind||cover.__oaiCleanFinalRefresh) return; cover.__oaiCleanFinalRefresh=true;
-    var sx=0, sy=0, active=false, ready=false, refreshing=false, TH=92, MAX=138;
-    function show(state){ind.classList.add('show');ind.classList.toggle('ready',state==='ready');ind.classList.toggle('refreshing',state==='refreshing');}
-    function hide(){ind.classList.remove('show','ready','refreshing');}
-    cover.addEventListener('touchstart',function(e){if(refreshing||!isCoverVisible()||cover.scrollTop>0||!e.touches||!e.touches[0]) return;sx=e.touches[0].clientX;sy=e.touches[0].clientY;active=true;ready=false;},{passive:true,capture:true});
-    cover.addEventListener('touchmove',function(e){if(!active||refreshing||!e.touches||!e.touches[0]) return;var dx=e.touches[0].clientX-sx,dy=e.touches[0].clientY-sy;if(Math.abs(dx)>Math.abs(dy)*1.2) return;if(dy<=0){ready=false;hide();return;}if(e.cancelable)e.preventDefault();var p=Math.min(dy,MAX);ready=p>=TH;show(ready?'ready':'show');},{passive:false,capture:true});
-    cover.addEventListener('touchend',function(){if(!active) return;active=false;if(ready){refreshing=true;show('refreshing');try{navigator.vibrate&&navigator.vibrate(55);}catch(e){}setTimeout(function(){location.reload();},380);}else hide();ready=false;},{passive:true,capture:true});
-    cover.addEventListener('touchcancel',function(){active=false;ready=false;hide();},{passive:true,capture:true});
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',installRefresh,{once:true});else installRefresh();
-  var exitReady=false, exitTimer=0;
-  window._showBackToast=function(){
-    if(!isCoverVisible()) return;
-    if(exitReady){exitReady=false;clearTimeout(exitTimer);try{var old=$('_bt');if(old) old.remove();}catch(e){}try{if(typeof doExit==='function')doExit();else if(typeof attemptAppExit==='function')attemptAppExit();else history.go(-2);}catch(e){try{history.go(-2);}catch(_){}}return;}
-    exitReady=true;try{var prev=$('_bt');if(prev)prev.remove();}catch(e){}
-    var t=document.createElement('div');t.id='_bt';t.textContent='한 번 더 누르면 앱을 종료합니다';t.style.cssText='position:fixed;bottom:calc(env(safe-area-inset-bottom,0px)+32px);left:50%;transform:translateX(-50%);background:rgba(14,21,53,.92);color:#fff;padding:10px 22px;border-radius:22px;font-size:13px;font-weight:700;z-index:99999;white-space:nowrap;pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,.3);';document.body.appendChild(t);
-    clearTimeout(exitTimer);exitTimer=setTimeout(function(){exitReady=false;try{if(t.parentNode)t.remove();}catch(e){}},2500);
-  };
-})();
-</script>
 
 
 
 <!-- OAI STABILITY PATCH 20260502-USER-FINAL: taller shrine/parish/retreat tabs + qna-style refresh + stable upper marker -->
-<style id="oai-user-final-tabs-refresh-marker-20260502">
-/* 성지·성당·피정 상단 탭: 찌그러짐 방지용 최종 확대 */
-:root{--tab-h:88px!important;}
-#tabbar{
-  height:calc(88px + env(safe-area-inset-top,0px))!important;
-  min-height:calc(88px + env(safe-area-inset-top,0px))!important;
-  padding:calc(env(safe-area-inset-top,0px) + 7px) 8px 7px!important;
-  gap:7px!important;
-  align-items:center!important;
-}
-#map-wrap{top:calc(88px + env(safe-area-inset-top,0px))!important;}
-.sheet{top:calc(88px + env(safe-area-inset-top,0px))!important;}
+
+
+<!-- OAI FINAL STABILITY PATCH 20260502: refresh reset + one-back missa + compact info buttons -->
+<style id="oai-final-refresh-missa-infobutton-20260502">
+/* 성지·성당·피정 탭 높이: 찌그러짐 방지 */
+:root{--tab-h:92px!important;}
+#tabbar{height:calc(92px + env(safe-area-inset-top,0px))!important;min-height:calc(92px + env(safe-area-inset-top,0px))!important;padding:calc(env(safe-area-inset-top,0px) + 8px) 8px 8px!important;gap:8px!important;align-items:center!important;}
+#map-wrap{top:calc(92px + env(safe-area-inset-top,0px))!important;}
+.sheet{top:calc(92px + env(safe-area-inset-top,0px))!important;}
 #sheet-route{top:auto!important;}
-#tabbar .tab-btn{
-  height:72px!important;
-  min-height:72px!important;
-  padding:9px 3px 10px!important;
-  gap:6px!important;
-  justify-content:center!important;
-  border-radius:16px!important;
-  font-size:15px!important;
-  line-height:1.24!important;
-  white-space:normal!important;
-}
-#tabbar .tab-icon{font-size:27px!important;line-height:1!important;}
-#tabbar .tab-btn.active .tab-icon{font-size:29px!important;}
-#tabbar .tab-btn span:not(.tab-icon){display:block!important;line-height:1.25!important;white-space:nowrap!important;}
-/* 피정의집/내주변/지역검색 등 내부 탭과 검색 버튼도 같은 높이감으로 확대 */
-.filter-bar{
-  min-height:70px!important;
-  height:auto!important;
-  padding:12px 12px!important;
-  align-items:center!important;
-  gap:8px!important;
-}
-.filter-btn,.sm-fb{
-  min-height:48px!important;
-  height:48px!important;
-  padding:0 18px!important;
-  border-radius:24px!important;
-  font-size:14px!important;
-  font-weight:800!important;
-  display:flex!important;
-  align-items:center!important;
-  justify-content:center!important;
-}
-.region-wrap{padding-top:15px!important;padding-bottom:15px!important;}
-.region-row{gap:9px!important;}
-.region-search-btn{
-  height:50px!important;
-  min-height:50px!important;
-  padding:0 20px!important;
-  border-radius:25px!important;
-  font-size:14px!important;
-}
-.srch-bar{padding:10px 12px 9px!important;}
-.srch-inner{height:50px!important;min-height:50px!important;border-radius:25px!important;}
-#sm-tab-bar{
-  height:82px!important;
-  min-height:82px!important;
-  padding:14px 12px!important;
-  gap:10px!important;
-  align-items:center!important;
-}
-#sm-tab-bar .sm-tab{
-  height:54px!important;
-  min-height:54px!important;
-  padding:0 12px!important;
-  font-size:16px!important;
-  line-height:1.25!important;
-  border-radius:17px!important;
-  display:flex!important;
-  align-items:center!important;
-  justify-content:center!important;
-}
-/* 새로고침: 문의·건의와 같은 알약형 디자인, 화면은 고정/표시만 반응 */
-#cv-pull-modern{
-  position:fixed!important;
-  left:50%!important;
-  top:50%!important;
-  right:auto!important;
-  bottom:auto!important;
-  transform:translate(-50%,-50%) scale(.96)!important;
-  z-index:10030!important;
-  opacity:0!important;
-  pointer-events:none!important;
-  transition:opacity .14s ease,transform .14s ease!important;
-  background:linear-gradient(135deg,#1f2a44,#31446c)!important;
-  color:#fff!important;
-  border:0!important;
-  border-radius:999px!important;
-  box-shadow:0 10px 24px rgba(31,42,68,.25)!important;
-  padding:0 19px!important;
-  min-height:46px!important;
-  display:flex!important;
-  align-items:center!important;
-  justify-content:center!important;
-  gap:8px!important;
-}
+#tabbar .tab-btn{height:76px!important;min-height:76px!important;padding:10px 3px!important;gap:6px!important;justify-content:center!important;border-radius:17px!important;font-size:15px!important;line-height:1.22!important;white-space:normal!important;}
+#tabbar .tab-icon{font-size:28px!important;line-height:1!important;}
+#tabbar .tab-btn.active .tab-icon{font-size:30px!important;}
+#tabbar .tab-btn span:not(.tab-icon){display:block!important;line-height:1.22!important;white-space:nowrap!important;}
+.filter-bar{min-height:72px!important;height:auto!important;padding:13px 12px!important;align-items:center!important;gap:9px!important;}
+.filter-btn,.sm-fb{min-height:50px!important;height:50px!important;padding:0 18px!important;border-radius:25px!important;font-size:14px!important;font-weight:800!important;display:flex!important;align-items:center!important;justify-content:center!important;}
+.region-wrap{padding-top:16px!important;padding-bottom:16px!important;}
+.region-search-btn{height:52px!important;min-height:52px!important;padding:0 21px!important;border-radius:26px!important;font-size:14px!important;}
+.srch-bar{padding:11px 12px 10px!important;}.srch-inner{height:52px!important;min-height:52px!important;border-radius:26px!important;}
+#sm-tab-bar{height:84px!important;min-height:84px!important;padding:15px 12px!important;gap:10px!important;align-items:center!important;}
+#sm-tab-bar .sm-tab{height:56px!important;min-height:56px!important;padding:0 12px!important;font-size:16px!important;line-height:1.22!important;border-radius:18px!important;display:flex!important;align-items:center!important;justify-content:center!important;}
+/* 인포카드 상세페이지/홈페이지 버튼: 박스 크기는 그대로, 글자만 줄여 넘침 방지 */
+#ic-links-row{display:flex;gap:6px;align-items:stretch;box-sizing:border-box;}
+#ic-links-row .ic-link-btn{flex:1 1 0!important;width:0!important;min-width:0!important;max-width:100%!important;box-sizing:border-box!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;letter-spacing:-.04em!important;line-height:1.05!important;padding-left:5px!important;padding-right:5px!important;}
+#ic-guide.ic-link-btn,#ic-hp.ic-link-btn{font-size:12px!important;}
+@media(max-width:390px){#ic-guide.ic-link-btn,#ic-hp.ic-link-btn{font-size:11px!important;}}
+/* 새로고침 표시: 문의·건의 스타일, 화면/커버는 움직이지 않고 표시만 반응 */
+#cover,#cover.pulling,#cover.refreshing{transform:none!important;}
+#cv-pull-modern{position:fixed!important;left:50%!important;top:50%!important;right:auto!important;bottom:auto!important;transform:translate(-50%,-50%) scale(.96)!important;z-index:10030!important;opacity:0!important;pointer-events:none!important;transition:opacity .14s ease,transform .14s ease!important;background:linear-gradient(135deg,#1f2a44,#31446c)!important;color:#fff!important;border:0!important;border-radius:999px!important;box-shadow:0 10px 24px rgba(31,42,68,.25)!important;padding:0 19px!important;min-height:46px!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:8px!important;}
 #cv-pull-modern.show{opacity:1!important;transform:translate(-50%,-50%) scale(1)!important;}
 #cv-pull-modern.ready{transform:translate(-50%,-50%) scale(1.035)!important;}
 #cv-pull-modern.refreshing{opacity:1!important;transform:translate(-50%,-50%) scale(1)!important;}
@@ -6540,64 +6277,51 @@ html.app-active #cover #qna-cover-btn{display:none!important;}
 #cv-pull-modern.ready::after{content:'놓으면 새로고침';}
 #cv-pull-modern.refreshing::after{content:'새로고침 중';}
 #cv-pull-modern.refreshing .cv-pull-icon{animation:cv-pull-spin .75s linear infinite!important;}
-#cover{transform:none!important;}
-#cover.refreshing,#cover.pulling{transform:none!important;}
 </style>
-<script id="oai-user-final-tabs-refresh-marker-20260502">
+<script id="oai-final-refresh-missa-infobutton-20260502">
 (function(){
   'use strict';
-  if(window.__OAI_USER_FINAL_TABS_REFRESH_MARKER_20260502__) return;
-  window.__OAI_USER_FINAL_TABS_REFRESH_MARKER_20260502__=true;
-  function $(id){return document.getElementById(id);}
+  if(window.__OAI_FINAL_REFRESH_MISSA_INFOBUTTON_20260502__) return;
+  window.__OAI_FINAL_REFRESH_MISSA_INFOBUTTON_20260502__=true;
+  function $(id){return document.getElementById(id);} 
   function isCoverVisible(){var h=document.documentElement,c=$('cover');return !!(c && !h.classList.contains('app-active') && c.style.display!=='none');}
-  function makeLL(item){try{var lat=Number(item&&item.lat), lng=Number(item&&item.lng);if(!isFinite(lat)||!isFinite(lng))return null;if(typeof _LL==='function')return new _LL(lat,lng);if(window.kakao&&kakao.maps)return new kakao.maps.LatLng(lat,lng);}catch(e){}return null;}
-  function makePoint(x,y){try{if(window.kakao&&kakao.maps&&kakao.maps.Point)return new kakao.maps.Point(x,y);}catch(e){}return {x:x,y:y};}
-  var lastFocusKey='', lastFocusAt=0;
-  window._focusMarkerAboveInfoCard=function(item){
-    try{
-      if(typeof _map==='undefined'||!_map||!item) return;
-      var pos=makeLL(item); if(!pos) return;
-      var key=String(Number(item.lat).toFixed(6))+','+String(Number(item.lng).toFixed(6));
-      var now=Date.now();
-      if(key===lastFocusKey && now-lastFocusAt<220) return;
-      lastFocusKey=key; lastFocusAt=now;
-      var mapEl=$('map-wrap')||$('map');
-      var h=(mapEl&&(mapEl.clientHeight||mapEl.offsetHeight))||window.innerHeight||700;
-      var proj=_map.getProjection&&_map.getProjection();
-      if(proj&&proj.containerPointFromCoords&&proj.coordsFromContainerPoint){
-        var p=proj.containerPointFromCoords(pos);
-        if(p&&isFinite(p.x)&&isFinite(p.y)){
-          /* 마커가 화면 정중앙보다 위쪽 31% 지점에 오도록 처음부터 중심을 잡는다. */
-          var centerY=Math.round(h/2);
-          var targetY=Math.round(h*0.31);
-          var newCenter=proj.coordsFromContainerPoint(makePoint(p.x, p.y+(centerY-targetY)));
-          if(newCenter){_map.setCenter(newCenter);return;}
-        }
-      }
-      _map.setCenter(pos);
-    }catch(e){}
-  };
-  /* 일부 기존 코드가 인포카드 표시 직후 다른 중심 이동을 해도 최종 1회만 위쪽 기준으로 고정 */
-  if(typeof window._showInfoCard==='function' && !window._showInfoCard.__oaiFinalWrapped){
-    var oldShow=window._showInfoCard;
-    window._showInfoCard=function(item,idx){
-      var ret=oldShow.apply(this,arguments);
-      try{ if(item) window._focusMarkerAboveInfoCard(item); }catch(e){}
-      return ret;
-    };
-    window._showInfoCard.__oaiFinalWrapped=true;
+  function forceCover(){
+    try{document.querySelectorAll('.module-view.open,#prayer-view.open,#diocese-view.open,#missa-view.open,.sheet.open,.trail-sheet.open,#srch-modal.open,#info-card.open,#exit-dlg.open').forEach(function(v){v.classList.remove('open','show');});}catch(e){}
+    try{document.documentElement.classList.remove('app-active','parish-mode','retreat-mode');}catch(e){}
+    try{var c=$('cover'); if(c){c.style.display='';c.style.opacity='';c.scrollTop=0;}}catch(e){}
   }
-  function installQnaStyleRefresh(){
-    var cover=$('cover'), ind=$('cv-pull-modern');
-    if(!cover||!ind||cover.__oaiUserFinalRefresh) return;
-    cover.__oaiUserFinalRefresh=true;
-    var sx=0, sy=0, active=false, ready=false, refreshing=false;
-    var TH=96, MAX=150;
+  /* 새로고침 후 이전 행동/이전 모듈 복귀 방지 */
+  function markFreshReload(){
+    try{sessionStorage.setItem('oai_force_cover_after_reload','1');}catch(e){}
+    try{sessionStorage.removeItem('oai_last_open_module');sessionStorage.removeItem('lastCategory');}catch(e){}
+  }
+  function applyForceCoverAfterReload(){
+    var on=false; try{on=sessionStorage.getItem('oai_force_cover_after_reload')==='1';sessionStorage.removeItem('oai_force_cover_after_reload');}catch(e){}
+    if(on){setTimeout(forceCover,0);setTimeout(forceCover,80);}
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',applyForceCoverAfterReload,{once:true});else applyForceCoverAfterReload();
+
+  /* 매일미사: 외부 새창만 열고, 앱 내부 상태는 즉시 커버로 복귀 → 뒤로가기 1번으로 커버 상태 */
+  window.openMissa=function(){
+    var today=new Date(), yyyy=today.getFullYear(), mm=String(today.getMonth()+1).padStart(2,'0'), dd=String(today.getDate()).padStart(2,'0');
+    var url='https://missa.cbck.or.kr/DailyMissa/'+yyyy+mm+dd;
+    try{localStorage.setItem('oai_last_missa_url',url);}catch(e){}
+    try{var link=$('missa-open-link'); if(link) link.href=url;}catch(e){}
+    try{window.open(url,'_blank','noopener');}catch(e){try{location.href=url;}catch(_) {}}
+    setTimeout(forceCover,0);
+    setTimeout(forceCover,120);
+  };
+
+  /* 커버 새로고침: 기존 중복 핸들러 제거 뒤 하나만 동작하도록 capture 단계에서 가로챔 */
+  function installRefresh(){
+    var cover=$('cover'), ind=$('cv-pull-modern'); if(!cover||!ind||cover.__oaiFinalUnifiedRefresh) return; cover.__oaiFinalUnifiedRefresh=true;
+    var sx=0, sy=0, active=false, ready=false, refreshing=false, TH=96, MAX=150;
     function show(state){ind.classList.add('show');ind.classList.toggle('ready',state==='ready');ind.classList.toggle('refreshing',state==='refreshing');}
     function hide(){ind.classList.remove('show','ready','refreshing');}
     cover.addEventListener('touchstart',function(e){
       if(refreshing||!isCoverVisible()||cover.scrollTop>0||!e.touches||!e.touches[0]) return;
       sx=e.touches[0].clientX; sy=e.touches[0].clientY; active=true; ready=false;
+      if(e.stopImmediatePropagation)e.stopImmediatePropagation();
     },{passive:true,capture:true});
     cover.addEventListener('touchmove',function(e){
       if(!active||refreshing||!e.touches||!e.touches[0]) return;
@@ -6605,22 +6329,23 @@ html.app-active #cover #qna-cover-btn{display:none!important;}
       if(Math.abs(dx)>Math.abs(dy)*1.2) return;
       if(dy<=0){ready=false;hide();return;}
       if(e.cancelable)e.preventDefault();
-      var p=Math.min(dy,MAX);
-      ready=p>=TH;
-      show(ready?'ready':'show');
+      if(e.stopImmediatePropagation)e.stopImmediatePropagation();
+      var p=Math.min(dy,MAX); ready=p>=TH; show(ready?'ready':'show');
     },{passive:false,capture:true});
-    cover.addEventListener('touchend',function(){
+    cover.addEventListener('touchend',function(e){
       if(!active) return;
       active=false;
+      if(e.stopImmediatePropagation)e.stopImmediatePropagation();
       if(ready){
         ready=false; refreshing=true; show('refreshing');
-        try{navigator.vibrate&&navigator.vibrate(70);}catch(e){}
+        try{navigator.vibrate&&navigator.vibrate(70);}catch(ex){}
+        markFreshReload();
         setTimeout(function(){location.reload();},360);
       }else{ready=false;hide();}
     },{passive:true,capture:true});
-    cover.addEventListener('touchcancel',function(){active=false;ready=false;hide();},{passive:true,capture:true});
+    cover.addEventListener('touchcancel',function(e){active=false;ready=false;hide();if(e.stopImmediatePropagation)e.stopImmediatePropagation();},{passive:true,capture:true});
   }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',installQnaStyleRefresh,{once:true});else installQnaStyleRefresh();
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',installRefresh,{once:true});else installRefresh();
 })();
 </script>
 
