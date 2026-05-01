@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ko" class="oai-font-global">
 <head>
@@ -6259,34 +6258,19 @@ html.retreat-mode #sm-tab-bar .sm-tab.active {
   background: var(--gold, #d4aa6a) !important;
   border-color: var(--gold2, #b8965a) !important;
 }
+
+/* ⑤ 첫화면 흔들림 방지 */
+#cover{transform:none!important;will-change:auto!important;}
+#cover .cover-grid{box-sizing:border-box!important;}
+@media (max-width:430px){#cover .cover-grid{padding-left:16px!important;padding-right:16px!important;gap:10px!important;}}
+
+/* ⑥ 웹사이트 '전체' 탭 숨김 */
+#web-cat_전체,.web-cat-btn[data-web-cat="전체"]{display:none!important;}
 </style>
 
 <script>
-/* 길찾기 뒤로가기 후 마커 노랑 복원 */
+/* 설치 버튼: standalone 감지 즉시 숨김 */
 (function(){
-  // route sheet가 닫힐 때 (sheet-route close 감지) 선택 마커를 금색으로 복원
-  var routeSheet = document.getElementById('sheet-route');
-  if(!routeSheet) return;
-  var obs = new MutationObserver(function(muts){
-    muts.forEach(function(m){
-      if(m.attributeName === 'class' && !routeSheet.classList.contains('open')){
-        // 기존에 선택된 마커(선택 마커 dot)를 금색으로 강조
-        var sel = document.querySelector('.li-dot[style*="background"]');
-        if(sel && window._selectedMarker && typeof window._selectedMarker.setImage === 'function'){
-          try{
-            // 카카오 마커 이미지를 금색으로 복원 시도
-            var imgSrc = 'https://t1.daumcdn.net/mapjsapi/images/markerY.png';
-            var imgSize = new kakao.maps.Size(32,40);
-            var markerImg = new kakao.maps.MarkerImage(imgSrc, imgSize);
-            window._selectedMarker.setImage(markerImg);
-          }catch(e){}
-        }
-      }
-    });
-  });
-  obs.observe(routeSheet, {attributes:true, attributeFilter:['class']});
-
-  // 설치 버튼: standalone 감지 즉시 숨김 (CSS 외 JS 보강)
   function hideInstallIfStandalone(){
     var isStandalone =
       window.matchMedia('(display-mode: standalone)').matches ||
@@ -6298,28 +6282,16 @@ html.retreat-mode #sm-tab-bar .sm-tab.active {
     }
   }
   hideInstallIfStandalone();
-  // app-active 클래스 변화 감지
   var htmlEl = document.documentElement;
   var htmlObs = new MutationObserver(function(){ hideInstallIfStandalone(); });
   htmlObs.observe(htmlEl, {attributes:true, attributeFilter:['class']});
-  // matchMedia 변화 감지
-  try{
-    window.matchMedia('(display-mode: standalone)').addEventListener('change', hideInstallIfStandalone);
-  }catch(e){}
-  // load 후 한번 더
+  try{ window.matchMedia('(display-mode: standalone)').addEventListener('change', hideInstallIfStandalone); }catch(e){}
   window.addEventListener('load', hideInstallIfStandalone);
   window.addEventListener('pageshow', hideInstallIfStandalone);
 })();
 </script>
 
 
-<!-- OAI PATCH 20260501: website all-tab cleanup only + cover no-rattle -->
-<style id="oai-webtab-cover-spacing-20260501">
-#web-cat_전체,.web-cat-btn[data-web-cat="전체"]{display:none!important;}
-#cover{transform:none!important;will-change:auto!important;}
-#cover .cover-grid{box-sizing:border-box!important;}
-@media (max-width:430px){#cover .cover-grid{padding-left:16px!important;padding-right:16px!important;gap:10px!important;}}
-</style>
 <script id="oai-webtab-only-script-20260501">
 (function(){
   function $(id){return document.getElementById(id);}
@@ -6329,26 +6301,6 @@ html.retreat-mode #sm-tab-bar .sm-tab.active {
   setTimeout(removeAllWebTab,0);setTimeout(removeAllWebTab,300);
   var ow=window.openWebView;if(typeof ow==='function'&&!ow.__oaiNoAllTab){window.openWebView=function(){var r=ow.apply(this,arguments);[0,60,200,500].forEach(function(ms){setTimeout(function(){removeAllWebTab();try{var list=$('web-list');if(list)list.scrollTop=0;}catch(e){}},ms);});return r;};window.openWebView.__oaiNoAllTab=true;}
   var swc=window.setWebCat;if(typeof swc==='function'&&!swc.__oaiNoAllTab){window.setWebCat=function(cat){var r=swc.apply(this,arguments);removeAllWebTab();try{var list=$('web-list');if(list)list.scrollTop=0;}catch(e){}return r;};window.setWebCat.__oaiNoAllTab=true;}
-})();
-</script>
-
-<!-- OAI PATCH 20260501: route yellow marker final safety -->
-<script id="oai-route-yellow-final-safety-20260501">
-(function(){
-  function hardClear(){
-    try{ if(window._polyline){ window._polyline.setMap(null); window._polyline=null; } }catch(e){}
-    try{ if(typeof _clearRouteTmpMarkers==='function') _clearRouteTmpMarkers(); }catch(e){}
-  }
-  var oldRestore=window._restoreRouteDestinationSelection;
-  if(typeof oldRestore==='function' && !oldRestore.__oaiYellowSafety){
-    window._restoreRouteDestinationSelection=function(destItem, showCard){
-      hardClear();
-      var r=oldRestore.apply(this, arguments);
-      [80,260].forEach(function(ms){setTimeout(function(){try{hardClear();oldRestore.call(window,destItem,showCard);}catch(e){}},ms);});
-      return r;
-    };
-    window._restoreRouteDestinationSelection.__oaiYellowSafety=true;
-  }
 })();
 </script>
 
