@@ -6362,168 +6362,81 @@ html.retreat-mode #sm-tab-bar .sm-tab.active {
 </script>
 
 
-
-<style id="oai-marker-diocese-stability-fix-20260501">
-/* 교구관구 iframe은 내부 보정이 끝난 뒤 보여 주어 첫 진입 시 글자/화면 튐을 막는다. */
-#diocese-frame.oai-stabilizing{visibility:hidden!important;opacity:0!important;}
-#diocese-view.open #diocese-loading{z-index:2;}
-</style>
-<script id="oai-marker-diocese-stability-fix-20260501">
+<script id="oai-unwind-diocese-marker-20260501">
 (function(){
   'use strict';
-  if(window.__OAI_MARKER_DIOCESE_STABILITY_FIX_20260501__) return;
-  window.__OAI_MARKER_DIOCESE_STABILITY_FIX_20260501__ = true;
+  if(window.__OAI_UNWIND_DIOCESE_MARKER_20260501__) return;
+  window.__OAI_UNWIND_DIOCESE_MARKER_20260501__ = true;
 
-  var DIOCESE_RETURN_KEY = 'oai_diocese_external_return_20260501';
-
+  var DIO_RET_KEY = 'oai_diocese_return_state_v2';
+  var MAP_SEL_KEY = 'oai_map_last_selected_v2';
   function $(id){ return document.getElementById(id); }
-  function isDioceseOpen(){ var v=$('diocese-view'); return !!(v && v.classList.contains('open')); }
-  function setCoverHidden(){
-    try{ document.documentElement.classList.add('app-active'); document.documentElement.classList.remove('parish-mode','retreat-mode'); }catch(e){}
-    var cv=$('cover'); if(cv){ cv.style.display='none'; cv.style.opacity='0'; }
+  function normUrl(url){
+    url = String(url || '').trim();
+    if(!url || url === '#' || /^javascript:/i.test(url)) return '';
+    url = url.replace(/^http\/\//i,'http://').replace(/^https\/\//i,'https://');
+    if(/^\/\//.test(url)) url = location.protocol + url;
+    if(!/^[a-z][a-z0-9+.-]*:/i.test(url)) url = 'https://' + url.replace(/^\/+/, '');
+    return url;
   }
-  function showDioceseView(){
-    var view=$('diocese-view'), frame=$('diocese-frame'), loading=$('diocese-loading');
-    if(!view || !frame) return;
-    setCoverHidden();
-    view.classList.add('open');
-    if(loading) loading.style.display='flex';
-    if(!frame.src || frame.src==='about:blank') frame.src='diocese.html';
-    stabilizeDioceseFrame();
+  function isProbablyExternal(url){
+    url = String(url || '').trim();
+    if(!url || url === '#' || /^javascript:/i.test(url)) return false;
+    if(/^https?:/i.test(url) || /^\/\//.test(url)) return true;
+    if(/^(www\.|m\.|catholic|cbck|aos|casuwon|daegu|djcatholic|gjcatholic|caincheon|catholicbusan|jcatholic|ucatholic|cdcj|cathms|diocesejeju|gunjong)/i.test(url)) return true;
+    return /\.(or\.kr|go\.kr|com|net|org|kr)(\/|$)/i.test(url);
   }
-  function stabilizeDioceseFrame(){
-    var view=$('diocese-view'), frame=$('diocese-frame'), loading=$('diocese-loading');
-    if(!view || !frame || !view.classList.contains('open')) return;
-    frame.classList.add('oai-stabilizing');
-    if(loading) loading.style.display='flex';
-    [80,220,420].forEach(function(ms){
-      setTimeout(function(){
-        try{ if(typeof window.injectDioceseAll==='function') window.injectDioceseAll(); }catch(e){}
-        try{ if(typeof window.__OAI_applyGlobalFont==='function') window.__OAI_applyGlobalFont(); }catch(e){}
-      }, ms);
-    });
-    setTimeout(function(){
-      try{ if(typeof window.injectDioceseAll==='function') window.injectDioceseAll(); }catch(e){}
-      frame.classList.remove('oai-stabilizing');
-      if(loading) loading.style.display='none';
-    }, 560);
+  function saveDioceseReturn(){
+    var st = { t: Date.now(), open: true, scroll: 0 };
+    try{ var f = $('diocese-frame'); var d = f && f.contentWindow && f.contentWindow.document; if(d) st.scroll = (d.scrollingElement || d.documentElement || d.body).scrollTop || 0; }catch(e){}
+    try{ sessionStorage.setItem(DIO_RET_KEY, JSON.stringify(st)); }catch(e){}
   }
+  function showDioceseShell(){
+    try{ var cover = $('cover'); if(cover){ cover.style.display='none'; cover.style.opacity=''; cover.style.pointerEvents=''; } document.documentElement.classList.add('app-active'); document.documentElement.classList.remove('parish-mode','retreat-mode'); var v = $('diocese-view'); if(v) v.classList.add('open'); }catch(e){}
+  }
+  function openExternalStable(url){
+    url = normUrl(url); if(!url) return false;
+    saveDioceseReturn(); showDioceseShell();
+    try{ var w = window.open(url, '_blank', 'noopener,noreferrer'); if(!w) location.href = url; }catch(e){ location.href = url; }
+    return false;
+  }
+  window.__OAI_openExternalKeepApp = openExternalStable;
+  function stabilizeDioceseDoc(d){
+    if(!d || !d.documentElement) return;
+    try{ var st = d.getElementById('oai-diocese-unwind-stable-style-20260501'); if(!st){ st = d.createElement('style'); st.id = 'oai-diocese-unwind-stable-style-20260501'; st.textContent = 'html,body{width:100%!important;height:100%!important;overflow:hidden!important;-webkit-text-size-adjust:100%!important;text-size-adjust:100%!important}body{display:flex!important;flex-direction:column!important;font-family:inherit!important}.hd,.header,.topbar{flex-shrink:0!important;box-sizing:border-box!important}.list,.content,.body,.main,.map-wrap{flex:1 1 auto!important;min-height:0!important}a[href],button{touch-action:manipulation!important}'; (d.head || d.documentElement).appendChild(st); } }catch(e){}
+  }
+  function patchDioceseLinks(){
+    var f = $('diocese-frame'); if(!f || !f.contentWindow) return;
+    var d; try{ d = f.contentWindow.document; }catch(e){ return; }
+    if(!d || !d.documentElement) return;
+    stabilizeDioceseDoc(d);
+    try{ d.querySelectorAll('a[href]').forEach(function(a){ var h = a.getAttribute('href') || ''; if(isProbablyExternal(h) || isProbablyExternal(a.href)){ a.setAttribute('target','_blank'); a.setAttribute('rel','noopener noreferrer'); } }); }catch(e){}
+    if(!d.__oaiUnwindDioceseLinkCapture){ d.__oaiUnwindDioceseLinkCapture = true; d.addEventListener('click', function(ev){ var a = ev.target && ev.target.closest && ev.target.closest('a[href]'); if(!a) return; var h = a.getAttribute('href') || a.href || ''; if(!isProbablyExternal(h) && !isProbablyExternal(a.href)) return; ev.preventDefault(); ev.stopPropagation(); try{ ev.stopImmediatePropagation(); }catch(e){} openExternalStable(a.href || h); return false; }, true); }
+  }
+  function scheduleDiocesePatch(){ [0,60,180,420,900,1500].forEach(function(ms){ setTimeout(patchDioceseLinks, ms); }); }
+  var frame = $('diocese-frame'); if(frame && !frame.__oaiUnwindLoad){ frame.__oaiUnwindLoad = true; frame.addEventListener('load', function(){ var loading = $('diocese-loading'); if(loading) loading.style.display = 'none'; scheduleDiocesePatch(); }); }
+  if(typeof window.openDioceseView === 'function' && !window.openDioceseView.__oaiUnwindStable){ var oldOpenDiocese = window.openDioceseView; window.openDioceseView = function(){ showDioceseShell(); var r = oldOpenDiocese.apply(this, arguments); scheduleDiocesePatch(); return r; }; window.openDioceseView.__oaiUnwindStable = true; }
+  window.addEventListener('pageshow', function(){ var raw = null; try{ raw = sessionStorage.getItem(DIO_RET_KEY); }catch(e){} if(raw){ try{ sessionStorage.removeItem(DIO_RET_KEY); }catch(e){} showDioceseShell(); var f = $('diocese-frame'); if(f && (!f.src || f.src === 'about:blank')){ try{ f.src = 'diocese.html'; }catch(e){} } scheduleDiocesePatch(); setTimeout(function(){ try{ var st = JSON.parse(raw); var d = f && f.contentWindow && f.contentWindow.document; if(d && st && st.scroll) (d.scrollingElement || d.documentElement || d.body).scrollTop = Number(st.scroll) || 0; }catch(e){} }, 450); }else{ scheduleDiocesePatch(); } });
+  setInterval(function(){ var v = $('diocese-view'); if(v && v.classList.contains('open')) patchDioceseLinks(); }, 700);
 
-  var frame=$('diocese-frame');
-  if(frame && !frame.__oaiStableLoad20260501){
-    frame.__oaiStableLoad20260501 = true;
-    frame.addEventListener('load', stabilizeDioceseFrame, true);
-  }
-
-  var oldOpenDiocese = window.openDioceseView;
-  if(typeof oldOpenDiocese === 'function' && !oldOpenDiocese.__oaiStable20260501){
-    window.openDioceseView = function(){
-      setCoverHidden();
-      var frame=$('diocese-frame'), loading=$('diocese-loading');
-      if(frame) frame.classList.add('oai-stabilizing');
-      if(loading) loading.style.display='flex';
-      var r = oldOpenDiocese.apply(this, arguments);
-      stabilizeDioceseFrame();
-      setTimeout(stabilizeDioceseFrame, 260);
-      return r;
-    };
-    window.openDioceseView.__oaiStable20260501 = true;
-  }
-
-  function markDioceseReturn(){
-    try{ sessionStorage.setItem(DIOCESE_RETURN_KEY, String(Date.now())); }catch(e){}
-  }
-  function restoreDioceseIfNeeded(){
-    var raw=null;
-    try{ raw=sessionStorage.getItem(DIOCESE_RETURN_KEY); }catch(e){}
-    if(!raw) return false;
-    try{ sessionStorage.removeItem(DIOCESE_RETURN_KEY); }catch(e){}
-    showDioceseView();
-    setTimeout(stabilizeDioceseFrame, 80);
-    setTimeout(stabilizeDioceseFrame, 360);
-    return true;
-  }
-
-  var oldOpenTopUrl = window.openTopUrl;
-  if(typeof oldOpenTopUrl === 'function' && !oldOpenTopUrl.__oaiDioceseReturn20260501){
-    window.openTopUrl = function(url){
-      if(isDioceseOpen()) markDioceseReturn();
-      return oldOpenTopUrl.apply(this, arguments);
-    };
-    window.openTopUrl.__oaiDioceseReturn20260501 = true;
-  }
-
-  var oldKeepApp = window.__OAI_openExternalKeepApp;
-  if(typeof oldKeepApp === 'function' && !oldKeepApp.__oaiDioceseReturn20260501){
-    window.__OAI_openExternalKeepApp = function(url){
-      markDioceseReturn();
-      return oldKeepApp.apply(this, arguments);
-    };
-    window.__OAI_openExternalKeepApp.__oaiDioceseReturn20260501 = true;
-  }
-
-  function saveCurrentMarkerReturn(extra){
-    try{
-      if(typeof window.saveCoreReturnState === 'function'){
-        window.saveCoreReturnState(Object.assign({markerReturn:true}, extra||{}));
-      }
-    }catch(e){}
-  }
-
-  var oldOpenKakaoNav = window.openKakaoNav;
-  if(typeof oldOpenKakaoNav === 'function' && !oldOpenKakaoNav.__oaiMarkerReturn20260501){
-    window.openKakaoNav = function(){
-      try{
-        if(_curInfoItem && Number.isInteger(_curInfoItem.idx)){
-          saveCurrentMarkerReturn({infoIdx:_curInfoItem.idx});
-        }
-      }catch(e){}
-      return oldOpenKakaoNav.apply(this, arguments);
-    };
-    window.openKakaoNav.__oaiMarkerReturn20260501 = true;
-  }
-
-  var oldDoKakaoRoute = window.doKakaoRoute;
-  if(typeof oldDoKakaoRoute === 'function' && !oldDoKakaoRoute.__oaiMarkerReturn20260501){
-    window.doKakaoRoute = function(){
-      try{
-        if(_rE && Number.isInteger(_rE.idx) && _rE.idx >= 0){
-          saveCurrentMarkerReturn({infoIdx:_rE.idx, activeTab:''});
-        }
-      }catch(e){}
-      return oldDoKakaoRoute.apply(this, arguments);
-    };
-    window.doKakaoRoute.__oaiMarkerReturn20260501 = true;
-  }
-
-  var oldShowInfo = window._showInfoCard;
-  if(typeof oldShowInfo === 'function' && !oldShowInfo.__oaiYellowMarker20260501){
-    window._showInfoCard = function(item, idx){
-      try{
-        if(item && Number.isInteger(idx) && !_routeMode){
-          if(_mode === 'shrine' && typeof window._selectShrineMarker === 'function') window._selectShrineMarker(idx);
-          else if(_mode === 'parish' && typeof window._selectParishMarker === 'function') window._selectParishMarker(item);
-          else if(_mode === 'retreat' && typeof window._selectRetreatMarker === 'function') window._selectRetreatMarker(item);
-        }
-      }catch(e){}
-      return oldShowInfo.apply(this, arguments);
-    };
-    window._showInfoCard.__oaiYellowMarker20260501 = true;
-  }
-
-  function restoreCoreSoon(){
-    setTimeout(function(){
-      try{
-        var raw=sessionStorage.getItem('catholic_core_return_v1');
-        if(raw && typeof window.restoreCoreReturnState==='function') window.restoreCoreReturnState();
-      }catch(e){}
-    }, 900);
-  }
-  window.addEventListener('pageshow', function(){ restoreDioceseIfNeeded(); restoreCoreSoon(); });
-  document.addEventListener('visibilitychange', function(){ if(!document.hidden){ restoreDioceseIfNeeded(); restoreCoreSoon(); } });
-  window.addEventListener('focus', function(){ restoreDioceseIfNeeded(); restoreCoreSoon(); });
+  function getItems(){ try{ return (typeof _getCurrentItems === 'function') ? _getCurrentItems() : []; }catch(e){ return []; } }
+  function saveMapSelection(item, idx){ if(!item) return; var st = { mode: (typeof _mode !== 'undefined' ? _mode : 'shrine'), idx: (typeof idx === 'number' ? idx : -1), name: item.name || '', lat: Number(item.lat), lng: Number(item.lng), t: Date.now() }; window.__oaiLastMapSelection = st; try{ sessionStorage.setItem(MAP_SEL_KEY, JSON.stringify(st)); }catch(e){} }
+  function readMapSelection(){ if(window.__oaiLastMapSelection) return window.__oaiLastMapSelection; try{ return JSON.parse(sessionStorage.getItem(MAP_SEL_KEY) || 'null'); }catch(e){ return null; } }
+  function findSelection(st){ var items = getItems(); var idx = (st && typeof st.idx === 'number') ? st.idx : -1; if(idx >= 0 && items[idx]) return { item: items[idx], idx: idx }; if(st){ for(var i=0;i<items.length;i++){ var it = items[i]; if(!it) continue; if(st.name && it.name === st.name) return { item: it, idx: i }; if(isFinite(st.lat) && isFinite(st.lng) && Math.abs(Number(it.lat)-st.lat)<0.000001 && Math.abs(Number(it.lng)-st.lng)<0.000001) return { item: it, idx: i }; } } return null; }
+  function routeSheetOpen(){ var rs = $('sheet-route'); return !!(rs && rs.classList.contains('open')); }
+  function restoreYellowMarker(openCard){ var st = readMapSelection(); if(!st || !st.name) return; if(typeof _mode !== 'undefined' && st.mode && st.mode !== _mode) return; if(routeSheetOpen()) return; var found = findSelection(st); if(!found || !found.item) return; try{ if(typeof _restoreMapMarkers === 'function') _restoreMapMarkers(); if(typeof _mode !== 'undefined' && _mode === 'shrine' && typeof _selectShrineMarker === 'function') _selectShrineMarker(found.idx); else if(typeof _mode !== 'undefined' && _mode === 'parish' && typeof _selectParishMarker === 'function') _selectParishMarker(found.item); else if(typeof _mode !== 'undefined' && _mode === 'retreat' && typeof _selectRetreatMarker === 'function') _selectRetreatMarker(found.item); if(openCard && typeof _showInfoCard === 'function') _showInfoCard(found.item, found.idx); if(typeof _focusMarkerAboveInfoCard === 'function') _focusMarkerAboveInfoCard(found.item); }catch(e){} }
+  function wrap(name, fn){ var old = window[name]; if(typeof old !== 'function' || old.__oaiUnwindMarker) return; window[name] = fn(old); window[name].__oaiUnwindMarker = true; }
+  wrap('selectItem', function(old){ return function(idx, opts){ var items = getItems(); var item = items && items[idx]; saveMapSelection(item, idx); var r = old.apply(this, arguments); setTimeout(function(){ restoreYellowMarker(false); }, 120); setTimeout(function(){ restoreYellowMarker(false); }, 380); return r; }; });
+  wrap('_showInfoCard', function(old){ return function(item, idx){ saveMapSelection(item, idx); return old.apply(this, arguments); }; });
+  wrap('openInAppRoute', function(old){ return function(){ try{ if(typeof _curInfoItem !== 'undefined' && _curInfoItem) saveMapSelection(_curInfoItem.item, _curInfoItem.idx); }catch(e){} return old.apply(this, arguments); }; });
+  wrap('openKakaoNav', function(old){ return function(){ try{ if(typeof _curInfoItem !== 'undefined' && _curInfoItem){ saveMapSelection(_curInfoItem.item, _curInfoItem.idx); if(typeof saveCoreReturnState === 'function') saveCoreReturnState({infoIdx:_curInfoItem.idx}); } }catch(e){} return old.apply(this, arguments); }; });
+  wrap('doKakaoRoute', function(old){ return function(){ try{ if(typeof _rE !== 'undefined' && _rE){ var items = getItems(); var idx = (typeof _rE.idx === 'number') ? _rE.idx : -1; var item = idx >= 0 ? items[idx] : null; if(item) saveMapSelection(item, idx); } }catch(e){} return old.apply(this, arguments); }; });
+  wrap('closeTab', function(old){ return function(name){ var r = old.apply(this, arguments); if(name === 'route'){ setTimeout(function(){ restoreYellowMarker(true); }, 80); setTimeout(function(){ restoreYellowMarker(true); }, 260); } return r; }; });
+  wrap('resetRoute', function(old){ return function(){ var r = old.apply(this, arguments); setTimeout(function(){ restoreYellowMarker(false); }, 80); setTimeout(function(){ restoreYellowMarker(false); }, 260); return r; }; });
+  var rs = $('sheet-route'); if(rs && !rs.__oaiUnwindMarkerObserver){ rs.__oaiUnwindMarkerObserver = true; new MutationObserver(function(){ if(!routeSheetOpen()){ setTimeout(function(){ restoreYellowMarker(true); }, 90); setTimeout(function(){ restoreYellowMarker(true); }, 300); } }).observe(rs, {attributes:true, attributeFilter:['class']}); }
+  document.addEventListener('visibilitychange', function(){ if(!document.hidden) setTimeout(function(){ restoreYellowMarker(false); }, 160); });
+  window.addEventListener('pageshow', function(){ setTimeout(function(){ restoreYellowMarker(false); }, 220); });
 })();
 </script>
-
 </body>
 </html>
