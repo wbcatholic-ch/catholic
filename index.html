@@ -1297,6 +1297,29 @@ html.retreat-mode .tab-btn.active{
 
   50%{ box-shadow: 0 4px 20px rgba(46,139,71,0.6); }
 }
+
+/* PWA 설치 버튼 - 커버 하단 */
+#pwa-install-btn {
+  display: none;
+  margin: 12px auto 0;
+  padding: 10px 24px;
+  background: #16a34a;
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: inherit;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  box-shadow: 0 3px 12px rgba(22,163,74,0.45);
+  -webkit-tap-highlight-color: transparent;
+  animation: pwa-pulse 2.5s ease-in-out infinite;
+}
+@keyframes pwa-pulse {
+  0%,100% { box-shadow: 0 3px 12px rgba(22,163,74,0.4); }
+  50%      { box-shadow: 0 3px 22px rgba(22,163,74,0.75); transform: scale(1.03); }
+}
 </style>
 <style id="prayer-swipe-anim">@keyframes prSlideLeft{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}@keyframes prSlideRight{from{opacity:0;transform:translateX(-40px)}to{opacity:1;transform:translateX(0)}}</style>
 
@@ -1422,6 +1445,11 @@ html.retreat-mode .tab-btn.active{
             <span class="cover-name">관구·교구 알아보기</span>
         </button>
     </div>
+
+<!-- PWA 설치 버튼 (커버 전용) -->
+<button id="pwa-install-btn" onclick="triggerPwaInstall()" aria-label="앱 설치하기">
+  📲 앱 설치
+</button>
 </div>
 <script>
 // --- [Fix 1] Reliable Back Button Logic ---
@@ -5804,6 +5832,49 @@ if('serviceWorker' in navigator){
       .catch(function(e){ console.warn('[SW] 실패', e); });
   });
 }
+</script>
+<script>
+// ── PWA 설치 버튼 로직 ──
+(function(){
+  // 이미 설치된 앱(standalone)이면 버튼 절대 표시 안 함
+  var isStandalone =
+    window.matchMedia('(display-mode: standalone)').matches ||
+    window.navigator.standalone === true;
+  if(isStandalone) return;
+
+  var btn = null;
+  var prompt = null;
+
+  function getBtn(){ return btn || (btn = document.getElementById('pwa-install-btn')); }
+
+  // 크롬이 설치 가능 판단 시 버튼 표시
+  window.addEventListener('beforeinstallprompt', function(e){
+    e.preventDefault();
+    prompt = e;
+    var b = getBtn();
+    if(b) b.style.display = 'inline-block';
+  });
+
+  // 설치 완료 시 버튼 숨김
+  window.addEventListener('appinstalled', function(){
+    var b = getBtn();
+    if(b) b.style.display = 'none';
+    prompt = null;
+  });
+
+  // 버튼 클릭 → 설치 다이얼로그 실행
+  window.triggerPwaInstall = function(){
+    if(!prompt) return;
+    prompt.prompt();
+    prompt.userChoice.then(function(r){
+      if(r.outcome === 'accepted'){
+        var b = getBtn();
+        if(b) b.style.display = 'none';
+      }
+      prompt = null;
+    });
+  };
+})();
 </script>
 </body>
 </html>
