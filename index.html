@@ -6361,5 +6361,169 @@ html.retreat-mode #sm-tab-bar .sm-tab.active {
 })();
 </script>
 
+
+
+<style id="oai-marker-diocese-stability-fix-20260501">
+/* 교구관구 iframe은 내부 보정이 끝난 뒤 보여 주어 첫 진입 시 글자/화면 튐을 막는다. */
+#diocese-frame.oai-stabilizing{visibility:hidden!important;opacity:0!important;}
+#diocese-view.open #diocese-loading{z-index:2;}
+</style>
+<script id="oai-marker-diocese-stability-fix-20260501">
+(function(){
+  'use strict';
+  if(window.__OAI_MARKER_DIOCESE_STABILITY_FIX_20260501__) return;
+  window.__OAI_MARKER_DIOCESE_STABILITY_FIX_20260501__ = true;
+
+  var DIOCESE_RETURN_KEY = 'oai_diocese_external_return_20260501';
+
+  function $(id){ return document.getElementById(id); }
+  function isDioceseOpen(){ var v=$('diocese-view'); return !!(v && v.classList.contains('open')); }
+  function setCoverHidden(){
+    try{ document.documentElement.classList.add('app-active'); document.documentElement.classList.remove('parish-mode','retreat-mode'); }catch(e){}
+    var cv=$('cover'); if(cv){ cv.style.display='none'; cv.style.opacity='0'; }
+  }
+  function showDioceseView(){
+    var view=$('diocese-view'), frame=$('diocese-frame'), loading=$('diocese-loading');
+    if(!view || !frame) return;
+    setCoverHidden();
+    view.classList.add('open');
+    if(loading) loading.style.display='flex';
+    if(!frame.src || frame.src==='about:blank') frame.src='diocese.html';
+    stabilizeDioceseFrame();
+  }
+  function stabilizeDioceseFrame(){
+    var view=$('diocese-view'), frame=$('diocese-frame'), loading=$('diocese-loading');
+    if(!view || !frame || !view.classList.contains('open')) return;
+    frame.classList.add('oai-stabilizing');
+    if(loading) loading.style.display='flex';
+    [80,220,420].forEach(function(ms){
+      setTimeout(function(){
+        try{ if(typeof window.injectDioceseAll==='function') window.injectDioceseAll(); }catch(e){}
+        try{ if(typeof window.__OAI_applyGlobalFont==='function') window.__OAI_applyGlobalFont(); }catch(e){}
+      }, ms);
+    });
+    setTimeout(function(){
+      try{ if(typeof window.injectDioceseAll==='function') window.injectDioceseAll(); }catch(e){}
+      frame.classList.remove('oai-stabilizing');
+      if(loading) loading.style.display='none';
+    }, 560);
+  }
+
+  var frame=$('diocese-frame');
+  if(frame && !frame.__oaiStableLoad20260501){
+    frame.__oaiStableLoad20260501 = true;
+    frame.addEventListener('load', stabilizeDioceseFrame, true);
+  }
+
+  var oldOpenDiocese = window.openDioceseView;
+  if(typeof oldOpenDiocese === 'function' && !oldOpenDiocese.__oaiStable20260501){
+    window.openDioceseView = function(){
+      setCoverHidden();
+      var frame=$('diocese-frame'), loading=$('diocese-loading');
+      if(frame) frame.classList.add('oai-stabilizing');
+      if(loading) loading.style.display='flex';
+      var r = oldOpenDiocese.apply(this, arguments);
+      stabilizeDioceseFrame();
+      setTimeout(stabilizeDioceseFrame, 260);
+      return r;
+    };
+    window.openDioceseView.__oaiStable20260501 = true;
+  }
+
+  function markDioceseReturn(){
+    try{ sessionStorage.setItem(DIOCESE_RETURN_KEY, String(Date.now())); }catch(e){}
+  }
+  function restoreDioceseIfNeeded(){
+    var raw=null;
+    try{ raw=sessionStorage.getItem(DIOCESE_RETURN_KEY); }catch(e){}
+    if(!raw) return false;
+    try{ sessionStorage.removeItem(DIOCESE_RETURN_KEY); }catch(e){}
+    showDioceseView();
+    setTimeout(stabilizeDioceseFrame, 80);
+    setTimeout(stabilizeDioceseFrame, 360);
+    return true;
+  }
+
+  var oldOpenTopUrl = window.openTopUrl;
+  if(typeof oldOpenTopUrl === 'function' && !oldOpenTopUrl.__oaiDioceseReturn20260501){
+    window.openTopUrl = function(url){
+      if(isDioceseOpen()) markDioceseReturn();
+      return oldOpenTopUrl.apply(this, arguments);
+    };
+    window.openTopUrl.__oaiDioceseReturn20260501 = true;
+  }
+
+  var oldKeepApp = window.__OAI_openExternalKeepApp;
+  if(typeof oldKeepApp === 'function' && !oldKeepApp.__oaiDioceseReturn20260501){
+    window.__OAI_openExternalKeepApp = function(url){
+      markDioceseReturn();
+      return oldKeepApp.apply(this, arguments);
+    };
+    window.__OAI_openExternalKeepApp.__oaiDioceseReturn20260501 = true;
+  }
+
+  function saveCurrentMarkerReturn(extra){
+    try{
+      if(typeof window.saveCoreReturnState === 'function'){
+        window.saveCoreReturnState(Object.assign({markerReturn:true}, extra||{}));
+      }
+    }catch(e){}
+  }
+
+  var oldOpenKakaoNav = window.openKakaoNav;
+  if(typeof oldOpenKakaoNav === 'function' && !oldOpenKakaoNav.__oaiMarkerReturn20260501){
+    window.openKakaoNav = function(){
+      try{
+        if(_curInfoItem && Number.isInteger(_curInfoItem.idx)){
+          saveCurrentMarkerReturn({infoIdx:_curInfoItem.idx});
+        }
+      }catch(e){}
+      return oldOpenKakaoNav.apply(this, arguments);
+    };
+    window.openKakaoNav.__oaiMarkerReturn20260501 = true;
+  }
+
+  var oldDoKakaoRoute = window.doKakaoRoute;
+  if(typeof oldDoKakaoRoute === 'function' && !oldDoKakaoRoute.__oaiMarkerReturn20260501){
+    window.doKakaoRoute = function(){
+      try{
+        if(_rE && Number.isInteger(_rE.idx) && _rE.idx >= 0){
+          saveCurrentMarkerReturn({infoIdx:_rE.idx, activeTab:''});
+        }
+      }catch(e){}
+      return oldDoKakaoRoute.apply(this, arguments);
+    };
+    window.doKakaoRoute.__oaiMarkerReturn20260501 = true;
+  }
+
+  var oldShowInfo = window._showInfoCard;
+  if(typeof oldShowInfo === 'function' && !oldShowInfo.__oaiYellowMarker20260501){
+    window._showInfoCard = function(item, idx){
+      try{
+        if(item && Number.isInteger(idx) && !_routeMode){
+          if(_mode === 'shrine' && typeof window._selectShrineMarker === 'function') window._selectShrineMarker(idx);
+          else if(_mode === 'parish' && typeof window._selectParishMarker === 'function') window._selectParishMarker(item);
+          else if(_mode === 'retreat' && typeof window._selectRetreatMarker === 'function') window._selectRetreatMarker(item);
+        }
+      }catch(e){}
+      return oldShowInfo.apply(this, arguments);
+    };
+    window._showInfoCard.__oaiYellowMarker20260501 = true;
+  }
+
+  function restoreCoreSoon(){
+    setTimeout(function(){
+      try{
+        var raw=sessionStorage.getItem('catholic_core_return_v1');
+        if(raw && typeof window.restoreCoreReturnState==='function') window.restoreCoreReturnState();
+      }catch(e){}
+    }, 900);
+  }
+  window.addEventListener('pageshow', function(){ restoreDioceseIfNeeded(); restoreCoreSoon(); });
+  document.addEventListener('visibilitychange', function(){ if(!document.hidden){ restoreDioceseIfNeeded(); restoreCoreSoon(); } });
+  window.addEventListener('focus', function(){ restoreDioceseIfNeeded(); restoreCoreSoon(); });
+})();
+</script>
+
 </body>
 </html>
