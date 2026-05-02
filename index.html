@@ -1388,6 +1388,113 @@ html.retreat-mode .tab-btn.active{
 .missa-external-desc{font-size:14px;font-weight:500;color:#6B7280;line-height:1.7;margin-bottom:20px;word-break:keep-all;}
 .missa-open-link{display:flex;align-items:center;justify-content:center;width:100%;height:48px;border-radius:12px;background:#0e1535;color:#d4aa6a;text-decoration:none;font-size:16px;font-weight:800;}
 </style>
+
+<style id="oai-final-font-standardize-20260502">
+/* 문의·건의 버튼: 기존 위치 유지, 살짝만 확대 */
+#cover #qna-cover-btn{
+  min-height:46px!important;
+  padding:0 18px!important;
+  font-size:14px!important;
+  font-weight:900!important;
+  line-height:1!important;
+  border-radius:999px!important;
+  gap:8px!important;
+}
+@media(max-width:380px){
+  #cover #qna-cover-btn{min-height:44px!important;padding:0 15px!important;font-size:13.5px!important;}
+}
+
+/* 카테고리 내부 리스트 글자 규격 통일 */
+.list-item,.nearby-item,.region-item,.sm-item,.sm-place-item{
+  align-items:center!important;
+  box-sizing:border-box!important;
+}
+.li-name,.nearby-name,.region-item .li-name,.sm-name,.sm-place-name{
+  font-size:16px!important;
+  font-weight:800!important;
+  line-height:1.35!important;
+  letter-spacing:-.03em!important;
+  white-space:normal!important;
+  overflow:visible!important;
+  text-overflow:clip!important;
+  word-break:keep-all!important;
+}
+.li-sub,.nearby-addr,.region-item .li-sub,.sm-sub,.sm-place-addr{
+  font-size:13px!important;
+  font-weight:500!important;
+  line-height:1.45!important;
+  letter-spacing:-.02em!important;
+  white-space:normal!important;
+  overflow:visible!important;
+  text-overflow:clip!important;
+  word-break:keep-all!important;
+}
+.li-badge,.nearby-type,.sm-badge{
+  font-size:12px!important;
+  font-weight:800!important;
+  line-height:1!important;
+}
+.nearby-dist{font-size:14px!important;font-weight:900!important;line-height:1.2!important;}
+
+/* 모듈 카드류 글자 규격 통일 */
+.web-card-name,.trail-nm,.prayer-title,.prayer-card-title{
+  font-size:17px!important;
+  font-weight:800!important;
+  line-height:1.38!important;
+  letter-spacing:-.03em!important;
+  word-break:keep-all!important;
+}
+.web-card-desc,.trail-url,.prayer-desc,.prayer-card-desc{
+  font-size:14px!important;
+  line-height:1.55!important;
+  word-break:keep-all!important;
+}
+
+/* 인포카드 안 사각 버튼: 박스는 키우지 않고 글자만 안정화 */
+#info-card .ic-btn-row,
+#info-card .ic-links{
+  display:flex!important;
+  gap:7px!important;
+  align-items:stretch!important;
+}
+#info-card .ic-btn-row > *,
+#info-card .ic-links > *{
+  flex:1 1 0!important;
+  min-width:0!important;
+  max-width:100%!important;
+  box-sizing:border-box!important;
+}
+#info-card .ic-link-btn,
+#info-card .ic-route-btn,
+#info-card .ic-tel-btn,
+#info-card .btn-kakao-nav{
+  font-size:12px!important;
+  font-weight:800!important;
+  line-height:1.05!important;
+  letter-spacing:-.045em!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  min-width:0!important;
+}
+#info-card #ic-guide.ic-link-btn,
+#info-card #ic-hp.ic-link-btn{
+  font-size:12px!important;
+  padding-left:4px!important;
+  padding-right:4px!important;
+}
+/* 피정의 집 상세페이지 문구만 살짝 더 작게 */
+html.retreat-mode #info-card #ic-guide.ic-link-btn{
+  font-size:11px!important;
+  letter-spacing:-.055em!important;
+}
+@media(max-width:390px){
+  #info-card #ic-guide.ic-link-btn,
+  #info-card #ic-hp.ic-link-btn{font-size:11px!important;}
+  html.retreat-mode #info-card #ic-guide.ic-link-btn{font-size:10.5px!important;}
+}
+</style>
+
 <body>
 <div id="missa-view">
   <div id="missa-bar">
@@ -6402,31 +6509,6 @@ html.app-active #cover #qna-cover-btn{display:none!important;}
 #oai-cover-exit-toast{position:fixed!important;left:50%!important;bottom:calc(92px + env(safe-area-inset-bottom,0px))!important;transform:translateX(-50%) translateY(10px)!important;z-index:10080!important;min-height:42px!important;padding:0 18px!important;border-radius:999px!important;background:rgba(31,42,68,.94)!important;color:#fff!important;display:flex!important;align-items:center!important;justify-content:center!important;font-size:13px!important;font-weight:900!important;line-height:1!important;white-space:nowrap!important;box-shadow:0 10px 24px rgba(31,42,68,.28)!important;opacity:0!important;pointer-events:none!important;transition:opacity .16s ease,transform .16s ease!important;}
 #oai-cover-exit-toast.show{opacity:1!important;transform:translateX(-50%) translateY(0)!important;}
 </style>
-<script id="oai-cover-back-list-text-20260502-7">
-(function(){
-  'use strict';
-  if(window.__OAI_COVER_BACK_LIST_TEXT_20260502_7__) return;
-  window.__OAI_COVER_BACK_LIST_TEXT_20260502_7__=true;
-  function $(id){return document.getElementById(id);}
-  function coverVisible(){var h=document.documentElement,c=$('cover');return !!(c && !h.classList.contains('app-active') && c.offsetParent!==null && getComputedStyle(c).display!=='none');}
-  function forceCleanCover(){try{document.querySelectorAll('.module-view.open,#prayer-view.open,#diocese-view.open,#missa-view.open,.sheet.open,.trail-sheet.open,#srch-modal.open,#info-card.open,#exit-dlg.open').forEach(function(v){v.classList.remove('open','show');});}catch(e){}try{document.documentElement.classList.remove('app-active','parish-mode','retreat-mode');}catch(e){}try{var c=$('cover'); if(c){c.style.display='';c.style.opacity='';c.scrollTop=0;}}catch(e){}}
-  function toast(){var t=$('oai-cover-exit-toast');if(!t){t=document.createElement('div');t.id='oai-cover-exit-toast';t.textContent='한 번 더 누르면 종료됩니다';document.body.appendChild(t);}t.classList.add('show');clearTimeout(t.__tm);t.__tm=setTimeout(function(){try{t.classList.remove('show');}catch(e){}},1300);}
-  var lastBack=0;
-  function installCoverBackGuard(){
-    try{if(!history.state||!history.state.__oaiCoverExitBase){history.replaceState(Object.assign({},history.state||{},{__oaiCoverExitBase:true}),document.title,location.href);}history.pushState({__oaiCoverExitGuard:true},document.title,location.href);}catch(e){}
-    window.addEventListener('popstate',function(e){
-      if(!coverVisible()) return;
-      try{e.stopImmediatePropagation&&e.stopImmediatePropagation();}catch(_){}
-      forceCleanCover();
-      var now=Date.now();
-      if(now-lastBack<1600){lastBack=0;try{var t=$("oai-cover-exit-toast");if(t)t.classList.remove("show");}catch(_){}try{sessionStorage.setItem("oai_force_cover_after_reload","1");sessionStorage.removeItem("oai_last_open_module");sessionStorage.removeItem("lastCategory");sessionStorage.removeItem("oai_restore_action");sessionStorage.removeItem("oai_last_action");}catch(_){}try{history.replaceState({__oaiExitNow:true},document.title,location.href);}catch(_){}setTimeout(function(){try{if(navigator.app&&typeof navigator.app.exitApp==="function"){navigator.app.exitApp();return;}}catch(err){}try{window.close();}catch(err){}setTimeout(function(){try{history.go(-2);}catch(err){try{history.back();}catch(e){}}},80);},0);return;}
-      lastBack=now;toast();try{history.pushState({__oaiCoverExitGuard:true},document.title,location.href);}catch(err){}
-    },true);
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',installCoverBackGuard,{once:true});else installCoverBackGuard();
-})();
-</script>
-
 <!-- OAI PATCH 20260502-8: retreat find box width/text fit -->
 <style id="oai-retreat-find-box-text-20260502-8">
 /* 커버의 피정의 집 찾기: 카드 가로폭은 다른 카드와 동일, 긴 글자만 두 줄 처리 */
@@ -6627,143 +6709,118 @@ html.retreat-mode .region-search-btn{width:82px!important;min-width:82px!importa
 })();
 </script>
 
-<!-- OAI PATCH 20260502-10: cover back must never restore previous step, double-back exits -->
-<script id="oai-cover-back-exit-only-20260502-10">
-(function(){
-  'use strict';
-  if(window.__OAI_COVER_BACK_EXIT_ONLY_20260502_10__) return;
-  window.__OAI_COVER_BACK_EXIT_ONLY_20260502_10__=true;
-  var last=0;
-  function $(id){return document.getElementById(id);}
-  function isCover(){var c=$('cover'),h=document.documentElement;return !!(c&&!h.classList.contains('app-active')&&getComputedStyle(c).display!=='none');}
-  function cleanCover(){try{document.querySelectorAll('.module-view.open,#prayer-view.open,#diocese-view.open,#missa-view.open,.sheet.open,.trail-sheet.open,#srch-modal.open,#info-card.open,#exit-dlg.open').forEach(function(v){v.classList.remove('open','show');});}catch(e){}try{document.documentElement.classList.remove('app-active','parish-mode','retreat-mode');}catch(e){}try{var c=$('cover');if(c){c.style.display='';c.style.opacity='';c.style.pointerEvents='';}}catch(e){}}
-  function toast(){var t=$('oai-cover-exit-toast');if(!t){t=document.createElement('div');t.id='oai-cover-exit-toast';t.textContent='한 번 더 누르면 종료됩니다';document.body.appendChild(t);}t.classList.add('show');clearTimeout(t.__tm);t.__tm=setTimeout(function(){try{t.classList.remove('show');}catch(e){}},1300);}
-  function exitApp(){try{sessionStorage.setItem('oai_force_cover_after_reload','1');sessionStorage.removeItem('oai_last_open_module');sessionStorage.removeItem('lastCategory');sessionStorage.removeItem('oai_restore_action');sessionStorage.removeItem('oai_last_action');}catch(e){}try{if(navigator.app&&typeof navigator.app.exitApp==='function'){navigator.app.exitApp();return;}}catch(e){}try{window.close();}catch(e){}setTimeout(function(){try{history.go(-2);}catch(e){try{history.back();}catch(_){}}},80);}
-  function handle(e){if(!isCover()) return;try{e.preventDefault&&e.preventDefault();e.stopPropagation&&e.stopPropagation();e.stopImmediatePropagation&&e.stopImmediatePropagation();}catch(_){}cleanCover();var now=Date.now();if(now-last<1600){last=0;exitApp();return;}last=now;toast();try{history.pushState({__oaiCoverExitGuard:true},document.title,location.href);}catch(_){} }
-  document.addEventListener('backbutton',handle,true);
-})();
-</script>
 
+<!-- OAI PATCH 20260502-12: final fix duplicate cover emojis, one-row tall top tabs, stable cover back exit -->
+<style id="oai-final-emoji-tabs-back-20260502-12">
+/* 1) 커버 이모지 중복 방지: 가상 이모지 제거, 실제 span 한 개만 표시 */
+#cc-2 .cover-emoji::before,
+#cc-3 .cover-emoji::before{content:none!important;display:none!important;}
+#cc-2 .cover-emoji,
+#cc-3 .cover-emoji{font-size:var(--cover-emoji-size,34px)!important;line-height:1!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;}
+#cover .cover-icon-wrap{overflow:visible!important;}
 
-<!-- OAI PATCH 20260502-11: robust cover-only double back exit, blocks previous-step restore -->
-<style id="oai-cover-exit-toast-style-20260502-11">
-#oai-cover-exit-toast{position:fixed!important;left:50%!important;bottom:calc(92px + env(safe-area-inset-bottom,0px))!important;transform:translateX(-50%) translateY(10px)!important;z-index:2147483647!important;min-height:42px!important;padding:0 18px!important;border-radius:999px!important;background:rgba(31,42,68,.94)!important;color:#fff!important;display:flex!important;align-items:center!important;justify-content:center!important;font-size:13px!important;font-weight:900!important;line-height:1!important;white-space:nowrap!important;box-shadow:0 10px 24px rgba(31,42,68,.28)!important;opacity:0!important;pointer-events:none!important;transition:opacity .16s ease,transform .16s ease!important}
-#oai-cover-exit-toast.show{opacity:1!important;transform:translateX(-50%) translateY(0)!important}
+/* 2) 성지·성당·피정 상단 탭: 무조건 한 줄 4칸, 길찾기 아래로 밀림 금지 */
+:root{--tab-h:98px!important;}
+#tabbar{
+  display:grid!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  grid-template-rows:1fr!important;
+  height:calc(var(--tab-h) + env(safe-area-inset-top,0px))!important;
+  min-height:calc(var(--tab-h) + env(safe-area-inset-top,0px))!important;
+  padding:calc(env(safe-area-inset-top,0px) + 8px) 8px 9px!important;
+  gap:8px!important;
+  align-items:stretch!important;
+  overflow:hidden!important;
+}
+#tabbar .tab-btn{
+  width:100%!important;
+  min-width:0!important;
+  max-width:none!important;
+  height:81px!important;
+  min-height:81px!important;
+  margin:0!important;
+  padding:8px 2px 7px!important;
+  border-radius:18px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:5px!important;
+  box-sizing:border-box!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:clip!important;
+  font-size:14px!important;
+  line-height:1.1!important;
+  letter-spacing:-.05em!important;
+}
+#tabbar .tab-icon{font-size:27px!important;line-height:1!important;display:block!important;flex:0 0 auto!important;}
+#tabbar .tab-btn.active .tab-icon{font-size:29px!important;}
+#tabbar .tab-btn span:not(.tab-icon){
+  display:block!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:clip!important;
+  line-height:1.1!important;
+  max-width:100%!important;
+  word-break:keep-all!important;
+}
+#map-wrap,.sheet{top:calc(var(--tab-h) + env(safe-area-inset-top,0px))!important;}
 </style>
-<script id="oai-cover-back-exit-robust-20260502-11">
+<script id="oai-final-emoji-tabs-back-20260502-12">
 (function(){
   'use strict';
-  if(window.__OAI_COVER_BACK_EXIT_ROBUST_20260502_11__) return;
-  window.__OAI_COVER_BACK_EXIT_ROBUST_20260502_11__ = true;
-
-  var lastBack = 0;
-  var exiting = false;
-  var guardReady = false;
-
-  function $(id){ return document.getElementById(id); }
-
-  function isCover(){
-    var h = document.documentElement;
-    var c = $('cover');
-    return !!(c && !h.classList.contains('app-active') && getComputedStyle(c).display !== 'none');
+  if(window.__OAI_FINAL_EMOJI_TABS_BACK_20260502_12__) return;
+  window.__OAI_FINAL_EMOJI_TABS_BACK_20260502_12__=true;
+  function $(id){return document.getElementById(id);}
+  function normalizeCoverIcon(id, emoji){
+    var b=$(id); if(!b) return;
+    var wrap=b.querySelector('.cover-icon-wrap'); if(!wrap) return;
+    var sp=wrap.querySelector('.cover-emoji');
+    if(!sp){sp=document.createElement('span');sp.className='cover-emoji';sp.setAttribute('aria-hidden','true');wrap.innerHTML='';wrap.appendChild(sp);}
+    sp.textContent=emoji;
+    Array.prototype.slice.call(wrap.children).forEach(function(ch){if(ch!==sp) ch.remove();});
   }
-
-  function cleanCoverOnly(){
-    try{
-      document.querySelectorAll('.module-view.open,#prayer-view.open,#diocese-view.open,#missa-view.open,.sheet.open,.trail-sheet.open,#srch-modal.open,#info-card.open,#exit-dlg.open').forEach(function(v){
-        v.classList.remove('open','show');
-      });
-    }catch(e){}
-    try{ document.documentElement.classList.remove('app-active','parish-mode','retreat-mode'); }catch(e){}
-    try{
-      var c = $('cover');
-      if(c){ c.style.display=''; c.style.opacity=''; c.style.pointerEvents=''; }
-    }catch(e){}
+  function normalizeAll(){
+    normalizeCoverIcon('cc-2','📖');
+    normalizeCoverIcon('cc-3','🙏');
+    /* 탭 텍스트는 한 줄 유지: 기존 줄바꿈/강제 3열 패치 무력화 */
+    document.querySelectorAll('#tabbar .tab-btn').forEach(function(btn){
+      btn.style.whiteSpace='nowrap';
+      btn.style.minWidth='0';
+      btn.style.maxWidth='none';
+    });
   }
-
-  function toast(){
-    var t = $('oai-cover-exit-toast');
-    if(!t){
-      t = document.createElement('div');
-      t.id = 'oai-cover-exit-toast';
-      t.textContent = '뒤로가기를 한 번 더 누르면 종료됩니다';
-      document.body.appendChild(t);
+  var lastCover=false;
+  function isCover(){var c=$('cover');return !!(c && !document.documentElement.classList.contains('app-active') && getComputedStyle(c).display!=='none');}
+  function resetNativeExitToastOnCoverEntry(){
+    var now=isCover();
+    if(now && !lastCover){
+      try{window._exitReady=false; clearTimeout(window._exitTimer);}catch(e){}
+      try{var t=$('_bt'); if(t) t.remove(); var t2=$('oai-cover-exit-toast'); if(t2) t2.classList.remove('show');}catch(e){}
     }
-    t.classList.add('show');
-    clearTimeout(t.__tm);
-    t.__tm = setTimeout(function(){ try{ t.classList.remove('show'); }catch(e){} }, 1300);
+    lastCover=now;
   }
-
-  function makeGuard(){
-    if(!isCover() || exiting || guardReady) return;
-    try{
-      history.pushState({__oaiCoverExitGuard11:true}, document.title, location.href);
-      guardReady = true;
-    }catch(e){}
+  var oldGTC=window.goToCover;
+  if(typeof oldGTC==='function'){
+    window.goToCover=function(){
+      var r=oldGTC.apply(this,arguments);
+      setTimeout(function(){normalizeAll();resetNativeExitToastOnCoverEntry();},0);
+      return r;
+    };
   }
-
-  function reallyExit(){
-    exiting = true;
-    try{ var t=$('oai-cover-exit-toast'); if(t) t.classList.remove('show'); }catch(e){}
-    try{
-      sessionStorage.setItem('oai_force_cover_after_reload','1');
-      sessionStorage.removeItem('oai_last_open_module');
-      sessionStorage.removeItem('lastCategory');
-      sessionStorage.removeItem('oai_restore_action');
-      sessionStorage.removeItem('oai_last_action');
-    }catch(e){}
-    try{ if(navigator.app && typeof navigator.app.exitApp === 'function'){ navigator.app.exitApp(); return; } }catch(e){}
-    try{ window.close(); }catch(e){}
-    setTimeout(function(){
-      try{ history.go(-2); }
-      catch(e){ try{ history.back(); }catch(_){} }
-    }, 20);
+  var oldStart=window.startApp;
+  if(typeof oldStart==='function'){
+    window.startApp=function(){
+      var r=oldStart.apply(this,arguments);
+      setTimeout(normalizeAll,0);
+      return r;
+    };
   }
-
-  function coverBack(e){
-    if(exiting) return false;
-    if(!isCover()) { guardReady=false; return false; }
-
-    try{
-      e && e.preventDefault && e.preventDefault();
-      e && e.stopPropagation && e.stopPropagation();
-      e && e.stopImmediatePropagation && e.stopImmediatePropagation();
-    }catch(_){}
-
-    cleanCoverOnly();
-    var now = Date.now();
-    if(now - lastBack < 1700){
-      lastBack = 0;
-      reallyExit();
-      return true;
-    }
-
-    lastBack = now;
-    toast();
-    guardReady = false;
-    makeGuard();
-    return true;
-  }
-
-  window.addEventListener('popstate', function(e){
-    if(coverBack(e)) return;
-  }, true);
-
-  document.addEventListener('backbutton', function(e){
-    if(coverBack(e)) return;
-  }, true);
-
-  function watchCover(){
-    if(isCover()) makeGuard();
-    else guardReady=false;
-  }
-
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', watchCover);
-  else watchCover();
-
-  try{
-    new MutationObserver(watchCover).observe(document.documentElement,{attributes:true,attributeFilter:['class']});
-  }catch(e){}
+  function boot(){normalizeAll();resetNativeExitToastOnCoverEntry();}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+  window.addEventListener('load',function(){boot();setTimeout(boot,200);setTimeout(boot,800);},{once:true});
+  try{new MutationObserver(function(){normalizeAll();resetNativeExitToastOnCoverEntry();}).observe(document.documentElement,{attributes:true,attributeFilter:['class']});}catch(e){}
 })();
 </script>
 
