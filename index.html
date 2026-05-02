@@ -5200,11 +5200,12 @@ window.initPrayerView = function(){
   function appActive(){ return document.documentElement.classList.contains('app-active'); }
 
   function callGTC(){
-    if(typeof window.goToCover === 'function') window.goToCover();
-    else {
-      document.documentElement.classList.remove('app-active','parish-mode','retreat-mode');
-      var cv = $b('cover'); if(cv) cv.style.display = '';
-    }
+    try{
+      if(typeof window.goToCover === 'function') window.goToCover();
+    }catch(e){}
+    document.documentElement.classList.remove('app-active','parish-mode','retreat-mode');
+    var cv = $b('cover'); if(cv){ cv.style.display = ''; cv.scrollTop = 0; }
+    var app = $b('app'); if(app) app.style.display = '';
   }
 
   /* ── 외부·모듈 뷰 닫기 (닫으면 항상 goToCover) ── */
@@ -5941,23 +5942,13 @@ html.retreat-mode #sm-tab-bar .sm-tab:not(.active) {
   border-color: rgba(63,117,96,.22) !important;
 }
 /* 활성 탭 */
-html:not(.parish-mode):not(.retreat-mode) #sm-tab-bar .sm-tab.active {
-  background: linear-gradient(135deg,#243a83,#1f2f6b) !important;
-  color: #fff !important;
-  border-color: transparent !important;
-  box-shadow: 0 3px 10px rgba(31,47,107,.30) !important;
-}
-html.parish-mode #sm-tab-bar .sm-tab.active {
-  background: linear-gradient(135deg,#355c7d,#446e93) !important;
-  color: #fff !important;
-  border-color: transparent !important;
-  box-shadow: 0 3px 10px rgba(53,92,125,.28) !important;
-}
+html:not(.parish-mode):not(.retreat-mode) #sm-tab-bar .sm-tab.active,
+html.parish-mode #sm-tab-bar .sm-tab.active,
 html.retreat-mode #sm-tab-bar .sm-tab.active {
-  background: linear-gradient(135deg,#3f7e5b,#4f8f6a) !important;
-  color: #fff !important;
-  border-color: transparent !important;
-  box-shadow: 0 3px 10px rgba(63,126,91,.28) !important;
+  background: var(--gold, #d4aa6a) !important;
+  color: var(--navy, #0e1535) !important;
+  border-color: var(--gold, #d4aa6a) !important;
+  box-shadow: 0 4px 12px rgba(212,170,106,.32) !important;
 }
 
 /* filter-btn (성지순례 내부 카테고리 버튼)도 높이 통일 */
@@ -6984,18 +6975,7 @@ html.retreat-mode #info-card #ic-hp.ic-link-btn{font-size:15px!important;}
   }else{
     window.goToCover=safeGoToCover;
   }
-  /* 마지막 단계 popstate를 직접 처리해서 커버→about:blank 이동을 막음 */
-  try{history.replaceState({oaiStay:true},'',location.href);history.pushState({oaiStay:true},'',location.href);}catch(e){}
-  window.addEventListener('popstate',function(e){
-    try{if(e.stopImmediatePropagation)e.stopImmediatePropagation(); if(e.preventDefault)e.preventDefault();}catch(x){}
-    try{history.pushState({oaiStay:true},'',location.href);}catch(x){}
-    if(isAppActive()){
-      if(typeof window._handleBack==='function') window._handleBack();
-      else safeGoToCover();
-    }else{
-      window._showBackToast();
-    }
-  },true);
+  /* 중복 popstate/history 캡처 제거: 기존 단일 뒤로가기 컨트롤러만 사용 */
   /* 정보카드가 열릴 때마다 버튼 자동 축소 */
   try{new MutationObserver(function(){setTimeout(fitInfoButtons,0);setTimeout(fitInfoButtons,80);}).observe(document.body,{subtree:true,attributes:true,childList:true,attributeFilter:['class','style']});}catch(e){}
   var oldShow=window._showInfoCard;
