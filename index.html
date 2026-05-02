@@ -1137,7 +1137,7 @@ html.oai-font-global #cover .cover-name{font-size:calc(16px * var(--app-font-sca
 /* ── 검색창 감싸는 배경: 카테고리 고유색 ── */
 #srch-modal .sm-srch{
   border-top:1px solid rgba(255,255,255,.10);
-  border-bottom:1px solid rgba(0,0,0,.14);
+  border-bottom:1px solid rgba(255,255,255,.28);
 }
 html:not(.parish-mode):not(.retreat-mode) #srch-modal .sm-srch{
   background:linear-gradient(135deg,#1f2f6b,#243a83);
@@ -1166,7 +1166,7 @@ html.retreat-mode #srch-modal .sm-srch{
 
 /* ── 버튼(성지, 일반장소) 감싸는 배경: 카테고리 고유색 ── */
 #srch-modal #sm-tab-bar{
-  border-bottom:1px solid rgba(0,0,0,.14) !important;
+  border-bottom:1px solid rgba(255,255,255,.28) !important;
   gap:8px !important;
   padding:10px 12px !important;
 }
@@ -1208,7 +1208,7 @@ html.retreat-mode #srch-modal #sm-tab-bar{
 /* ── sm-filter(필터 칩 영역) 배경: 카테고리 고유색 ── */
 #srch-modal .sm-filter{
   border-top:1px solid rgba(255,255,255,.08);
-  border-bottom:1px solid rgba(0,0,0,.14);
+  border-bottom:1px solid rgba(255,255,255,.28);
   gap:8px;
 }
 html:not(.parish-mode):not(.retreat-mode) #srch-modal .sm-filter{
@@ -1237,7 +1237,7 @@ html.retreat-mode #srch-modal .sm-filter{
 /* ── sm-body 위 구분선 ── */
 #srch-modal .sm-body,
 #srch-modal #sm-body-place{
-  border-top:2px solid rgba(0,0,0,.10);
+  border-top:2px solid rgba(255,255,255,.30);
 }
 
 /* 커버: 대제목/서브는 그대로 두고 카테고리 버튼 글자만 2단계 확대 */
@@ -6686,7 +6686,7 @@ html.retreat-mode .li-badge{
 
 /* 성지 고유색: 밝은 남색을 제거하고 고급 남색 계열로 고정 */
 :root{
-  --tab-h:79px!important;
+  --tab-h:72px!important;
   --pilgrim:#1f2a44!important;
   --oai-shrine-header:#1f2a44!important;
   --shrine-main:#1f2a44!important;
@@ -6713,8 +6713,8 @@ html.retreat-mode .li-badge{
   width:100%!important;
   min-width:0!important;
   max-width:none!important;
-  height:67px!important;
-  min-height:67px!important;
+  height:60px!important;
+  min-height:60px!important;
   margin:0!important;
   padding:6px 2px 5px!important;
   border-radius:14px!important;
@@ -6727,7 +6727,7 @@ html.retreat-mode .li-badge{
   white-space:nowrap!important;
   overflow:hidden!important;
   text-overflow:clip!important;
-  font-size:12px!important;
+  font-size:13px!important;
   line-height:1.05!important;
   letter-spacing:-.055em!important;
   box-shadow:none!important;
@@ -6735,12 +6735,12 @@ html.retreat-mode .li-badge{
 }
 #tabbar .tab-btn.active{
   background:var(--gold)!important;
-  color:#1F2937!important;
+  color:#fff!important;
   border-color:var(--gold2)!important;
   box-shadow:none!important;
 }
-#tabbar .tab-icon{font-size:20px!important;line-height:1!important;display:block!important;flex:0 0 auto!important;}
-#tabbar .tab-btn.active .tab-icon{font-size:21px!important;}
+#tabbar .tab-icon{font-size:21px!important;line-height:1!important;display:block!important;flex:0 0 auto!important;}
+#tabbar .tab-btn.active .tab-icon{font-size:22px!important;}
 #tabbar .tab-btn span:not(.tab-icon){
   display:block!important;
   white-space:nowrap!important;
@@ -6778,7 +6778,7 @@ html.retreat-mode .srch-bar,html.retreat-mode .filter-bar,html.retreat-mode .reg
   line-height:1!important;
   box-shadow:none!important;
 }
-#region-body .dio-hd,.region-list-hd,.sm-grp{border-top:1px solid var(--gold)!important;border-bottom:1px solid var(--gold)!important;}
+#region-body .dio-hd,.region-list-hd,.sm-grp{border-top:1px solid rgba(255,255,255,.34)!important;border-bottom:1px solid rgba(255,255,255,.34)!important;}
 .filter-btn.active,#srch-modal .sm-fb.on,#srch-modal .sm-tab.active,html.parish-mode .filter-btn.active,html.retreat-mode .filter-btn.active{
   background:var(--gold)!important;
   color:#1F2937!important;
