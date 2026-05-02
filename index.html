@@ -1589,7 +1589,7 @@ html.retreat-mode .tab-btn.active{
       <button type="button" class="pr-font-btn pr-lg" onclick="event.stopPropagation();prAdjustFont(1);">가</button>
     </div>
     <div class="cover-grid">
-        <button id="cc-1" class="cover-card" onclick="hideCoverAndRun(function(){ if(typeof openMissa === 'function') openMissa(); })">
+        <button id="cc-1" class="cover-card" onclick="if(typeof openMissa === 'function') openMissa();">
             <div class="cover-icon-wrap"><span class="cover-emoji" aria-hidden="true">✝️</span></div>
             <span class="cover-name">매일미사</span>
         </button>
