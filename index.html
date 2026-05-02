@@ -1620,6 +1620,12 @@ html.retreat-mode #info-card #ic-guide.ic-link-btn{
         </button>
     </div>
 
+<!-- 커버 하단 안내문구 -->
+<div id="cover-bottom-note">
+  본 앱은 가톨릭 신자들의 신앙생활을 돕기 위해 만든 비공식 개인 앱입니다.<br>
+  정보는 CBCK, 굿뉴스 및 각 교구 홈페이지를 참고했습니다.
+</div>
+
 <!-- 문의·건의 버튼 (커버 전용) -->
 <button id="qna-cover-btn" type="button" onclick="openQnaView()" aria-label="문의·건의">
   💬 문의·건의
@@ -2179,18 +2185,11 @@ function attemptAppExit(){
   window._appExiting = true;
   // 토스트 즉시 제거
   const bt=$('_bt'); if(bt) bt.remove();
-  // 1순위: window.close (standalone PWA에서 작동)
-  try{ window.close(); }catch(e){}
-  // 2순위: history를 맨 처음으로 되돌려 실제 브라우저 히스토리로 탈출
+  // about:blank로 보내지 않는다. 가능한 환경에서는 앱/창을 닫고, 아니면 실제 이전 화면으로만 빠진다.
+  try{ if(navigator.app && typeof navigator.app.exitApp === 'function') navigator.app.exitApp(); }catch(e){}
+  try{ window.open('', '_self'); window.close(); }catch(e){}
   setTimeout(()=>{
-    try{
-      // 앱이 push한 모든 상태를 벗어나도록 충분히 뒤로
-      history.go(-(history.length + 2));
-    }catch(e){}
-    // 3순위: 위 방법이 안 되면 about:blank로 대체
-    setTimeout(()=>{
-      try{ location.replace('about:blank'); }catch(e){}
-    }, 400);
+    try{ history.go(-2); }catch(e){ try{ history.back(); }catch(_){} }
   }, 80);
 }
 function closeExitDlg(){$('exit-dlg').classList.remove('open');}
@@ -5336,6 +5335,7 @@ window.initPrayerView = function(){
   var _restoring = false;
 
   window.addEventListener('popstate', function(){
+    if(window._appExiting) return;
     if(_restoring){ _restoring = false; return; }
 
     /* 커버: 토스트 → 두 번째에 종료 */
@@ -5821,8 +5821,8 @@ html.app-active #pwa-install-btn{display:none!important;}
 /* OAI direct fix 20260502: prayer/web swipe action without page push */
 #prayer-view, #web-view{overflow-x:hidden!important;overscroll-behavior-x:none!important;}
 #prayer-list-view,#pr-list-ul,#web-list{touch-action:pan-y!important;overscroll-behavior-x:none!important;transform:none!important;}
-@keyframes oaiSwipeSoftFlash{0%{opacity:.82}100%{opacity:1}}
-.oai-swipe-left,.oai-swipe-right{animation:oaiSwipeSoftFlash .16s ease-out both!important;transform:none!important;}
+@keyframes oaiSwipeSoftFlash{0%{opacity:1}100%{opacity:1}}
+.oai-swipe-left,.oai-swipe-right{animation:none!important;transform:none!important;}
 
 </style>
 
@@ -6147,8 +6147,8 @@ html,body{overflow-x:hidden!important;overscroll-behavior-x:none!important;}
 #prayer-detail:not(.show){display:none!important;visibility:hidden!important;transform:none!important;pointer-events:none!important;}
 #prayer-detail.show{display:flex!important;visibility:visible!important;transform:none!important;pointer-events:auto!important;}
 /* 화면 이동 액션: 레이아웃을 밀지 않고 살짝 반응만 표시 */
-@keyframes oaiFinalSwipeFlash{0%{opacity:.68;filter:brightness(1.04)}100%{opacity:1;filter:none}}
-.oai-swipe-left,.oai-swipe-right{animation:oaiFinalSwipeFlash .22s ease-out both!important;transform:none!important;}
+@keyframes oaiFinalSwipeFlash{0%{opacity:1}100%{opacity:1}}
+.oai-swipe-left,.oai-swipe-right{animation:none!important;transform:none!important;}
 /* 웹사이트 즐겨찾기 탭: 기도문 즐겨찾기와 같은 주황색 */
 #web-view .web-cat-btn.on[data-web-cat="⭐ 즐겨찾기"],
 #web-view .web-cat-btn.on[data-cat-color="⭐ 즐겨찾기"]{background:#E8780C!important;color:#fff!important;border-color:#E8780C!important;box-shadow:0 8px 18px rgba(232,120,12,.18)!important;}
@@ -6315,68 +6315,53 @@ html,body{overflow-x:hidden!important;overscroll-behavior-x:none!important;}
 
 
 <style id="oai-stronger-swipe-action-20260502">
-/* 스와이프 탭 이동 액션 강화: 화면 자체는 밀지 않고 내부 목록 위에 방향 표시만 확실히 표시 */
-@keyframes oaiSwipePanelFlash20260502{
-  0%{opacity:0;filter:brightness(1);}
-  28%{opacity:1;filter:brightness(1.08);}
-  100%{opacity:0;filter:brightness(1);}
-}
+/* 기도문·웹사이트 좌우 이동 액션: 화면 번쩍임 없이 금색 방향 하이라이트만 표시 */
 @keyframes oaiSwipeArrowPop20260502{
-  0%{opacity:0;transform:translateY(-50%) scale(.72);}
-  32%{opacity:1;transform:translateY(-50%) scale(1.08);}
+  0%{opacity:0;transform:translateY(-50%) scale(.86);}
+  30%{opacity:1;transform:translateY(-50%) scale(1.04);}
   100%{opacity:0;transform:translateY(-50%) scale(1);}
 }
 .oai-swipe-left,.oai-swipe-right{
   position:relative!important;
   overflow:hidden!important;
-  animation:oaiSwipePanelFlash20260502 .42s ease-out both!important;
-  will-change:opacity,filter!important;
+  animation:none!important;
+  transform:none!important;
+  filter:none!important;
+  will-change:auto!important;
 }
 .oai-swipe-left::before,.oai-swipe-right::before{
-  content:'';
-  position:absolute;
-  top:0;bottom:0;
-  width:42%;
-  z-index:30;
-  pointer-events:none;
-  opacity:0;
-  animation:oaiSwipePanelFlash20260502 .42s ease-out both!important;
-}
-.oai-swipe-left::before{
-  right:0;
-  background:linear-gradient(90deg,rgba(255,255,255,0),rgba(212,170,106,.28));
-}
-.oai-swipe-right::before{
-  left:0;
-  background:linear-gradient(270deg,rgba(255,255,255,0),rgba(212,170,106,.28));
+  content:none!important;
+  display:none!important;
 }
 .oai-swipe-left::after,.oai-swipe-right::after{
   position:absolute;
   top:50%;
   z-index:31;
-  width:42px;height:42px;
+  width:38px;height:38px;
   border-radius:50%;
   display:flex;
   align-items:center;
   justify-content:center;
-  background:rgba(255,255,255,.96);
+  background:rgba(255,255,255,.98);
   color:#b8965a;
-  border:2px solid rgba(212,170,106,.65);
-  box-shadow:0 8px 22px rgba(14,21,53,.18);
-  font-size:28px;
+  border:2px solid rgba(212,170,106,.72);
+  box-shadow:0 6px 18px rgba(14,21,53,.14);
+  font-size:26px;
   font-weight:900;
   line-height:1;
   pointer-events:none;
-  animation:oaiSwipeArrowPop20260502 .42s ease-out both!important;
+  animation:oaiSwipeArrowPop20260502 .34s ease-out both!important;
 }
 .oai-swipe-left::after{content:'›';right:16px;}
 .oai-swipe-right::after{content:'‹';left:16px;}
 #pr-list-ul.oai-swipe-left,#pr-list-ul.oai-swipe-right,
-#web-list.oai-swipe-left,#web-list.oai-swipe-right,
-#trail-list.oai-swipe-left,#trail-list.oai-swipe-right,
-.sheet-body.oai-swipe-left,.sheet-body.oai-swipe-right{
+#web-list.oai-swipe-left,#web-list.oai-swipe-right{
   transform:none!important;
   max-width:100vw!important;
+}
+#trail-list.oai-swipe-left,#trail-list.oai-swipe-right,
+.sheet-body.oai-swipe-left,.sheet-body.oai-swipe-right{
+  animation:none!important;
 }
 #prayer-view,#web-view,#trail-view,.sheet{overflow-x:hidden!important;}
 </style>
@@ -6417,10 +6402,13 @@ html,body{overflow-x:hidden!important;overscroll-behavior-x:none!important;}
 
 <!-- OAI PATCH 20260502-4: missa popup removed + cover qna button restore -->
 <style id="oai-missa-qna-fix-20260502-4">
+#cover .cover-grid{max-width:min(440px,calc(100vw - 28px))!important;padding-left:4px!important;padding-right:4px!important;}
+#cover-bottom-note{position:fixed!important;left:14px!important;right:14px!important;bottom:calc(62px + env(safe-area-inset-bottom,0px))!important;z-index:10015!important;background:transparent!important;border:0!important;box-shadow:none!important;color:rgba(62,54,46,.74)!important;text-align:center!important;font-family:inherit!important;font-size:11px!important;font-weight:600!important;line-height:1.48!important;letter-spacing:-.02em!important;word-break:keep-all!important;pointer-events:none!important;}
 #cover #qna-cover-btn{position:fixed!important;right:14px!important;bottom:calc(14px + env(safe-area-inset-bottom,0px))!important;z-index:10020!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:7px!important;min-height:42px!important;padding:0 15px!important;border:0!important;border-radius:999px!important;background:linear-gradient(135deg,#1f2a44,#31446c)!important;color:#fff!important;font-family:inherit!important;font-size:13px!important;font-weight:900!important;line-height:1!important;box-shadow:0 10px 24px rgba(31,42,68,.25)!important;opacity:1!important;visibility:visible!important;pointer-events:auto!important;}
-html.app-active #cover #qna-cover-btn{display:none!important;}
+html.app-active #cover #qna-cover-btn,html.app-active #cover-bottom-note{display:none!important;}
 #cover #pwa-install-btn{left:14px!important;right:auto!important;bottom:calc(14px + env(safe-area-inset-bottom,0px))!important;}
-@media (max-width:380px){#cover #qna-cover-btn{right:10px!important;padding:0 12px!important;font-size:12px!important;}#cover #pwa-install-btn{left:10px!important;font-size:12px!important;}}
+@media (max-width:380px){#cover .cover-grid{max-width:calc(100vw - 22px)!important;}#cover-bottom-note{left:10px!important;right:10px!important;bottom:calc(58px + env(safe-area-inset-bottom,0px))!important;font-size:10.5px!important;}#cover #qna-cover-btn{right:10px!important;padding:0 12px!important;font-size:12px!important;}#cover #pwa-install-btn{left:10px!important;font-size:12px!important;}}
+@media (max-height:720px){#cover-bottom-note{bottom:calc(54px + env(safe-area-inset-bottom,0px))!important;font-size:10px!important;line-height:1.35!important;}#cover #qna-cover-btn{min-height:38px!important;font-size:12px!important;}}
 </style>
 <script id="oai-missa-qna-fix-20260502-4">
 (function(){
