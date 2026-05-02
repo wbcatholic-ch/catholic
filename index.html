@@ -7009,5 +7009,90 @@ html.retreat-mode #info-card #ic-hp.ic-link-btn{font-size:15px!important;}
 })();
 </script>
 
+
+<!-- OAI PATCH 20260502-14: active tab contrast + smaller diocese filter buttons -->
+<style id="oai-active-tab-diocese-size-20260502-14">
+/* 성지·성당·피정 상단 4탭: 활성 탭이 배경과 섞이지 않도록 고대비 색상으로 고정 */
+#tabbar .tab-btn.active{
+  background:#d4aa6a!important;
+  color:#1f2937!important;
+  border:2px solid rgba(255,255,255,.72)!important;
+  box-shadow:0 8px 18px rgba(0,0,0,.16), inset 0 1px 0 rgba(255,255,255,.35)!important;
+}
+#tabbar .tab-btn.active .tab-icon,
+#tabbar .tab-btn.active span:not(.tab-icon){color:#1f2937!important;}
+html.parish-mode #tabbar .tab-btn.active{
+  background:#f5e6d0!important;
+  color:#355c7d!important;
+  border-color:rgba(255,255,255,.82)!important;
+}
+html.parish-mode #tabbar .tab-btn.active .tab-icon,
+html.parish-mode #tabbar .tab-btn.active span:not(.tab-icon){color:#355c7d!important;}
+html.retreat-mode #tabbar .tab-btn.active{
+  background:#e8f3ec!important;
+  color:#0d6f66!important;
+  border-color:rgba(255,255,255,.82)!important;
+}
+html.retreat-mode #tabbar .tab-btn.active .tab-icon,
+html.retreat-mode #tabbar .tab-btn.active span:not(.tab-icon){color:#0d6f66!important;}
+
+/* 출발/도착 검색창 안의 성당찾기·일반장소 탭도 활성/비활성 구분 복구 */
+#sm-tab-bar .sm-tab{
+  height:46px!important;
+  min-height:46px!important;
+  padding:0 12px!important;
+  border-radius:14px!important;
+  background:#f8fafc!important;
+  color:#526274!important;
+  border:1.5px solid #b9c3d0!important;
+}
+#sm-tab-bar .sm-tab.active{
+  background:#d4aa6a!important;
+  color:#1f2937!important;
+  border-color:#d4aa6a!important;
+}
+html.parish-mode #sm-tab-bar .sm-tab.active{background:#4f6f90!important;color:#fff!important;border-color:#4f6f90!important;}
+html.retreat-mode #sm-tab-bar .sm-tab.active{background:#6aa186!important;color:#fff!important;border-color:#6aa186!important;}
+
+/* 교구/지역 필터 버튼: 너무 큰 패치값을 되돌려 한 줄 버튼 높이로 축소 */
+.filter-bar{
+  gap:8px!important;
+  padding:9px 12px!important;
+}
+.filter-btn,.sm-fb{
+  height:40px!important;
+  min-height:40px!important;
+  max-height:40px!important;
+  padding:0 17px!important;
+  border-radius:20px!important;
+  font-size:15px!important;
+  line-height:1!important;
+  font-weight:800!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  white-space:nowrap!important;
+  flex:0 0 auto!important;
+}
+.filter-btn.active,.sm-fb.on{
+  background:#d4aa6a!important;
+  color:#1f2937!important;
+  border-color:#d4aa6a!important;
+}
+html.parish-mode .filter-btn.active,html.parish-mode .sm-fb.on{
+  background:#f5e6d0!important;
+  color:#355c7d!important;
+  border-color:#f5e6d0!important;
+}
+html.retreat-mode .filter-btn.active,html.retreat-mode .sm-fb.on{
+  background:#e8f3ec!important;
+  color:#0d6f66!important;
+  border-color:#e8f3ec!important;
+}
+@media(max-width:380px){
+  .filter-btn,.sm-fb{height:38px!important;min-height:38px!important;max-height:38px!important;padding:0 15px!important;font-size:14px!important;border-radius:19px!important;}
+}
+</style>
+
 </body>
 </html>
