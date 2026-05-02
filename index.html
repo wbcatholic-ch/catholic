@@ -5104,13 +5104,11 @@ window.prCloseDetail = window.prCloseDetail;
     var idx = getIdx(prCurCat);
     var next = (idx + 1) % PR_CATS.length; // 순환
     prSwitchCat(PR_CATS[next]);
-    if(typeof window.oaiSwipeAction === 'function') window.oaiSwipeAction(document.getElementById('pr-list-ul'), 'left');
   }
   function goPrev() {
     var idx = getIdx(prCurCat);
     var prev = (idx - 1 + PR_CATS.length) % PR_CATS.length; // 순환
     prSwitchCat(PR_CATS[prev]);
-    if(typeof window.oaiSwipeAction === 'function') window.oaiSwipeAction(document.getElementById('pr-list-ul'), 'right');
   }
 
   el.addEventListener('touchstart', function(e) {
@@ -5338,14 +5336,10 @@ window.initPrayerView = function(){
     if(window._appExiting) return;
     if(_restoring){ _restoring = false; return; }
 
-    /* 커버: 토스트 → 두 번째에 종료 */
+    /* 커버: 토스트 → 두 번째에 종료. go(1) 재복원 없이 바로 트랩만 다시 심어 2번으로 끝낸다. */
     if(!appActive()){
-      _restoring = true;
-      history.go(1);
-      /* go(1) 복원 후 _restoring이 해제된 다음 토스트 표시 */
-      setTimeout(function(){
-        if(typeof window._showBackToast==='function') window._showBackToast();
-      }, 50);
+      if(typeof window._showBackToast==='function') window._showBackToast();
+      try{ history.pushState({_p:1}, '', _href); }catch(e){}
       return;
     }
 
@@ -6102,6 +6096,7 @@ html.retreat-mode #sm-tab-bar .sm-tab.active {
   'use strict';
   window.oaiSwipeAction = function(el, dir){
     if(!el) return;
+    if(el.id === 'pr-list-ul' || el.id === 'prayer-list-view' || el.id === 'web-list') return;
     el.classList.remove('oai-swipe-left','oai-swipe-right');
     requestAnimationFrame(function(){
       el.classList.add(dir === 'right' ? 'oai-swipe-right' : 'oai-swipe-left');
@@ -6170,7 +6165,10 @@ html,body{overflow-x:hidden!important;overscroll-behavior-x:none!important;}
     el.classList.add(dir==='right'?'oai-swipe-right':'oai-swipe-left');
     setTimeout(function(){try{el.classList.remove('oai-swipe-left','oai-swipe-right');}catch(e){}},240);
   }
-  window.oaiSwipeAction = function(el, dir){ flash(el, dir); };
+  window.oaiSwipeAction = function(el, dir){
+    if(el && (el.id === 'pr-list-ul' || el.id === 'prayer-list-view' || el.id === 'web-list')) return;
+    flash(el, dir);
+  };
 
   /* 가로로 밀 때 브라우저/웹뷰 자체 화면이 옆으로 밀리는 현상 차단 */
   function bindHorizontalGuard(el){
@@ -6209,7 +6207,6 @@ html,body{overflow-x:hidden!important;overscroll-behavior-x:none!important;}
       if(cur<0) cur=0;
       var next = dx<0 ? (cur+1)%tabs.length : (cur-1+tabs.length)%tabs.length;
       tabs[next].click();
-      flash($('web-list'), dx<0?'left':'right');
     }, {passive:true});
   }
 
@@ -6370,8 +6367,6 @@ html,body{overflow-x:hidden!important;overscroll-behavior-x:none!important;}
   'use strict';
   function pickActiveBody(){
     try{
-      if(document.getElementById('prayer-view')?.classList.contains('open')) return document.getElementById('pr-list-ul') || document.getElementById('prayer-list-view');
-      if(document.getElementById('web-view')?.classList.contains('open')) return document.getElementById('web-list');
       if(document.getElementById('trail-view')?.classList.contains('open')) return document.querySelector('#trail-panel-list.on #trail-list') || document.querySelector('#trail-view .trail-panel.on');
       var at = window._activeTab;
       if(at) return document.querySelector('#sheet-'+at+' .sheet-body') || document.getElementById('sheet-'+at);
@@ -6381,6 +6376,7 @@ html,body{overflow-x:hidden!important;overscroll-behavior-x:none!important;}
   function flash(el, dir){
     el = el || pickActiveBody();
     if(!el) return;
+    if(el.id === 'pr-list-ul' || el.id === 'prayer-list-view' || el.id === 'web-list') return;
     try{
       el.classList.remove('oai-swipe-left','oai-swipe-right');
       void el.offsetWidth;
@@ -6402,13 +6398,13 @@ html,body{overflow-x:hidden!important;overscroll-behavior-x:none!important;}
 
 <!-- OAI PATCH 20260502-4: missa popup removed + cover qna button restore -->
 <style id="oai-missa-qna-fix-20260502-4">
-#cover .cover-grid{max-width:min(440px,calc(100vw - 28px))!important;padding-left:4px!important;padding-right:4px!important;}
-#cover-bottom-note{position:fixed!important;left:14px!important;right:14px!important;bottom:calc(62px + env(safe-area-inset-bottom,0px))!important;z-index:10015!important;background:transparent!important;border:0!important;box-shadow:none!important;color:rgba(62,54,46,.74)!important;text-align:center!important;font-family:inherit!important;font-size:11px!important;font-weight:600!important;line-height:1.48!important;letter-spacing:-.02em!important;word-break:keep-all!important;pointer-events:none!important;}
-#cover #qna-cover-btn{position:fixed!important;right:14px!important;bottom:calc(14px + env(safe-area-inset-bottom,0px))!important;z-index:10020!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:7px!important;min-height:42px!important;padding:0 15px!important;border:0!important;border-radius:999px!important;background:linear-gradient(135deg,#1f2a44,#31446c)!important;color:#fff!important;font-family:inherit!important;font-size:13px!important;font-weight:900!important;line-height:1!important;box-shadow:0 10px 24px rgba(31,42,68,.25)!important;opacity:1!important;visibility:visible!important;pointer-events:auto!important;}
+#cover .cover-grid{max-width:min(420px,calc(100vw - 38px))!important;padding-left:4px!important;padding-right:4px!important;}
+#cover-bottom-note{position:fixed!important;left:12px!important;right:12px!important;bottom:calc(7px + env(safe-area-inset-bottom,0px))!important;z-index:10015!important;background:transparent!important;border:0!important;box-shadow:none!important;color:rgba(62,54,46,.76)!important;text-align:center!important;font-family:inherit!important;font-size:10.5px!important;font-weight:600!important;line-height:1.38!important;letter-spacing:-.03em!important;word-break:keep-all!important;pointer-events:none!important;display:block!important;}
+#cover #qna-cover-btn{position:fixed!important;right:12px!important;bottom:calc(54px + env(safe-area-inset-bottom,0px))!important;z-index:10020!important;display:flex!important;align-items:center!important;justify-content:center!important;min-height:42px!important;padding:0 15px!important;border:0!important;border-radius:999px!important;background:linear-gradient(135deg,#1f2a44,#31446c)!important;color:#fff!important;font-family:inherit!important;font-size:13px!important;font-weight:900!important;line-height:1!important;box-shadow:0 10px 24px rgba(31,42,68,.25)!important;opacity:1!important;visibility:visible!important;pointer-events:auto!important;}
 html.app-active #cover #qna-cover-btn,html.app-active #cover-bottom-note{display:none!important;}
-#cover #pwa-install-btn{left:14px!important;right:auto!important;bottom:calc(14px + env(safe-area-inset-bottom,0px))!important;}
-@media (max-width:380px){#cover .cover-grid{max-width:calc(100vw - 22px)!important;}#cover-bottom-note{left:10px!important;right:10px!important;bottom:calc(58px + env(safe-area-inset-bottom,0px))!important;font-size:10.5px!important;}#cover #qna-cover-btn{right:10px!important;padding:0 12px!important;font-size:12px!important;}#cover #pwa-install-btn{left:10px!important;font-size:12px!important;}}
-@media (max-height:720px){#cover-bottom-note{bottom:calc(54px + env(safe-area-inset-bottom,0px))!important;font-size:10px!important;line-height:1.35!important;}#cover #qna-cover-btn{min-height:38px!important;font-size:12px!important;}}
+#cover #pwa-install-btn{left:12px!important;right:auto!important;bottom:calc(54px + env(safe-area-inset-bottom,0px))!important;z-index:10020!important;}
+@media (max-width:380px){#cover .cover-grid{max-width:calc(100vw - 34px)!important;}#cover-bottom-note{left:8px!important;right:8px!important;font-size:9.7px!important;line-height:1.32!important;}#cover #qna-cover-btn{right:8px!important;bottom:calc(50px + env(safe-area-inset-bottom,0px))!important;padding:0 11px!important;font-size:12px!important;}#cover #pwa-install-btn{left:8px!important;bottom:calc(50px + env(safe-area-inset-bottom,0px))!important;font-size:12px!important;}}
+@media (max-height:720px){#cover-bottom-note{font-size:9.4px!important;line-height:1.28!important;}#cover #qna-cover-btn{bottom:calc(46px + env(safe-area-inset-bottom,0px))!important;min-height:38px!important;font-size:12px!important;}#cover #pwa-install-btn{bottom:calc(46px + env(safe-area-inset-bottom,0px))!important;}}
 </style>
 <script id="oai-missa-qna-fix-20260502-4">
 (function(){
@@ -6448,86 +6444,45 @@ html.app-active #cover #qna-cover-btn,html.app-active #cover-bottom-note{display
 
 
 <!-- OAI FINAL STABILITY PATCH 20260502: refresh reset + one-back missa + compact info buttons -->
-<style id="oai-final-refresh-missa-infobutton-20260502">
-/* 성지·성당·피정 탭 높이: 찌그러짐 방지 */
-:root{--tab-h:92px!important;}
-#tabbar{height:calc(92px + env(safe-area-inset-top,0px))!important;min-height:calc(92px + env(safe-area-inset-top,0px))!important;padding:calc(env(safe-area-inset-top,0px) + 8px) 8px 8px!important;gap:8px!important;align-items:center!important;}
-#map-wrap{top:calc(92px + env(safe-area-inset-top,0px))!important;}
-.sheet{top:calc(92px + env(safe-area-inset-top,0px))!important;}
-#sheet-route{top:auto!important;}
-#tabbar .tab-btn{height:76px!important;min-height:76px!important;padding:10px 3px!important;gap:6px!important;justify-content:center!important;border-radius:17px!important;font-size:15px!important;line-height:1.22!important;white-space:normal!important;}
-#tabbar .tab-icon{font-size:28px!important;line-height:1!important;}
-#tabbar .tab-btn.active .tab-icon{font-size:30px!important;}
-#tabbar .tab-btn span:not(.tab-icon){display:block!important;line-height:1.22!important;white-space:nowrap!important;}
-.filter-bar{min-height:72px!important;height:auto!important;padding:13px 12px!important;align-items:center!important;gap:9px!important;}
-.filter-btn,.sm-fb{min-height:50px!important;height:50px!important;padding:0 18px!important;border-radius:25px!important;font-size:14px!important;font-weight:800!important;display:flex!important;align-items:center!important;justify-content:center!important;}
-.region-wrap{padding-top:16px!important;padding-bottom:16px!important;}
-.region-search-btn{height:52px!important;min-height:52px!important;padding:0 21px!important;border-radius:26px!important;font-size:14px!important;}
-.srch-bar{padding:11px 12px 10px!important;}.srch-inner{height:52px!important;min-height:52px!important;border-radius:26px!important;}
-#sm-tab-bar{height:84px!important;min-height:84px!important;padding:15px 12px!important;gap:10px!important;align-items:center!important;}
-#sm-tab-bar .sm-tab{height:56px!important;min-height:56px!important;padding:0 12px!important;font-size:16px!important;line-height:1.22!important;border-radius:18px!important;display:flex!important;align-items:center!important;justify-content:center!important;}
-/* 인포카드 상세페이지/홈페이지 버튼: 박스 크기는 그대로, 글자만 줄여 넘침 방지 */
-#ic-links-row{display:flex;gap:6px;align-items:stretch;box-sizing:border-box;}
-#ic-links-row .ic-link-btn{flex:1 1 0!important;width:0!important;min-width:0!important;max-width:100%!important;box-sizing:border-box!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;letter-spacing:-.04em!important;line-height:1.05!important;padding-left:5px!important;padding-right:5px!important;}
-#ic-guide.ic-link-btn,#ic-hp.ic-link-btn{font-size:12px!important;}
-@media(max-width:390px){#ic-guide.ic-link-btn,#ic-hp.ic-link-btn{font-size:11px!important;}}
-/* 새로고침 표시: 문의·건의 스타일, 화면/커버는 움직이지 않고 표시만 반응 */
-#cover,#cover.pulling,#cover.refreshing{transform:none!important;}
-#cv-pull-modern{position:fixed!important;left:50%!important;top:50%!important;right:auto!important;bottom:auto!important;transform:translate(-50%,-50%) scale(.96)!important;z-index:10030!important;opacity:0!important;pointer-events:none!important;transition:opacity .14s ease,transform .14s ease!important;background:linear-gradient(135deg,#1f2a44,#31446c)!important;color:#fff!important;border:0!important;border-radius:999px!important;box-shadow:0 10px 24px rgba(31,42,68,.25)!important;padding:0 19px!important;min-height:46px!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:8px!important;}
-#cv-pull-modern.show{opacity:1!important;transform:translate(-50%,-50%) scale(1)!important;}
-#cv-pull-modern.ready{transform:translate(-50%,-50%) scale(1.035)!important;}
-#cv-pull-modern.refreshing{opacity:1!important;transform:translate(-50%,-50%) scale(1)!important;}
-#cv-pull-modern .cv-pull-ring{width:24px!important;height:46px!important;background:transparent!important;display:flex!important;align-items:center!important;justify-content:center!important;}
-#cv-pull-modern .cv-pull-icon{width:23px!important;height:23px!important;color:#fff!important;}
-#cv-pull-modern::after{content:'새로고침';font-family:inherit!important;font-size:13px!important;font-weight:900!important;line-height:1!important;color:#fff!important;white-space:nowrap!important;}
-#cv-pull-modern.ready::after{content:'놓으면 새로고침';}
-#cv-pull-modern.refreshing::after{content:'새로고침 중';}
-#cv-pull-modern.refreshing .cv-pull-icon{animation:cv-pull-spin .75s linear infinite!important;}
-</style>
+<style id="oai-final-refresh-missa-infobutton-20260502">/* 새로고침 표시: 화면 고정, 흰색 원형 배경 + 빨간 원형화살표 */
+#cover,#cover.pulling,#cover.refreshing{transform:none!important;top:0!important;overscroll-behavior-y:contain!important;}
+#cv-pull-modern{position:fixed!important;left:50%!important;top:76px!important;right:auto!important;bottom:auto!important;transform:translateX(-50%) scale(var(--pull-scale,.74))!important;transform-origin:center!important;z-index:10060!important;opacity:0!important;pointer-events:none!important;transition:opacity .1s ease,transform .08s linear!important;background:#fff!important;color:#e3342f!important;border:1px solid rgba(227,52,47,.18)!important;border-radius:999px!important;box-shadow:0 8px 22px rgba(31,42,68,.16)!important;width:54px!important;height:54px!important;min-width:54px!important;min-height:54px!important;padding:0!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:0!important;}
+#cv-pull-modern.show,#cv-pull-modern.ready,#cv-pull-modern.refreshing{opacity:1!important;}
+#cv-pull-modern .cv-pull-ring{width:54px!important;height:54px!important;display:flex!important;align-items:center!important;justify-content:center!important;background:transparent!important;}
+#cv-pull-modern .cv-pull-icon{width:31px!important;height:31px!important;color:#e3342f!important;stroke:currentColor!important;}
+#cv-pull-modern::after{content:''!important;display:none!important;}
+#cv-pull-modern.ready{box-shadow:0 10px 26px rgba(227,52,47,.22)!important;}
+#cv-pull-modern.refreshing .cv-pull-icon{animation:cv-pull-spin .7s linear infinite!important;}
+@keyframes cv-pull-spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}</style>
 <script id="oai-final-refresh-missa-infobutton-20260502">
 (function(){
   'use strict';
   if(window.__OAI_FINAL_REFRESH_MISSA_INFOBUTTON_20260502__) return;
   window.__OAI_FINAL_REFRESH_MISSA_INFOBUTTON_20260502__=true;
   function $(id){return document.getElementById(id);} 
-  function isCoverVisible(){var h=document.documentElement,c=$('cover');return !!(c && !h.classList.contains('app-active') && c.style.display!=='none');}
   function forceCover(){
     try{document.querySelectorAll('.module-view.open,#prayer-view.open,#diocese-view.open,#missa-view.open,.sheet.open,.trail-sheet.open,#srch-modal.open,#info-card.open,#exit-dlg.open').forEach(function(v){v.classList.remove('open','show');});}catch(e){}
     try{document.documentElement.classList.remove('app-active','parish-mode','retreat-mode');}catch(e){}
     try{var c=$('cover'); if(c){c.style.display='';c.style.opacity='';c.scrollTop=0;}}catch(e){}
   }
-  /* 새로고침 후 이전 행동/이전 모듈 복귀 방지 */
   function markFreshReload(){
     try{sessionStorage.setItem('oai_force_cover_after_reload','1');}catch(e){}
-    try{sessionStorage.removeItem('oai_last_open_module');sessionStorage.removeItem('lastCategory');}catch(e){}
+    try{sessionStorage.removeItem('oai_last_open_module');sessionStorage.removeItem('lastCategory');sessionStorage.removeItem('oai_restore_action');}catch(e){}
   }
   function applyForceCoverAfterReload(){
     var on=false; try{on=sessionStorage.getItem('oai_force_cover_after_reload')==='1';sessionStorage.removeItem('oai_force_cover_after_reload');}catch(e){}
     if(on){setTimeout(forceCover,0);setTimeout(forceCover,80);}
   }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',applyForceCoverAfterReload,{once:true});else applyForceCoverAfterReload();
-
-  /* 매일미사: 외부 새창만 열고, 앱 내부 상태는 즉시 커버로 복귀 → 뒤로가기 1번으로 커버 상태 */
-  window.openMissa=function(){
-    var today=new Date(), yyyy=today.getFullYear(), mm=String(today.getMonth()+1).padStart(2,'0'), dd=String(today.getDate()).padStart(2,'0');
-    var url='https://missa.cbck.or.kr/DailyMissa/'+yyyy+mm+dd;
-    try{localStorage.setItem('oai_last_missa_url',url);}catch(e){}
-    try{var link=$('missa-open-link'); if(link) link.href=url;}catch(e){}
-    try{window.open(url,'_blank','noopener');}catch(e){try{location.href=url;}catch(_) {}}
-    setTimeout(forceCover,0);
-    setTimeout(forceCover,120);
-  };
-
-  /* 커버 새로고침: 기존 중복 핸들러 제거 뒤 하나만 동작하도록 capture 단계에서 가로챔 */
   function installRefresh(){
     var cover=$('cover'), ind=$('cv-pull-modern'); if(!cover||!ind||cover.__oaiFinalUnifiedRefresh) return; cover.__oaiFinalUnifiedRefresh=true;
     var sx=0, sy=0, active=false, ready=false, refreshing=false, TH=96, MAX=150;
-    function show(state){ind.classList.add('show');ind.classList.toggle('ready',state==='ready');ind.classList.toggle('refreshing',state==='refreshing');}
-    function hide(){ind.classList.remove('show','ready','refreshing');}
+    function isCoverVisible(){return !!(cover && !document.documentElement.classList.contains('app-active') && getComputedStyle(cover).display!=='none');}
+    function setScale(dy){var v=Math.max(.72,Math.min(1.18,.72+(Math.min(Math.max(dy,0),MAX)/MAX)*.46)); ind.style.setProperty('--pull-scale', String(v));}
+    function show(state,dy){setScale(dy||0);ind.classList.add('show');ind.classList.toggle('ready',state==='ready');ind.classList.toggle('refreshing',state==='refreshing');}
+    function hide(){ind.classList.remove('show','ready','refreshing');ind.style.setProperty('--pull-scale','.72');}
     cover.addEventListener('touchstart',function(e){
       if(refreshing||!isCoverVisible()||cover.scrollTop>0||!e.touches||!e.touches[0]) return;
-      sx=e.touches[0].clientX; sy=e.touches[0].clientY; active=true; ready=false;
-      if(e.stopImmediatePropagation)e.stopImmediatePropagation();
+      sx=e.touches[0].clientX; sy=e.touches[0].clientY; active=true; ready=false; hide();
     },{passive:true,capture:true});
     cover.addEventListener('touchmove',function(e){
       if(!active||refreshing||!e.touches||!e.touches[0]) return;
@@ -6535,22 +6490,20 @@ html.app-active #cover #qna-cover-btn,html.app-active #cover-bottom-note{display
       if(Math.abs(dx)>Math.abs(dy)*1.2) return;
       if(dy<=0){ready=false;hide();return;}
       if(e.cancelable)e.preventDefault();
-      if(e.stopImmediatePropagation)e.stopImmediatePropagation();
-      var p=Math.min(dy,MAX); ready=p>=TH; show(ready?'ready':'show');
+      ready=dy>=TH; show(ready?'ready':'show',dy);
     },{passive:false,capture:true});
-    cover.addEventListener('touchend',function(e){
-      if(!active) return;
-      active=false;
-      if(e.stopImmediatePropagation)e.stopImmediatePropagation();
+    cover.addEventListener('touchend',function(){
+      if(!active) return; active=false;
       if(ready){
-        ready=false; refreshing=true; show('refreshing');
-        try{navigator.vibrate&&navigator.vibrate(70);}catch(ex){}
+        ready=false; refreshing=true; show('refreshing',MAX);
+        try{navigator.vibrate&&navigator.vibrate(80);}catch(ex){}
         markFreshReload();
-        setTimeout(function(){location.reload();},360);
+        setTimeout(function(){location.reload();},260);
       }else{ready=false;hide();}
     },{passive:true,capture:true});
-    cover.addEventListener('touchcancel',function(e){active=false;ready=false;hide();if(e.stopImmediatePropagation)e.stopImmediatePropagation();},{passive:true,capture:true});
+    cover.addEventListener('touchcancel',function(){active=false;ready=false;hide();},{passive:true,capture:true});
   }
+  window.addEventListener('pageshow', applyForceCoverAfterReload);
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',installRefresh,{once:true});else installRefresh();
 })();
 </script>
@@ -6660,37 +6613,16 @@ html.retreat-mode .li-badge{
 
 
 <!-- OAI FINAL PATCH 20260502-9: emojis + retreat tab width + refresh finalization -->
-<style id="oai-final-emoji-retreat-refresh-20260502-9">
-/* 커버 이모지: 런타임 덮어쓰기 후에도 최종값 유지 */
-#cc-2 .cover-emoji::before{content:'📖';}
-#cc-3 .cover-emoji::before{content:'🙏';}
-#cc-2 .cover-emoji,#cc-3 .cover-emoji{font-size:0!important;}
-#cc-2 .cover-emoji::before,#cc-3 .cover-emoji::before{font-size:var(--cover-emoji-size,32px)!important;line-height:1!important;}
-
-/* 성지·성당·피정 상단 탭: 가로폭 균등 + 피정의집찾기 긴 글자 대응 */
-#tabbar{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;column-gap:8px!important;}
-#tabbar .tab-btn{width:100%!important;min-width:0!important;max-width:none!important;box-sizing:border-box!important;overflow:hidden!important;}
-#tabbar .tab-btn span:not(.tab-icon){white-space:normal!important;text-align:center!important;word-break:keep-all!important;overflow-wrap:normal!important;line-height:1.12!important;letter-spacing:-.05em!important;}
-html.retreat-mode #tab-list-lbl{font-size:13px!important;line-height:1.08!important;}
-html.retreat-mode #tabbar .tab-btn{padding-left:2px!important;padding-right:2px!important;}
-
-/* 피정의집찾기 지역검색 박스: 검색칸과 찾기 버튼 높이/가로 정렬 최종 보정 */
-html.retreat-mode .region-row{display:grid!important;grid-template-columns:minmax(0,1fr) 82px!important;width:100%!important;gap:8px!important;align-items:center!important;}
-html.retreat-mode .region-row .srch-inner{width:100%!important;min-width:0!important;height:52px!important;min-height:52px!important;box-sizing:border-box!important;}
-html.retreat-mode .region-search-btn{width:82px!important;min-width:82px!important;max-width:82px!important;height:52px!important;min-height:52px!important;padding:0 6px!important;box-sizing:border-box!important;display:flex!important;align-items:center!important;justify-content:center!important;text-align:center!important;white-space:normal!important;line-height:1.08!important;font-size:12px!important;letter-spacing:-.04em!important;}
-
-/* 새로고침: 문의·건의 버튼과 같은 고정형 표시, 화면은 절대 이동 금지 */
-#cover,#cover.pulling,#cover.refreshing{transform:none!important;top:0!important;}
-#cv-pull-modern{position:fixed!important;left:50%!important;top:50%!important;right:auto!important;bottom:auto!important;transform:translate(-50%,-50%) scale(.96)!important;z-index:10050!important;opacity:0!important;pointer-events:none!important;transition:opacity .12s ease,transform .12s ease!important;background:linear-gradient(135deg,#1f2a44,#31446c)!important;color:#fff!important;border:0!important;border-radius:999px!important;box-shadow:0 10px 24px rgba(31,42,68,.25)!important;min-height:46px!important;padding:0 18px!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:8px!important;}
-#cv-pull-modern.show{opacity:1!important;transform:translate(-50%,-50%) scale(1)!important;}
-#cv-pull-modern.ready{opacity:1!important;transform:translate(-50%,-50%) scale(1.035)!important;}
-#cv-pull-modern.refreshing{opacity:1!important;transform:translate(-50%,-50%) scale(1)!important;}
-#cv-pull-modern .cv-pull-ring{width:24px!important;height:46px!important;display:flex!important;align-items:center!important;justify-content:center!important;background:transparent!important;}
-#cv-pull-modern .cv-pull-icon{width:22px!important;height:22px!important;color:#fff!important;}
-#cv-pull-modern::after{content:'새로고침';font-family:inherit!important;font-size:13px!important;font-weight:900!important;line-height:1!important;color:#fff!important;white-space:nowrap!important;}
-#cv-pull-modern.ready::after{content:'놓으면 새로고침';}
-#cv-pull-modern.refreshing::after{content:'새로고침 중';}
-</style>
+<style id="oai-final-emoji-retreat-refresh-20260502-9">/* 새로고침 표시: 화면 고정, 흰색 원형 배경 + 빨간 원형화살표 */
+#cover,#cover.pulling,#cover.refreshing{transform:none!important;top:0!important;overscroll-behavior-y:contain!important;}
+#cv-pull-modern{position:fixed!important;left:50%!important;top:76px!important;right:auto!important;bottom:auto!important;transform:translateX(-50%) scale(var(--pull-scale,.74))!important;transform-origin:center!important;z-index:10060!important;opacity:0!important;pointer-events:none!important;transition:opacity .1s ease,transform .08s linear!important;background:#fff!important;color:#e3342f!important;border:1px solid rgba(227,52,47,.18)!important;border-radius:999px!important;box-shadow:0 8px 22px rgba(31,42,68,.16)!important;width:54px!important;height:54px!important;min-width:54px!important;min-height:54px!important;padding:0!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:0!important;}
+#cv-pull-modern.show,#cv-pull-modern.ready,#cv-pull-modern.refreshing{opacity:1!important;}
+#cv-pull-modern .cv-pull-ring{width:54px!important;height:54px!important;display:flex!important;align-items:center!important;justify-content:center!important;background:transparent!important;}
+#cv-pull-modern .cv-pull-icon{width:31px!important;height:31px!important;color:#e3342f!important;stroke:currentColor!important;}
+#cv-pull-modern::after{content:''!important;display:none!important;}
+#cv-pull-modern.ready{box-shadow:0 10px 26px rgba(227,52,47,.22)!important;}
+#cv-pull-modern.refreshing .cv-pull-icon{animation:cv-pull-spin .7s linear infinite!important;}
+@keyframes cv-pull-spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}</style>
 <script id="oai-final-emoji-retreat-refresh-20260502-9">
 (function(){
   'use strict';
@@ -6699,67 +6631,12 @@ html.retreat-mode .region-search-btn{width:82px!important;min-width:82px!importa
   function $(id){return document.getElementById(id);} 
   function setCoverEmojis(){
     var pairs={'cc-2':'📖','cc-3':'🙏'};
-    Object.keys(pairs).forEach(function(id){
-      var btn=$(id); if(!btn) return;
-      var wrap=btn.querySelector('.cover-icon-wrap'); if(!wrap) return;
-      wrap.innerHTML='<span class="cover-emoji" aria-hidden="true">'+pairs[id]+'</span>';
-    });
+    Object.keys(pairs).forEach(function(id){var btn=$(id); if(!btn) return; var wrap=btn.querySelector('.cover-icon-wrap'); if(!wrap) return; wrap.innerHTML='<span class="cover-emoji" aria-hidden="true">'+pairs[id]+'</span>';});
   }
-  function fixRetreatTabLabel(){
-    var lbl=$('tab-list-lbl');
-    if(!lbl) return;
-    var html=document.documentElement;
-    if(html.classList.contains('retreat-mode')) lbl.innerHTML='피정의집<br>찾기';
-  }
-  function resetBeforeRefresh(){
-    try{sessionStorage.setItem('oai_force_cover_after_reload','1');}catch(e){}
-    try{sessionStorage.removeItem('oai_last_open_module');sessionStorage.removeItem('lastCategory');sessionStorage.removeItem('oai_restore_action');}catch(e){}
-  }
-  function hardenRefresh(){
-    var cover=$('cover'), ind=$('cv-pull-modern');
-    if(!cover||!ind||cover.__oaiRefreshFinal9) return;
-    cover.__oaiRefreshFinal9=true;
-    var sy=0,sx=0,active=false,ready=false,refreshing=false,TH=96;
-    function coverVisible(){return !!(cover && !document.documentElement.classList.contains('app-active') && getComputedStyle(cover).display!=='none');}
-    function show(cls){ind.classList.add('show');ind.classList.toggle('ready',cls==='ready');ind.classList.toggle('refreshing',cls==='refreshing');}
-    function hide(){ind.classList.remove('show','ready','refreshing');}
-    cover.addEventListener('touchstart',function(e){
-      if(refreshing||!coverVisible()||cover.scrollTop>0||!e.touches||!e.touches[0]) return;
-      sx=e.touches[0].clientX; sy=e.touches[0].clientY; active=true; ready=false;
-      if(e.stopImmediatePropagation)e.stopImmediatePropagation();
-    },{capture:true,passive:true});
-    cover.addEventListener('touchmove',function(e){
-      if(!active||refreshing||!e.touches||!e.touches[0]) return;
-      var dx=e.touches[0].clientX-sx, dy=e.touches[0].clientY-sy;
-      if(Math.abs(dx)>Math.abs(dy)*1.2) return;
-      if(dy<=0){ready=false;hide();return;}
-      if(e.cancelable)e.preventDefault();
-      if(e.stopImmediatePropagation)e.stopImmediatePropagation();
-      ready=dy>=TH; show(ready?'ready':'show');
-    },{capture:true,passive:false});
-    cover.addEventListener('touchend',function(e){
-      if(!active) return;
-      active=false;
-      if(e.stopImmediatePropagation)e.stopImmediatePropagation();
-      if(ready){
-        ready=false; refreshing=true; show('refreshing');
-        try{navigator.vibrate&&navigator.vibrate(80);}catch(ex){}
-        resetBeforeRefresh();
-        setTimeout(function(){location.reload();},260);
-      }else{ready=false;hide();}
-    },{capture:true,passive:true});
-    cover.addEventListener('touchcancel',function(e){active=false;ready=false;hide();if(e.stopImmediatePropagation)e.stopImmediatePropagation();},{capture:true,passive:true});
-  }
-  function boot(){setCoverEmojis();fixRetreatTabLabel();hardenRefresh();}
+  function fixRetreatTabLabel(){var lbl=$('tab-list-lbl'); if(lbl && document.documentElement.classList.contains('retreat-mode')) lbl.innerHTML='피정의집<br>찾기';}
+  function boot(){setCoverEmojis();fixRetreatTabLabel();}
   var oldStart=window.startApp;
-  if(typeof oldStart==='function'){
-    window.startApp=function(mode){
-      var r=oldStart.apply(this,arguments);
-      setTimeout(function(){setCoverEmojis();fixRetreatTabLabel();},0);
-      setTimeout(fixRetreatTabLabel,80);
-      return r;
-    };
-  }
+  if(typeof oldStart==='function'){window.startApp=function(){var r=oldStart.apply(this,arguments);setTimeout(boot,0);setTimeout(fixRetreatTabLabel,80);return r;};}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
   window.addEventListener('load',function(){boot();setTimeout(boot,250);setTimeout(boot,900);},{once:true});
 })();
