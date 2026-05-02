@@ -6684,17 +6684,18 @@ html.retreat-mode .li-badge{
 #cc-3 .cover-emoji{font-size:var(--cover-emoji-size,34px)!important;line-height:1!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;}
 #cover .cover-icon-wrap{overflow:visible!important;}
 
-/* 성지 고유색: 밝은 남색/갈색 계열을 제거하고 원래 남색 계열로 고정 */
+/* 성지 고유색: 밝은 남색을 제거하고 고급 남색 계열로 고정 */
 :root{
-  --tab-h:70px!important;
-  --oai-shrine-header:#0e1535!important;
-  --shrine-main:#0e1535!important;
-  --shrine-main-2:#1a2456!important;
+  --tab-h:79px!important;
+  --pilgrim:#1f2a44!important;
+  --oai-shrine-header:#1f2a44!important;
+  --shrine-main:#1f2a44!important;
+  --shrine-main-2:#2d3a5f!important;
   --shrine-soft:#edf1fb!important;
   --shrine-soft-2:#f5f7fc!important;
 }
 
-/* 상단 탭: 기존 88px 기준의 약 80%, 그림자 제거, 4칸 한 줄 유지 */
+/* 상단 탭: 수정 전 기준 약 90%, 그림자 제거, 4칸 한 줄 유지 */
 #tabbar{
   display:grid!important;
   grid-template-columns:repeat(4,minmax(0,1fr))!important;
@@ -6712,8 +6713,8 @@ html.retreat-mode .li-badge{
   width:100%!important;
   min-width:0!important;
   max-width:none!important;
-  height:57px!important;
-  min-height:57px!important;
+  height:67px!important;
+  min-height:67px!important;
   margin:0!important;
   padding:6px 2px 5px!important;
   border-radius:14px!important;
@@ -6759,7 +6760,7 @@ html:not(.parish-mode):not(.retreat-mode) .region-wrap,
 html:not(.parish-mode):not(.retreat-mode) .sm-hd,
 html:not(.parish-mode):not(.retreat-mode) .sm-filter,
 html:not(.parish-mode):not(.retreat-mode) #srch-modal .sm-srch,
-html:not(.parish-mode):not(.retreat-mode) #srch-modal #sm-tab-bar{background:linear-gradient(135deg,#0e1535,#1a2456)!important;}
+html:not(.parish-mode):not(.retreat-mode) #srch-modal #sm-tab-bar{background:linear-gradient(135deg,var(--shrine-main,#1f2a44),var(--shrine-main-2,#2d3a5f))!important;}
 html.parish-mode .srch-bar,html.parish-mode .filter-bar,html.parish-mode .region-wrap,html.parish-mode #srch-modal .sm-srch,html.parish-mode #srch-modal #sm-tab-bar{background:linear-gradient(135deg,var(--church-main-2,#3f5d7b),var(--church-main,#4f6f90))!important;}
 html.retreat-mode .srch-bar,html.retreat-mode .filter-bar,html.retreat-mode .region-wrap,html.retreat-mode #srch-modal .sm-srch,html.retreat-mode #srch-modal #sm-tab-bar{background:linear-gradient(135deg,var(--retreat-main-2,#6aa186),var(--retreat-main,#7fb39a))!important;}
 .srch-bar,.filter-bar,.region-wrap,#srch-modal .sm-srch,#srch-modal .sm-filter,#srch-modal #sm-tab-bar{border-bottom:2px solid var(--gold)!important;}
@@ -6789,6 +6790,8 @@ html.retreat-mode .srch-bar,html.retreat-mode .filter-bar,html.retreat-mode .reg
 .filter-bar{padding:6px 10px!important;gap:6px!important;}
 .region-wrap{padding:7px 10px 6px!important;}
 .region-row{gap:6px!important;}
+.region-search-btn{color:#fff!important;background:rgba(31,42,68,.92)!important;border:1px solid rgba(255,255,255,.24)!important;}
+#info-card .ic-route-btn,#rs-search-btn{color:#fff!important;background:var(--pilgrim,#1f2a44)!important;border-color:var(--pilgrim,#1f2a44)!important;}
 
 /* 인포카드: 제목/주소 본문 16px, 버튼도 16px에서 시작하고 넘칠 때 JS가 축소 */
 #info-card .ic-name,#info-card .ic-addr-val{font-size:16px!important;line-height:1.45!important;}
