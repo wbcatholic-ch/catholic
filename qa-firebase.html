@@ -30,7 +30,8 @@
     font-family: 'Noto Sans KR', sans-serif;
     background: var(--gray-50);
     min-height: 100vh;
-    max-width: 480px;
+    width: 100%;
+    max-width: 720px;
     margin: 0 auto;
     color: var(--gray-900);
     -webkit-tap-highlight-color: transparent;
@@ -233,6 +234,26 @@
     text-align: center; letter-spacing: 8px; font-size: 22px;
     font-weight: 700; margin-bottom: 8px;
   }
+
+
+  /* 폴드폰/큰 화면 대응: 화면 폭과 높이를 더 넓게 사용 */
+  html { min-height: 100%; }
+  body { min-height: 100dvh; overflow-x: hidden; }
+  #header { padding-top: calc(14px + env(safe-area-inset-top, 0px)); }
+  .view { padding-bottom: calc(92px + env(safe-area-inset-bottom, 0px)); }
+  #post-list, #write-view, #detail-view { width: 100%; max-width: 680px; margin-left: auto; margin-right: auto; }
+  @media (min-width: 600px) {
+    #header { border-radius: 0 0 18px 18px; }
+    #filter-bar { max-width: 680px; margin: 0 auto; width: 100%; }
+    .card { padding: 16px 18px; }
+  }
+  @media (max-height: 720px) {
+    #header { padding-bottom: 10px; }
+    .field-group { margin-bottom: 12px; }
+    #write-view { padding-top: 12px; }
+    textarea { min-height: 96px; }
+  }
+
 </style>
 </head>
 <body>
@@ -372,18 +393,10 @@ function showView(id) {
   document.getElementById('header-title').textContent = titles[id] || '문의 · 건의';
 }
 
-function goList()   {
-  showView('list-view');
-  adminUnlocked = false;
-  document.getElementById('list-view').style.display = '';
-  document.getElementById('success-view').style.display = 'none';
-  try { history.replaceState({qaView:'list'}, '', location.pathname + location.search); } catch(e) {}
-  setTimeout(() => { window.scrollTo({ top: 0, behavior: 'auto' }); }, 30);
-}
+function goList()   { showView('list-view');  adminUnlocked = false; }
 function goWrite()  {
   resetForm();
   showView('write-view');
-  try { history.pushState({qaView:'write'}, '', location.pathname + location.search); } catch(e) {}
 }
 function goDetail() { showView('detail-view-wrap'); }
 
@@ -628,14 +641,11 @@ async function submitPost() {
   try {
     const ref = await COL.add(data);
     if (secret) unlockedSet.add(ref.id);   // 본인은 바로 열람 가능
-    resetForm();
-    currentFilter = '전체';
-    buildFilterBar();
     showView('list-view');
-    try { history.replaceState({qaView:'list'}, '', location.pathname + location.search); } catch(e) {}
-    document.getElementById('list-view').style.display = '';
-    document.getElementById('success-view').style.display = 'none';
-    setTimeout(() => { window.scrollTo({ top: 0, behavior: 'smooth' }); }, 50);
+    document.getElementById('success-view').style.display = 'block';
+    document.getElementById('list-view').style.display = 'none';
+    document.getElementById('header-title').textContent = '접수 완료';
+    document.getElementById('back-btn').classList.add('show');
   } catch(e) {
     errEl.textContent = '저장 실패: ' + e.message; errEl.style.display = 'block';
   }
@@ -648,10 +658,6 @@ function escHtml(str) {
 }
 
 /* ═══════════════════ 초기화 ═══════════════════ */
-try { history.replaceState({qaView:'list'}, '', location.pathname + location.search); } catch(e) {}
-window.addEventListener('popstate', function(){
-  goList();
-});
 buildFilterBar();
 buildCatRow();
 subscribeList();
