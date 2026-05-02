@@ -1450,7 +1450,7 @@ html.retreat-mode .tab-btn.active{
   word-break:keep-all!important;
 }
 
-/* 인포카드 안 사각 버튼: 박스는 키우지 않고 글자만 안정화 */
+/* 인포카드 안 사각 버튼: 기본 16px, 박스보다 넘칠 때만 JS가 자동 축소 */
 #info-card .ic-btn-row,
 #info-card .ic-links{
   display:flex!important;
@@ -1468,30 +1468,20 @@ html.retreat-mode .tab-btn.active{
 #info-card .ic-route-btn,
 #info-card .ic-tel-btn,
 #info-card .btn-kakao-nav{
-  font-size:12px!important;
+  font-size:16px!important;
   font-weight:800!important;
   line-height:1.05!important;
-  letter-spacing:-.045em!important;
+  letter-spacing:-.04em!important;
   white-space:nowrap!important;
   overflow:hidden!important;
-  text-overflow:ellipsis!important;
+  text-overflow:clip!important;
   min-width:0!important;
 }
 #info-card #ic-guide.ic-link-btn,
 #info-card #ic-hp.ic-link-btn{
-  font-size:12px!important;
+  font-size:16px!important;
   padding-left:4px!important;
   padding-right:4px!important;
-}
-/* 피정의 집 상세페이지 문구만 살짝 더 작게 */
-html.retreat-mode #info-card #ic-guide.ic-link-btn{
-  font-size:11px!important;
-  letter-spacing:-.055em!important;
-}
-@media(max-width:390px){
-  #info-card #ic-guide.ic-link-btn,
-  #info-card #ic-hp.ic-link-btn{font-size:11px!important;}
-  html.retreat-mode #info-card #ic-guide.ic-link-btn{font-size:10.5px!important;}
 }
 </style>
 
@@ -2527,6 +2517,23 @@ function selectItem(idx, opts={}){
   _focusMarkerAboveInfoCard(item);
 }
 
+
+function _fitInfoCardButtons(){
+  try{
+    const btns=document.querySelectorAll('#info-card .ic-link-btn,#info-card .ic-route-btn,#info-card .ic-tel-btn,#info-card .btn-kakao-nav');
+    btns.forEach(btn=>{
+      btn.style.fontSize='16px';
+      btn.style.letterSpacing='-.04em';
+      btn.style.whiteSpace='nowrap';
+      let size=16;
+      while(size>11 && btn.scrollWidth>btn.clientWidth){
+        size-=0.5;
+        btn.style.fontSize=size+'px';
+      }
+    });
+  }catch(e){}
+}
+
 function _showInfoCard(item, idx){
   _curInfoItem = {item, idx};
 
@@ -2595,6 +2602,8 @@ function _showInfoCard(item, idx){
   if(linksRow) (item.hp||(item.seq&&_mode==='shrine')||item.url)?_show(linksRow):_hide(linksRow);
 
   $('info-card').classList.add('open');
+  setTimeout(_fitInfoCardButtons, 0);
+  setTimeout(_fitInfoCardButtons, 80);
 }
 
 function closeInfoCard(){
@@ -5104,11 +5113,13 @@ window.prCloseDetail = window.prCloseDetail;
     var idx = getIdx(prCurCat);
     var next = (idx + 1) % PR_CATS.length; // 순환
     prSwitchCat(PR_CATS[next]);
+    if(typeof window.oaiSwipeAction === 'function') window.oaiSwipeAction(document.getElementById('pr-list-ul'), 'left');
   }
   function goPrev() {
     var idx = getIdx(prCurCat);
     var prev = (idx - 1 + PR_CATS.length) % PR_CATS.length; // 순환
     prSwitchCat(PR_CATS[prev]);
+    if(typeof window.oaiSwipeAction === 'function') window.oaiSwipeAction(document.getElementById('pr-list-ul'), 'right');
   }
 
   el.addEventListener('touchstart', function(e) {
@@ -6060,6 +6071,29 @@ html.retreat-mode #sm-tab-bar .sm-tab.active {
     if(!d) return;
     BAD_IDS.forEach(function(id){ var n=d.getElementById(id); if(n && n.parentNode) n.parentNode.removeChild(n); });
     try{ d.documentElement.style.removeProperty('--app-font-scale'); }catch(e){}
+    try{
+      if(!d.__oaiDioceseInfoClose20260502){
+        d.__oaiDioceseInfoClose20260502=true;
+        var closeCard=function(){
+          var sels=['#info-card','.info-card','.map-info-card','.diocese-info-card','#mapInfo','#infoPanel','.detail-card','.place-card','.lv-info-card'];
+          sels.forEach(function(sel){
+            d.querySelectorAll(sel).forEach(function(card){
+              card.classList.remove('open','show','active','on');
+              if(card.style){ card.style.display='none'; card.style.visibility='hidden'; }
+            });
+          });
+        };
+        d.addEventListener('click',function(ev){
+          var t=ev.target;
+          if(!t||!t.closest) return;
+          if(t.closest('.close,.close-btn,.info-close,.map-info-close,.diocese-info-close,.btn-close,[data-close],button[aria-label*=\"닫\"],button[title*=\"닫\"]')){ closeCard(); return; }
+          var card=t.closest('#info-card,.info-card,.map-info-card,.diocese-info-card,#mapInfo,#infoPanel,.detail-card,.place-card,.lv-info-card');
+          if(card) return;
+          if(t.closest('#map,.map,.map-wrap,.map-area,.kakao-map,.leaflet-container,canvas')) closeCard();
+        },true);
+        if(f && f.contentWindow) f.contentWindow.oaiCloseDioceseInfoCard=closeCard;
+      }
+    }catch(e){}
   }
   window.addEventListener('load', function(){
     cleanDioceseFrame();
@@ -6096,7 +6130,6 @@ html.retreat-mode #sm-tab-bar .sm-tab.active {
   'use strict';
   window.oaiSwipeAction = function(el, dir){
     if(!el) return;
-    if(el.id === 'pr-list-ul' || el.id === 'prayer-list-view' || el.id === 'web-list') return;
     el.classList.remove('oai-swipe-left','oai-swipe-right');
     requestAnimationFrame(function(){
       el.classList.add(dir === 'right' ? 'oai-swipe-right' : 'oai-swipe-left');
@@ -6165,10 +6198,7 @@ html,body{overflow-x:hidden!important;overscroll-behavior-x:none!important;}
     el.classList.add(dir==='right'?'oai-swipe-right':'oai-swipe-left');
     setTimeout(function(){try{el.classList.remove('oai-swipe-left','oai-swipe-right');}catch(e){}},240);
   }
-  window.oaiSwipeAction = function(el, dir){
-    if(el && (el.id === 'pr-list-ul' || el.id === 'prayer-list-view' || el.id === 'web-list')) return;
-    flash(el, dir);
-  };
+  window.oaiSwipeAction = function(el, dir){ flash(el, dir); };
 
   /* 가로로 밀 때 브라우저/웹뷰 자체 화면이 옆으로 밀리는 현상 차단 */
   function bindHorizontalGuard(el){
@@ -6207,6 +6237,7 @@ html,body{overflow-x:hidden!important;overscroll-behavior-x:none!important;}
       if(cur<0) cur=0;
       var next = dx<0 ? (cur+1)%tabs.length : (cur-1+tabs.length)%tabs.length;
       tabs[next].click();
+      flash($('web-list'), dx<0?'left':'right');
     }, {passive:true});
   }
 
@@ -6367,6 +6398,8 @@ html,body{overflow-x:hidden!important;overscroll-behavior-x:none!important;}
   'use strict';
   function pickActiveBody(){
     try{
+      if(document.getElementById('prayer-view')?.classList.contains('open')) return document.getElementById('pr-list-ul') || document.getElementById('prayer-list-view');
+      if(document.getElementById('web-view')?.classList.contains('open')) return document.getElementById('web-list');
       if(document.getElementById('trail-view')?.classList.contains('open')) return document.querySelector('#trail-panel-list.on #trail-list') || document.querySelector('#trail-view .trail-panel.on');
       var at = window._activeTab;
       if(at) return document.querySelector('#sheet-'+at+' .sheet-body') || document.getElementById('sheet-'+at);
@@ -6376,7 +6409,6 @@ html,body{overflow-x:hidden!important;overscroll-behavior-x:none!important;}
   function flash(el, dir){
     el = el || pickActiveBody();
     if(!el) return;
-    if(el.id === 'pr-list-ul' || el.id === 'prayer-list-view' || el.id === 'web-list') return;
     try{
       el.classList.remove('oai-swipe-left','oai-swipe-right');
       void el.offsetWidth;
@@ -6653,14 +6685,14 @@ html.retreat-mode .li-badge{
 #cover .cover-icon-wrap{overflow:visible!important;}
 
 /* 2) 성지·성당·피정 상단 탭: 무조건 한 줄 4칸, 길찾기 아래로 밀림 금지 */
-:root{--tab-h:98px!important;}
+:root{--tab-h:88px!important;}
 #tabbar{
   display:grid!important;
   grid-template-columns:repeat(4,minmax(0,1fr))!important;
   grid-template-rows:1fr!important;
   height:calc(var(--tab-h) + env(safe-area-inset-top,0px))!important;
   min-height:calc(var(--tab-h) + env(safe-area-inset-top,0px))!important;
-  padding:calc(env(safe-area-inset-top,0px) + 8px) 8px 9px!important;
+  padding:calc(env(safe-area-inset-top,0px) + 7px) 8px 8px!important;
   gap:8px!important;
   align-items:stretch!important;
   overflow:hidden!important;
@@ -6669,8 +6701,8 @@ html.retreat-mode .li-badge{
   width:100%!important;
   min-width:0!important;
   max-width:none!important;
-  height:81px!important;
-  min-height:81px!important;
+  height:73px!important;
+  min-height:73px!important;
   margin:0!important;
   padding:8px 2px 7px!important;
   border-radius:18px!important;
@@ -6683,12 +6715,12 @@ html.retreat-mode .li-badge{
   white-space:nowrap!important;
   overflow:hidden!important;
   text-overflow:clip!important;
-  font-size:14px!important;
+  font-size:13px!important;
   line-height:1.1!important;
   letter-spacing:-.05em!important;
 }
-#tabbar .tab-icon{font-size:27px!important;line-height:1!important;display:block!important;flex:0 0 auto!important;}
-#tabbar .tab-btn.active .tab-icon{font-size:29px!important;}
+#tabbar .tab-icon{font-size:24px!important;line-height:1!important;display:block!important;flex:0 0 auto!important;}
+#tabbar .tab-btn.active .tab-icon{font-size:26px!important;}
 #tabbar .tab-btn span:not(.tab-icon){
   display:block!important;
   white-space:nowrap!important;
