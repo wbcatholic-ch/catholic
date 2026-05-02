@@ -620,11 +620,11 @@ async function submitPost() {
   try {
     const ref = await COL.add(data);
     if (secret) unlockedSet.add(ref.id);   // 본인은 바로 열람 가능
+    resetForm();
+    currentFilter = '전체';
+    buildFilterBar();
     showView('list-view');
-    document.getElementById('success-view').style.display = 'block';
-    document.getElementById('list-view').style.display = 'none';
-    document.getElementById('header-title').textContent = '접수 완료';
-    document.getElementById('back-btn').classList.add('show');
+    setTimeout(() => { window.scrollTo({ top: 0, behavior: 'smooth' }); }, 50);
   } catch(e) {
     errEl.textContent = '저장 실패: ' + e.message; errEl.style.display = 'block';
   }
@@ -641,8 +641,5 @@ buildFilterBar();
 buildCatRow();
 subscribeList();
 </script>
-
-
-  
 </body>
 </html>
