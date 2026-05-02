@@ -6665,7 +6665,7 @@ html.retreat-mode .li-badge{
     var pairs={'cc-2':'📖','cc-3':'🙏'};
     Object.keys(pairs).forEach(function(id){var btn=$(id); if(!btn) return; var wrap=btn.querySelector('.cover-icon-wrap'); if(!wrap) return; wrap.innerHTML='<span class="cover-emoji" aria-hidden="true">'+pairs[id]+'</span>';});
   }
-  function fixRetreatTabLabel(){var lbl=$('tab-list-lbl'); if(lbl && document.documentElement.classList.contains('retreat-mode')) lbl.innerHTML='피정의집<br>찾기';}
+  function fixRetreatTabLabel(){var lbl=$('tab-list-lbl'); if(lbl && document.documentElement.classList.contains('retreat-mode')) lbl.textContent='피정의집 찾기';}
   function boot(){setCoverEmojis();fixRetreatTabLabel();}
   var oldStart=window.startApp;
   if(typeof oldStart==='function'){window.startApp=function(){var r=oldStart.apply(this,arguments);setTimeout(boot,0);setTimeout(fixRetreatTabLabel,80);return r;};}
@@ -6675,62 +6675,125 @@ html.retreat-mode .li-badge{
 </script>
 
 
-<!-- OAI PATCH 20260502-12: final fix duplicate cover emojis, one-row tall top tabs, stable cover back exit -->
+<!-- OAI FINAL INTEGRATED 20260502-12: 성지·성당·피정 탭/검색/인포카드 정리 -->
 <style id="oai-final-emoji-tabs-back-20260502-12">
-/* 1) 커버 이모지 중복 방지: 가상 이모지 제거, 실제 span 한 개만 표시 */
+/* 커버 이모지 중복 방지: 실제 span 한 개만 표시 */
 #cc-2 .cover-emoji::before,
 #cc-3 .cover-emoji::before{content:none!important;display:none!important;}
 #cc-2 .cover-emoji,
 #cc-3 .cover-emoji{font-size:var(--cover-emoji-size,34px)!important;line-height:1!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;}
 #cover .cover-icon-wrap{overflow:visible!important;}
 
-/* 2) 성지·성당·피정 상단 탭: 무조건 한 줄 4칸, 길찾기 아래로 밀림 금지 */
-:root{--tab-h:88px!important;}
+/* 성지 고유색: 밝은 남색/갈색 계열을 제거하고 원래 남색 계열로 고정 */
+:root{
+  --tab-h:70px!important;
+  --oai-shrine-header:#0e1535!important;
+  --shrine-main:#0e1535!important;
+  --shrine-main-2:#1a2456!important;
+  --shrine-soft:#edf1fb!important;
+  --shrine-soft-2:#f5f7fc!important;
+}
+
+/* 상단 탭: 기존 88px 기준의 약 80%, 그림자 제거, 4칸 한 줄 유지 */
 #tabbar{
   display:grid!important;
   grid-template-columns:repeat(4,minmax(0,1fr))!important;
   grid-template-rows:1fr!important;
   height:calc(var(--tab-h) + env(safe-area-inset-top,0px))!important;
   min-height:calc(var(--tab-h) + env(safe-area-inset-top,0px))!important;
-  padding:calc(env(safe-area-inset-top,0px) + 7px) 8px 8px!important;
-  gap:8px!important;
+  padding:calc(env(safe-area-inset-top,0px) + 5px) 7px 6px!important;
+  gap:7px!important;
   align-items:stretch!important;
   overflow:hidden!important;
+  box-shadow:none!important;
+  border-bottom:1.5px solid var(--gold)!important;
 }
 #tabbar .tab-btn{
   width:100%!important;
   min-width:0!important;
   max-width:none!important;
-  height:73px!important;
-  min-height:73px!important;
+  height:57px!important;
+  min-height:57px!important;
   margin:0!important;
-  padding:8px 2px 7px!important;
-  border-radius:18px!important;
+  padding:6px 2px 5px!important;
+  border-radius:14px!important;
   display:flex!important;
   flex-direction:column!important;
   align-items:center!important;
   justify-content:center!important;
-  gap:5px!important;
+  gap:3px!important;
   box-sizing:border-box!important;
   white-space:nowrap!important;
   overflow:hidden!important;
   text-overflow:clip!important;
-  font-size:13px!important;
-  line-height:1.1!important;
-  letter-spacing:-.05em!important;
+  font-size:12px!important;
+  line-height:1.05!important;
+  letter-spacing:-.055em!important;
+  box-shadow:none!important;
+  transform:none!important;
 }
-#tabbar .tab-icon{font-size:24px!important;line-height:1!important;display:block!important;flex:0 0 auto!important;}
-#tabbar .tab-btn.active .tab-icon{font-size:26px!important;}
+#tabbar .tab-btn.active{
+  background:var(--gold)!important;
+  color:#1F2937!important;
+  border-color:var(--gold2)!important;
+  box-shadow:none!important;
+}
+#tabbar .tab-icon{font-size:20px!important;line-height:1!important;display:block!important;flex:0 0 auto!important;}
+#tabbar .tab-btn.active .tab-icon{font-size:21px!important;}
 #tabbar .tab-btn span:not(.tab-icon){
   display:block!important;
   white-space:nowrap!important;
   overflow:hidden!important;
   text-overflow:clip!important;
-  line-height:1.1!important;
+  line-height:1.05!important;
   max-width:100%!important;
   word-break:keep-all!important;
 }
 #map-wrap,.sheet{top:calc(var(--tab-h) + env(safe-area-inset-top,0px))!important;}
+
+/* 성지/성당/피정 찾기: 검색창을 감싸는 영역은 고유색, 탭 분리선은 금색 */
+html:not(.parish-mode):not(.retreat-mode) .sheet-hd,
+html:not(.parish-mode):not(.retreat-mode) .srch-bar,
+html:not(.parish-mode):not(.retreat-mode) .filter-bar,
+html:not(.parish-mode):not(.retreat-mode) .region-wrap,
+html:not(.parish-mode):not(.retreat-mode) .sm-hd,
+html:not(.parish-mode):not(.retreat-mode) .sm-filter,
+html:not(.parish-mode):not(.retreat-mode) #srch-modal .sm-srch,
+html:not(.parish-mode):not(.retreat-mode) #srch-modal #sm-tab-bar{background:linear-gradient(135deg,#0e1535,#1a2456)!important;}
+html.parish-mode .srch-bar,html.parish-mode .filter-bar,html.parish-mode .region-wrap,html.parish-mode #srch-modal .sm-srch,html.parish-mode #srch-modal #sm-tab-bar{background:linear-gradient(135deg,var(--church-main-2,#3f5d7b),var(--church-main,#4f6f90))!important;}
+html.retreat-mode .srch-bar,html.retreat-mode .filter-bar,html.retreat-mode .region-wrap,html.retreat-mode #srch-modal .sm-srch,html.retreat-mode #srch-modal #sm-tab-bar{background:linear-gradient(135deg,var(--retreat-main-2,#6aa186),var(--retreat-main,#7fb39a))!important;}
+.srch-bar,.filter-bar,.region-wrap,#srch-modal .sm-srch,#srch-modal .sm-filter,#srch-modal #sm-tab-bar{border-bottom:2px solid var(--gold)!important;}
+.srch-inner,#srch-modal .sm-si{background:#efe7d7!important;border:1.5px solid #d4c7ad!important;box-shadow:none!important;}
+.srch-inner input,#srch-modal .sm-si input{color:#374151!important;}
+.srch-inner input::placeholder,#srch-modal .sm-si input::placeholder{color:#8A8F98!important;}
+
+/* 교구/필터 버튼 높이 축소, 활성은 금색 */
+.filter-btn,.region-search-btn,#srch-modal .sm-fb,#srch-modal .sm-tab{
+  min-height:30px!important;
+  height:30px!important;
+  padding:0 10px!important;
+  border-radius:10px!important;
+  font-size:12px!important;
+  line-height:1!important;
+  box-shadow:none!important;
+}
+#region-body .dio-hd,.region-list-hd,.sm-grp{border-top:1px solid var(--gold)!important;border-bottom:1px solid var(--gold)!important;}
+.filter-btn.active,#srch-modal .sm-fb.on,#srch-modal .sm-tab.active,html.parish-mode .filter-btn.active,html.retreat-mode .filter-btn.active{
+  background:var(--gold)!important;
+  color:#1F2937!important;
+  border-color:var(--gold2)!important;
+  font-weight:900!important;
+}
+#srch-modal #sm-tab-bar{height:42px!important;min-height:42px!important;padding:6px 10px!important;gap:7px!important;align-items:center!important;}
+#srch-modal .sm-filter{padding:6px 10px!important;gap:6px!important;}
+.filter-bar{padding:6px 10px!important;gap:6px!important;}
+.region-wrap{padding:7px 10px 6px!important;}
+.region-row{gap:6px!important;}
+
+/* 인포카드: 제목/주소 본문 16px, 버튼도 16px에서 시작하고 넘칠 때 JS가 축소 */
+#info-card .ic-name,#info-card .ic-addr-val{font-size:16px!important;line-height:1.45!important;}
+#info-card .ic-link-btn,#info-card .ic-route-btn,#info-card .ic-tel-btn,#info-card .btn-kakao-nav{font-size:16px!important;line-height:1.05!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:clip!important;box-shadow:none!important;}
+#info-card .ic-btn-row,#info-card .ic-links{gap:7px!important;}
 </style>
 <script id="oai-final-emoji-tabs-back-20260502-12">
 (function(){
