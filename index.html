@@ -6781,8 +6781,8 @@ html.retreat-mode .srch-bar,html.retreat-mode .filter-bar,html.retreat-mode .reg
 .srch-inner input,#srch-modal .sm-si input{color:#374151!important;}
 .srch-inner input::placeholder,#srch-modal .sm-si input::placeholder{color:#8A8F98!important;}
 
-/* 교구/필터 버튼 높이 축소, 활성은 금색 */
-.filter-btn,.region-search-btn,#srch-modal .sm-fb,#srch-modal .sm-tab{
+/* 교구/필터 버튼 높이 축소, 출발성지검색 탭은 하얀계열 + 높이 상향 */
+.filter-btn,.region-search-btn,#srch-modal .sm-fb{
   min-height:30px!important;
   height:30px!important;
   padding:0 10px!important;
@@ -6791,6 +6791,29 @@ html.retreat-mode .srch-bar,html.retreat-mode .filter-bar,html.retreat-mode .reg
   line-height:1!important;
   box-shadow:none!important;
 }
+#srch-modal #sm-tab-bar{
+  height:50px!important;
+  min-height:50px!important;
+  padding:6px 10px!important;
+  gap:8px!important;
+  align-items:center!important;
+}
+#srch-modal #sm-tab-bar .sm-tab{
+  min-height:38px!important;
+  height:38px!important;
+  padding:0 12px!important;
+  border-radius:14px!important;
+  font-size:13px!important;
+  line-height:1!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  background:rgba(255,255,255,.78)!important;
+  color:rgba(31,42,68,.78)!important;
+  border:1.5px solid rgba(255,255,255,.86)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.75)!important;
+  font-weight:800!important;
+}
 #region-body .dio-hd,.region-list-hd,.sm-grp{border-top:1px solid rgba(255,255,255,.34)!important;border-bottom:1px solid rgba(255,255,255,.34)!important;}
 .filter-btn.active,#srch-modal .sm-fb.on,html.parish-mode .filter-btn.active,html.retreat-mode .filter-btn.active{
   background:var(--gold)!important;
@@ -6798,18 +6821,17 @@ html.retreat-mode .srch-bar,html.retreat-mode .filter-bar,html.retreat-mode .reg
   border-color:var(--gold2)!important;
   font-weight:900!important;
 }
-#srch-modal #sm-tab-bar .sm-tab.active{
-  background:linear-gradient(135deg,#16213f,#253a66)!important;
-  color:#ffffff!important;
-  border-color:rgba(255,255,255,.72)!important;
+#srch-modal #sm-tab-bar .sm-tab.active,
+html.parish-mode #srch-modal #sm-tab-bar .sm-tab.active,
+html.retreat-mode #srch-modal #sm-tab-bar .sm-tab.active{
+  background:#ffffff!important;
+  color:var(--pilgrim,#1f2a44)!important;
+  border-color:#ffffff!important;
   font-weight:900!important;
-  box-shadow:0 3px 10px rgba(0,0,0,.22)!important;
+  box-shadow:0 3px 12px rgba(0,0,0,.16), inset 0 1px 0 rgba(255,255,255,.9)!important;
 }
-html.parish-mode #srch-modal #sm-tab-bar .sm-tab.active{background:linear-gradient(135deg,#355c7d,#446e93)!important;color:#ffffff!important;border-color:rgba(255,255,255,.72)!important}
-html.retreat-mode #srch-modal #sm-tab-bar .sm-tab.active{background:linear-gradient(135deg,#3f7e5b,#4f8f6a)!important;color:#ffffff!important;border-color:rgba(255,255,255,.72)!important}
-#srch-modal #sm-tab-bar .sm-tab.active *{color:#ffffff!important}
+#srch-modal #sm-tab-bar .sm-tab.active *{color:var(--pilgrim,#1f2a44)!important}
 
-#srch-modal #sm-tab-bar{height:42px!important;min-height:42px!important;padding:6px 10px!important;gap:7px!important;align-items:center!important;}
 #srch-modal .sm-filter{padding:6px 10px!important;gap:6px!important;}
 .filter-bar{padding:6px 10px!important;gap:6px!important;}
 .region-wrap{padding:7px 10px 6px!important;}
