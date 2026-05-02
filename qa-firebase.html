@@ -372,10 +372,18 @@ function showView(id) {
   document.getElementById('header-title').textContent = titles[id] || '문의 · 건의';
 }
 
-function goList()   { showView('list-view');  adminUnlocked = false; }
+function goList()   {
+  showView('list-view');
+  adminUnlocked = false;
+  document.getElementById('list-view').style.display = '';
+  document.getElementById('success-view').style.display = 'none';
+  try { history.replaceState({qaView:'list'}, '', location.pathname + location.search); } catch(e) {}
+  setTimeout(() => { window.scrollTo({ top: 0, behavior: 'auto' }); }, 30);
+}
 function goWrite()  {
   resetForm();
   showView('write-view');
+  try { history.pushState({qaView:'write'}, '', location.pathname + location.search); } catch(e) {}
 }
 function goDetail() { showView('detail-view-wrap'); }
 
@@ -624,6 +632,9 @@ async function submitPost() {
     currentFilter = '전체';
     buildFilterBar();
     showView('list-view');
+    try { history.replaceState({qaView:'list'}, '', location.pathname + location.search); } catch(e) {}
+    document.getElementById('list-view').style.display = '';
+    document.getElementById('success-view').style.display = 'none';
     setTimeout(() => { window.scrollTo({ top: 0, behavior: 'smooth' }); }, 50);
   } catch(e) {
     errEl.textContent = '저장 실패: ' + e.message; errEl.style.display = 'block';
@@ -637,6 +648,10 @@ function escHtml(str) {
 }
 
 /* ═══════════════════ 초기화 ═══════════════════ */
+try { history.replaceState({qaView:'list'}, '', location.pathname + location.search); } catch(e) {}
+window.addEventListener('popstate', function(){
+  goList();
+});
 buildFilterBar();
 buildCatRow();
 subscribeList();
