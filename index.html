@@ -2022,49 +2022,50 @@ function normalizeCatholicExternalUrl(url){
   url = String(url || '').trim();
   if(!url) return '';
 
-  // 기존 데이터에 남아 있는 1~8/PB/PR/P2 같은 단축 URL을 여기서 먼저 풀어준다.
-  // 데이터 파일은 전체 URL이 원칙이지만, 남은 단축값 때문에 잘못 열리는 문제를 방지한다.
+  // 데이터에 남은 단축 URL만 풀고, 교구별 도메인은 강제로 바꾸지 않는다.
+  // 원주/마산/의정부/인천처럼 각 교구 CMS가 서로 다른 주소 정책을 쓰기 때문이다.
   try{
     if(typeof _decUrl === 'function') url = _decUrl(url);
   }catch(e){}
 
-  // 흔한 오타 보정: http//example.com, https//example.com
-  url = url.replace(/^hthttp:\/\//i, 'http://').replace(/^hthttps:\/\//i, 'https://').replace(/^http\/\//i, 'http://').replace(/^https\/\//i, 'https://');
+  // 명백한 표기 오류만 보정한다.
+  url = url
+    .replace(/^hthttp:\/\//i, 'http://')
+    .replace(/^hthttps:\/\//i, 'https://')
+    .replace(/^http\/\//i, 'http://')
+    .replace(/^https\/\//i, 'https://');
   if(url.indexOf('//') === 0) url = 'https:' + url;
   if(!/^https?:\/\//i.test(url)) url = 'https://' + url.replace(/^\/+/, '');
 
+  // 프로토콜 뒤의 //는 유지하고, 경로에 생긴 중복 슬래시만 정리한다.
+  // 예: https://cathms.kr//E_2/6012 -> https://cathms.kr/E_2/6012
   try{
     var u = new URL(url);
-    var host = u.hostname.toLowerCase();
-    if(host === 'www.ucatholic.or.kr') u.hostname = 'ucatholic.or.kr';
-    if(u.hostname.toLowerCase() === 'ucatholic.or.kr') u.protocol = 'https:';
-    if(host === 'wjcatholic.or.kr') u.hostname = 'www.wjcatholic.or.kr';
-    if(u.hostname.toLowerCase() === 'www.wjcatholic.or.kr') u.protocol = 'https:';
-    if(host === 'www.cathms.kr') u.hostname = 'cathms.kr';
-    if(u.hostname.toLowerCase() === 'cathms.kr') u.protocol = 'https:';
-    if(u.hostname.toLowerCase() === 'www.caincheon.or.kr') u.protocol = 'https:';
+    u.pathname = u.pathname.replace(/\/{2,}/g, '/');
     return u.toString();
-  }catch(e){ return url; }
+  }catch(e){
+    return url.replace(/([^:])\/\/+/g, '$1/');
+  }
 }
 function openCoreExternalUrl(url, extra){
   url = normalizeCatholicExternalUrl(url);
   if(!url) return;
   saveCoreReturnState(extra);
-  // 외부링크는 앱/현재창을 덮지 않고 무조건 새창으로 연다.
-  try{
-    const w = window.open(url, '_blank');
-    if(w) return;
-  }catch(e){}
+  try{ if(typeof markExternalReturnStabilize==='function') markExternalReturnStabilize('core'); }catch(e){}
+
+  // 모바일/PWA에서 window.open 지연이 생기지 않도록 실제 링크 클릭 방식으로 연다.
   try{
     const a = document.createElement('a');
     a.href = url;
     a.target = '_blank';
+    a.rel = 'noopener';
     a.style.display = 'none';
     document.body.appendChild(a);
     a.click();
     setTimeout(()=>{ try{ a.remove(); }catch(e){} }, 300);
   }catch(e){
-    alert('새창 열기가 차단되었습니다. 브라우저의 팝업 허용을 확인해 주세요.');
+    try{ window.open(url, '_blank'); }
+    catch(_){ alert('새창 열기가 차단되었습니다. 브라우저의 팝업 허용을 확인해 주세요.'); }
   }
 }
 
@@ -2453,9 +2454,20 @@ function attemptAppExit(){
   try{ if(navigator.app && typeof navigator.app.exitApp === 'function'){ navigator.app.exitApp(); return; } }catch(e){}
 
   // 중요: 여기서 history.back()을 호출하면 외부사이트 방문 기록으로 되돌아갈 수 있다.
-  // 따라서 종료 시도는 window.close까지만 하고, 히스토리 트랩은 다시 심지 않는다.
+  // 따라서 종료 시도는 window.close까지만 하며, 실패해도 외부사이트 기록으로 되돌아가지 않게 트랩을 복구한다.
   try{ window.open('', '_self'); window.close(); }catch(e){}
   try{ document.documentElement.classList.add('app-exiting'); }catch(e){}
+  setTimeout(function(){
+    try{
+      if(document.visibilityState !== 'hidden'){
+        const base = location.href.split('#')[0];
+        history.replaceState({_p:0}, '', base);
+        history.pushState({_p:1}, '', base);
+        window._appExiting = false;
+        document.documentElement.classList.remove('app-exiting');
+      }
+    }catch(e){}
+  }, 250);
 }
 function closeExitDlg(){
   _exitReady=false;
@@ -2568,7 +2580,7 @@ function _loadMap(){
 
 function _mapError(msg){
   const m=$('map');
-  m.innerHTML=`<div class="map-loading"><div style="font-size:40px;margin-bottom:16px">🗺️</div><div style="font-size:15px;font-weight:700;color:var(--gold);margin-bottom:12px">지도를 불러올 수 없습니다</div><div style="font-size:12px;color:rgba(255,255,255,.7);line-height:1.8;max-width:280px;word-break:keep-all">${msg}</div><button onclick="location.reload()" style="margin-top:16px;padding:10px 24px;background:var(--gold);color:var(--navy);border:none;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;">새로고침</button></div>`;
+  m.innerHTML=`<div class="map-loading"><div style="font-size:40px;margin-bottom:16px">🗺️</div><div style="font-size:15px;font-weight:700;color:var(--gold);margin-bottom:12px">지도를 불러올 수 없습니다</div><div style="font-size:12px;color:rgba(255,255,255,.7);line-height:1.8;max-width:280px;word-break:keep-all">${msg}</div></div>`;
   _markers=new Array(SHRINES.length).fill(null);
   renderList();
   openTab('nearby');
@@ -4538,12 +4550,18 @@ function _fmtTime(s){
     saveReturnState(payload);
     try{ if(typeof markExternalReturnStabilize==='function') markExternalReturnStabilize(payload.module || 'external'); }catch(e){}
     try{
-      const w = window.open(url, '_blank');
-      if(w) return;
-    }catch(e){}
-    try{
-      const a=document.createElement('a'); a.href=url; a.target='_blank'; document.body.appendChild(a); a.click(); setTimeout(()=>a.remove(),300);
-    }catch(e){ alert('새창 열기가 차단되었습니다. 브라우저의 팝업 허용을 확인해 주세요.'); }
+      const a=document.createElement('a');
+      a.href=url;
+      a.target='_blank';
+      a.rel='noopener';
+      a.style.display='none';
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(()=>{ try{ a.remove(); }catch(e){} },300);
+    }catch(e){
+      try{ window.open(url, '_blank'); }
+      catch(_){ alert('새창 열기가 차단되었습니다. 브라우저의 팝업 허용을 확인해 주세요.'); }
+    }
   }
 
   const _origGoToCover = window.goToCover;
@@ -5637,7 +5655,12 @@ window.initPrayerView = function(){
     if(!appActive()){
       var exiting = false;
       if(typeof window._showBackToast==='function') exiting = window._showBackToast() === true;
-      if(!exiting){ try{ history.pushState({_p:1}, '', _href); }catch(e){} }
+      /*
+       * OAI 20260505: 커버에서 두 번째 뒤로가기 때도 히스토리 트랩을 즉시 복구한다.
+       * window.close()/네이티브 종료가 실패하는 브라우저/PWA 환경에서 트랩을 복구하지 않으면
+       * 이전 외부사이트 기록으로 이동한 뒤 종료되는 문제가 생긴다.
+       */
+      try{ history.pushState({_p:1}, '', _href); }catch(e){}
       return;
     }
 
@@ -6353,12 +6376,39 @@ window.initPrayerView = function(){
     try{document.querySelectorAll('.module-view.open,#prayer-view.open,#diocese-view.open,#missa-view.open,.sheet.open,.trail-sheet.open,#srch-modal.open,#info-card.open,#exit-dlg.open').forEach(function(v){v.classList.remove('open','show');});}catch(e){}
   }
   window.__oaiSoftCoverRefresh=function(){
+    var htmlEl=document.documentElement;
+    var body=document.body;
+    var cover=$('cover');
+    var ind=$('cv-pull-modern');
     try{sessionStorage.removeItem('oai_force_cover_after_reload');}catch(e){}
-    try{document.documentElement.classList.remove('app-active','parish-mode','retreat-mode','oai-returning');}catch(e){}
-    closeOpenedTransientViews();
-    try{var c=$('cover'); if(c){c.style.display='';c.style.opacity='';c.style.pointerEvents='';c.scrollTop=0;}}catch(e){}
-    try{window.scrollTo(0,0);}catch(e){}
-    try{var ind=$('cv-pull-modern'); if(ind){ind.classList.remove('show','ready','refreshing');ind.style.setProperty('--pull-scale','.72');}}catch(e){}
+
+    /* 사용자용 커버 새로고침: 문의·건의처럼 화면을 크게 흔들지 않고 조용히 초기화 */
+    try{
+      if(body){
+        body.style.transition='none';
+        body.style.transform='translateZ(0)';
+      }
+      if(cover){
+        cover.style.transition='opacity .16s ease';
+        cover.style.opacity='0.96';
+        cover.style.pointerEvents='none';
+      }
+    }catch(e){}
+
+    requestAnimationFrame(function(){
+      try{htmlEl.classList.remove('app-active','parish-mode','retreat-mode','oai-returning');}catch(e){}
+      closeOpenedTransientViews();
+      try{if(cover){cover.style.display='';cover.scrollTop=0;}}catch(e){}
+      try{window.scrollTo({top:0,left:0,behavior:'auto'});}catch(e){try{window.scrollTo(0,0);}catch(ex){}}
+      try{if(body) body.getBoundingClientRect();}catch(e){}
+      setTimeout(function(){
+        try{
+          if(ind){ind.classList.remove('show','ready','refreshing');ind.style.setProperty('--pull-scale','.72');}
+          if(cover){cover.style.opacity='';cover.style.pointerEvents='';}
+          if(body){body.style.transition='';body.style.transform='';}
+        }catch(e){}
+      },160);
+    });
   };
   window.addEventListener('pageshow', function(){
     try{document.documentElement.classList.remove('oai-returning');}catch(e){}
