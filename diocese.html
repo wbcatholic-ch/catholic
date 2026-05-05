@@ -247,10 +247,43 @@ body > header{display:none!important;visibility:hidden!important;height:0!import
 </script>
 
 <style id="oai-diocese-tab-standard-20260504">
-/* 관구교구 헤더 아래 탭 버튼 표준화 */
+/* 관구교구 헤더 아래 탭 버튼 표준화 + 글자 크기 조절(지도 제외) */
+:root{--dio-font-scale:1;}
 .tab-bar{height:55px!important;padding:8px 10px!important;gap:8px!important;background:#FFFBF2!important;border-top:0!important;border-bottom:1px solid #DDD5C8!important;align-items:center!important;}
-.tab{height:40px!important;border-radius:12px!important;font-size:15px!important;font-weight:800!important;background:#F8FAFC!important;color:#475569!important;border:1.5px solid #CBD5E1!important;display:flex!important;align-items:center!important;justify-content:center!important;}
+.tab{height:40px!important;border-radius:12px!important;font-size:calc(15px * var(--dio-font-scale,1))!important;font-weight:800!important;background:#F8FAFC!important;color:#475569!important;border:1.5px solid #CBD5E1!important;display:flex!important;align-items:center!important;justify-content:center!important;}
 .tab.on{background:#1F2A44!important;color:#fff!important;border-color:#1F2A44!important;box-shadow:0 3px 10px rgba(31,42,68,.22)!important;}
+#dio-font-controls{flex:0 0 auto;display:flex;align-items:center;gap:0;background:#FFFBF2;border:1.5px solid #DDD5C8;border-radius:14px;padding:2px 3px;height:40px;min-width:78px;box-sizing:border-box;overflow:hidden;}
+.dio-font-btn{background:none;border:none;width:36px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:900;font-family:inherit;cursor:pointer;line-height:1;padding:0;}
+.dio-font-btn.dio-sm{font-size:12px;color:#1565C0;}
+.dio-font-btn.dio-lg{font-size:19px;color:#C85A00;}
+.dio-font-divider{width:1px;height:18px;background:#DDD5C8;margin:0 2px;flex:0 0 1px;}
+#search-view #si,#search-view #sb{font-size:calc(15px * var(--dio-font-scale,1))!important;}
+#search-view .sh{font-size:calc(11px * var(--dio-font-scale,1))!important;}
+#search-view .se{font-size:calc(13px * var(--dio-font-scale,1))!important;}
+#search-view .sl{font-size:calc(12px * var(--dio-font-scale,1))!important;}
+#search-view .si-r-op{font-size:calc(11px * var(--dio-font-scale,1))!important;}
+#search-view .sd{font-size:calc(16px * var(--dio-font-scale,1))!important;}
+#search-view .sg{font-size:calc(12px * var(--dio-font-scale,1))!important;}
+#search-view .si-r-url{font-size:calc(11px * var(--dio-font-scale,1))!important;}
+#search-view .si-r-arr{font-size:calc(15px * var(--dio-font-scale,1))!important;}
+#search-view .sot{font-size:calc(12px * var(--dio-font-scale,1))!important;}
+#search-view .sod{font-size:calc(13px * var(--dio-font-scale,1))!important;}
+#search-view .sodd{font-size:calc(12px * var(--dio-font-scale,1))!important;}
+#list-view .lv-sec-bdg{font-size:calc(15px * var(--dio-font-scale,1))!important;}
+#list-view .lv-sec-cnt{font-size:calc(14px * var(--dio-font-scale,1))!important;}
+#list-view .lv-bdg{font-size:calc(12px * var(--dio-font-scale,1))!important;}
+#list-view .lv-op{font-size:calc(11.5px * var(--dio-font-scale,1))!important;}
+#list-view .lv-name{font-size:calc(17px * var(--dio-font-scale,1))!important;}
+#list-view .lv-rg,#list-view .lv-det{font-size:calc(13px * var(--dio-font-scale,1))!important;}
+#list-view .lv-parish-count{font-size:calc(8px * var(--dio-font-scale,1))!important;}
+#list-view .lv-parish-count b{font-size:calc(12px * var(--dio-font-scale,1))!important;}
+#list-view .lv-parish-count span{font-size:calc(7px * var(--dio-font-scale,1))!important;}
+#list-view .lv-url{font-size:calc(12px * var(--dio-font-scale,1))!important;}
+#list-view .lv-arr{font-size:calc(15px * var(--dio-font-scale,1))!important;}
+#gw-bar{gap:calc(5px * var(--dio-font-scale,1))!important;}
+#gw-bar .gb{font-size:calc(12px * var(--dio-font-scale,1))!important;padding:calc(6px * var(--dio-font-scale,1)) calc(14px * var(--dio-font-scale,1))!important;border-radius:calc(20px * var(--dio-font-scale,1))!important;}
+#ctrl .cb{font-size:calc(15px * var(--dio-font-scale,1))!important;}
+@media(max-width:360px){#dio-font-controls{min-width:72px}.dio-font-btn{width:32px}}
 </style>
 </head>
 <body>
@@ -1226,6 +1259,31 @@ function buildListView(){
 }
 
 
+
+(function(){
+  var KEY='oai_diocese_font_scale';
+  var STEPS=[0.92,1,1.08,1.16,1.25,1.34];
+  function clampScale(v){
+    v=parseFloat(v);
+    if(!isFinite(v)) return 1;
+    return Math.max(STEPS[0],Math.min(STEPS[STEPS.length-1],v));
+  }
+  function apply(v){
+    v=clampScale(v);
+    document.documentElement.style.setProperty('--dio-font-scale',String(v));
+    try{localStorage.setItem(KEY,String(v));}catch(e){}
+  }
+  window.dioAdjustFont=function(delta){
+    var cur=clampScale(getComputedStyle(document.documentElement).getPropertyValue('--dio-font-scale')||1);
+    var idx=STEPS.reduce(function(best,step,i){return Math.abs(step-cur)<Math.abs(STEPS[best]-cur)?i:best;},1);
+    idx += delta>0 ? 1 : -1;
+    if(idx<0) idx=0;
+    if(idx>=STEPS.length) idx=STEPS.length-1;
+    apply(STEPS[idx]);
+  };
+  try{apply(localStorage.getItem(KEY)||'1');}catch(e){apply(1);}
+})();
+
 document.querySelectorAll('.tab').forEach(function(t){
   t.addEventListener('click',function(){
     document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('on');});
@@ -1234,6 +1292,15 @@ document.querySelectorAll('.tab').forEach(function(t){
     document.getElementById('map-view').classList.toggle('on',tab==='gwangu');
     document.getElementById('search-view').classList.toggle('on',tab==='search');
     document.getElementById('list-view').classList.toggle('on',tab==='list');
+    if(tab==='search'){
+      var si=document.getElementById('si');
+      if(si){
+        setTimeout(function(){
+          try{ si.focus({preventScroll:true}); }
+          catch(e){ try{ si.focus(); }catch(_){} }
+        },120);
+      }
+    }
     if(tab==='list'){
       // 스크롤 위치 복귀
       var sv=sessionStorage.getItem('listScroll');
@@ -1549,6 +1616,7 @@ function makeRow(disp,diocese,overlapDongs){
 }
 
 function doSearch(){
+  try{ document.activeElement && document.activeElement.blur && document.activeElement.blur(); }catch(e){}
   const raw=document.getElementById('si').value.trim();
   const res=document.getElementById('sres');
   if(!raw){res.innerHTML='<div class="se">검색어를 입력하세요</div>';return;}
@@ -1706,7 +1774,7 @@ window.addEventListener('pageshow',function(){
   window.openDioceseUrl = function(url, source){
     if(!url) return; var state=window.getDioceseReturnState(source||'link');
     if(window.parent && window.parent!==window && typeof window.parent.openDioceseExternal==='function') window.parent.openDioceseExternal(url,state);
-    else { try{ sessionStorage.setItem('oai_diocese_standalone_return',JSON.stringify(state)); }catch(e){} try{ var w=window.open(url,'_blank','noopener'); if(w) return; }catch(e){} try{ var a=document.createElement('a'); a.href=url; a.target='_blank'; a.rel='noopener'; document.body.appendChild(a); a.click(); setTimeout(function(){try{a.remove();}catch(e){}},300); }catch(e){ alert('새창 열기가 차단되었습니다. 브라우저의 팝업 허용을 확인해 주세요.'); } }
+    else { try{ sessionStorage.setItem('oai_diocese_standalone_return',JSON.stringify(state)); }catch(e){} location.href=url; }
   };
   document.addEventListener('click',function(e){ var t=e.target&&e.target.closest?e.target.closest('[data-dio-url]'):null; if(!t) return; e.preventDefault(); e.stopPropagation(); window.openDioceseUrl(t.getAttribute('data-dio-url'),t.getAttribute('data-dio-source')||'link'); },true);
 })();
