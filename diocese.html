@@ -222,30 +222,6 @@ body > header{display:none!important;visibility:hidden!important;height:0!import
 #card .c-x{display:flex!important;align-items:center!important;justify-content:center!important;opacity:1!important;visibility:visible!important;pointer-events:auto!important;}
 
 </style>
-<script id="oai-no-cache-runtime-20260501">
-(function(){
-  try{
-    var u = new URL(location.href);
-    if(u.searchParams.has('v')){
-      u.searchParams.delete('v');
-      history.replaceState(history.state, document.title, u.pathname + (u.search || '') + u.hash);
-    }
-  }catch(e){}
-  try{
-    if('serviceWorker' in navigator){
-      navigator.serviceWorker.getRegistrations().then(function(regs){
-        regs.forEach(function(reg){ try{ reg.unregister(); }catch(e){} });
-      }).catch(function(){});
-    }
-    if(window.caches && caches.keys){
-      caches.keys().then(function(keys){
-        keys.forEach(function(k){ try{ caches.delete(k); }catch(e){} });
-      }).catch(function(){});
-    }
-  }catch(e){}
-})();
-</script>
-
 <style id="oai-diocese-tab-standard-20260504">
 /* 관구교구 헤더 아래 탭 버튼 표준화 + 글자 크기 조절(지도 제외) */
 :root{--dio-font-scale:1;}
