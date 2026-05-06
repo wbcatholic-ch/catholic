@@ -66,7 +66,8 @@ header{flex-shrink:0;background:var(--d);border-bottom:none;z-index:30;
   transition:opacity .15s,transform .12s,box-shadow .15s;}
 .tab.on{background:var(--d);color:#fff;border-color:transparent;font-weight:700;
   box-shadow:0 2px 8px rgba(31,42,68,.28);}
-.tab:active{transform:scale(.97);}
+.tab:active{transform:scale(.992);}
+.tab.on,.tab.on:active{transform:none!important;}
 
 /* ── 뷰 컨테이너 ── */
 #main{flex:1;overflow:hidden;min-height:0;position:relative;background:var(--bg);}
@@ -163,7 +164,7 @@ header{flex-shrink:0;background:var(--d);border-bottom:none;z-index:30;
 .lv-card{background:var(--card);border-radius:var(--r);border:1px solid var(--bdr);
   box-shadow:0 1px 8px rgba(0,0,0,.06);margin-bottom:12px;overflow:hidden;cursor:pointer;
   transition:transform .12s,box-shadow .12s;}
-.lv-card:active{transform:scale(.983);box-shadow:none;}
+.lv-card.oai-touch-pressed{transform:translateY(6px) scale(.982);box-shadow:none;filter:brightness(.96);}
 /* top: 뱃지 + 교구전체명 */
 .lv-top{display:flex;align-items:center;justify-content:space-between;padding:12px 14px 0;gap:8px;}
 .lv-bdg{font-size:12px;font-weight:800;padding:4px 10px;border-radius:6px;color:#fff;white-space:nowrap;flex-shrink:0;}
@@ -263,8 +264,8 @@ body > header{display:none!important;visibility:hidden!important;height:0!import
 <style id="oai-touch-ux-standard-20260506">
 /* OAI 20260506: 공통 터치 UX 표준화 */
 .oai-touch-pressed{
-  transform:scale(.965)!important;
-  filter:brightness(.96)!important;
+  transform:scale(.992)!important;
+  filter:brightness(.995)!important;
   transition:transform .12s ease, filter .12s ease!important;
 }
 .oai-touchable{
@@ -272,6 +273,14 @@ body > header{display:none!important;visibility:hidden!important;height:0!import
   will-change:transform;
 }
 </style>
+
+<style id="oai-diocese-smooth-entry-20260506">
+/* OAI 20260506: 관구·교구 첫 표시/탭 전환 부드럽게 */
+#map-view.on,#list-view.on,#search-view.on{animation:oaiDioFadeIn .22s ease both;}
+@keyframes oaiDioFadeIn{from{opacity:.01}to{opacity:1}}
+html.oai-dio-returning #map-view.on,html.oai-dio-returning #list-view.on,html.oai-dio-returning #search-view.on{animation:none!important;}
+</style>
+
 </head>
 <body>
 <header>
@@ -1771,43 +1780,54 @@ window.addEventListener('pageshow',function(){
   if(window.__oaiTouchUxKeyboard20260506) return;
   window.__oaiTouchUxKeyboard20260506 = true;
 
-  var DELAY_MS = 105;
-  var delayedSelectors = [
-    '.cv-hotspot','.cv-extra-btn','.cv-btn',
-    '.prayer-item','.prayer-card','.prayer-list-item',
-    '.list-item','.nearby-item','.region-item',
-    '.sm-item','.sm-place-item',
-    '.trail-card','.trail-sh-body',
-    '.lv-card','.si-r','.card',
-    '.filter-btn','.cat-opt','.tab','.tab-btn','.trail-tab','.web-cat-btn'
-  ].join(',');
-
+  var ACTION_DELAY_MS = 55;
+  var FEEDBACK_MS = 170;
+  var PRESS_DELAY_MS = 85;
+  var MOVE_CANCEL_PX = 7;
+  var delayedSelectors = '#list-view .lv-card';
   var directSelectors = [
     'a','input','textarea','select','label',
-    '.ic-link-btn','.ic-hp-btn','.ic-guide-btn',
-    '.btn-kakao-route','.btn-kakao-nav','.c-btn',
-    '.web-card','.trail-foot','.web-card-foot','.trail-sh-foot',
-    '#close-btn','.module-close','.sheet-x','.sm-x','.ic-close-btn','.c-x',
-    '.btn-primary','.btn-secondary','#write-btn','#sb','#admin-pin-check'
+    '#card','#card *','.c-x','.c-btn','[data-dio-url]',
+    '.tab','.tab-btn','#si','#font-controls button'
   ].join(',');
 
-  function closest(el, sel){
-    try{return el && el.closest ? el.closest(sel) : null;}catch(e){return null;}
-  }
+  var activeTouch = null;
+  function closest(el, sel){ try{return el && el.closest ? el.closest(sel) : null;}catch(e){return null;} }
+  function clearPress(el){ if(!el) return; try{el.classList.remove('oai-touch-pressed');}catch(e){} el.__oaiPressing=false; }
   function press(el){
     if(!el || el.__oaiPressing) return;
     el.__oaiPressing = true;
     el.classList.add('oai-touchable','oai-touch-pressed');
-    setTimeout(function(){
-      try{el.classList.remove('oai-touch-pressed');}catch(e){}
-      el.__oaiPressing = false;
-    }, DELAY_MS + 45);
+    setTimeout(function(){ clearPress(el); }, FEEDBACK_MS);
+  }
+  function cancelActive(){
+    if(!activeTouch) return;
+    activeTouch.canceled = true;
+    if(activeTouch.timer){ clearTimeout(activeTouch.timer); activeTouch.timer = null; }
+    clearPress(activeTouch.el);
+    try{ activeTouch.el.__oaiTouchCanceledUntil = Date.now() + 350; }catch(e){}
   }
 
   document.addEventListener('pointerdown', function(e){
+    if(closest(e.target, directSelectors)) return;
     var el = closest(e.target, delayedSelectors);
     if(!el) return;
-    press(el);
+    activeTouch = {el:el,id:e.pointerId,x:e.clientX,y:e.clientY,canceled:false,timer:null};
+    activeTouch.timer = setTimeout(function(){
+      if(activeTouch && activeTouch.el === el && !activeTouch.canceled) press(el);
+    }, PRESS_DELAY_MS);
+  }, true);
+  document.addEventListener('pointermove', function(e){
+    if(!activeTouch || activeTouch.id !== e.pointerId) return;
+    var dx=Math.abs(e.clientX-activeTouch.x), dy=Math.abs(e.clientY-activeTouch.y);
+    if(dx > MOVE_CANCEL_PX || dy > MOVE_CANCEL_PX) cancelActive();
+  }, true);
+  document.addEventListener('pointercancel', cancelActive, true);
+  document.addEventListener('pointerup', function(e){
+    if(!activeTouch || activeTouch.id !== e.pointerId) return;
+    if(activeTouch.timer){ clearTimeout(activeTouch.timer); activeTouch.timer = null; }
+    if(activeTouch.canceled) clearPress(activeTouch.el);
+    activeTouch = null;
   }, true);
 
   document.addEventListener('click', function(e){
@@ -1815,6 +1835,7 @@ window.addEventListener('pageshow',function(){
     if(closest(e.target, directSelectors)) return;
     var el = closest(e.target, delayedSelectors);
     if(!el) return;
+    if(el.__oaiTouchCanceledUntil && Date.now() < el.__oaiTouchCanceledUntil){ e.preventDefault(); e.stopImmediatePropagation(); return; }
     if(el.__oaiClickDelay) return;
     e.preventDefault();
     e.stopImmediatePropagation();
@@ -1825,11 +1846,9 @@ window.addEventListener('pageshow',function(){
         var ev = new MouseEvent('click', {bubbles:true,cancelable:true,view:window});
         ev.__oaiTouchReplay = true;
         el.dispatchEvent(ev);
-      }catch(err){
-        try{ el.click(); }catch(_e){}
-      }
+      }catch(err){ try{ el.click(); }catch(_e){} }
       setTimeout(function(){ el.__oaiClickDelay = false; }, 0);
-    }, DELAY_MS);
+    }, ACTION_DELAY_MS);
   }, true);
 
   function disableKeyboardSuggestions(root){
@@ -1848,11 +1867,8 @@ window.addEventListener('pageshow',function(){
   document.addEventListener('DOMContentLoaded', function(){ disableKeyboardSuggestions(document); });
   try{
     var mo = new MutationObserver(function(muts){
-      for(var i=0;i<muts.length;i++){
-        for(var j=0;j<muts[i].addedNodes.length;j++){
-          var n=muts[i].addedNodes[j];
-          if(n && n.nodeType===1) disableKeyboardSuggestions(n);
-        }
+      for(var i=0;i<muts.length;i++) for(var j=0;j<muts[i].addedNodes.length;j++){
+        var n=muts[i].addedNodes[j]; if(n && n.nodeType===1) disableKeyboardSuggestions(n);
       }
     });
     mo.observe(document.documentElement,{childList:true,subtree:true});

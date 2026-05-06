@@ -33,7 +33,7 @@
   }
   body {
     font-family: 'Noto Sans KR', sans-serif;
-    background: var(--gray-50);
+    background: #f6efe4;
     min-height: 100vh;
     width: 100%;
     max-width: 720px;
@@ -95,20 +95,21 @@
   /* ── 필터 ── */
   #filter-bar {
     display: flex; gap: 6px; padding: 14px 14px 8px;
+    background:#f6efe4;
     overflow-x: auto; scrollbar-width: none;
   }
   #filter-bar::-webkit-scrollbar { display: none; }
   .filter-btn {
-    flex-shrink: 0; border: 1.5px solid var(--gray-200); border-radius: 20px;
-    padding: 5px 14px; font-size: 13px; background: #fff; color: var(--gray-500);
+    flex-shrink: 0; border: 1.5px solid #e6dccb; border-radius: 20px;
+    padding: 6px 15px; font-size: 16px; background: #fffaf2; color: #5f564c;
     cursor: pointer; font-weight: 500; font-family: inherit; transition: all .15s;
   }
-  .filter-btn.active { background: var(--blue); color: var(--gold); border-color: var(--blue); font-weight: 700; }
+  .filter-btn.active { background: #1f2a44; color: var(--gold); border-color: #1f2a44; font-weight: 800; }
 
   /* ── 게시글 목록 ── */
   #post-list { padding: 4px 14px; }
   .card {
-    background: #fff; border-radius: var(--radius); padding: 14px 16px;
+    background: #fffaf2; border:1px solid #e6dccb; border-radius: var(--radius); padding: 14px 16px;
     margin-bottom: 10px; box-shadow: var(--shadow); cursor: pointer;
     animation: fadeUp .25s ease both; transition: transform .12s;
   }
@@ -118,13 +119,13 @@
     to   { opacity: 1; transform: translateY(0); }
   }
   .card-top { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 7px; }
-  .card-title { font-size: 14px; font-weight: 600; color: #1E293B; line-height: 1.45; margin-bottom: 5px; }
-  .card-meta  { font-size: 11px; color: var(--gray-400); }
-  .card-date  { margin-left: auto; font-size: 11px; color: var(--gray-400); }
+  .card-title { font-size: 16px; font-weight: 600; color: #1E293B; line-height: 1.45; margin-bottom: 5px; }
+  .card-meta  { font-size: 16px; color: var(--gray-400); }
+  .card-date  { margin-left: auto; font-size: 16px; color: var(--gray-400); }
 
   /* 배지 공통 */
   .badge {
-    border-radius: 20px; padding: 2px 9px; font-size: 11px; font-weight: 700;
+    border-radius: 20px; padding: 3px 10px; font-size: 16px; font-weight: 700;
     display: inline-flex; align-items: center; gap: 3px;
   }
   .badge-문의     { background:#EFF6FF; color:#1D4ED8; border:1px solid #BFDBFE; }
@@ -136,55 +137,55 @@
   .badge-wait  { background:#FEF9C3; color:#92400E; border:1px solid #FDE68A; font-weight:500; }
 
   /* ── 상세 ── */
-  #detail-view { padding: 16px; }
+  #detail-view { padding: 16px; background:#f6efe4; }
   .detail-head {
-    background: #fff; border-radius: var(--radius);
+    background: #fffaf2; border:1px solid #e6dccb; border-radius: var(--radius);
     padding: 16px; margin-bottom: 12px; box-shadow: var(--shadow);
   }
-  .detail-title { font-size: 17px; font-weight: 700; color: #1E293B; margin: 10px 0 6px; line-height: 1.4; }
-  .detail-meta  { font-size: 12px; color: var(--gray-400); }
+  .detail-title { font-size: 16px; font-weight: 700; color: #1E293B; margin: 10px 0 6px; line-height: 1.4; }
+  .detail-meta  { font-size: 16px; color: var(--gray-400); }
   .detail-body  {
     background: #f6efe4; border-radius: var(--radius); padding: 16px;
-    font-size: 14px; line-height: 1.85; color: #334155;
+    font-size: 16px; line-height: 1.85; color: #334155;
     margin-bottom: 12px; box-shadow: var(--shadow); white-space: pre-wrap; border:1px solid #e6dccb;
   }
   .answer-box {
     background: #f9f3e8; border: 1px solid #e6dccb;
     border-radius: var(--radius); padding: 16px; margin-bottom: 12px;
   }
-  .answer-label { font-size: 12px; font-weight: 700; color: var(--blue); margin-bottom: 8px; }
-  .answer-text  { font-size: 14px; line-height: 1.8; color: #1E3A5F; white-space: pre-wrap; }
+  .answer-label { font-size: 16px; font-weight: 700; color: var(--blue); margin-bottom: 8px; }
+  .answer-text  { font-size: 16px; line-height: 1.8; color: #1E3A5F; white-space: pre-wrap; }
   .pending-box  {
-    background: var(--gray-50); border: 1px dashed var(--gray-200);
+    background: #fffaf2; border: 1px dashed #e6dccb;
     border-radius: var(--radius); padding: 14px; text-align: center;
-    font-size: 13px; color: var(--gray-500); margin-bottom: 12px;
+    font-size: 16px; color: var(--gray-500); margin-bottom: 12px;
   }
 
   /* ── 관리자 영역 ── */
   .admin-area { margin-top: 20px; padding-top: 16px; border-top: 1px dashed var(--gray-200); }
   #admin-toggle-btn {
-    width: 100%; background: none; border: 1px dashed var(--gray-200);
-    color: var(--gray-400); border-radius: 10px; padding: 9px;
-    font-size: 12px; cursor: pointer; font-family: inherit;
+    width: 100%; background: #fffaf2; border: 1px dashed #e6dccb;
+    color: #8a7b68; border-radius: 10px; padding: 10px;
+    font-size: 16px; cursor: pointer; font-family: inherit;
   }
-  #admin-form { background: #FFF8F0; border: 1px solid #FED7AA; border-radius: var(--radius); padding: 14px; }
+  #admin-form { background: #fffaf2; border: 1px solid #e6dccb; border-radius: var(--radius); padding: 14px; }
   .admin-pin-row { display: flex; gap: 8px; margin-bottom: 10px; }
   #admin-pin-input { flex: 1; }
-  #admin-pin-check { padding: 0 16px; background: #92400E; color: #fff; border: none; border-radius: 10px; font-size: 13px; cursor: pointer; font-family: inherit; }
+  #admin-pin-check { padding: 0 16px; background: #92400E; color: #fff; border: none; border-radius: 10px; font-size: 16px; cursor: pointer; font-family: inherit; }
   #answer-textarea {
-    width: 100%; border: 1px solid #FED7AA; border-radius: 10px;
-    padding: 10px 12px; font-size: 13px; line-height: 1.75; resize: vertical;
-    font-family: inherit; background: #fff; min-height: 100px;
+    width: 100%; border: 1px solid #e6dccb; border-radius: 10px;
+    padding: 10px 12px; font-size: 16px; line-height: 1.75; resize: vertical;
+    font-family: inherit; background: #fffaf2; min-height: 100px;
   }
 
   /* ── 글쓰기 ── */
-  #write-view { padding: 16px; }
+  #write-view { padding: 16px; background:#f6efe4; }
   .field-group { margin-bottom: 18px; }
-  .field-label { display: block; font-size: 13px; font-weight: 700; color: var(--gray-700); margin-bottom: 8px; }
+  .field-label { display: block; font-size: 16px; font-weight: 700; color: var(--gray-700); margin-bottom: 8px; }
   .cat-row { display: flex; gap: 8px; flex-wrap: wrap; }
   .cat-opt {
     border: 1.5px solid var(--gray-200); border-radius: 20px;
-    padding: 6px 16px; font-size: 13px; background: #fff;
+    padding: 7px 16px; font-size: 16px; background: #fffaf2;
     color: var(--gray-500); cursor: pointer; font-weight: 500; font-family: inherit;
     transition: all .15s;
   }
@@ -192,27 +193,27 @@
   .cat-opt.active-수정제안 { background:#FEF9C3; color:#92400E; border-color:#FDE68A; font-weight:700; }
   .cat-opt.active-개선건의 { background:#F0FDF4; color:#166534; border-color:#BBF7D0; font-weight:700; }
   .cat-opt.active-칭찬     { background:#FDF4FF; color:#7E22CE; border-color:#E9D5FF; font-weight:700; }
-  input[type=text], input[type=number], textarea {
-    width: 100%; border: 1.5px solid var(--gray-200); border-radius: 10px;
-    padding: 11px 14px; font-size: 14px; font-family: inherit; outline: none;
-    background: #fff; transition: border-color .15s;
+  input[type=text], input[type=number], input[type=password], textarea {
+    width: 100%; border: 1.5px solid #e6dccb; border-radius: 10px;
+    padding: 11px 14px; font-size: 16px; font-family: inherit; outline: none;
+    background: #fffaf2; transition: border-color .15s;
   }
-  input[type=text]:focus, input[type=number]:focus, textarea:focus { border-color: var(--gold); }
+  input[type=text]:focus, input[type=number]:focus, input[type=password]:focus, textarea:focus { border-color: var(--gold); }
   textarea { resize: vertical; line-height: 1.75; }
-  .char-count { text-align: right; font-size: 11px; color: var(--gray-400); margin-top: 4px; }
-  .error-msg { color: #DC2626; font-size: 13px; margin-bottom: 12px; }
-  .notice-txt { text-align: center; font-size: 11px; color: var(--gray-400); margin-top: 12px; }
+  .char-count { text-align: right; font-size: 16px; color: var(--gray-400); margin-top: 4px; }
+  .error-msg { color: #DC2626; font-size: 16px; margin-bottom: 12px; }
+  .notice-txt { text-align: center; font-size: 16px; color: var(--gray-400); margin-top: 12px; }
 
   /* ── 버튼 ── */
   .btn-primary {
     width: 100%; background: var(--blue); color: #fff; border: none;
-    border-radius: 12px; padding: 13px; font-size: 15px; font-weight: 700;
+    border-radius: 12px; padding: 13px; font-size: 16px; font-weight: 700;
     cursor: pointer; font-family: inherit; transition: opacity .15s;
   }
   .btn-primary:active { opacity: .85; }
   .btn-secondary {
     flex: 1; background: var(--gray-100); color: var(--gray-500); border: none;
-    border-radius: 12px; padding: 12px; font-size: 14px; font-weight: 600;
+    border-radius: 12px; padding: 12px; font-size: 16px; font-weight: 600;
     cursor: pointer; font-family: inherit;
   }
   .btn-row { display: flex; gap: 8px; margin-top: 10px; }
@@ -220,11 +221,11 @@
   /* ── 성공 화면 ── */
   #success-view { padding: 60px 24px; text-align: center; display: none; }
   #success-view .icon { font-size: 52px; margin-bottom: 16px; }
-  #success-view .ttl  { font-size: 20px; font-weight: 700; color: var(--blue); margin-bottom: 8px; }
-  #success-view .sub  { font-size: 14px; color: var(--gray-500); line-height: 1.8; margin-bottom: 28px; }
+  #success-view .ttl  { font-size: 16px; font-weight: 700; color: var(--blue); margin-bottom: 8px; }
+  #success-view .sub  { font-size: 16px; color: var(--gray-500); line-height: 1.8; margin-bottom: 28px; }
 
   /* ── 로딩 / 빈화면 ── */
-  .loading-box { text-align: center; padding: 60px 0; color: var(--gray-400); font-size: 14px; }
+  .loading-box { text-align: center; padding: 60px 0; color: var(--gray-400); font-size: 16px; }
   .spinner {
     width: 28px; height: 28px; border: 3px solid var(--gray-200);
     border-top-color: var(--gold); border-radius: 50%;
@@ -527,7 +528,7 @@ function showDetailView(post) {
       <div class="admin-area">
         <button id="admin-toggle-btn" onclick="toggleAdminArea()">🔧 관리자 답변 달기</button>
         <div id="admin-form" style="display:none;">
-          <div style="font-size:13px;font-weight:700;color:#92400E;margin-bottom:10px;">관리자 인증 후 답변 작성</div>
+          <div style="font-size:16px;font-weight:700;color:#92400E;margin-bottom:10px;">관리자 인증 후 답변 작성</div>
           <div class="admin-pin-row" id="admin-pin-row">
             <input type="password" id="admin-pin-input" placeholder="관리자 비밀번호" style="flex:1;">
             <button id="admin-pin-check" onclick="verifyAdmin()">확인</button>
@@ -535,7 +536,7 @@ function showDetailView(post) {
           <div id="admin-write-area" style="display:none;">
             <textarea id="answer-textarea" rows="4" placeholder="답변을 입력하세요…">${escHtml(post.answer || '')}</textarea>
             <div class="btn-row">
-              <button class="btn-primary" style="font-size:14px;" onclick="submitAnswer()">답변 등록</button>
+              <button class="btn-primary" style="font-size:16px;" onclick="submitAnswer()">답변 등록</button>
               <button class="btn-secondary" onclick="deleteCurrentPost()">글 삭제</button>
               <button class="btn-secondary" onclick="toggleAdminArea()">취소</button>
             </div>
