@@ -1216,7 +1216,12 @@ function buildListView(){
       const ico=document.createElement('div');ico.className='lv-ico';
       ico.textContent='⛪';
       const info=document.createElement('div');info.className='lv-info';
-      const nm=document.createElement('div');nm.className='lv-name';nm.textContent=(dName==='군종교구')?dName:(dName+' · '+(m.parishes||0)+'개 본당');
+      const nm=document.createElement('div');nm.className='lv-name';
+      if(dName==='춘천교구' || dName==='부산교구'){
+        nm.textContent=dName+' · '+(m.parishes||0)+'개 본당(해외본당 제외)';
+      }else{
+        nm.textContent=(dName==='군종교구')?dName:(dName+' · '+(m.parishes||0)+'개 본당');
+      }
       const rg=document.createElement('div');rg.className='lv-rg';
       rg.innerHTML='📍 '+m.region;
       info.appendChild(nm);info.appendChild(rg);
