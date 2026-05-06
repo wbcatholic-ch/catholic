@@ -12,6 +12,7 @@
 })();
 </script>
 <script src="parishes.js?v=20260506-diocese-http1"></script>
+<script src="config.js"></script>
 
 <meta charset="UTF-8">
 <meta http-equiv="Cache-Control" content="no-cache, max-age=0, must-revalidate">
@@ -2310,8 +2311,19 @@ function _getRetreatColor(item){const codeMap={'서울대교구':'SE','인천교
 function _getModeMarkerColor(item){return _mode==='shrine'?(TC[item.type]||'#555'):(_mode==='retreat'?_getRetreatColor(item):'#8b5e3c');}
 function _getRouteGuideTarget(){return _mode==='shrine'?'성지':(_mode==='retreat'?'피정의 집':'성당');}
 
-const REST  = '86a3b86e6c1b0210b8e4aba5f6c83b00';
-const JSKEY = '07f7989e29fdfb425fff924f36fb3ec0';
+// ─── API 키: config.js 에서 로드 ─────────────────────────────────────
+// config.js 가 없거나 키가 비어있으면 콘솔에 경고가 표시됩니다.
+// 배포 전 Kakao Developers 콘솔에서 플랫폼 > 웹 도메인을 반드시 등록하세요.
+const REST  = (window.APP_CONFIG && window.APP_CONFIG.KAKAO_REST_KEY) || '';
+const JSKEY = (window.APP_CONFIG && window.APP_CONFIG.KAKAO_JS_KEY)  || '';
+(function(){
+  if(!REST || !JSKEY){
+    console.warn(
+      '[가톨릭 앱] config.js 가 로드되지 않았거나 API 키가 비어 있습니다.\n' +
+      '  config.sample.js 를 복사해 config.js 를 만들고 키를 입력하세요.'
+    );
+  }
+})();
 const TC    = {'성지':'#c0392b','순례지':'#1565c0','순교 사적지':'#1b7a3e'};
 const _DIOS=[['all','전체'],['서울대교구','서울'],['인천교구','인천'],['수원교구','수원'],['의정부교구','의정부'],['춘천교구','춘천'],['원주교구','원주'],['대전교구','대전'],['청주교구','청주'],['대구대교구','대구'],['안동교구','안동'],['부산교구','부산'],['마산교구','마산'],['광주대교구','광주'],['전주교구','전주'],['제주교구','제주']];
 
@@ -5064,7 +5076,7 @@ function _fmtTime(s){
     window.__trailKakaoLoading = true;
     window.__trailKakaoQueue = [cb];
     const sc = document.createElement('script');
-    const key = (typeof JSKEY!=='undefined' && JSKEY) ? JSKEY : '07f7989e29fdfb425fff924f36fb3ec0';
+    const key = (typeof JSKEY!=='undefined' && JSKEY) ? JSKEY : '';
     sc.src = 'https://dapi.kakao.com/v2/maps/sdk.js?appkey=' + key + '&autoload=false';
     sc.onload = function(){
       kakao.maps.load(function(){

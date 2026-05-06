@@ -1,13 +1,14 @@
-/* Catholic App Service Worker - 20260506-direct2
+/* Catholic App Service Worker - 20260506-sec1
    캐시를 매번 삭제하지 않고, 버전 변경 시 오래된 캐시만 정리합니다.
    localStorage/사용자 설정은 건드리지 않습니다. */
-const CACHE_VERSION = 'catholic-app-20260506-direct2';
+const CACHE_VERSION = 'catholic-app-20260506-sec1';
 const APP_SHELL = [
   './',
   './index.html',
   './diocese.html',
   './qa-firebase.html',
   './parishes.js',
+  './config.js',       // API 키 설정 파일 — 오프라인 시에도 지도 동작에 필요
   './manifest.json',
   './icon-192x192.png'
 ];
