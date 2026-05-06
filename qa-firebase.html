@@ -255,6 +255,20 @@
   }
 
 </style>
+
+
+<style id="oai-touch-ux-standard-20260506">
+/* OAI 20260506: 공통 터치 UX 표준화 */
+.oai-touch-pressed{
+  transform:scale(.965)!important;
+  filter:brightness(.96)!important;
+  transition:transform .12s ease, filter .12s ease!important;
+}
+.oai-touchable{
+  transition:transform .12s ease, filter .12s ease!important;
+  will-change:transform;
+}
+</style>
 </head>
 <body>
 
@@ -684,6 +698,101 @@ subscribeList();
   if('serviceWorker' in navigator){
     try{ navigator.serviceWorker.register('./sw.js?v=' + encodeURIComponent(APP_VERSION)).then(function(reg){try{reg.update();}catch(e){}}).catch(function(){}); }catch(e){}
   }
+})();
+</script>
+
+
+<script id="oai-touch-ux-keyboard-20260506">
+(function(){
+  if(window.__oaiTouchUxKeyboard20260506) return;
+  window.__oaiTouchUxKeyboard20260506 = true;
+
+  var DELAY_MS = 105;
+  var delayedSelectors = [
+    '.cv-hotspot','.cv-extra-btn','.cv-btn',
+    '.prayer-item','.prayer-card','.prayer-list-item',
+    '.list-item','.nearby-item','.region-item',
+    '.sm-item','.sm-place-item',
+    '.trail-card','.trail-sh-body',
+    '.lv-card','.si-r','.card',
+    '.filter-btn','.cat-opt','.tab','.tab-btn','.trail-tab','.web-cat-btn'
+  ].join(',');
+
+  var directSelectors = [
+    'a','input','textarea','select','label',
+    '.ic-link-btn','.ic-hp-btn','.ic-guide-btn',
+    '.btn-kakao-route','.btn-kakao-nav','.c-btn',
+    '.web-card','.trail-foot','.web-card-foot','.trail-sh-foot',
+    '#close-btn','.module-close','.sheet-x','.sm-x','.ic-close-btn','.c-x',
+    '.btn-primary','.btn-secondary','#write-btn','#sb','#admin-pin-check'
+  ].join(',');
+
+  function closest(el, sel){
+    try{return el && el.closest ? el.closest(sel) : null;}catch(e){return null;}
+  }
+  function press(el){
+    if(!el || el.__oaiPressing) return;
+    el.__oaiPressing = true;
+    el.classList.add('oai-touchable','oai-touch-pressed');
+    setTimeout(function(){
+      try{el.classList.remove('oai-touch-pressed');}catch(e){}
+      el.__oaiPressing = false;
+    }, DELAY_MS + 45);
+  }
+
+  document.addEventListener('pointerdown', function(e){
+    var el = closest(e.target, delayedSelectors);
+    if(!el) return;
+    press(el);
+  }, true);
+
+  document.addEventListener('click', function(e){
+    if(e.__oaiTouchReplay) return;
+    if(closest(e.target, directSelectors)) return;
+    var el = closest(e.target, delayedSelectors);
+    if(!el) return;
+    if(el.__oaiClickDelay) return;
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    press(el);
+    el.__oaiClickDelay = true;
+    setTimeout(function(){
+      try{
+        var ev = new MouseEvent('click', {bubbles:true,cancelable:true,view:window});
+        ev.__oaiTouchReplay = true;
+        el.dispatchEvent(ev);
+      }catch(err){
+        try{ el.click(); }catch(_e){}
+      }
+      setTimeout(function(){ el.__oaiClickDelay = false; }, 0);
+    }, DELAY_MS);
+  }, true);
+
+  function disableKeyboardSuggestions(root){
+    root = root || document;
+    var nodes = root.querySelectorAll ? root.querySelectorAll('input[type="text"], input[type="search"], input:not([type]), textarea') : [];
+    nodes.forEach(function(el){
+      if(el.type === 'password' || el.type === 'number' || el.type === 'tel' || el.type === 'email') return;
+      el.setAttribute('autocomplete','off');
+      el.setAttribute('autocorrect','off');
+      el.setAttribute('autocapitalize','off');
+      el.setAttribute('spellcheck','false');
+      el.setAttribute('enterkeyhint','done');
+    });
+  }
+  disableKeyboardSuggestions(document);
+  document.addEventListener('DOMContentLoaded', function(){ disableKeyboardSuggestions(document); });
+  try{
+    var mo = new MutationObserver(function(muts){
+      for(var i=0;i<muts.length;i++){
+        for(var j=0;j<muts[i].addedNodes.length;j++){
+          var n=muts[i].addedNodes[j];
+          if(n && n.nodeType===1) disableKeyboardSuggestions(n);
+        }
+      }
+    });
+    mo.observe(document.documentElement,{childList:true,subtree:true});
+  }catch(e){}
 })();
 </script>
 </body>
