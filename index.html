@@ -846,8 +846,8 @@ html.retreat-mode .nearby-type,html.retreat-mode .li-badge,html.retreat-mode .ic
 #prayer-bar-sub,#prayer-bar .module-bar-sub,#web-view .module-bar-sub,#trail-view .module-bar-sub,#qna-view .module-bar-sub,#diocese-view .module-bar-sub{font-size:var(--oai-std-sub-fs)!important;font-weight:600!important;line-height:1.25!important;margin-top:3px!important;opacity:.72!important;color:#fff!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
 #prayer-close,#prayer-bar .module-close,#web-view .module-close,#trail-view .module-close,#qna-view .module-close,#diocese-view .module-close{width:36px!important;height:36px!important;min-width:36px!important;flex:0 0 36px!important;border-radius:50%!important;background:rgba(255,255,255,.13)!important;border:1px solid rgba(255,255,255,.22)!important;color:rgba(212,170,106,.9)!important;font-size:20px!important;font-weight:900!important;display:flex!important;align-items:center!important;justify-content:center!important;line-height:1!important;cursor:pointer!important;flex-shrink:0!important}
 html.retreat-mode .filter-btn{background:#fff!important;color:#0F766E!important;border-color:#DDE3EE!important}
-#region-body .nearby-num,#region-body .region-item .nearby-num{background:#2563EB!important}
-#region-body .nearby-type,#region-body .region-item .nearby-type{background:#EFF6FF!important;color:#2563EB!important}
+/* OAI removed: region number must keep category color */
+/* OAI removed: region badge must keep category color */
 #region-body .nearby-dist,#nearby-body .nearby-dist{color:#2563EB!important}
 .region-list-hd,.ric-lbl{color:#2563EB!important}
 /* Final single clean patch: cover, font scope, marker focus */
@@ -1879,6 +1879,14 @@ function markExternalReturnStabilize(kind){
   try{ sessionStorage.setItem('oai_external_return_stabilize', kind || 'external'); }catch(e){}
 }
 
+function oaiClearNavVeil(){
+  try{
+    document.documentElement.classList.remove('oai-navigating-out');
+    var veil=document.getElementById('oai-nav-veil');
+    if(veil) veil.classList.remove('show');
+  }catch(e){}
+}
+
 function oaiSmoothNavigate(url, kind, label){
   if(!url) return;
   try{ if(typeof markExternalReturnStabilize==='function') markExternalReturnStabilize(kind || 'external'); }catch(e){}
@@ -1901,6 +1909,12 @@ function oaiSmoothNavigate(url, kind, label){
   requestAnimationFrame(function(){
     setTimeout(function(){ location.href=url; }, 70);
   });
+  // 외부 사이트가 브라우저/네트워크 문제로 실제 전환되지 않으면 안내막이 남지 않도록 자동 해제한다.
+  setTimeout(function(){
+    try{
+      if(document.visibilityState === 'visible') oaiClearNavVeil();
+    }catch(e){ oaiClearNavVeil(); }
+  }, 6500);
 }
 function oaiResetExternalPopupResidue(kind){
   // 외부사이트 복귀 시 남는 포커스/스크롤락만 정리한다.
@@ -1921,7 +1935,7 @@ function oaiResetExternalPopupResidue(kind){
   try{ document.body.getBoundingClientRect(); }catch(e){}
 }
 function applyExternalReturnStabilize(forceKind){
-  try{ document.documentElement.classList.remove('oai-navigating-out'); var v=document.getElementById('oai-nav-veil'); if(v) v.classList.remove('show'); }catch(e){}
+  try{ oaiClearNavVeil(); }catch(e){}
   var kind=forceKind||'';
   try{
     if(!kind){
@@ -1952,6 +1966,13 @@ window.addEventListener('focus', function(){
     var kind=sessionStorage.getItem('oai_external_return_stabilize') || '';
     if(kind) applyExternalReturnStabilize();
   }catch(e){}
+}, true);
+
+window.addEventListener('popstate', function(){
+  try{ oaiClearNavVeil(); }catch(e){}
+}, true);
+window.addEventListener('pagehide', function(){
+  try{ oaiClearNavVeil(); }catch(e){}
 }, true);
 
 /* ── 뒤로가기 핸들러는 principle-back-controller-20260424 에서 통합 관리 ── */
@@ -2309,6 +2330,20 @@ function _getModeTypeLabel(item){return _mode==='shrine'?item.type:(_mode==='ret
 const _RETREAT_DIO_COLORS={'SE':'#c0392b','IC':'#c0392b','SW':'#c0392b','UJ':'#c0392b','CC':'#1565c0','WJ':'#1565c0','DJ':'#c0392b','CJ':'#1565c0','DG':'#1b7a3e','AD':'#1b7a3e','BS':'#1565c0','MS':'#1b7a3e','GJ':'#1b7a3e','JJ':'#1b7a3e','JE':'#1b7a3e','ML':'#c0392b'};
 function _getRetreatColor(item){const codeMap={'서울대교구':'SE','인천교구':'IC','수원교구':'SW','의정부교구':'UJ','춘천교구':'CC','원주교구':'WJ','대전교구':'DJ','청주교구':'CJ','대구대교구':'DG','안동교구':'AD','부산교구':'BS','마산교구':'MS','광주대교구':'GJ','전주교구':'JJ','제주교구':'JE','군종교구':'ML'};const code=codeMap[item.diocese]||'SE';return _RETREAT_DIO_COLORS[code]||'#c0392b';}
 function _getModeMarkerColor(item){return _mode==='shrine'?(TC[item.type]||'#555'):(_mode==='retreat'?_getRetreatColor(item):'#8b5e3c');}
+function _getModeBadgeClass(item){
+  if(_mode==='shrine'){
+    if(item&&item.type==='성지') return 'oai-type-shrine';
+    if(item&&item.type==='순례지') return 'oai-type-pilgrim';
+    if(item&&item.type==='순교 사적지') return 'oai-type-martyr';
+    return 'oai-type-shrine';
+  }
+  return _mode==='retreat' ? 'oai-type-retreat' : 'oai-type-parish';
+}
+function _getModeBadgeHtml(item,clsName){
+  const c=_getModeMarkerColor(item);
+  const lbl=_getModeTypeLabel(item);
+  return `<span class="${clsName} ${_getModeBadgeClass(item)}" style="background:${c}18!important;color:${c}!important">${lbl}</span>`;
+}
 function _getRouteGuideTarget(){return _mode==='shrine'?'성지':(_mode==='retreat'?'피정의 집':'성당');}
 
 // ─── API 키: config.js 에서 로드 ─────────────────────────────────────
@@ -3621,7 +3656,8 @@ function _renderNearbyDone(prelim,results,getIdx,getColor,getLabel,phase){
     const isEst=(phase==='est');
     const distTxt=isEst?`~${km}km`:`🚗${km}km`;
     const dur=(!isEst&&o.r.dur)?`<span style="font-size:10px;color:#aaa;font-weight:400;margin-left:3px">${_fmtTime(o.r.dur)}</span>`:'';
-    return `<div class="nearby-item" onclick="selectItem(${idx},{fromNearby:true})"><div class="nearby-num" style="background:${c}">${i+1}</div><div class="nearby-info"><div class="nearby-name">${o.x.p.name}</div><div class="nearby-addr">${o.x.p.addr.substring(0,26)}${o.x.p.addr.length>26?'…':''}</div></div><div class="nearby-meta"><div class="nearby-type" style="background:${c}18;color:${c}">${lbl}</div><div class="nearby-dist" style="color:${isEst?'#aaa':''}">${distTxt}${dur}</div></div></div>`;
+    const bcls=_getModeBadgeClass(o.x.p);
+    return `<div class="nearby-item" onclick="selectItem(${idx},{fromNearby:true})"><div class="nearby-num" style="background:${c}!important">${i+1}</div><div class="nearby-info"><div class="nearby-name">${o.x.p.name}</div><div class="nearby-addr">${o.x.p.addr.substring(0,26)}${o.x.p.addr.length>26?'…':''}</div></div><div class="nearby-meta"><div class="nearby-type ${bcls}" style="background:${c}18!important;color:${c}!important">${lbl}</div><div class="nearby-dist" style="color:${isEst?'#aaa':''}">${distTxt}${dur}</div></div></div>`;
   }).join('');
   if(phase==='final') body.scrollTop=scrollTop;
 }
@@ -3690,9 +3726,9 @@ function renderList(){
    const c=_getModeMarkerColor(s);
    const d=document.createElement('div');
    d.className='list-item';
-   d.innerHTML=`<div class="li-dot" style="background:${c}"></div>
+   d.innerHTML=`<div class="li-dot" style="background:${c}!important"></div>
     <div class="li-info"><div class="li-name">${s.name}</div><div class="li-sub">${s.addr.substring(0,28)}${s.addr.length>28?'…':''}</div></div>
-    <span class="li-badge" style="background:${c}18;color:${c}">${_mode==='shrine'?s.type:(_mode==='retreat'?'피정의 집':'성당')}</span>`;
+    <span class="li-badge ${_getModeBadgeClass(s)}" style="background:${c}18!important;color:${c}!important">${_getModeTypeLabel(s)}</span>`;
    d.onclick=()=>selectItem(i);
    body.appendChild(d);
   });
@@ -3808,7 +3844,8 @@ function _showRegionResults(q,lat,lng,doc){
         if(rgl) rgl.innerHTML=sorted.map((o,i)=>{
           const idx=items.indexOf(o.x.s);const c=_getModeMarkerColor(o.x.s);const lbl=_getModeTypeLabel(o.x.s);
           const km=o.r.km.toFixed(1);const dur=o.r.dur?`<span style="font-size:10px;color:#aaa;font-weight:400;margin-left:3px">${_fmtTime(o.r.dur)}</span>`:'';
-          return `<div class="region-item" onclick="selectItem(${idx},{fromRegion:true})"><div class="nearby-num" style="background:${c};width:28px;height:28px;font-size:12px">${i+1}</div><div class="nearby-info"><div class="nearby-name">${o.x.s.name}</div><div class="nearby-addr">${o.x.s.addr.substring(0,26)}${o.x.s.addr.length>26?'…':''}</div></div><div class="nearby-meta"><div class="nearby-type" style="background:${c}18;color:${c}">${lbl}</div><div class="nearby-dist">🚗${km}km${dur}</div></div></div>`;
+          const bcls=_getModeBadgeClass(o.x.s);
+          return `<div class="region-item" onclick="selectItem(${idx},{fromRegion:true})"><div class="nearby-num" style="background:${c}!important;width:28px;height:28px;font-size:12px">${i+1}</div><div class="nearby-info"><div class="nearby-name">${o.x.s.name}</div><div class="nearby-addr">${o.x.s.addr.substring(0,26)}${o.x.s.addr.length>26?'…':''}</div></div><div class="nearby-meta"><div class="nearby-type ${bcls}" style="background:${c}18!important;color:${c}!important">${lbl}</div><div class="nearby-dist">🚗${km}km${dur}</div></div></div>`;
         }).join('');
       }
     });
@@ -3840,9 +3877,9 @@ function _showRegionFallback(q){
   const idx=items2.indexOf(s);
   const c=_getModeMarkerColor(s);
   return `<div class="region-item" onclick="selectItem(${idx},{fromRegion:true})">
-   <div class="nearby-num" style="background:${c};width:26px;height:26px;font-size:12px">${i+1}</div>
+   <div class="nearby-num" style="background:${c}!important;width:26px;height:26px;font-size:12px">${i+1}</div>
    <div class="nearby-info"><div class="nearby-name">${s.name}</div><div class="nearby-addr">${s.addr.substring(0,26)}…</div></div>
-   <div class="nearby-meta"><div class="nearby-type" style="background:${c}18;color:${c}">${_mode==='shrine'?s.type:(_mode==='retreat'?'피정의 집':'성당')}</div></div>
+   <div class="nearby-meta"><div class="nearby-type ${_getModeBadgeClass(s)}" style="background:${c}18!important;color:${c}!important">${_getModeTypeLabel(s)}</div></div>
   </div>`;
   }).join('');
   $('region-body').innerHTML=
@@ -4350,7 +4387,7 @@ function filterModal(q){
   items.forEach(({s,i})=>{
    const tc=_mode==='shrine'?(TC[s.type]||'#555'):_getModeMarkerColor(s);
    const badge=_mode==='shrine'?s.type:(_mode==='retreat'?'피정':'성당');
-   html+=`<div class="sm-item" onclick="selectFromModal(${i})"><div class="sm-role" style="background:${c}">${_smRole==='start'?'출':'도'}</div><div class="sm-info"><div class="sm-name">${s.name}</div><div class="sm-sub">${s.addr}</div></div><span class="sm-badge" style="color:${tc};background:${tc}18">${badge}</span></div>`;
+   html+=`<div class="sm-item" onclick="selectFromModal(${i})"><div class="sm-role" style="background:${c}!important">${_smRole==='start'?'출':'도'}</div><div class="sm-info"><div class="sm-name">${s.name}</div><div class="sm-sub">${s.addr}</div></div><span class="sm-badge ${_getModeBadgeClass(s)}" style="color:${tc};background:${tc}18">${badge}</span></div>`;
   });
   });
   body.innerHTML=html||'<div style="padding:32px;text-align:center;color:#aaa;font-size:13px">검색 결과가 없습니다</div>';
@@ -4400,10 +4437,10 @@ function _fetchDist(lat,lng,iLat,iLng,distId){
  }).catch(()=>{});
 }
 function _nearbyHtml(idx,i,name,addr,c,tLabel,distId,estKm){
- return `<div class="nearby-item" onclick="selectItem(${idx},{fromNearby:true})"><div class="nearby-num" style="background:${c}">${i+1}</div><div class="nearby-info"><div class="nearby-name">${name}</div><div class="nearby-addr">${addr.substring(0,26)}${addr.length>26?'…':''}</div></div><div class="nearby-meta"><div class="nearby-type" style="background:${c}18;color:${c}">${tLabel}</div><div class="nearby-dist" id="${distId}">🚗${estKm}km</div></div></div>`;
+ return `<div class="nearby-item" onclick="selectItem(${idx},{fromNearby:true})"><div class="nearby-num" style="background:${c}!important">${i+1}</div><div class="nearby-info"><div class="nearby-name">${name}</div><div class="nearby-addr">${addr.substring(0,26)}${addr.length>26?'…':''}</div></div><div class="nearby-meta"><div class="nearby-type" style="background:${c}18!important;color:${c}!important">${tLabel}</div><div class="nearby-dist" id="${distId}">🚗${estKm}km</div></div></div>`;
 }
 function _regionHtml(idx,i,name,addr,c,tLabel,distId,estKm){
- return `<div class="region-item" onclick="selectItem(${idx},{fromRegion:true})"><div class="nearby-num" style="background:${c};width:28px;height:28px;font-size:12px">${i+1}</div><div class="nearby-info"><div class="nearby-name">${name}</div><div class="nearby-addr">${addr.substring(0,26)}${addr.length>26?'…':''}</div></div><div class="nearby-meta"><div class="nearby-type" style="background:${c}18;color:${c}">${tLabel}</div>${distId?`<div class="nearby-dist" id="${distId}">🚗${estKm}km</div>`:''}</div></div>`;
+ return `<div class="region-item" onclick="selectItem(${idx},{fromRegion:true})"><div class="nearby-num" style="background:${c}!important;width:28px;height:28px;font-size:12px">${i+1}</div><div class="nearby-info"><div class="nearby-name">${name}</div><div class="nearby-addr">${addr.substring(0,26)}${addr.length>26?'…':''}</div></div><div class="nearby-meta"><div class="nearby-type" style="background:${c}18!important;color:${c}!important">${tLabel}</div>${distId?`<div class="nearby-dist" id="${distId}">🚗${estKm}km</div>`:''}</div></div>`;
 }
 function _show(el,d){if(el)el.style.display=d||'flex';}
 function _hide(el){if(el)el.style.display='none';}
@@ -7085,6 +7122,7 @@ html.app-active #cv-pull-modern{
     '#qna-cover-btn','#pwa-install-btn','.missa-open-link',
     '.btn-primary','.btn-secondary','#write-btn','#sb','#admin-pin-check',
     '.filter-btn','.cat-opt','.tab','.tab-btn','.trail-tab','.web-cat-btn',
+    '.pr-star','.web-fav-btn','#pr-detail-star',
     '#prayer-search-input','#prayer-search-bar button'
   ].join(',');
 
@@ -7197,5 +7235,29 @@ html.app-active #cv-pull-modern{
 
 
 
+
+<style id="oai-category-badge-colors-final-20260507">
+/* 내주변 + 지역검색 10개 목록: 뒤쪽 CSS 덮어쓰기 방지 */
+#nearby-body .nearby-type.oai-type-shrine,
+#region-body .nearby-type.oai-type-shrine,
+#list-body .li-badge.oai-type-shrine,
+#sm-body .sm-badge.oai-type-shrine{background:#c0392b18!important;color:#c0392b!important;}
+#nearby-body .nearby-type.oai-type-pilgrim,
+#region-body .nearby-type.oai-type-pilgrim,
+#list-body .li-badge.oai-type-pilgrim,
+#sm-body .sm-badge.oai-type-pilgrim{background:#1565c018!important;color:#1565c0!important;}
+#nearby-body .nearby-type.oai-type-martyr,
+#region-body .nearby-type.oai-type-martyr,
+#list-body .li-badge.oai-type-martyr,
+#sm-body .sm-badge.oai-type-martyr{background:#1b7a3e18!important;color:#1b7a3e!important;}
+html.parish-mode #nearby-body .nearby-num,
+html.parish-mode #region-body .nearby-num{background:#8b5e3c!important;}
+html.parish-mode #nearby-body .nearby-type.oai-type-parish,
+html.parish-mode #region-body .nearby-type.oai-type-parish,
+html.parish-mode #list-body .li-badge.oai-type-parish{background:#8b5e3c18!important;color:#8b5e3c!important;}
+html.retreat-mode #nearby-body .nearby-type.oai-type-retreat,
+html.retreat-mode #region-body .nearby-type.oai-type-retreat,
+html.retreat-mode #list-body .li-badge.oai-type-retreat{background:#3F7E5B18!important;color:#3F7E5B!important;}
+</style>
 </body>
 </html>
