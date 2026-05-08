@@ -1,7 +1,7 @@
 {
-  "name": "한국 천주교 앱",
-  "short_name": "천주교 앱",
-  "description": "성지 167곳 · 성당 1697곳 · 순례길 · 기도문 · 가톨릭 웹 통합 앱",
+  "name": "가톨릭길동무",
+  "short_name": "가톨릭길동무",
+  "description": "가톨릭 신앙생활 종합 앱 (성지 167곳 · 성당 1697곳 · 순례길 · 기도문)",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
