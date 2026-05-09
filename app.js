@@ -584,6 +584,8 @@ const AppState = {
   activeDio:          null, // 현재 마커 펼쳐진 교구 코드
   parishSysInited:    false,
   parishIdleListener: null, // 뷰포트 필터링용 idle 이벤트 리스너
+  parishDioUserZoomTouched: false, // 사용자가 성당 교구 지도에서 직접 확대/축소했는지
+  parishDioProgrammaticMoveUntil: 0, // 앱이 조정한 줌 변경을 사용자 조작으로 오인하지 않기 위한 보호 시간
 
   // ── 검색 디바운스 ──
   smPlaceDebounce: null,
@@ -637,6 +639,8 @@ const AppState = {
     ['_activeDio',           'activeDio'],
     ['_parishSysInited',     'parishSysInited'],
     ['_parishIdleListener',  'parishIdleListener'],
+    ['_parishDioUserZoomTouched', 'parishDioUserZoomTouched'],
+    ['_parishDioProgrammaticMoveUntil', 'parishDioProgrammaticMoveUntil'],
     ['_smPlaceDebounce',  'smPlaceDebounce'],
     ['_smTab',            'smTab'],
   ];
@@ -865,6 +869,8 @@ function _resetMapState(){
   _dioOverlays={};
   _activeDio=null;
   _parishSysInited=false;
+  _parishDioUserZoomTouched=false;
+  _parishDioProgrammaticMoveUntil=0;
   if(_parishIdleListener){ try{kakao.maps.event.removeListener(_parishIdleListener);}catch(e){ console.warn('[클로드정리]',e); } _parishIdleListener=null; }
   _paSelMkr=null;
   _myMkr=null;
@@ -1116,6 +1122,9 @@ function _updateTabBtns(active){
 function _focusMarkerAboveInfoCard(item){
   if(!_map || !item || !item.lat || !item.lng) return;
   try{
+    if(_mode==='parish' && !_routeMode){
+      if(typeof _focusParishPointAround==='function' && _focusParishPointAround(item.lat,item.lng,{level:6,aboveInfoCard:true})) return;
+    }
     const pos = new _LL(item.lat,item.lng);
     const mapEl = $('map-wrap') || $('map');
     const mapH = (mapEl && (mapEl.clientHeight || mapEl.offsetHeight)) || window.innerHeight || 700;
@@ -1510,29 +1519,24 @@ function _showItemsOnMap(items){
 }
 function _selectParishMarker(p){
   if(_paSelMkr){try{_paSelMkr.setMap(null);}catch(e){ console.warn("[클로드정리]", e); }  _paSelMkr=null;}
-  if(!_map||!p.lat||!p.lng) return;
+  if(!_map||!p.lat||!p.lng) return null;
   // 해당 성당이 속한 교구 마커 활성화
-  const codeMap={'서울대교구':'SE','인천교구':'IC','수원교구':'SW','의정부교구':'UJ',
-    '춘천교구':'CC','원주교구':'WJ','대전교구':'DJ','청주교구':'CJ','대구대교구':'DG',
-    '안동교구':'AD','부산교구':'BS','마산교구':'MS','광주대교구':'GJ','전주교구':'JJ',
-    '제주교구':'JE','군종교구':'ML'};
-  const dioCode=codeMap[p.diocese];
-  if(dioCode) _ensureParishMarkerZoom();
-  if(dioCode && _activeDio!==dioCode && _parishSysInited){
-    if(_activeDio) _hideParishDioMkrs(_activeDio);
+  const dioCode=_parishDioCodeOf(p);
+  if(dioCode && _parishSysInited){
+    if(_activeDio && _activeDio!==dioCode) _hideParishDioMkrs(_activeDio);
     _activeDio=dioCode;
     _showParishDioMkrs(dioCode);
     document.querySelectorAll('.dio-label').forEach(e=>{e.style.transform='';e.style.display='';});
     const clickedEl=_dioOverlays[dioCode]?.getContent?.();
     if(clickedEl){clickedEl.style.display='none';}
+    // 성당 선택의 노란 마커는 교구 전체 bounds로 축소하지 않고, 선택 지점 주변만 보이도록 한다.
+    // 실제 중심/확대는 인포카드 표시 후 _focusMarkerAboveInfoCard()에서 한 번만 처리한다.
+  }else if(dioCode){
+    _ensureParishMarkerZoom();
   }
   _paSelMkr=new _MM({position:new _LL(p.lat,p.lng),image:_mkrImg('#FFE500',true),zIndex:200});
   _paSelMkr.setMap(_map);
-  if(dioCode){
-    setTimeout(function(){
-      try{ if(_mode==='parish' && _activeDio===dioCode) _updateParishViewport(dioCode); }catch(e){ console.warn('[클로드정리]',e); }
-    }, 180);
-  }
+  return dioCode;
 }
 
 // ── 교구 라벨·마커 시스템 ─────────────────────────────────────────
@@ -1555,15 +1559,19 @@ const _DIO_CFG={
 
 };
 
+const _PARISH_DIO_CODE_MAP={'서울대교구':'SE','인천교구':'IC','수원교구':'SW','의정부교구':'UJ',
+  '춘천교구':'CC','원주교구':'WJ','대전교구':'DJ','청주교구':'CJ','대구대교구':'DG',
+  '안동교구':'AD','부산교구':'BS','마산교구':'MS','광주대교구':'GJ','전주교구':'JJ',
+  '제주교구':'JE','군종교구':'ML'};
+function _parishDioCodeOf(p){
+  return p && p.diocese ? (_PARISH_DIO_CODE_MAP[p.diocese] || null) : null;
+}
+
 // 교구별 성당 목록 (코드 기준 분류)
 const _PA_BY_DIO = (function(){
   const m={};
-  const codeMap={'서울대교구':'SE','인천교구':'IC','수원교구':'SW','의정부교구':'UJ',
-    '춘천교구':'CC','원주교구':'WJ','대전교구':'DJ','청주교구':'CJ','대구대교구':'DG',
-    '안동교구':'AD','부산교구':'BS','마산교구':'MS','광주대교구':'GJ','전주교구':'JJ',
-    '제주교구':'JE','군종교구':'ML'};
   PARISHES.forEach(p=>{
-    const code=codeMap[p.diocese]||'ETC';
+    const code=_parishDioCodeOf(p)||'ETC';
     (m[code]||(m[code]=[])).push(p);
   });
   return m;
@@ -1575,6 +1583,76 @@ function _dioLabelSize(lvl){
   if(lvl<=4) return 18; if(lvl===5) return 16;
   if(lvl===6) return 15; if(lvl===7) return 14;
   if(lvl===8) return 13; return 12;
+}
+
+function _markParishDioProgrammaticMove(ms){
+  try{
+    _parishDioProgrammaticMoveUntil=(Date.now?Date.now():new Date().getTime())+(ms||1400);
+  }catch(e){ console.warn('[클로드정리]',e); }
+}
+
+function _parishDioCenter(code){
+  if(!_map||typeof _LL==='undefined') return null;
+  const parishes=_PA_BY_DIO[code]||[];
+  let minLat=Infinity,maxLat=-Infinity,minLng=Infinity,maxLng=-Infinity,count=0;
+  parishes.forEach(function(p){
+    if(!p||!p.lat||!p.lng||p.lat===0||p.lng===0) return;
+    minLat=Math.min(minLat,p.lat); maxLat=Math.max(maxLat,p.lat);
+    minLng=Math.min(minLng,p.lng); maxLng=Math.max(maxLng,p.lng);
+    count++;
+  });
+  if(count>0) return new _LL((minLat+maxLat)/2,(minLng+maxLng)/2);
+  const cfg=_DIO_CFG[code];
+  return cfg ? new _LL(cfg.lat,cfg.lng) : null;
+}
+
+function _centerParishDioWithoutZoom(code){
+  if(_mode!=='parish'||!_map) return false;
+  const center=_parishDioCenter(code);
+  if(!center) return false;
+  try{
+    if(typeof _map.panTo==='function') _map.panTo(center);
+    else _map.setCenter(center);
+    return true;
+  }catch(e){ console.warn('[클로드정리]',e); }
+  return false;
+}
+
+function _focusParishPointAround(lat, lng, opts){
+  opts=opts||{};
+  if(_mode!=='parish'||!_map||!lat||!lng||typeof _LL==='undefined') return false;
+  const targetLevel = opts.level || 6;
+  const pos = new _LL(lat,lng);
+  try{
+    if(typeof _map.getLevel==='function' && typeof _map.setLevel==='function'){
+      const lvl = _map.getLevel();
+      // 현재 위치/노란 마커 기준 이동은 교구 전체 bounds로 축소하지 않는다.
+      // 화면이 멀리 빠져 있을 때만 주변이 보이도록 확대하고, 이미 더 확대된 상태는 유지한다.
+      if(lvl > targetLevel){
+        _markParishDioProgrammaticMove(1300);
+        _map.setLevel(targetLevel);
+      }
+    }
+    if(opts.aboveInfoCard){
+      const mapEl = $('map-wrap') || $('map');
+      const mapH = (mapEl && (mapEl.clientHeight || mapEl.offsetHeight)) || window.innerHeight || 700;
+      const proj = _map.getProjection && _map.getProjection();
+      if(proj && proj.containerPointFromCoords && proj.coordsFromContainerPoint){
+        const p = proj.containerPointFromCoords(pos);
+        const centerY = Math.round(mapH / 2);
+        const targetY = Math.round(mapH * 0.34);
+        const point = (window.kakao && kakao.maps && kakao.maps.Point)
+          ? new kakao.maps.Point(p.x, p.y + (centerY - targetY))
+          : {x:p.x, y:p.y + (centerY - targetY)};
+        const newCenter = proj.coordsFromContainerPoint(point);
+        if(newCenter){ _map.setCenter(newCenter); return true; }
+      }
+    }
+    if(typeof _map.panTo==='function') _map.panTo(pos);
+    else _map.setCenter(pos);
+    return true;
+  }catch(e){ console.warn('[클로드정리]',e); }
+  return false;
 }
 
 function _buildParishDioSystem(){
@@ -1611,6 +1689,12 @@ function _buildParishDioSystem(){
     document.querySelectorAll('.dio-label').forEach(el2=>{
       el2.style.fontSize=fs2+'px';
     });
+    try{
+      const now=Date.now?Date.now():new Date().getTime();
+      if(_mode==='parish' && now>_parishDioProgrammaticMoveUntil){
+        _parishDioUserZoomTouched=true;
+      }
+    }catch(e){ console.warn('[클로드정리]',e); }
   });
 }
 
@@ -1633,51 +1717,70 @@ function _toggleParishDio(code){
   _activeDio=code;
   const clickedEl=_dioOverlays[code]?.getContent?.();
   if(clickedEl){clickedEl.style.display='none';}
-  _focusParishDio(code);
   _showParishDioMkrs(code);
+  _focusParishDio(code,{fromLabel:true});
 }
 
-function _focusParishDio(code){
-  if(_mode!=='parish'||!_map||typeof _LB==='undefined'||typeof _LL==='undefined') return;
+function _focusParishDio(code, opts){
+  opts=opts||{};
+  // 성당 카테고리의 교구명 클릭은 처음에는 교구 전체 보기로 맞추고,
+  // 사용자가 직접 확대/축소한 뒤에는 현재 줌을 유지한 채 교구 중심만 이동한다.
+  if(opts.fromLabel && _parishDioUserZoomTouched){
+    if(_centerParishDioWithoutZoom(code)) return;
+  }
+  _fitParishDioBounds(code,{reason:'dio-click'});
+}
+
+function _fitParishDioBounds(code, opts){
+  opts=opts||{};
+  if(_mode!=='parish'||!_map||typeof _LB==='undefined'||typeof _LL==='undefined') return false;
   const parishes=_PA_BY_DIO[code]||[];
-  let bounds=null, count=0;
+  let bounds=null, count=0, only=null;
   try{
     parishes.forEach(function(p){
       if(!p||!p.lat||!p.lng||p.lat===0||p.lng===0) return;
+      only=p;
       const pos=new _LL(p.lat,p.lng);
       if(!bounds) bounds=new _LB();
       bounds.extend(pos);
       count++;
     });
     if(count>1 && bounds){
-      /* 성당 카테고리에서 교구를 선택하면 해당 교구 전체 성당이 보이는 범위가 기준입니다.
-         이전 5-3에서는 setBounds 직후 _showParishDioMkrs()가 줌을 8로 강제해
-         넓은 교구의 일부 마커만 보이는 문제가 생겼습니다. 여기서는 bounds가 정한
-         중심/줌을 우선하고, 너무 과하게 확대된 경우에만 살짝 뒤로 물러납니다. */
-      try{ _map.setBounds(bounds, 78, 52, 78, 52); }
+      /* 성당 카테고리의 교구 선택/성당 선택은 해당 교구 성당 전체 범위를 기준으로 맞춘다.
+         한 성당의 노란 마커 중심 이동이 bounds를 다시 빼앗지 않도록 이 함수로 기준을 통일한다. */
+      _markParishDioProgrammaticMove(1700);
+      try{ _map.setBounds(bounds, 86, 64, 126, 64); }
       catch(e1){ _map.setBounds(bounds); }
       setTimeout(function(){
         try{
           if(_mode==='parish' && _activeDio===code && typeof _map.getLevel==='function' && typeof _map.setLevel==='function'){
             var lvl=_map.getLevel();
-            if(lvl<8) _map.setLevel(8);
+            // 너무 가까이 확대되어 일부 성당만 보이는 경우만 한 단계 안전하게 물러난다.
+            if(lvl<8){ _markParishDioProgrammaticMove(1200); _map.setLevel(8); }
           }
         }catch(e2){ console.warn('[클로드정리]',e2); }
-      }, 80);
-    }else if(count===1){
-      const only=parishes.find(function(p){return p&&p.lat&&p.lng&&p.lat!==0&&p.lng!==0;});
-      if(only){ _map.setCenter(new _LL(only.lat,only.lng)); _map.setLevel(8); }
-    }else{
-      const cfg=_DIO_CFG[code];
-      if(cfg){ _map.setCenter(new _LL(cfg.lat,cfg.lng)); _map.setLevel(8); }
+      }, opts.delay || 90);
+      return true;
+    }
+    if(count===1 && only){
+      _map.setCenter(new _LL(only.lat,only.lng));
+      if(typeof _map.setLevel==='function'){ _markParishDioProgrammaticMove(1200); _map.setLevel(8); }
+      return true;
+    }
+    const cfg=_DIO_CFG[code];
+    if(cfg){
+      _map.setCenter(new _LL(cfg.lat,cfg.lng));
+      if(typeof _map.setLevel==='function'){ _markParishDioProgrammaticMove(1200); _map.setLevel(8); }
+      return true;
     }
   }catch(e){ console.warn('[클로드정리]',e); }
+  return false;
 }
 
 function _ensureParishMarkerZoom(){
   if(_mode!=='parish'||!_map||typeof _map.getLevel!=='function'||typeof _map.setLevel!=='function') return;
   try{
-    if(_map.getLevel()>=9) _map.setLevel(8);
+    if(_map.getLevel()>6){ _markParishDioProgrammaticMove(1200); _map.setLevel(6); }
   }catch(e){ console.warn('[클로드정리]',e); }
 }
 function _showParishDioMkrs(code){
@@ -1796,7 +1899,7 @@ function _autoLocate(){
    _map.setLevel(8);
   } else if(_mode==='parish'){
    _map.setCenter(new _LL(p.coords.latitude,p.coords.longitude));
-   _map.setLevel(8);
+   _map.setLevel(6);
   } else if(_mode==='retreat'){
    _map.setCenter(new _LL(p.coords.latitude,p.coords.longitude));
    _map.setLevel(9);
@@ -1830,6 +1933,7 @@ function _showCurrentParishDioIfIdle(){
     _ensureParishMarkerZoom();
     _activeDio=code;
     _showParishDioMkrs(code);
+    if(typeof _focusParishPointAround==='function') _focusParishPointAround(_myLat,_myLng,{level:6});
     document.querySelectorAll('.dio-label').forEach(e=>{e.style.transform='';e.style.display='';});
     const clickedEl=_dioOverlays[code]?.getContent?.();
     if(clickedEl){clickedEl.style.display='none';}
