@@ -645,20 +645,30 @@
     }, {passive:false, capture:true});
   }
 
-  /* 웹사이트도 기도문처럼 좌우 스와이프 탭 이동 */
+  /* 웹사이트 좌우 스와이프 탭 이동 — 기도문과 동일 감도 */
   function bindWebSwipe(){
     var el=$('web-list');
     if(!el || el.__oaiFinalWebSwipe) return;
     el.__oaiFinalWebSwipe = true;
-    var sx=0, sy=0, moved=false;
+    var sx=0, sy=0;
+    var THRESHOLD = 32;
+    var HORIZONTAL_RATIO = 1.03;
+    function isHorizontalSwipe(dx, dy){
+      return Math.abs(dx) >= THRESHOLD && Math.abs(dx) >= Math.abs(dy) * HORIZONTAL_RATIO;
+    }
     el.addEventListener('touchstart', function(e){
       if(!e.touches || !e.touches[0]) return;
-      sx=e.touches[0].clientX; sy=e.touches[0].clientY; moved=false;
+      sx=e.touches[0].clientX; sy=e.touches[0].clientY;
     }, {passive:true});
+    el.addEventListener('touchmove', function(e){
+      if(!e.touches || !e.touches[0]) return;
+      var dx=e.touches[0].clientX-sx, dy=e.touches[0].clientY-sy;
+      if(Math.abs(dx)>7 && Math.abs(dx)>Math.abs(dy)*HORIZONTAL_RATIO && e.cancelable) e.preventDefault();
+    }, {passive:false});
     el.addEventListener('touchend', function(e){
       if(!e.changedTouches || !e.changedTouches[0]) return;
       var dx=e.changedTouches[0].clientX-sx, dy=e.changedTouches[0].clientY-sy;
-      if(Math.abs(dx)<55 || Math.abs(dx)<Math.abs(dy)*1.2) return;
+      if(!isHorizontalSwipe(dx, dy)) return;
       var tabs=Array.prototype.slice.call(document.querySelectorAll('#web-cats .web-cat-btn'));
       if(!tabs.length) return;
       var cur=tabs.findIndex(function(b){return b.classList.contains('on');});
