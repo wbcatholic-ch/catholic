@@ -156,7 +156,7 @@
   const WEB_FAV_KEY = 'web_favorites_v1';
   let webFavs = [];
   function wfLoad(){ try{ webFavs=JSON.parse(localStorage.getItem(WEB_FAV_KEY)||'[]'); }catch(e){ webFavs=[]; } }
-  function wfSave(){ try{ localStorage.setItem(WEB_FAV_KEY, JSON.stringify(webFavs)); }catch(e){ console.warn("[클로드정리]", e); } }
+  function wfSave(){ try{ localStorage.setItem(WEB_FAV_KEY, JSON.stringify(webFavs)); }catch(e){ console.warn("[가톨릭길동무]", e); } }
   function wfHas(url){ return webFavs.includes(url); }
   function wfToggle(url){
     if(wfHas(url)) webFavs=webFavs.filter(u=>u!==url);
@@ -177,27 +177,16 @@
     if(typeof trailCloseSheet === 'function') trailCloseSheet();
   }
   function saveReturnState(state){
-    try{ sessionStorage.setItem(RETURN_KEY, JSON.stringify(state)); }catch(e){ console.warn("[클로드정리]", e); }
+    try{ sessionStorage.setItem(RETURN_KEY, JSON.stringify(state)); }catch(e){ console.warn("[가톨릭길동무]", e); }
   }
   function openExternalUrl(url, state){
     url = (typeof normalizeCatholicExternalUrl === 'function') ? normalizeCatholicExternalUrl(url) : String(url||'').trim();
     if(!url) return;
 
-    const payload = Object.assign({}, state||{});
-    if(payload.module==='trail' && trailState.map && window.kakao && window.kakao.maps){
-      try{
-        const center = trailState.map.getCenter();
-        payload.center = {lat:center.getLat(), lng:center.getLng()};
-        payload.level = trailState.map.getLevel();
-      }catch(e){ console.warn("[클로드정리]", e); }
-    }
-    if(payload.module==='web'){
-      payload.cat = payload.cat || webState.curCat || '⭐ 즐겨찾기';
-    }
-    saveReturnState(payload);
-    // location.href 방식: PWA/모바일 팝업 차단 우회, 뒤로가기로 복귀 가능
-    if(typeof oaiSmoothNavigate==='function') oaiSmoothNavigate(url, payload.module || 'external', '외부 사이트로 이동 중입니다');
-    else location.href = url;
+    // V38: 웹사이트와 순례길 모두 외부 복귀는 브라우저의 기본 복원에 맡긴다.
+    // 별도 sessionStorage 복원/지도 재초기화가 복귀 순간 덜컹거림을 만들 수 있어 저장하지 않는다.
+    try{ sessionStorage.removeItem(RETURN_KEY); }catch(e){ console.warn("[가톨릭길동무]", e); }
+    location.href = url;
     return;
   }
 
@@ -271,52 +260,35 @@
 
   function restoreIntegratedState(){
     let raw = null;
-    try{ raw = sessionStorage.getItem(RETURN_KEY); }catch(e){ console.warn("[클로드정리]", e); }
+    try{ raw = sessionStorage.getItem(RETURN_KEY); }catch(e){ console.warn("[가톨릭길동무]", e); }
     if(!raw) return;
     let state = null;
-    try{ state = JSON.parse(raw); }catch(e){ console.warn("[클로드정리]", e); }
-    try{ sessionStorage.removeItem(RETURN_KEY); }catch(e){ console.warn("[클로드정리]", e); }
+    try{ state = JSON.parse(raw); }catch(e){ console.warn("[가톨릭길동무]", e); }
+    try{ sessionStorage.removeItem(RETURN_KEY); }catch(e){ console.warn("[가톨릭길동무]", e); }
     if(!state || !state.module) return;
 
     if(state.module === 'web'){
-      openWebView({restore:true});
-      initWebModule();
-      if(state.cat){ applyWebCatState(state.cat); renderWebList(); keepWebActiveCatVisible(state.cat, 'auto'); }
-      requestAnimationFrame(function(){
-        const list = ig$('web-list');
-        if(list){
-          list.style.scrollBehavior = 'auto';
-          list.scrollTop = Number(state.scroll||0);
-          list.style.scrollBehavior = '';
-        }
-      });
+      // V38: 웹사이트 화면은 브라우저가 돌아온 화면을 그대로 복원하게 둔다.
+      // 여기서 openWebView/renderWebList를 다시 호출하면 복귀 순간 배경 지도와 목록이 겹쳐 보인다.
       return;
     }
 
     if(state.module === 'trail'){
-      trailState.pendingOpenIndex = Number.isInteger(state.openIndex) ? state.openIndex : null;
-      trailState.restoreCenter = state.center || null;
-      trailState.restoreLevel = Number.isFinite(Number(state.level)) ? Number(state.level) : null;
-      trailState.needsHardReset = true;
-      openTrailView({restore:true, forceRebuild:true});
-      trailSetView(state.view === 'list' ? 'list' : 'map');
-      requestAnimationFrame(function(){
-        const list = ig$('trail-list');
-        if(list && state.view === 'list') list.scrollTop = Number(state.scroll||0);
-      });
+      // V38: 순례길도 외부 복귀 시 강제 재오픈/지도 재생성을 하지 않는다.
+      return;
     }
   }
 
   window.addEventListener('pageshow', function(){
+    // V38: 외부사이트 복귀 시 순례길 지도 relayout을 강제로 반복하지 않는다.
+    // 브라우저 bfcache가 복원한 화면을 그대로 두는 것이 가장 덜 흔들린다.
     setTimeout(restoreIntegratedState, 0);
-    setTimeout(function(){ relayoutTrailMap(0); }, 180);
-    setTimeout(function(){ relayoutTrailMap(0); }, 420);
   });
 
   function resetWebTransientState(){
     // 웹사이트 카테고리 버튼을 누를 때 남아 있던 검색/스크롤/복귀 상태를 깨끗하게 초기화
-    try{ sessionStorage.removeItem(RETURN_KEY); }catch(e){ console.warn("[클로드정리]", e); }
-    try{ document.activeElement && document.activeElement.blur && document.activeElement.blur(); }catch(e){ console.warn("[클로드정리]", e); }
+    try{ sessionStorage.removeItem(RETURN_KEY); }catch(e){ console.warn("[가톨릭길동무]", e); }
+    try{ document.activeElement && document.activeElement.blur && document.activeElement.blur(); }catch(e){ console.warn("[가톨릭길동무]", e); }
     const list = ig$('web-list');
     if(list){
       list.style.scrollBehavior = 'auto';
@@ -468,25 +440,12 @@
           if(webState.curCat==='⭐ 즐겨찾기') renderWebList();
           return;
         }
-        // 교구 카드도 openExternalUrl 로 통일.
-        // <a href target="_blank"> 방식은 PWA/Chrome Android에서
-        // 앱 내부 탐색으로 처리되어 사이트가 열리지 않는 경우가 있다.
+        // V38: 교구 카드도 저장/복원 없이 즉시 이동한다.
         if(isDioceseCard){
-          try{
-            saveReturnState({source:'web-diocese', module:'web', cat:webState.curCat, scroll:(ig$('web-list')?.scrollTop||0)});
-          }catch(e){ console.warn("[클로드정리]", e); }
-          openExternalUrl(s.url, {
-            module:'web',
-            cat:webState.curCat,
-            scroll:(ig$('web-list')?.scrollTop||0)
-          });
+          openExternalUrl(s.url, { module:'web' });
           return;
         }
-        openExternalUrl(s.url, {
-          module:'web',
-          cat:webState.curCat,
-          scroll:(ig$('web-list')?.scrollTop||0)
-        });
+        openExternalUrl(s.url, { module:'web' });
       });
       wrap.appendChild(card);
     });
@@ -512,7 +471,7 @@
         const q = window.__trailKakaoQueue || [];
         window.__trailKakaoLoading = false;
         window.__trailKakaoQueue = [];
-        q.forEach(fn => { try{ fn(); }catch(e){ console.warn("[클로드정리]", e); } });
+        q.forEach(fn => { try{ fn(); }catch(e){ console.warn("[가톨릭길동무]", e); } });
       });
     };
     sc.onerror = function(){
@@ -543,15 +502,15 @@
         const center = trailState.map.getCenter ? trailState.map.getCenter() : null;
         trailState.map.relayout();
         if(center) trailState.map.setCenter(center);
-      }catch(e){ console.warn("[클로드정리]", e); }
+      }catch(e){ console.warn("[가톨릭길동무]", e); }
       syncTrailMarkers();
     }, wait);
   }
 
   function hardResetTrailModule(){
-    try{ if(trailState.myOverlay) trailState.myOverlay.setMap(null); }catch(e){ console.warn("[클로드정리]", e); }
+    try{ if(trailState.myOverlay) trailState.myOverlay.setMap(null); }catch(e){ console.warn("[가톨릭길동무]", e); }
     trailState.myOverlay = null;
-    trailState.markers.forEach(function(marker){ try{ marker.setMap(null); }catch(e){ console.warn("[클로드정리]", e); } });
+    trailState.markers.forEach(function(marker){ try{ marker.setMap(null); }catch(e){ console.warn("[가톨릭길동무]", e); } });
     trailState.markers = [];
     trailState.selected = -1;
     trailState.inited = false;
@@ -572,15 +531,15 @@
         try{
           const lv = trailState.map.getLevel();
           if(Number.isFinite(lv) && lv < 12) trailState.map.setLevel(12);
-        }catch(e){ console.warn("[클로드정리]", e); }
+        }catch(e){ console.warn("[가톨릭길동무]", e); }
       }, 60);
-    }catch(e){ console.warn("[클로드정리]", e); }
+    }catch(e){ console.warn("[가톨릭길동무]", e); }
   }
 
   function syncTrailMarkers(){
     if(!(trailState.map && window.kakao && window.kakao.maps)) return;
     if(trailState.markers.length !== TRAIL_ITEMS.length){
-      trailState.markers.forEach(function(marker){ try{ marker.setMap(null); }catch(e){ console.warn("[클로드정리]", e); } });
+      trailState.markers.forEach(function(marker){ try{ marker.setMap(null); }catch(e){ console.warn("[가톨릭길동무]", e); } });
       trailState.markers = [];
       TRAIL_ITEMS.forEach(function(d, i){
         const marker = new kakao.maps.Marker({
@@ -595,9 +554,9 @@
       return;
     }
     trailState.markers.forEach(function(marker, i){
-      try{ marker.setMap(trailState.map); }catch(e){ console.warn("[클로드정리]", e); }
-      try{ marker.setImage(new kakao.maps.MarkerImage(trailMkSvg(TRAIL_COLORS[TRAIL_ITEMS[i].t], false), new kakao.maps.Size(42,52), {offset:new kakao.maps.Point(21,52)})); }catch(e){ console.warn("[클로드정리]", e); }
-      try{ marker.setZIndex(1); }catch(e){ console.warn("[클로드정리]", e); }
+      try{ marker.setMap(trailState.map); }catch(e){ console.warn("[가톨릭길동무]", e); }
+      try{ marker.setImage(new kakao.maps.MarkerImage(trailMkSvg(TRAIL_COLORS[TRAIL_ITEMS[i].t], false), new kakao.maps.Size(42,52), {offset:new kakao.maps.Point(21,52)})); }catch(e){ console.warn("[가톨릭길동무]", e); }
+      try{ marker.setZIndex(1); }catch(e){ console.warn("[가톨릭길동무]", e); }
     });
     trailState.selected = -1;
   }
@@ -624,10 +583,10 @@
       trailState.map = new kakao.maps.Map(container, { center:new kakao.maps.LatLng(36.2,127.9), level:12 });
       trailState.map.addControl(new kakao.maps.ZoomControl(), kakao.maps.ControlPosition.RIGHT);
       if(trailState.restoreCenter && Number.isFinite(Number(trailState.restoreCenter.lat)) && Number.isFinite(Number(trailState.restoreCenter.lng))){
-        try{ trailState.map.setCenter(new kakao.maps.LatLng(Number(trailState.restoreCenter.lat), Number(trailState.restoreCenter.lng))); }catch(e){ console.warn("[클로드정리]", e); }
+        try{ trailState.map.setCenter(new kakao.maps.LatLng(Number(trailState.restoreCenter.lat), Number(trailState.restoreCenter.lng))); }catch(e){ console.warn("[가톨릭길동무]", e); }
       }
       if(Number.isFinite(Number(trailState.restoreLevel))){
-        try{ trailState.map.setLevel(Number(trailState.restoreLevel)); }catch(e){ console.warn("[클로드정리]", e); }
+        try{ trailState.map.setLevel(Number(trailState.restoreLevel)); }catch(e){ console.warn("[가톨릭길동무]", e); }
       }
       trailState.restoreCenter = null;
       trailState.restoreLevel = null;
