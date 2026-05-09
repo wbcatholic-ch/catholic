@@ -200,7 +200,7 @@ html.retreat-mode .filter-bar{background:var(--retreat-bg)}
 .nearby-addr{font-size:12px!important;color:#8a94a6!important;line-height:1.3;margin-top:3px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .nearby-meta{text-align:right;flex-shrink:0;line-height:1.6;min-width:68px}
 .nearby-type{font-size:11px!important;font-weight:700!important;padding:4px 10px!important;border-radius:999px!important;white-space:nowrap;display:block!important}
-.nearby-dist{font-size:14px!important;color:#c0392b!important;font-weight:900!important;margin-top:4px!important;line-height:1.2!important}
+.nearby-dist{font-size:16px!important;color:#c0392b!important;font-weight:900!important;margin-top:4px!important;line-height:1.2!important}
 html.retreat-mode .nearby-dist{color:#6aa186!important}
 .region-wrap{padding:7px 10px 6px!important;background:var(--navy2);flex-shrink:0;border-top:none!important}
 html.parish-mode .region-wrap{background:var(--parish-bg)}
@@ -547,13 +547,11 @@ html.retreat-mode .region-item .nearby-num{background:#4f46e5!important}
 .sheet.from-right.open,.sheet.from-left.open{transform:translate(0,0)!important;transition:transform .28s cubic-bezier(.4,0,.2,1)}
 .sheet.exit-left{transform:translateX(-100%)}
 .sheet.exit-right{transform:translateX(100%)}
-#diocese-view{display:none;position:fixed;inset:0;z-index:10000;background:#fff;flex-direction:column}
+#diocese-view{display:none;position:fixed;inset:0;z-index:10000;background:#F8F6F2;flex-direction:column}
 #diocese-view.open{display:flex}
 #diocese-bar{background:linear-gradient(135deg,#1f2a44,#2f4167);padding:env(safe-area-inset-top,0) 14px 0;display:flex;align-items:center;justify-content:space-between;min-height:calc(52px + env(safe-area-inset-top,0));flex-shrink:0;border-bottom:2px solid var(--gold)}
 #diocese-bar-title{font-size:16px;font-weight:700;color:var(--gold);letter-spacing:.05em}
 #diocese-close{position:fixed;top:calc(env(safe-area-inset-top,0px) + 10px);right:14px;background:rgba(15,21,53,.72);border:1px solid rgba(255,255,255,.28);border-radius:50%;color:rgba(212,170,106,.9);font-size:20px;font-weight:900;width:38px;height:38px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:2100;flex-shrink:0}
-#diocese-loading{position:absolute;inset:0;top:calc(52px + env(safe-area-inset-top,0));display:flex;flex-direction:column;align-items:center;justify-content:flex-start;background:#F8F6F2;z-index:1;pointer-events:none;padding-top:60px}
-#diocese-frame{flex:1;width:100%;border:none;background:#fff}
 #prayer-view{display:none;position:fixed;inset:0;z-index:20000;flex-direction:column;background:#EDE8E0;font-family:'Noto Sans KR',sans-serif}
 #prayer-view.open{display:flex;left:0!important;right:0!important;width:100vw!important;position:fixed;top:0!important;bottom:0!important;transform:none!important}
 #prayer-bar{background:#0e1535;border-bottom:2px solid var(--gold);gap:12px}
@@ -619,13 +617,13 @@ html.retreat-mode .sm-filter{background:var(--retreat-bg)!important}
 .filter-btn,
 .sm-fb,
 .trail-tab,
-.region-search-btn{height:46px!important;min-height:46px!important;padding:0 16px!important;display:flex!important;align-items:center!important;justify-content:center;border-radius:16px!important;font-size:14px!important;line-height:1.2!important;white-space:nowrap}
+.region-search-btn{height:46px!important;min-height:46px!important;padding:0 16px!important;display:flex!important;align-items:center!important;justify-content:center;border-radius:16px!important;font-size:16px!important;line-height:1.2!important;white-space:nowrap}
 /* ===== /OAI ===== */
 #srch-modal #sm-tab-bar .sm-tab:not(.active){background:rgba(255,255,255,.16);color:rgba(255,255,255,.92)!important;border-color:rgba(255,255,255,.38)!important;font-weight:800!important}
 .nearby-name,.li-name{font-size:16px!important;font-weight:700!important}
 .nearby-addr,.li-sub{font-size:12px!important}
 .ic-sub,.ic-type-badge,.ic-addr-lbl{font-size:12px!important}
-.ic-tel-btn,.ic-route-btn,.ic-link-btn,.btn-kakao-nav{font-size:14px!important}
+.ic-tel-btn,.ic-route-btn,.ic-link-btn,.btn-kakao-nav{font-size:16px!important}
 #sm-tab-bar{display:flex;gap:10px;padding:10px 12px;height:55px;align-items:center;background:#f5efe5;border-bottom:1px solid var(--ui-line);box-sizing:border-box}
 html.parish-mode #sm-tab-bar{background:var(--church-soft-2);border-bottom-color:#d4b896!important}
 html.retreat-mode #sm-tab-bar{background:var(--retreat-soft-2)!important;border-bottom-color:#a5b4fc!important}
@@ -794,7 +792,6 @@ html.retreat-mode .sm-fb.on{background:var(--retreat-soft,#e8f3ec)!important;col
 #web-view .web-cat-btn[data-cat-color="교구"].on{background:#2e5a3a!important}
 #web-view .web-cat-btn.on .cnt{background:rgba(255,255,255,.22)!important;color:#fff!important}
 /* Q&A 탭은 앱 기본 남색 계열 유지 */
-}
 /* 2) 주요기도문·순례길·웹사이트·관구교구 버튼/탭 높이 80% 수준 */
 /* --retreat-bg 등 변수 최종값은 하단 #oai-retreat-unified-clean 에서 일괄 정의 */
 html.retreat-mode #tabbar,
@@ -871,7 +868,7 @@ html.retreat-mode .nearby-type,html.retreat-mode .li-badge,html.retreat-mode .ic
 /* Final single clean patch: cover, font scope, marker focus */
 #cover .cover-header,#cover .cv-head{margin:0!important;padding:2px 4px 8px!important;gap:8px!important;flex:0 0 auto!important;text-align:center!important}
 #cover .cover-title,#cover .cv-title{font-size:clamp(32px,8.6vw,42px)!important;line-height:1.12!important;font-weight:900!important;letter-spacing:-.04em;margin:0!important;color:#1f2a44!important}
-#cover .cover-subtitle,#cover .cv-sub{font-size:14px!important;line-height:1.45!important;margin:7px 0 4px!important;color:#667085!important;font-weight:600!important}
+#cover .cover-subtitle,#cover .cv-sub{font-size:16px!important;line-height:1.45!important;margin:7px 0 4px!important;color:#667085!important;font-weight:600!important}
 #cover .cover-icon-wrap,#cover .cv-btn-icon,#cover .cv-btn-badge{width:38px!important;height:38px!important;min-width:38px!important;border-radius:13px!important;font-size:21px!important;margin:0!important;flex:0 0 38px!important;background:transparent!important;background-color:transparent!important;box-shadow:none!important;border:none!important}
 #cover .cover-icon-wrap svg{width:25px!important;height:25px!important;display:none!important}
 #cover .cover-name,#cover .cv-btn-label{font-size:16px;line-height:1.18;font-weight:850;letter-spacing:-.02em;text-align:center}
@@ -881,7 +878,7 @@ html.retreat-mode .nearby-type,html.retreat-mode .li-badge,html.retreat-mode .ic
 /* cover never follows zoom */
 html.oai-font-global #cover,html.oai-font-global #cover *{font-size:inherit}
 html.oai-font-global #cover .cover-title,html.oai-font-global #cover .cv-title{font-size:30px!important}
-html.oai-font-global #cover .cover-subtitle,html.oai-font-global #cover .cv-sub{font-size:14px!important}
+html.oai-font-global #cover .cover-subtitle,html.oai-font-global #cover .cv-sub{font-size:16px!important}
 html.oai-font-global #cover .cover-name,html.oai-font-global #cover .cv-btn-label{font-size:16px!important}
 html.oai-font-global #cover .cover-icon-wrap,html.oai-font-global #cover .cv-btn-icon,html.oai-font-global #cover .cv-btn-badge{font-size:21px!important}
 /* cover font controls */
@@ -909,7 +906,7 @@ html.oai-font-global #cover .cover-title,html.oai-font-global #cover .cv-title{f
 /* category headers fixed against zoom */
 #cover .cover-header{flex:0 0 auto!important;width:100%!important;padding:0 4px 18px!important;margin:0!important;text-align:center!important}
 #cover .cover-title{font-size:clamp(30px,8.2vw,38px)!important;line-height:1.14!important;font-weight:800!important;letter-spacing:-.03em;margin:0!important;color:#3E362E!important}
-#cover .cover-subtitle{font-size:14px!important;line-height:1.45!important;margin:0 0 8px!important;color:#81B29A!important;font-weight:600!important}
+#cover .cover-subtitle{font-size:16px!important;line-height:1.45!important;margin:0 0 8px!important;color:#81B29A!important;font-weight:600!important}
 #cover .cover-grid{flex:1 1 auto;width:100%;max-width:min(420px,calc(100vw - 38px));margin:0 auto;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(4,1fr);row-gap:clamp(3px,1vh,6px);column-gap:clamp(4px,1.2vw,7px);align-content:stretch;box-sizing:border-box;min-height:0}
 #cover .cover-card{width:100%;min-height:0;height:auto;padding:10px 8px;border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:13px;text-align:center;transform:none;pointer-events:auto;cursor:pointer}
 #cover .cover-icon-wrap{width:clamp(50px,14vw,65px);height:clamp(50px,14vw,65px);border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:12px;background:transparent;background-color:transparent;box-shadow:none;border:none}
@@ -1143,7 +1140,7 @@ html.app-active #pwa-install-btn{display:none}
 .web-cat-btn[data-web-cat="⭐ 즐겨찾기"]{order:-1;color:#E8780C!important;border-color:rgba(232,120,12,.35)!important;background:#fff8f0!important}
 .web-cat-btn[data-web-cat="⭐ 즐겨찾기"].on{background:#E8780C!important;color:#fff!important;border-color:#E8780C!important;box-shadow:0 4px 14px rgba(232,120,12,.35)!important}
 /* 굿뉴스기도문 링크 버튼 */
-#goodnews-prayer-btn{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;margin-left:auto;padding:9px 16px;background:linear-gradient(135deg, #FEE500, #FFD700);color:#3A1D1D;font-size:14px;font-weight:800;font-family:inherit;text-decoration:none;border-radius:12px;white-space:nowrap;line-height:1.2;gap:5px;box-shadow:0 3px 10px rgba(180,130,0,.30);-webkit-tap-highlight-color:transparent;border:1px solid rgba(180,130,0,.20)}
+#goodnews-prayer-btn{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;margin-left:auto;margin-right:8px;max-width:112px;padding:8px 10px;background:linear-gradient(135deg, #FEE500, #FFD700);color:#3A1D1D;font-size:13px;font-weight:800;font-family:inherit;text-decoration:none;border-radius:12px;white-space:nowrap;line-height:1.2;gap:4px;box-shadow:0 3px 10px rgba(180,130,0,.30);-webkit-tap-highlight-color:transparent;border:1px solid rgba(180,130,0,.20);overflow:hidden;text-overflow:ellipsis}
 #goodnews-prayer-btn:active{opacity:0.82;transform:scale(0.97)}
 /* 기도문·웹 스와이프 액션 (페이지 push 없이) */
 #prayer-view, #web-view{overflow-x:hidden!important;overscroll-behavior-x:none!important}
@@ -1368,9 +1365,9 @@ html.retreat-mode #sm-tab-bar .sm-tab.active{
 }
 
 /* [3] 문의·건의 플로팅 버튼 크기 */
-#diocese-view{background:#fff;flex-direction:column}
+#diocese-view{background:#F8F6F2;flex-direction:column}
 #diocese-view .module-bar{background:linear-gradient(135deg,#1f2a44,#31446c);flex-shrink:0}
-#diocese-loading{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px}
+#diocese-loading{position:absolute;left:0;right:0;bottom:0;top:calc(var(--oai-std-header-h,70px) + env(safe-area-inset-top,0px));display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:60px 20px 0;background:#F8F6F2;z-index:1;pointer-events:none;box-sizing:border-box}
 #diocese-view iframe{flex:1 1 auto!important;min-height:0!important}
 #qna-cover-btn{min-height:52px!important;padding:0 22px!important;font-size:15px!important;font-weight:900!important;gap:9px!important;border-radius:999px!important}
 
@@ -1514,7 +1511,7 @@ html.retreat-mode #sm-tab-bar .sm-tab.active{
   visibility:visible;
   pointer-events:auto;
 }
-#diocese-frame{flex:1 1 auto!important;min-height:0!important;width:100%!important;border:0!important;}
+#diocese-frame{flex:1 1 auto!important;min-height:0!important;width:100%!important;border:0!important;background:#F8F6F2!important;}
 
 
 /* 화면 이동과 첫 진입 표시를 본문 스타일에 통합 */
@@ -1531,7 +1528,7 @@ html.oai-external-return-stabilize #oai-nav-veil{display:none!important}
 .app-touchable{transition:transform .16s ease,filter .16s ease;will-change:transform}
 .tab.on,.tab.on:active{transform:none}
 .oai-enter-ready{opacity:0;transform:none!important}
-.oai-enter-ready.oai-enter-show{opacity:1;transform:none!important;transition:opacity .34s cubic-bezier(.22,.61,.36,1)}
+.oai-enter-ready.oai-enter-show{opacity:1;transform:none!important;transition:opacity .24s cubic-bezier(.22,.61,.36,1)}
 html.oai-returning .oai-enter-ready,html.oai-external-return-stabilize .oai-enter-ready{opacity:1;transform:none!important;transition:none!important}
 #oai-category-entry-veil{position:fixed;left:0;right:0;top:var(--tab-h,72px);bottom:0;z-index:790;display:none;align-items:center;justify-content:center;pointer-events:none;opacity:0;transition:opacity .22s cubic-bezier(.22,.61,.36,1);transform:translateZ(0);backface-visibility:hidden}
 html.oai-category-entering #oai-category-entry-veil{display:flex;opacity:1}
@@ -2227,17 +2224,20 @@ html.app-active #qna-cover-btn { display: none !important; }
 
 /* 작은 화면 보정 */
 @media (max-height:650px) {
-  #cover { padding-top: calc(10vh + env(safe-area-inset-top,0px)) !important; }
-  #cover .cover-header { padding-bottom: 4px !important; }
-  #cover .cover-header .cover-title { font-size: clamp(18px,5vw,24px) !important; }
-  #cover .cover-header .cover-subtitle { font-size: 10px !important; }
-  #cover .cover-grid,#cover .cv-grid { row-gap: clamp(2px,0.5vh,4px) !important; }
-  #cover .cover-card,#cover .cv-btn { padding: clamp(4px,0.8vh,8px) 6px !important; }
-  #cover .cover-emoji { font-size: 18px !important; }
-  #cover .cover-name,#cover .cv-btn-label { font-size: 12px !important; }
-  #cover #qna-cover-btn { min-height: 34px !important; font-size: 11px !important; }
+  #cover { padding-top: calc(clamp(28px, 5.8vh, 46px) + env(safe-area-inset-top,0px)) !important; }
+  #cover .cover-header { padding-bottom: 6px !important; }
+  #cover .cover-header .cover-title { font-size: clamp(24px,6.8vw,30px) !important; }
+  #cover .cover-header .cover-subtitle { font-size: 11.5px !important; }
+  #cover .cover-grid,#cover .cv-grid { row-gap: clamp(4px,0.8vh,7px) !important; column-gap: clamp(5px,1.5vw,8px) !important; }
+  #cover .cover-card,#cover .cv-btn { padding: clamp(7px,1.1vh,11px) 7px !important; }
+  #cover .cover-emoji { font-size: 24px !important; }
+  #cover .cover-name,#cover .cv-btn-label { font-size: 15px !important; line-height:1.18!important; }
+  #cover #qna-cover-btn { min-height: 38px !important; font-size: 12px !important; }
   #cover-main-block {
-    padding-bottom: calc(7vh + env(safe-area-inset-bottom,0px)) !important;
+    max-width: min(456px, calc(100vw - 18px)) !important;
+    padding-left: 9px !important;
+    padding-right: 9px !important;
+    padding-bottom: calc(5.2vh + env(safe-area-inset-bottom,0px)) !important;
   }
 }
 /* 7. 하단 안내 문구 — 레이아웃 계산에서 제외하고 화면 하단에 고정 */
@@ -2267,4 +2267,85 @@ html.oai-font-global #cover #cover-bottom-note,
   color:rgba(96,86,76,.72);
   pointer-events:none;
   z-index:5;
+}
+
+/* ════════════════════════════════════════════════════════
+   작은 화면 전역 크기 기준 4-3
+   - 작은 폰에서 전체 앱의 글자/아이콘/헤더가 축소되어 보이는 문제 보정
+   - prayer_font_size를 줄여도 앱 전체 기준은 1배 미만으로 내려가지 않게 JS와 함께 사용
+════════════════════════════════════════════════════════ */
+@media (max-width:430px), (max-height:760px) {
+  html.oai-font-global #prayer-bar-ttl,
+  html.oai-font-global #prayer-bar .module-bar-title,
+  html.oai-font-global #web-view .module-bar-title,
+  html.oai-font-global #trail-view .module-bar-title,
+  html.oai-font-global #qna-view .module-bar-title,
+  html.oai-font-global #diocese-view .module-bar-title,
+  html.oai-font-global #diocese-bar-title,
+  html.oai-font-global .sheet-title,
+  html.oai-font-global .module-bar-title {
+    font-size:20px !important;
+    line-height:1.18 !important;
+  }
+  html.oai-font-global #prayer-bar-sub,
+  html.oai-font-global #prayer-bar .module-bar-sub,
+  html.oai-font-global #web-view .module-bar-sub,
+  html.oai-font-global #trail-view .module-bar-sub,
+  html.oai-font-global #qna-view .module-bar-sub,
+  html.oai-font-global #diocese-view .module-bar-sub,
+  html.oai-font-global .module-bar-sub {
+    font-size:11px !important;
+    line-height:1.25 !important;
+  }
+  html.oai-font-global #prayer-tabs .pr-tab,
+  html.oai-font-global #web-view .web-cat-btn,
+  html.oai-font-global #trail-view .trail-tab,
+  html.oai-font-global #qna-view .qna-tab,
+  html.oai-font-global .filter-btn,
+  html.oai-font-global .region-search-btn,
+  html.oai-font-global .sm-fb,
+  html.oai-font-global .sm-tab {
+    font-size:14px !important;
+  }
+  html.oai-font-global .nearby-name,
+  html.oai-font-global #region-body .nearby-name,
+  html.oai-font-global #region-body .li-name,
+  html.oai-font-global .region-item .nearby-name,
+  html.oai-font-global .li-name,
+  html.oai-font-global .sm-name,
+  html.oai-font-global .sm-place-name,
+  html.oai-font-global .web-card-name,
+  html.oai-font-global .trail-nm,
+  html.oai-font-global .trail-sh-name {
+    font-size:16px !important;
+    line-height:1.32 !important;
+  }
+  html.oai-font-global .nearby-addr,
+  html.oai-font-global #region-body .nearby-addr,
+  html.oai-font-global #region-body .li-sub,
+  html.oai-font-global .region-item .nearby-addr,
+  html.oai-font-global .li-sub,
+  html.oai-font-global .sm-sub,
+  html.oai-font-global .sm-place-addr,
+  html.oai-font-global .web-card-desc,
+  html.oai-font-global .trail-reg,
+  html.oai-font-global .trail-url,
+  html.oai-font-global .trail-sh-sub,
+  html.oai-font-global .trail-sh-url {
+    font-size:12.5px !important;
+    line-height:1.38 !important;
+  }
+  #tabbar .tab-btn {
+    font-size:13.5px !important;
+  }
+  #tabbar .tab-icon {
+    font-size:22px !important;
+  }
+  #cover .cover-emoji {
+    font-size:24px !important;
+  }
+  #cover .cover-name,
+  #cover .cv-btn-label {
+    font-size:15px !important;
+  }
 }

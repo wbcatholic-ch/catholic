@@ -19,6 +19,9 @@ const PR_CAT_STYLE = {
   bong3:    { label:'십자가의 길', bg:'#FFF7ED', color:'#C2410C', icon:'✞',  accent:'#C2410C' },
 };
 
+// 기도문 목록에서 좌우 스와이프 직후 즐겨찾기 별 오작동을 막는 공통 차단 시간
+let prSwipeBlockUntil = 0;
+
 // 기도문 데이터 (항목 추가 시 여기에 추가)
 const PR_DATA = { 
 
@@ -281,30 +284,91 @@ window.prRenderList = function(){
     let ignoreListClickUntil = 0;
     if(starBtn){
       let favHandledAt = 0;
-      function blockFavEvent(ev){
-        ignoreListClickUntil = Date.now() + 700;
+      let suppressClickUntil = 0;
+      let favTouch = null;
+      const FAV_MOVE_X_LIMIT = 5;
+      const FAV_MOVE_Y_LIMIT = 7;
+      const FAV_MAX_TAP_MS = 450;
+
+      function markFavTouch(ms){
+        ignoreListClickUntil = Date.now() + (ms || 700);
         li.dataset.favTouch = '1';
         window.setTimeout(function(){
           if(Date.now() > ignoreListClickUntil) delete li.dataset.favTouch;
-        }, 760);
-        if(ev){
-          if(typeof ev.preventDefault === 'function') ev.preventDefault();
-          if(typeof ev.stopPropagation === 'function') ev.stopPropagation();
-          if(typeof ev.stopImmediatePropagation === 'function') ev.stopImmediatePropagation();
-        }
+        }, (ms || 700) + 80);
       }
-      function handleFavEvent(ev){
-        blockFavEvent(ev);
+      function stopFavEvent(ev, preventDefault){
+        if(!ev) return;
+        if(preventDefault && typeof ev.preventDefault === 'function') ev.preventDefault();
+        if(typeof ev.stopPropagation === 'function') ev.stopPropagation();
+        if(typeof ev.stopImmediatePropagation === 'function') ev.stopImmediatePropagation();
+      }
+      function favTouchPoint(ev){
+        const t = ev && ev.changedTouches && ev.changedTouches[0] ? ev.changedTouches[0] :
+                  ev && ev.touches && ev.touches[0] ? ev.touches[0] : ev;
+        return { x: t && typeof t.clientX === 'number' ? t.clientX : 0,
+                 y: t && typeof t.clientY === 'number' ? t.clientY : 0 };
+      }
+      function runFavToggle(ev){
         const now = Date.now();
+        if(now < prSwipeBlockUntil) return;
         if(now - favHandledAt < 350) return;
         favHandledAt = now;
         prToggleFav(prayer.id, ev);
       }
-      ['pointerdown','mousedown','touchstart','pointerup','mouseup'].forEach(function(evtName){
-        starBtn.addEventListener(evtName, blockFavEvent, {capture:true, passive:false});
-      });
-      starBtn.addEventListener('touchend', handleFavEvent, {capture:true, passive:false});
-      starBtn.addEventListener('click', handleFavEvent, {capture:true, passive:false});
+
+      starBtn.addEventListener('touchstart', function(ev){
+        const pt = favTouchPoint(ev);
+        favTouch = {x:pt.x, y:pt.y, t:Date.now(), moved:false};
+        markFavTouch(700);
+        stopFavEvent(ev, false);
+      }, {capture:true, passive:false});
+
+      starBtn.addEventListener('touchmove', function(ev){
+        if(favTouch){
+          const pt = favTouchPoint(ev);
+          if(Math.abs(pt.x - favTouch.x) > FAV_MOVE_X_LIMIT ||
+             Math.abs(pt.y - favTouch.y) > FAV_MOVE_Y_LIMIT){
+            favTouch.moved = true;
+          }
+        }
+        markFavTouch(700);
+        stopFavEvent(ev, false);
+      }, {capture:true, passive:false});
+
+      starBtn.addEventListener('touchcancel', function(ev){
+        favTouch = null;
+        suppressClickUntil = Date.now() + 450;
+        markFavTouch(700);
+        stopFavEvent(ev, false);
+      }, {capture:true, passive:false});
+
+      starBtn.addEventListener('touchend', function(ev){
+        const now = Date.now();
+        const touch = favTouch;
+        favTouch = null;
+        markFavTouch(700);
+        suppressClickUntil = now + 450;
+        stopFavEvent(ev, true);
+        if(!touch) return;
+        const pt = favTouchPoint(ev);
+        const moved = touch.moved ||
+          Math.abs(pt.x - touch.x) > FAV_MOVE_X_LIMIT ||
+          Math.abs(pt.y - touch.y) > FAV_MOVE_Y_LIMIT;
+        const tooLong = now - touch.t > FAV_MAX_TAP_MS;
+        if(moved || tooLong || now < prSwipeBlockUntil) return;
+        runFavToggle(ev);
+      }, {capture:true, passive:false});
+
+      starBtn.addEventListener('click', function(ev){
+        markFavTouch(700);
+        if(Date.now() < suppressClickUntil || Date.now() < prSwipeBlockUntil || Date.now() - favHandledAt < 350){
+          stopFavEvent(ev, true);
+          return;
+        }
+        stopFavEvent(ev, true);
+        runFavToggle(ev);
+      }, {capture:true, passive:false});
     }
     li.addEventListener('click', function(ev){
       if(Date.now() < ignoreListClickUntil || li.dataset.favTouch === '1' ||
@@ -382,14 +446,21 @@ window.prSwitchCat = prSwitchCat;
 window.prOpenDetail = prOpenDetail;
 window.prCloseDetail = window.prCloseDetail;
 
-/* ── 기도문 좌우 스와이프 (순환) ── */
+/* ── 기도문 좌우 스와이프 (순환) — 웹사이트 기준 감도와 동일화 */
 (function(){
   var el = document.getElementById('prayer-list-view');
   if (!el) return;
-  var sx = 0, sy = 0, moved = false, locked = false;
-  var THRESHOLD = 55;
+  var sx = 0, sy = 0;
+  var THRESHOLD = 38;
+  var HORIZONTAL_RATIO = 1.04;
+  var SWIPE_BLOCK_MS = 700;
+  var horizontalLocked = false;
 
   function getIdx(cat) { return PR_CATS.indexOf(cat); }
+  function blockFavAfterSwipe(){ prSwipeBlockUntil = Date.now() + SWIPE_BLOCK_MS; }
+  function isHorizontalSwipe(dx, dy){
+    return Math.abs(dx) >= THRESHOLD && Math.abs(dx) >= Math.abs(dy) * HORIZONTAL_RATIO;
+  }
   function goNext() {
     var idx = getIdx(prCurCat);
     var next = (idx + 1) % PR_CATS.length; // 순환
@@ -404,24 +475,27 @@ window.prCloseDetail = window.prCloseDetail;
   }
 
   el.addEventListener('touchstart', function(e) {
+    if(!e.touches || !e.touches[0]) return;
     sx = e.touches[0].clientX;
     sy = e.touches[0].clientY;
-    moved = false; locked = false;
+    horizontalLocked = false;
   }, { passive: true });
   el.addEventListener('touchmove', function(e) {
-    if (locked) return;
+    if(!e.touches || !e.touches[0]) return;
     var dx = e.touches[0].clientX - sx;
     var dy = e.touches[0].clientY - sy;
-    if (Math.abs(dx) > 8 || Math.abs(dy) > 8) {
-      locked = true;
-      var angle = Math.abs(Math.atan2(dy, dx) * 180 / Math.PI);
-      moved = (angle < 30 || angle > 150); // 수평 스와이프
+    if(Math.abs(dx) > 7 && Math.abs(dx) > Math.abs(dy) * 1.03){
+      horizontalLocked = true;
+      blockFavAfterSwipe();
+      if(e.cancelable) e.preventDefault();
     }
-  }, { passive: true });
+  }, { passive: false });
   el.addEventListener('touchend', function(e) {
-    if (!moved) return;
+    if (!e.changedTouches || !e.changedTouches[0]) return;
     var dx = e.changedTouches[0].clientX - sx;
-    if (Math.abs(dx) < THRESHOLD) return;
+    var dy = e.changedTouches[0].clientY - sy;
+    if(Math.abs(dx) > 10 && Math.abs(dx) > Math.abs(dy) * 1.02) blockFavAfterSwipe();
+    if (!isHorizontalSwipe(dx, dy)) return;
     if (dx < 0) goNext(); else goPrev();
   }, { passive: true });
 })();
