@@ -60,9 +60,9 @@
     if(missa && missa.classList.contains('open')){
       if(typeof window.closeMissa === 'function') window.closeMissa();
       else missa.classList.remove('open');
-      callGTC(); return true;
+      return true;
     }
-    /* 기도문: 본문이면 목록으로, 목록이면 커버로 */
+    /* 기도문: 본문이면 목록으로, 목록이면 팝업 출발 여부에 따라 팝업/커버로 */
     var prayer = $b('prayer-view');
     if(prayer && prayer.classList.contains('open')){
       var prayerDetail = $b('prayer-detail');
@@ -71,9 +71,14 @@
         prayerDetail.classList.remove('show');
         return true;
       }
-      if(typeof window.closePrayerView === 'function') window.closePrayerView();
-      else prayer.classList.remove('open');
-      callGTC(); return true;
+      if(typeof window._closePrayerAndReturn === 'function') window._closePrayerAndReturn();
+      else {
+        if(typeof window.closePrayerView === 'function') window.closePrayerView();
+        else prayer.classList.remove('open');
+        if(typeof window._shouldMassQuickReturn === 'function' && window._shouldMassQuickReturn() && typeof window._returnToMassQuickMenu === 'function') window._returnToMassQuickMenu();
+        else callGTC();
+      }
+      return true;
     }
     /* 교구지도 */
     var diocese = $b('diocese-view');
@@ -249,6 +254,10 @@
     blurActive();
     var d=el('prayer-detail'); if(d) d.classList.remove('show');
     var p=el('prayer-view'); if(p) p.classList.remove('open');
+    if(typeof window._shouldMassQuickReturn === 'function' && window._shouldMassQuickReturn() && typeof window._returnToMassQuickMenu === 'function'){
+      try{ window._returnToMassQuickMenu(); }catch(_){ console.warn("[가톨릭길동무] silent catch"); }
+      return;
+    }
     if(typeof window.goToCover === 'function'){
       try{ window.goToCover(); }catch(_){ console.warn("[가톨릭길동무] silent catch"); }
     }else{
@@ -439,8 +448,8 @@
 (function(){
   if(window.__APP_FONT_SCALE_GUARD__) return;
   window.__APP_FONT_SCALE_GUARD__=true;
-  // V17: 문의·건의는 Google Sheet 임시 연결을 쓰지 않고 qa-firebase.html 한 경로로만 통일한다.
-  var QA_URL="qa-firebase.html?v=V17";
+  // V22: 문의·건의는 Google Sheet 임시 연결을 쓰지 않고 qa-firebase.html 한 경로로만 통일한다.
+  var QA_URL="qa-firebase.html?v=V22";
   var FONT_KEY='prayer_font_size', BASE=16, SIZES=[15,16,17,18,19,20,21,22,24,26,28];
   function el(id){return document.getElementById(id)}
   function getPx(){var px=parseInt(localStorage.getItem(FONT_KEY)||BASE,10);return (px>=15&&px<=28)?px:BASE;}
@@ -493,7 +502,7 @@
 })();
 
 (function(){
-  var QA_URL='qa-firebase.html?v=V17';
+  var QA_URL='qa-firebase.html?v=V22';
   function bindQnaButton(){
     var btn=document.getElementById('qna-cover-btn');
     if(btn){ btn.onclick=function(){ location.href=QA_URL; }; }
@@ -837,14 +846,14 @@
   };
 })();
 (function(){
-  // V17: 아래 블록은 버튼이 사라진 경우만 복원하고, 실제 이동은 openQnaView 한 경로로 위임한다.
+  // V22: 아래 블록은 버튼이 사라진 경우만 복원하고, 실제 이동은 openQnaView 한 경로로 위임한다.
   function $(id){return document.getElementById(id);}
   function restoreQnaButton(){
     var cover=$('cover');
     if(!cover) return;
     var btn=$('qna-cover-btn');
     if(!btn){btn=document.createElement('button');btn.id='qna-cover-btn';btn.type='button';btn.setAttribute('aria-label','문의·건의');btn.textContent='💬 문의·건의';cover.appendChild(btn);}
-    btn.onclick=function(ev){if(ev) ev.preventDefault(); if(typeof window.openQnaView === 'function') window.openQnaView(); else location.href='qa-firebase.html?v=V17';};
+    btn.onclick=function(ev){if(ev) ev.preventDefault(); if(typeof window.openQnaView === 'function') window.openQnaView(); else location.href='qa-firebase.html?v=V22';};
   }
   function removeMissaPopupState(){var mv=$('missa-view');if(mv) mv.classList.remove('open');}
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', function(){restoreQnaButton();removeMissaPopupState();});
@@ -853,8 +862,8 @@
 })();
 (function(){
   'use strict';
-  if(window.__APP_PULL_REFRESH_CLEAN_V17__) return;
-  window.__APP_PULL_REFRESH_CLEAN_V17__ = true;
+  if(window.__APP_PULL_REFRESH_CLEAN_V20_8__) return;
+  window.__APP_PULL_REFRESH_CLEAN_V20_8__ = true;
 
   function $(id){ return document.getElementById(id); }
   function isTypingTarget(el){
@@ -903,6 +912,7 @@
   window.__oaiSoftCoverRefresh = function(){
     var cover=$('cover'), ind=$('cv-pull-modern');
     try{ sessionStorage.removeItem('oai_force_cover_after_reload'); }catch(e){ console.warn('[가톨릭길동무]', e); }
+    try{ if(typeof window._clearMassQuickReturnForReload === 'function') window._clearMassQuickReturnForReload(); }catch(e){ console.warn('[가톨릭길동무]', e); }
     try{
       document.documentElement.classList.remove('app-active','parish-mode','retreat-mode','oai-returning');
       closeTransientViews();
@@ -921,8 +931,8 @@
 
   function installPullRefresh(){
     var cover=$('cover'), ind=$('cv-pull-modern');
-    if(!cover || !ind || cover.__oaiPullRefreshCleanV17) return;
-    cover.__oaiPullRefreshCleanV17 = true;
+    if(!cover || !ind || cover.__oaiPullRefreshCleanV20_8) return;
+    cover.__oaiPullRefreshCleanV20_8 = true;
 
     var sx=0, sy=0, active=false, ready=false, refreshing=false;
     var THRESHOLD=74;
@@ -1050,6 +1060,7 @@
   /* 스크롤/당겨서 새로고침 중 눌림 방지 적용 대상: 목록형 요소만 */
   var delayedSelectors = [
     '#cover .cover-card','#cover .cv-hotspot','#cover .cv-btn',
+    '#mass-quick-modal .mass-quick-btn',
     '#prayer-list-view .pr-item','#prayer-list-view .prayer-item','#prayer-list-view .prayer-card','#prayer-list-view .prayer-list-item','#prayer-list-view .pr-list-item',
     '#trail-list .trail-card',
     '#region-body .list-item','#region-body .nearby-item','#region-body .region-item',

@@ -1,4 +1,4 @@
-/* style.css — 가톨릭 앱 전체 스타일
+/* style.css — 가톨릭길동무 전체 스타일
    공통 변수·레이아웃·성지·성당·피정·기도문·웹·순례길
    커버·탭바·인포카드·지도·모달 등 */
 
@@ -40,9 +40,9 @@
   --oai-ivory-border:#d6c6a8;
   --oai-std-scale:var(--app-font-scale,1);
   --oai-std-header-h:72px;
-  --app-fs-title:calc(16px * var(--app-font-scale,1));
-  --app-fs-sub:calc(12px * var(--app-font-scale,1));
-  --app-fs-body:calc(16px * var(--app-font-scale,1));
+  --app-fs-title:calc(16px * var(--app-inner-font-scale,1));
+  --app-fs-sub:calc(12px * var(--app-inner-font-scale,1));
+  --app-fs-body:calc(16px * var(--app-inner-font-scale,1));
   /* 성지/성당/피정 모드 소프트 팔레트 */
   --shrine-soft-2:#f5f7fc;
   --church-soft-2:#f4f7fb;
@@ -79,6 +79,8 @@
   --fs-tab:             15px;
   --cover-emoji-size:   34px;
   --app-font-scale:     1;
+  --ios-inner-font-scale:1;
+  --app-inner-font-scale:calc(var(--app-font-scale,1) * var(--ios-inner-font-scale,1));
   --pr-item-fs:         15px;
   --pr-body-fs:         16px;
   --pr-detail-fs:       17px;
@@ -135,7 +137,8 @@
 }
 
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{width:100%;height:100%;background:var(--navy)!important;font-family:'Noto Sans KR',sans-serif;overscroll-behavior:none;overscroll-behavior-x:none!important;overflow-x:hidden!important}
+html,body{width:100%;height:100%;background:var(--navy)!important;font-family:'Noto Sans KR',sans-serif;overscroll-behavior:none;overscroll-behavior-x:none!important;overflow-x:hidden!important;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+html.ios-device{--ios-inner-font-scale:.94;}
 ::-webkit-scrollbar{width:4px}
 ::-webkit-scrollbar-thumb{background:rgba(26,36,86,.15);border-radius:2px}
 #cover{position:fixed;inset:0;z-index:9999;background:#f4efe4;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0);overflow:hidden;overflow-y:hidden;background-color:var(--bg-color);color:var(--text-main);font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;transition:none;padding-top:calc(5vh + env(safe-area-inset-top,0px));padding-bottom:0}
@@ -552,12 +555,12 @@ html.retreat-mode .region-item .nearby-num{background:#4f46e5!important}
 .sheet.exit-left{transform:translateX(-100%)}
 .sheet.exit-right{transform:translateX(100%)}
 #diocese-view{display:none;position:fixed;inset:0;z-index:10000;background:#F8F6F2;flex-direction:column}
-#diocese-view.open{display:flex}
+#diocese-view.open{display:flex;inset:0;bottom:0;height:auto;min-height:0}
 #diocese-bar{background:linear-gradient(135deg,#1f2a44,#2f4167);padding:env(safe-area-inset-top,0) 14px 0;display:flex;align-items:center;justify-content:space-between;min-height:calc(52px + env(safe-area-inset-top,0));flex-shrink:0;border-bottom:2px solid var(--gold)}
 #diocese-bar-title{font-size:16px;font-weight:700;color:var(--gold);letter-spacing:.05em}
 #diocese-close{position:fixed;top:calc(env(safe-area-inset-top,0px) + 10px);right:14px;background:rgba(15,21,53,.72);border:1px solid rgba(255,255,255,.28);border-radius:50%;color:rgba(212,170,106,.9);font-size:20px;font-weight:900;width:38px;height:38px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:2100;flex-shrink:0}
 #prayer-view{display:none;position:fixed;inset:0;z-index:20000;flex-direction:column;background:#EDE8E0;font-family:'Noto Sans KR',sans-serif}
-#prayer-view.open{display:flex;left:0!important;right:0!important;width:100vw!important;position:fixed;top:0!important;bottom:0!important;transform:none!important}
+#prayer-view.open{display:flex;left:0!important;right:0!important;width:100vw!important;position:fixed;top:0!important;bottom:0!important;height:auto!important;min-height:0!important;transform:none!important}
 #prayer-bar{background:#0e1535;border-bottom:2px solid var(--gold);gap:12px}
 #prayer-bar-brand{display:flex;align-items:center;gap:10px}
 #prayer-bar-ico{width:44px;height:44px;border-radius:14px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
@@ -651,49 +654,49 @@ html.retreat-mode .li-badge,html.retreat-mode .nearby-type,html.retreat-mode .ic
 /* 지역검색 리스트 제목 글자 = 내주변 리스트 제목 글자, 전역 글자크기와 연동 */
 html.oai-font-global #region-body .nearby-name,
 html.oai-font-global #region-body .li-name,
-html.oai-font-global #region-body .region-item .nearby-name{font-size:calc(16px * var(--app-font-scale))!important;font-weight:700!important;line-height:1.3!important}
+html.oai-font-global #region-body .region-item .nearby-name{font-size:calc(16px * var(--app-inner-font-scale,1))!important;font-weight:700!important;line-height:1.3!important}
 html.oai-font-global #region-body .nearby-addr,
 html.oai-font-global #region-body .li-sub,
-html.oai-font-global #region-body .region-item .nearby-addr{font-size:calc(12px * var(--app-font-scale))!important}
+html.oai-font-global #region-body .region-item .nearby-addr{font-size:calc(12px * var(--app-inner-font-scale,1))!important}
 /* 관구교구 iframe 내부에 주입될 수 없을 때를 대비한 부모 쪽 기본값 */
 #diocese-view{}
-#web-view.module-view.open,#trail-view.module-view.open,#qna-view.module-view.open{position:fixed;inset:0;width:100vw!important;height:100svh!important;max-width:none!important;max-height:none!important;display:flex!important;align-items:stretch!important;justify-content:flex-start;overflow:hidden!important;z-index:1800;flex-direction:column}
+#web-view.module-view.open,#trail-view.module-view.open,#qna-view.module-view.open{position:fixed;inset:0;width:100vw!important;height:auto!important;min-height:0!important;max-width:none!important;max-height:none!important;display:flex!important;align-items:stretch!important;justify-content:flex-start;overflow:hidden!important;z-index:1800;flex-direction:column}
 #web-view .module-bar,#trail-view .module-bar,#qna-view .module-bar,#web-view .web-body,#trail-view .trail-body,#qna-view .qna-body{width:100%;max-width:none!important}
 #web-view .web-body,#trail-view .trail-body,#qna-view .qna-body{flex:1 1 auto!important;min-height:0!important;height:auto!important;overflow:hidden!important}
 #web-view .web-list,#trail-view #trail-list,#qna-view .qna-list{flex:1 1 auto!important;min-height:0!important;overflow-y:auto!important}
 #trail-view .trail-panel{flex:1 1 auto!important;min-height:0!important}
 html.oai-font-global .cv-btn-label{font-size:calc(17px * var(--app-font-scale,1))!important;line-height:1.25!important;font-weight:850!important}
 html.oai-font-global .cv-btn-meta{font-size:calc(12px * var(--app-font-scale,1))!important;line-height:1.25!important}
-html.oai-font-global .cv-title{font-size:calc(32px * var(--app-font-scale,1))!important}
-html.oai-font-global .cv-sub{font-size:calc(15px * var(--app-font-scale,1))!important}
-html.oai-font-global .nearby-name,html.oai-font-global #region-body .nearby-name,html.oai-font-global #region-body .li-name,html.oai-font-global .region-item .nearby-name,html.oai-font-global .li-name,html.oai-font-global .sm-name,html.oai-font-global .sm-place-name{font-size:calc(16px * var(--app-font-scale))!important;line-height:1.3!important}
-html.oai-font-global .nearby-addr,html.oai-font-global #region-body .nearby-addr,html.oai-font-global #region-body .li-sub,html.oai-font-global .region-item .nearby-addr,html.oai-font-global .li-sub,html.oai-font-global .sm-sub,html.oai-font-global .sm-place-addr{font-size:calc(12px * var(--app-font-scale))!important;line-height:1.35!important}
-html.oai-font-global .nearby-type,html.oai-font-global .li-badge,html.oai-font-global .ic-type-badge{font-size:calc(11px * var(--app-font-scale,1))!important}
-html.oai-font-global .nearby-dist{font-size:calc(13px * var(--app-font-scale,1))!important}
-html.oai-font-global .sheet-title,html.oai-font-global .module-bar-title{font-size:calc(18px * var(--app-font-scale))!important}
-html.oai-font-global .module-bar-sub{font-size:calc(12px * var(--app-font-scale))!important}
-html.oai-font-global .filter-btn,html.oai-font-global .region-search-btn,html.oai-font-global .sm-fb,html.oai-font-global .sm-tab,html.oai-font-global .web-cat-btn,html.oai-font-global .trail-tab{font-size:calc(14px * var(--app-font-scale))!important}
-html.oai-font-global .ic-name{font-size:calc(17px * var(--app-font-scale,1))!important}
-html.oai-font-global .ic-addr-val,html.oai-font-global .ic-link-btn,html.oai-font-global .ic-route-btn,html.oai-font-global .ic-tel-btn,html.oai-font-global .btn-kakao-nav,html.oai-font-global .btn-kakao-route,html.oai-font-global .btn-route-reset{font-size:calc(14px * var(--app-font-scale,1))!important}
-html.oai-font-global .web-card-name{font-size:calc(17px * var(--app-font-scale,1))!important}
-html.oai-font-global .web-card-desc{font-size:calc(15px * var(--app-font-scale,1))!important}
-html.oai-font-global .trail-nm,html.oai-font-global .trail-sh-name{font-size:calc(16px * var(--app-font-scale,1))!important}
-html.oai-font-global .trail-reg,html.oai-font-global .trail-url,html.oai-font-global .trail-sh-sub,html.oai-font-global .trail-sh-url{font-size:calc(12px * var(--app-font-scale,1))!important}
-.lv-parish-count,.oai-parish-count{font-size:calc(8px * var(--app-font-scale,1))!important;font-weight:400!important;letter-spacing:0;white-space:nowrap;gap:0!important}
+html.oai-font-global .cv-title{font-size:calc(32px * var(--app-inner-font-scale,1))!important}
+html.oai-font-global .cv-sub{font-size:calc(15px * var(--app-inner-font-scale,1))!important}
+html.oai-font-global .nearby-name,html.oai-font-global #region-body .nearby-name,html.oai-font-global #region-body .li-name,html.oai-font-global .region-item .nearby-name,html.oai-font-global .li-name,html.oai-font-global .sm-name,html.oai-font-global .sm-place-name{font-size:calc(16px * var(--app-inner-font-scale,1))!important;line-height:1.3!important}
+html.oai-font-global .nearby-addr,html.oai-font-global #region-body .nearby-addr,html.oai-font-global #region-body .li-sub,html.oai-font-global .region-item .nearby-addr,html.oai-font-global .li-sub,html.oai-font-global .sm-sub,html.oai-font-global .sm-place-addr{font-size:calc(12px * var(--app-inner-font-scale,1))!important;line-height:1.35!important}
+html.oai-font-global .nearby-type,html.oai-font-global .li-badge,html.oai-font-global .ic-type-badge{font-size:calc(11px * var(--app-inner-font-scale,1))!important}
+html.oai-font-global .nearby-dist{font-size:calc(13px * var(--app-inner-font-scale,1))!important}
+html.oai-font-global .sheet-title,html.oai-font-global .module-bar-title{font-size:calc(18px * var(--app-inner-font-scale,1))!important}
+html.oai-font-global .module-bar-sub{font-size:calc(12px * var(--app-inner-font-scale,1))!important}
+html.oai-font-global .filter-btn,html.oai-font-global .region-search-btn,html.oai-font-global .sm-fb,html.oai-font-global .sm-tab,html.oai-font-global .web-cat-btn,html.oai-font-global .trail-tab{font-size:calc(14px * var(--app-inner-font-scale,1))!important}
+html.oai-font-global .ic-name{font-size:calc(17px * var(--app-inner-font-scale,1))!important}
+html.oai-font-global .ic-addr-val,html.oai-font-global .ic-link-btn,html.oai-font-global .ic-route-btn,html.oai-font-global .ic-tel-btn,html.oai-font-global .btn-kakao-nav,html.oai-font-global .btn-kakao-route,html.oai-font-global .btn-route-reset{font-size:calc(14px * var(--app-inner-font-scale,1))!important}
+html.oai-font-global .web-card-name{font-size:calc(17px * var(--app-inner-font-scale,1))!important}
+html.oai-font-global .web-card-desc{font-size:calc(15px * var(--app-inner-font-scale,1))!important}
+html.oai-font-global .trail-nm,html.oai-font-global .trail-sh-name{font-size:calc(16px * var(--app-inner-font-scale,1))!important}
+html.oai-font-global .trail-reg,html.oai-font-global .trail-url,html.oai-font-global .trail-sh-sub,html.oai-font-global .trail-sh-url{font-size:calc(12px * var(--app-inner-font-scale,1))!important}
+.lv-parish-count,.oai-parish-count{font-size:calc(8px * var(--app-inner-font-scale,1))!important;font-weight:400!important;letter-spacing:0;white-space:nowrap;gap:0!important}
 .lv-parish-count b,.oai-parish-count b{font-weight:400!important;margin:0!important}
 #qna-cover-btn{position:fixed;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:40;border:none;border-radius:999px;background:linear-gradient(135deg,#1f2a44,#31446c);color:#fff;padding:9px 13px;font-family:inherit;font-size:12.5px;font-weight:800;box-shadow:0 10px 24px rgba(31,42,68,.22);display:flex;align-items:center;gap:7px}
 html.app-active #qna-cover-btn{display:none!important}
 .qna-body{background:#F8FAFC;display:flex;flex-direction:column}
 .qna-tabs{display:flex;gap:8px;padding:12px 14px;background:#fff;border-bottom:1px solid #E5E7EB}
-.qna-tab{flex:1;height:42px;border-radius:12px;border:1.5px solid #DDE3EE;background:#fff;color:#475569;font-family:inherit;font-size:calc(15px * var(--app-font-scale));font-weight:800}
+.qna-tab{flex:1;height:42px;border-radius:12px;border:1.5px solid #DDE3EE;background:#fff;color:#475569;font-family:inherit;font-size:calc(15px * var(--app-inner-font-scale,1));font-weight:800}
 .qna-tab.on{background:#1f2a44;color:#fff;border-color:#1f2a44}
 .qna-list{padding:14px}
 .qna-card{background:#fff;border:1px solid #E5E7EB;border-radius:18px;padding:16px;margin-bottom:12px;box-shadow:0 10px 24px rgba(15,23,42,.06)}
-.qna-kicker{font-size:calc(12px * var(--app-font-scale));font-weight:800;color:#64748B;margin-bottom:7px}
-.qna-title{font-size:calc(17px * var(--app-font-scale));font-weight:900;color:#1F2937;line-height:1.35;margin-bottom:8px}
-.qna-text{font-size:calc(14px * var(--app-font-scale));color:#4B5563;line-height:1.65;word-break:keep-all}
+.qna-kicker{font-size:calc(12px * var(--app-inner-font-scale,1));font-weight:800;color:#64748B;margin-bottom:7px}
+.qna-title{font-size:calc(17px * var(--app-inner-font-scale,1));font-weight:900;color:#1F2937;line-height:1.35;margin-bottom:8px}
+.qna-text{font-size:calc(14px * var(--app-inner-font-scale,1));color:#4B5563;line-height:1.65;word-break:keep-all}
 .qna-actions{display:flex;gap:8px;margin-top:14px}
-.qna-actions button{flex:1;height:44px;border-radius:12px;border:1.5px solid #DDE3EE;background:#fff;color:#1F2937;font-family:inherit;font-size:calc(14px * var(--app-font-scale));font-weight:800}
+.qna-actions button{flex:1;height:44px;border-radius:12px;border:1.5px solid #DDE3EE;background:#fff;color:#1F2937;font-family:inherit;font-size:calc(14px * var(--app-inner-font-scale,1));font-weight:800}
 .qna-actions button.primary{background:#1f2a44;color:#fff;border-color:#1f2a44}
 /* =========================================================
    OAI 표준화: 주요기도문·웹사이트·순례길·관구교구 공통 규격
@@ -704,7 +707,7 @@ html.app-active #qna-cover-btn{display:none!important}
 #prayer-view.open,
 #web-view.module-view.open,
 #trail-view.module-view.open,
-#diocese-view.open{position:fixed;inset:0;width:100vw!important;height:100svh!important;max-width:none!important;max-height:none!important;overflow:hidden!important}
+#diocese-view.open{position:fixed;inset:0;width:100vw!important;height:auto!important;min-height:0!important;max-width:none!important;max-height:none!important;overflow:hidden!important}
 #web-view.module-view.open,
 #trail-view.module-view.open{display:flex!important;flex-direction:column;align-items:stretch!important}
 /* 2) 헤더 통일 → 하단 패치에서 처리 */
@@ -727,25 +730,25 @@ html.app-active #qna-cover-btn{display:none!important}
 #web-view .web-body,
 #trail-view .trail-body{width:100%;max-width:none!important}
 html.oai-font-global body,html.oai-font-global button,html.oai-font-global input,html.oai-font-global textarea,html.oai-font-global select{font-family:'Noto Sans KR',sans-serif!important}
-html.oai-font-global .nearby-name,html.oai-font-global .region-item .nearby-name,html.oai-font-global #region-body .nearby-name,html.oai-font-global .li-name,html.oai-font-global #region-body .li-name,html.oai-font-global .sm-name,html.oai-font-global .sm-place-name{font-size:calc(16px * var(--app-font-scale,1))!important;line-height:1.32!important;font-weight:700!important}
-html.oai-font-global .nearby-addr,html.oai-font-global .region-item .nearby-addr,html.oai-font-global #region-body .nearby-addr,html.oai-font-global .li-sub,html.oai-font-global #region-body .li-sub,html.oai-font-global .sm-sub,html.oai-font-global .sm-place-addr{font-size:calc(12px * var(--app-font-scale,1))!important;line-height:1.35!important}
-html.oai-font-global .web-card-badge,html.oai-font-global .web-card-url{font-size:calc(13px * var(--app-font-scale,1))!important}
-#web-view.module-view.open,#trail-view.module-view.open,#qna-view.module-view.open,#diocese-view.open,#prayer-view.open{position:fixed;inset:0;width:100vw!important;height:100svh!important;max-width:none!important;max-height:none!important;overflow:hidden!important;display:flex!important;flex-direction:column}
+html.oai-font-global .nearby-name,html.oai-font-global .region-item .nearby-name,html.oai-font-global #region-body .nearby-name,html.oai-font-global .li-name,html.oai-font-global #region-body .li-name,html.oai-font-global .sm-name,html.oai-font-global .sm-place-name{font-size:calc(16px * var(--app-inner-font-scale,1))!important;line-height:1.32!important;font-weight:700!important}
+html.oai-font-global .nearby-addr,html.oai-font-global .region-item .nearby-addr,html.oai-font-global #region-body .nearby-addr,html.oai-font-global .li-sub,html.oai-font-global #region-body .li-sub,html.oai-font-global .sm-sub,html.oai-font-global .sm-place-addr{font-size:calc(12px * var(--app-inner-font-scale,1))!important;line-height:1.35!important}
+html.oai-font-global .web-card-badge,html.oai-font-global .web-card-url{font-size:calc(13px * var(--app-inner-font-scale,1))!important}
+#web-view.module-view.open,#trail-view.module-view.open,#qna-view.module-view.open,#diocese-view.open,#prayer-view.open{position:fixed;inset:0;width:100vw!important;height:auto!important;min-height:0!important;max-width:none!important;max-height:none!important;overflow:hidden!important;display:flex!important;flex-direction:column}
 #region-body .nearby-item,
-#region-body .region-place-cand{min-height:72px;font-size:calc(17px * var(--app-font-scale,1))!important}
+#region-body .region-place-cand{min-height:72px;font-size:calc(17px * var(--app-inner-font-scale,1))!important}
 #region-body .region-item .nearby-name,
 #region-body .nearby-item .nearby-name,
 #region-body .region-place-cand > div:nth-child(2) > div:first-child,
-#region-body .li-name{font-size:calc(17px * var(--app-font-scale,1))!important;line-height:1.34!important;font-weight:700!important;color:#1F2937!important}
+#region-body .li-name{font-size:calc(17px * var(--app-inner-font-scale,1))!important;line-height:1.34!important;font-weight:700!important;color:#1F2937!important}
 #region-body .region-item .nearby-addr,
 #region-body .nearby-item .nearby-addr,
 #region-body .region-place-cand > div:nth-child(2) > div:nth-child(2),
-#region-body .li-sub{font-size:calc(13px * var(--app-font-scale,1))!important;line-height:1.38!important}
-#region-body .nearby-num{font-size:calc(13px * var(--app-font-scale,1))!important}
+#region-body .li-sub{font-size:calc(13px * var(--app-inner-font-scale,1))!important;line-height:1.38!important}
+#region-body .nearby-num{font-size:calc(13px * var(--app-inner-font-scale,1))!important}
 #region-body .nearby-type,
-#region-body .nearby-dist{font-size:calc(12px * var(--app-font-scale,1))!important}
+#region-body .nearby-dist{font-size:calc(12px * var(--app-inner-font-scale,1))!important}
 #region-body .region-list-hd,
-#region-body .dio-hd{font-size:calc(17px * var(--app-font-scale,1))!important;line-height:1.35!important;font-weight:900!important}
+#region-body .dio-hd{font-size:calc(17px * var(--app-inner-font-scale,1))!important;line-height:1.35!important;font-weight:900!important}
 #cover .cv-btn-label,
 #cover .cover-label{font-size:calc(18px * var(--app-font-scale,1))!important;line-height:1.24!important;font-weight:850!important}
 #cover .cv-btn-meta,
@@ -897,12 +900,12 @@ html.oai-font-global .pr-title,html.oai-font-global .web-card-name,html.oai-font
 html.oai-font-global .pr-content-card,html.oai-font-global .web-card-desc,html.oai-font-global .ic-addr-val{font-size:var(--app-fs-body)!important;line-height:1.6!important}
 html.oai-font-global .pr-content-card{line-height:2.05!important}
 html.oai-font-global .li-sub,html.oai-font-global .nearby-addr,html.oai-font-global .region-item .nearby-addr,html.oai-font-global #region-body .li-sub,html.oai-font-global #region-body .nearby-addr,html.oai-font-global .sm-sub,html.oai-font-global .sm-place-addr,html.oai-font-global .web-card-op,html.oai-font-global .web-card-url,html.oai-font-global .trail-reg,html.oai-font-global .trail-url,html.oai-font-global .trail-sh-sub,html.oai-font-global .trail-sh-url,html.oai-font-global .ic-sub,html.oai-font-global .ic-addr-lbl,html.oai-font-global .ic-dist-lbl{font-size:var(--app-fs-sub)!important;line-height:1.35!important}
-html.oai-font-global .tab-btn,html.oai-font-global .web-cat-btn,html.oai-font-global .trail-tab{font-size:calc(15px * var(--app-font-scale,1))!important}
-html.oai-font-global .tab-icon{font-size:calc(20px * var(--app-font-scale,1))!important}
-html.oai-font-global .tab-btn.active .tab-icon{font-size:calc(22px * var(--app-font-scale,1))!important}
-html.oai-font-global .nearby-type,html.oai-font-global .li-badge,html.oai-font-global .ic-type-badge,html.oai-font-global .web-card-badge{font-size:calc(11px * var(--app-font-scale,1))!important}
-html.oai-font-global .ic-link-btn,html.oai-font-global .ic-route-btn,html.oai-font-global .ic-tel-btn,html.oai-font-global .btn-kakao-nav,html.oai-font-global .btn-kakao-route,html.oai-font-global .btn-route-reset{font-size:calc(14px * var(--app-font-scale,1))!important}
-html.oai-font-global .pr-icon-dot{width:calc(36px * var(--app-font-scale,1))!important;height:calc(36px * var(--app-font-scale,1))!important;flex-basis:calc(36px * var(--app-font-scale,1))!important;font-size:calc(17px * var(--app-font-scale,1))!important}
+html.oai-font-global .tab-btn,html.oai-font-global .web-cat-btn,html.oai-font-global .trail-tab{font-size:calc(15px * var(--app-inner-font-scale,1))!important}
+html.oai-font-global .tab-icon{font-size:calc(20px * var(--app-inner-font-scale,1))!important}
+html.oai-font-global .tab-btn.active .tab-icon{font-size:calc(22px * var(--app-inner-font-scale,1))!important}
+html.oai-font-global .nearby-type,html.oai-font-global .li-badge,html.oai-font-global .ic-type-badge,html.oai-font-global .web-card-badge{font-size:calc(11px * var(--app-inner-font-scale,1))!important}
+html.oai-font-global .ic-link-btn,html.oai-font-global .ic-route-btn,html.oai-font-global .ic-tel-btn,html.oai-font-global .btn-kakao-nav,html.oai-font-global .btn-kakao-route,html.oai-font-global .btn-route-reset{font-size:calc(14px * var(--app-inner-font-scale,1))!important}
+html.oai-font-global .pr-icon-dot{width:calc(36px * var(--app-inner-font-scale,1))!important;height:calc(36px * var(--app-inner-font-scale,1))!important;flex-basis:calc(36px * var(--app-inner-font-scale,1))!important;font-size:calc(17px * var(--app-inner-font-scale,1))!important}
 /* prayer tabs quicker */
 #prayer-tabs .pr-tab,#prayer-list-view,#prayer-view .pr-list,#prayer-detail{transition:none!important;animation:none}
 /* retreat direction button unified blue */
@@ -910,7 +913,7 @@ html.retreat-mode .ic-route-btn{background:#1565c0;color:#fff!important;border-c
 /* cover fixed, not linked to font zoom */
 html.oai-font-global #cover .cover-title,html.oai-font-global #cover .cv-title{font-size:clamp(32px,8.6vw,42px)}
 /* category headers fixed against zoom */
-#cover .cover-header{flex:0 0 auto!important;width:100%!important;padding:0 4px 18px!important;margin:0!important;text-align:center!important}
+#cover .cover-header{flex:0 0 auto!important;width:100%!important;padding:0 4px 20px!important;margin:0!important;text-align:center!important}
 #cover .cover-title{font-size:clamp(30px,8.2vw,38px)!important;line-height:1.14!important;font-weight:800!important;letter-spacing:-.03em;margin:0!important;color:#3E362E!important}
 #cover .cover-subtitle{font-size:16px!important;line-height:1.45!important;margin:0 0 8px!important;color:#81B29A!important;font-weight:600!important}
 #cover .cover-grid{flex:1 1 auto;width:100%;max-width:min(420px,calc(100vw - 38px));margin:0 auto;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(4,1fr);row-gap:clamp(3px,1vh,6px);column-gap:clamp(4px,1.2vw,7px);align-content:stretch;box-sizing:border-box;min-height:0}
@@ -923,7 +926,7 @@ html.oai-font-global #cover .cover-subtitle{font-size:14px}
 html.oai-font-global #cover .cover-icon-wrap,html.oai-font-global #cover .cover-emoji{font-size:26px!important}
 #cover-font-controls .pr-font-divider{width:1px;height:20px!important;background:#ddd5c8!important;flex:0 0 1px!important;margin:0 2px!important}
 html.oai-font-global #prayer-bar-ttl,html.oai-font-global .module-bar-title{font-size:20px!important;line-height:1.24!important}
-html.oai-font-global .lv-rg,html.oai-font-global .lv-det,html.oai-font-global .lv-op,html.oai-font-global .c-gw,html.oai-font-global .c-rg,html.oai-font-global .c-lbl,html.oai-font-global .dd,html.oai-font-global .sg{font-size:calc(12px * var(--app-font-scale,1))!important;line-height:1.45!important}
+html.oai-font-global .lv-rg,html.oai-font-global .lv-det,html.oai-font-global .lv-op,html.oai-font-global .c-gw,html.oai-font-global .c-rg,html.oai-font-global .c-lbl,html.oai-font-global .dd,html.oai-font-global .sg{font-size:calc(12px * var(--app-inner-font-scale,1))!important;line-height:1.45!important}
 @media (max-height:720px){#cover{position:fixed;inset:0;z-index:9999;background:#f4efe4;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0);overflow:hidden;overflow-y:hidden;background-color:var(--bg-color);color:var(--text-main);font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;transition:none;padding-top:calc(5vh + env(safe-area-inset-top,0px));padding-bottom:0}#cover .cover-icon-wrap{background:transparent!important;background-color:transparent!important;box-shadow:none!important;border:none!important}#cover .cover-emoji{font-size:22px;}}
 /* 기존 커버 1개만 보정: 카테고리 onclick은 건드리지 않음 */
 html:not(.app-active) #cover{position:fixed;inset:0;z-index:9999;background:#f4efe4;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0);overflow:hidden;overflow-y:hidden;background-color:var(--bg-color);color:var(--text-main);font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;transition:none;padding-top:calc(5vh + env(safe-area-inset-top,0px));padding-bottom:0}
@@ -1049,6 +1052,87 @@ html.retreat-mode #srch-modal .sm-filter{background:linear-gradient(135deg,#3f7e
 .missa-external-desc{font-size:14px;font-weight:500;color:#6B7280;line-height:1.7;margin-bottom:20px;word-break:keep-all}
 .missa-open-link{display:flex;align-items:center;justify-content:center;width:100%;height:48px;border-radius:12px;background:#0e1535;color:#d4aa6a;text-decoration:none;font-size:16px;font-weight:800}
 
+
+/* 미사·기도·성가 빠른 메뉴: 커버 위에만 뜨는 내부 선택창 */
+.mass-quick-panel{
+  width:min(640px,calc(100vw - 14px));
+  padding:44px 26px 32px;
+  border-radius:32px;
+  text-align:center;
+  background:#fffaf1;
+  border:1px solid #e5ded3;
+  box-shadow:0 26px 76px rgba(31,42,68,.28);
+  max-height:min(90dvh,800px);
+}
+.mass-quick-panel h2{display:none!important}
+.mass-quick-lead{display:none!important}
+.mass-quick-actions{display:flex;flex-direction:column;gap:16px;width:100%;margin-top:6px}
+.mass-quick-btn,
+.mass-quick-btn.mass-quick-primary{
+  width:100%;
+  min-height:110px;
+  border:1.5px solid #d6b06c!important;
+  border-radius:24px;
+  background:#fff8e8!important;
+  color:#1f2937!important;
+  display:grid;
+  grid-template-columns:68px 1fr;
+  grid-template-rows:1fr;
+  align-items:center;
+  text-align:left;
+  padding:20px 22px;
+  box-shadow:0 9px 22px rgba(31,42,68,.10);
+  font-family:inherit;
+  cursor:pointer;
+}
+.mass-quick-btn.app-pressing,
+.mass-quick-btn.mass-quick-primary.app-pressing{
+  transform:translateY(8px) scale(.974);
+  filter:brightness(.94)!important;
+  box-shadow:0 2px 3px rgba(31,42,68,.04)!important;
+  transition:transform .16s ease,filter .16s ease,box-shadow .16s ease;
+}
+.mass-quick-btn span{
+  width:56px;
+  height:56px;
+  border-radius:18px;
+  background:#f5efe4;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:calc(34px * var(--app-font-scale,1))!important;
+  line-height:1;
+}
+.mass-quick-btn strong{
+  font-size:calc(16px * var(--app-font-scale,1))!important;
+  line-height:1.22!important;
+  font-weight:850!important;
+  letter-spacing:-.02em;
+  color:#1a1a1a!important;
+}
+.mass-quick-btn em{display:none!important}
+.mass-quick-panel .guide-badge{
+  min-height:44px;
+  padding:9px 20px;
+  margin-bottom:20px;
+  border-radius:17px;
+  font-size:calc(18px * var(--app-font-scale,1))!important;
+  line-height:1.25;
+  font-weight:900;
+  letter-spacing:-.04em;
+  background:#efe4d2;
+  color:#6f4f23;
+}
+@media (max-height:680px){
+  .mass-quick-panel{padding:34px 20px 24px;width:min(600px,calc(100vw - 14px))}
+  .mass-quick-actions{gap:12px}
+  .mass-quick-btn,.mass-quick-btn.mass-quick-primary{min-height:92px;padding:16px 18px;grid-template-columns:62px 1fr}
+  .mass-quick-btn span{width:50px;height:50px;font-size:calc(30px * var(--app-font-scale,1))!important}
+  .mass-quick-btn strong{font-size:calc(16px * var(--app-font-scale,1))!important}
+  .mass-quick-panel .guide-badge{font-size:calc(18px * var(--app-font-scale,1))!important;min-height:40px;margin-bottom:16px}
+}
+
+
 /* 카테고리 내부 리스트 글자 규격 통일 */
 .list-item,.nearby-item,.region-item,.sm-item,.sm-place-item{align-items:center;box-sizing:border-box}
 .li-name,.nearby-name,.region-item .li-name,.sm-name,.sm-place-name{font-size:16px;font-weight:800!important;line-height:1.35!important;letter-spacing:-.03em;white-space:normal;overflow:visible!important;text-overflow:clip;word-break:keep-all}
@@ -1078,6 +1162,7 @@ html.retreat-mode #srch-modal .sm-filter{background:linear-gradient(135deg,#3f7e
 .cover-title{font-size:clamp(28px,8vw,36px);font-weight:800;letter-spacing:-0.5px;color:var(--text-main);margin:0}
 .cover-subtitle{font-size:clamp(12px,3vw,14px);font-weight:500;color:var(--color-3);margin-bottom:8px;letter-spacing:1px}
 .cover-grid{flex:1 1 auto;display:grid;grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(4,1fr);gap:8px;padding:0 20px 4vh;box-sizing:border-box;width:100%;max-width:600px;margin:0 auto}
+.cover-card-wide{grid-column:1/-1}
 .cover-card{background:var(--card-bg);border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-decoration:none;color:var(--text-main);cursor:pointer;transition:transform 0.1s,box-shadow 0.2s;border:1px solid rgba(0,0,0,0.05);box-shadow:0 4px 6px rgba(0,0,0,0.02);outline:none;padding:0;margin:0}
 .cover-card.app-pressing{transform:translateY(8px) scale(.974);box-shadow:0 2px 3px rgba(0,0,0,0.02);filter:brightness(.94);transition:transform .16s ease,filter .16s ease}
 .cover-icon-wrap{width:clamp(50px,14vw,65px);height:clamp(50px,14vw,65px);border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:12px;background:transparent!important;background-color:transparent!important;box-shadow:none!important;border:none!important}
@@ -1219,13 +1304,13 @@ html,body{overflow-x:hidden!important;overscroll-behavior-x:none!important}
 #trail-list.oai-swipe-left,#trail-list.oai-swipe-right,
 .sheet-body.oai-swipe-left,.sheet-body.oai-swipe-right{animation:none}
 #prayer-view,#web-view,#trail-view,.sheet{overflow-x:hidden}
-#cover #qna-cover-btn{position:relative;right:auto;bottom:auto;z-index:10;display:flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border:0;border-radius:999px;background:linear-gradient(135deg,#1f2a44,#31446c);color:#fff;font-family:inherit;font-size:12.5px;font-weight:900;line-height:1;box-shadow:0 10px 24px rgba(31,42,68,.25);opacity:1;visibility:visible;pointer-events:auto;align-self:flex-end;margin-top:8px;margin-bottom:calc(5vh + env(safe-area-inset-bottom,0px))}
+#cover #qna-cover-btn{position:relative;right:auto;bottom:auto;z-index:10;display:flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border:0;border-radius:999px;background:linear-gradient(135deg,#1f2a44,#31446c);color:#fff;font-family:inherit;font-size:12.5px;font-weight:900;line-height:1;box-shadow:0 10px 24px rgba(31,42,68,.25);opacity:1;visibility:visible;pointer-events:auto;align-self:flex-end;margin-top:8px;margin-bottom:0}
 html.app-active
 #cover #pwa-install-btn{left:12px;right:auto;bottom:calc(50px + env(safe-area-inset-bottom,0px));z-index:10020}
 @media (max-width:380px){#cover .cover-grid{max-width:calc(100vw - 34px);}
-#cover #qna-cover-btn{position:relative;right:auto;bottom:auto;z-index:10;display:flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border:0;border-radius:999px;background:linear-gradient(135deg,#1f2a44,#31446c);color:#fff;font-family:inherit;font-size:12.5px;font-weight:900;line-height:1;box-shadow:0 10px 24px rgba(31,42,68,.25);opacity:1;visibility:visible;pointer-events:auto;align-self:flex-end;margin-top:8px;margin-bottom:calc(5vh + env(safe-area-inset-bottom,0px))}#cover #pwa-install-btn{left:12px;right:auto;bottom:calc(50px + env(safe-area-inset-bottom,0px));z-index:10020}}
+#cover #qna-cover-btn{position:relative;right:auto;bottom:auto;z-index:10;display:flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border:0;border-radius:999px;background:linear-gradient(135deg,#1f2a44,#31446c);color:#fff;font-family:inherit;font-size:12.5px;font-weight:900;line-height:1;box-shadow:0 10px 24px rgba(31,42,68,.25);opacity:1;visibility:visible;pointer-events:auto;align-self:flex-end;margin-top:8px;margin-bottom:0}#cover #pwa-install-btn{left:12px;right:auto;bottom:calc(50px + env(safe-area-inset-bottom,0px));z-index:10020}}
 @media (max-height:720px){
-#cover #qna-cover-btn{position:relative;right:auto;bottom:auto;z-index:10;display:flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border:0;border-radius:999px;background:linear-gradient(135deg,#1f2a44,#31446c);color:#fff;font-family:inherit;font-size:12.5px;font-weight:900;line-height:1;box-shadow:0 10px 24px rgba(31,42,68,.25);opacity:1;visibility:visible;pointer-events:auto;align-self:flex-end;margin-top:8px;margin-bottom:calc(5vh + env(safe-area-inset-bottom,0px))}#cover #pwa-install-btn{left:12px;right:auto;bottom:calc(50px + env(safe-area-inset-bottom,0px));z-index:10020}}
+#cover #qna-cover-btn{position:relative;right:auto;bottom:auto;z-index:10;display:flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border:0;border-radius:999px;background:linear-gradient(135deg,#1f2a44,#31446c);color:#fff;font-family:inherit;font-size:12.5px;font-weight:900;line-height:1;box-shadow:0 10px 24px rgba(31,42,68,.25);opacity:1;visibility:visible;pointer-events:auto;align-self:flex-end;margin-top:8px;margin-bottom:0}#cover #pwa-install-btn{left:12px;right:auto;bottom:calc(50px + env(safe-area-inset-bottom,0px));z-index:10020}}
 .li-info,.nearby-info,.sm-info,.sm-place-info,.region-item .li-info,.list-item .li-info{min-width:0!important;overflow:visible!important}
 .li-name,.li-sub,.nearby-name,.nearby-addr,.sm-name,.sm-sub,.sm-place-name,.sm-place-addr,.region-item .li-name,.region-item .li-sub,.list-item .li-name,.list-item .li-sub{white-space:normal;overflow:visible!important;text-overflow:clip;display:block!important;-webkit-line-clamp:unset!important;-webkit-box-orient:unset!important;word-break:keep-all;overflow-wrap:anywhere!important;line-height:1.38!important;max-height:none!important}
 .nearby-item,.list-item,.region-item,.sm-item,.sm-place-item{align-items:flex-start!important}
@@ -1475,7 +1560,7 @@ html.retreat-mode #sm-tab-bar .sm-tab.active{
 #web-view.module-view.open,
 #trail-view.module-view.open,
 #qna-view.module-view.open,
-#diocese-view.open{left:0!important;right:0!important;top:0!important;bottom:0!important;width:100vw!important;max-width:none!important;min-width:0!important;height:100svh!important;display:flex!important;flex-direction:column;align-items:stretch!important;overflow:hidden!important;box-sizing:border-box;}
+#diocese-view.open{left:0!important;right:0!important;top:0!important;bottom:0!important;width:100vw!important;max-width:none!important;min-width:0!important;height:auto!important;min-height:0!important;display:flex!important;flex-direction:column;align-items:stretch!important;overflow:hidden!important;box-sizing:border-box;}
 
 
 /* 순례길 활성 탭 색상 남색 통일 */
@@ -1611,7 +1696,22 @@ html.retreat-mode #sm-tab-bar .sm-tab.active{
   box-shadow:none!important;
 }
 
-/* V17: 외부 복귀/화면 진입 CSS 정리
+
+/* V22: 비지도 전체화면에서는 뒤쪽 메인 카카오 지도 레이어를 숨긴다.
+   성지·성당·피정의집 지도 화면은 이 클래스가 꺼진 상태로 유지한다. */
+html.oai-hide-main-map-layer #map-wrap,
+html.oai-hide-main-map-layer #loc-btn,
+html.oai-hide-main-map-layer #legend,
+html.oai-hide-main-map-layer #route-guide,
+html.oai-hide-main-map-layer .sheet,
+html.oai-hide-main-map-layer #info-card,
+html.oai-hide-main-map-layer #srch-modal{
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+html.oai-hide-main-map-layer #app{background:#EDE8E0;}
+
+/* V22: 외부 복귀/화면 진입 CSS 정리
    외부 이동 보호막을 제거한 현재 구조에서는 복귀 전용 강제 고정 CSS를 두지 않는다.
    화면 진입 중 필요한 최소 전환만 유지하고, app/viewport 전체를 흔드는 전역 보정은 금지한다. */
 html:not(.app-active),html:not(.app-active) body{scroll-behavior:auto!important;}
@@ -1620,10 +1720,10 @@ html:not(.app-active),html:not(.app-active) body{scroll-behavior:auto!important;
 #qna-view.module-view.open,
 #diocese-view.open,
 #prayer-view.open{
-  height:100svh!important;
-  min-height:100svh!important;
+  height:auto!important;
+  min-height:0!important;
   top:0!important;
-  bottom:auto!important;
+  bottom:0!important;
   transform:none!important;
 }
 html.oai-returning,
@@ -1696,7 +1796,7 @@ html.retreat-mode #region-body .nearby-dist span{
   margin-left:4px!important;
 }
 
-/* 커버 전용 당겨서 새로고침 — V17 단일 기준 */
+/* 커버 전용 당겨서 새로고침 — V22 단일 기준 */
 #cover{
   overscroll-behavior-y:contain!important;
 }
@@ -2025,7 +2125,7 @@ html.app-active #cv-pull-modern{
 #qna-view  .qna-tab.on        { background: var(--navy, #0e1535) !important; }
 
 /* ── 6. 헤더 배경색 (모듈별) ─────────────────────────────────────── */
-/* V17: 기도문 헤더를 기준으로 주요 모듈 헤더 단색 통일 */
+/* V22: 기도문 헤더를 기준으로 주요 모듈 헤더 단색 통일 */
 #prayer-bar,
 #trail-view .module-bar,
 #web-view .module-bar,
@@ -2047,7 +2147,7 @@ html.oai-font-global #trail-view .module-bar-title,
 html.oai-font-global #qna-view   .module-bar-title,
 html.oai-font-global #diocese-view .module-bar-title,
 html.oai-font-global #diocese-bar-title {
-  font-size: calc(var(--oai-std-title-fs) * var(--app-font-scale, 1)) !important;
+  font-size: calc(var(--oai-std-title-fs) * var(--app-inner-font-scale,1)) !important;
 }
 html.oai-font-global #prayer-bar-sub,
 html.oai-font-global #prayer-bar .module-bar-sub,
@@ -2055,22 +2155,23 @@ html.oai-font-global #web-view   .module-bar-sub,
 html.oai-font-global #trail-view .module-bar-sub,
 html.oai-font-global #qna-view   .module-bar-sub,
 html.oai-font-global #diocese-view .module-bar-sub {
-  font-size: calc(var(--oai-std-sub-fs) * var(--app-font-scale, 1)) !important;
+  font-size: calc(var(--oai-std-sub-fs) * var(--app-inner-font-scale,1)) !important;
 }
 html.oai-font-global #prayer-tabs .pr-tab,
 html.oai-font-global #web-view  .web-cat-btn,
 html.oai-font-global #trail-view .trail-tab,
 html.oai-font-global #qna-view  .qna-tab {
-  font-size: calc(var(--oai-std-btn-fs) * var(--app-font-scale, 1)) !important;
+  font-size: calc(var(--oai-std-btn-fs) * var(--app-inner-font-scale,1)) !important;
 }
 
 /* ── 끝 ─────────────────────────────────────────────────────────── */
 
+
 /* ══════════════════════════════════════════════════════════════════
-   커버 레이아웃 재설계 v3
+   V22 커버 레이아웃 안정 복원
    구조: #cover > cover-header / #cover-main-block / #cover-bottom-note
-   #cover-main-block: cover-grid + qna-cover-btn 한 몸체
-   스크롤 없음, 100dvh 고정
+   #cover-main-block: cover-grid + cover-action-row 한 몸체
+   V19 완료 기준 커버 구조로 복원
    ══════════════════════════════════════════════════════════════════ */
 
 /* 1. #cover — flex column, 스크롤 없음 */
@@ -2082,11 +2183,11 @@ html:not(.app-active) #cover {
   justify-content: flex-start ;
   overflow       : hidden !important;
   overflow-y     : hidden !important;
-  height         : 100dvh !important;
-  min-height     : 100dvh !important;
-  max-height     : 100dvh !important;
-  padding-top    : calc(9vh + env(safe-area-inset-top,0px)) !important;
-  padding-bottom : 0 !important;
+  height         : calc(var(--cover-vh, 1dvh) * 100) !important;
+  min-height     : calc(var(--cover-vh, 1dvh) * 100) !important;
+  max-height     : calc(var(--cover-vh, 1dvh) * 100) !important;
+  padding-top    : calc((var(--cover-vh, 1vh) * 8) + env(safe-area-inset-top,0px)) !important;
+  padding-bottom : calc((var(--cover-vh, 1vh) * 3) + env(safe-area-inset-bottom,0px)) !important;
   padding-left   : 0 !important;
   padding-right  : 0 !important;
   box-sizing     : border-box ;
@@ -2100,7 +2201,7 @@ html.app-active #cover {
 #cover .cover-header {
   flex-shrink : 0 ;
   width       : 100% !important;
-  padding     : 0 18px 8px !important;
+  padding     : 0 18px 20px !important;
   margin      : 0 !important;
   text-align  : center !important;
   box-sizing  : border-box ;
@@ -2108,12 +2209,14 @@ html.app-active #cover {
 
 /* 3. 메인 블록 (그리드 + 문의버튼 한 몸체) */
 #cover-main-block {
-  flex        : 1 1 0 !important;
+  flex        : 0 1 auto !important;
+  height      : calc((var(--cover-vh, 1dvh) * 100) - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px) - 222px) !important;
+  max-height  : 620px !important;
   min-height  : 0 !important;
   width       : 100% !important;
   max-width   : min(440px, calc(100vw - 32px)) !important;
   margin      : 0 auto !important;
-  padding     : 0 16px 10px !important;
+  padding     : 0 16px 8px !important;
   display     : flex !important;
   flex-direction: column ;
   align-items : stretch !important;
@@ -2131,7 +2234,7 @@ html.app-active #cover {
   display              : grid !important;
   grid-template-columns: repeat(2, minmax(0,1fr)) !important;
   grid-template-rows   : repeat(4, 1fr) !important;
-  row-gap              : clamp(3px, 0.9vh, 7px) !important;
+  row-gap              : clamp(3px, calc(var(--cover-vh, 1vh) * 0.7), 6px) !important;
   column-gap           : clamp(4px, 1.2vw, 8px) !important;
   align-content        : stretch ;
   box-sizing           : border-box ;
@@ -2144,7 +2247,7 @@ html.app-active #cover {
   height         : 100% !important;
   min-height     : 0 !important;
   max-height     : none !important;
-  padding        : clamp(6px,1.4vh,14px) 8px !important;
+  padding        : clamp(6px, calc(var(--cover-vh, 1vh) * 1.4), 14px) 8px !important;
   flex           : unset !important;
   display        : flex !important;
   flex-direction : column ;
@@ -2153,10 +2256,10 @@ html.app-active #cover {
   box-sizing     : border-box ;
 }
 
-/* 6. 커버 보조 기능줄 — 왼쪽 업데이트, 오른쪽 문의·건의 */
+/* 6. 커버 보조 기능줄 — 카테고리 그리드 바로 아래에서 함께 움직임 */
 #cover #cover-action-row {
   width          : 100% !important;
-  margin         : 8px 0 0 !important;
+  margin         : 7px 0 0 !important;
   display        : flex !important;
   align-items    : flex-end !important;
   justify-content: space-between !important;
@@ -2234,18 +2337,190 @@ html.app-active #cover {
   opacity        : 1 ;
 }
 
-/* 7. 하단 안내 문구 — 레이아웃 계산에서 제외하고 화면 하단에 고정 */
+
+/* V22: iPhone 카카오톡 인앱 브라우저 Safari 설치 안내
+   - 커버 레이아웃을 밀지 않고, 커버 위 레이어로 표시한다.
+   - 카테고리를 일부 가려도 Safari 설치 안내가 먼저 보이도록 한다. */
+#cover .ios-safari-banner{
+  display:none;
+}
+html.ios-kakao-inapp #cover .ios-safari-banner{
+  position:fixed!important;
+  left:max(18px,calc(env(safe-area-inset-left,0px) + 18px))!important;
+  right:max(18px,calc(env(safe-area-inset-right,0px) + 18px))!important;
+  top:50%!important;
+  transform:translateY(-38%)!important;
+  z-index:520!important;
+  display:flex;
+  flex-direction:column;
+  align-items:stretch;
+  justify-content:center;
+  gap:12px;
+  width:auto;
+  max-width:520px;
+  margin:0 auto;
+  padding:24px 18px 20px;
+  border:2.5px solid rgba(212,170,106,.72);
+  border-radius:28px;
+  background:rgba(255,248,232,.98);
+  color:#1f2a44;
+  box-shadow:0 22px 54px rgba(31,42,68,.24);
+  box-sizing:border-box;
+  pointer-events:auto;
+}
+#cover .ios-safari-banner[hidden]{display:none!important;}
+#cover .ios-safari-banner-x{
+  position:absolute;
+  top:10px;
+  right:10px;
+  width:34px;
+  height:34px;
+  border:0;
+  border-radius:50%;
+  background:rgba(31,42,68,.10);
+  color:#1f2a44;
+  font-family:inherit;
+  font-size:24px;
+  font-weight:900;
+  line-height:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow:0 4px 12px rgba(31,42,68,.10);
+}
+#cover .ios-safari-banner-text{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:8px;
+  text-align:center;
+  line-height:1.28;
+  padding:8px 28px 0;
+}
+#cover .ios-safari-banner-text strong{
+  font-size:calc(24px * var(--app-font-scale,1));
+  font-weight:900;
+  letter-spacing:-.04em;
+  word-break:keep-all;
+}
+#cover .ios-safari-banner-text span{
+  font-size:calc(16px * var(--app-font-scale,1));
+  font-weight:850;
+  color:rgba(31,42,68,.72);
+  word-break:keep-all;
+}
+#cover #ios-kakao-safari-help{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:100%;
+  min-height:62px;
+  padding:0 18px;
+  border:0;
+  border-radius:20px;
+  background:#1f2a44;
+  color:#fff;
+  font-family:inherit;
+  font-size:calc(21px * var(--app-font-scale,1));
+  font-weight:900;
+  line-height:1.18;
+  white-space:normal;
+  box-shadow:0 12px 24px rgba(31,42,68,.26);
+}
+#cover #ios-kakao-safari-help:active,
+#cover .ios-safari-banner-x:active{transform:scale(.985);}
+.ios-safari-guide-panel{
+  display:flex;
+  flex-direction:column;
+  width:min(94vw,520px);
+  max-height:min(88dvh,820px);
+}
+.ios-safari-guide-panel .guide-lead{
+  min-height:0;
+  margin-bottom:10px;
+}
+.ios-safari-steps{
+  width:100%;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  margin-top:8px;
+  overflow:auto;
+  -webkit-overflow-scrolling:touch;
+  padding:2px 2px 4px;
+}
+.ios-safari-step{
+  display:grid!important;
+  grid-template-columns:28px 1fr;
+  grid-template-rows:auto auto;
+  align-items:start!important;
+  gap:8px 10px!important;
+  padding:12px 12px!important;
+  border-radius:16px!important;
+  background:#fffaf2!important;
+  border:1px solid rgba(212,170,106,.32)!important;
+}
+.ios-safari-step b{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:28px;
+  height:28px;
+  border-radius:50%;
+  background:#1f2a44;
+  color:#fff;
+  font-size:14px;
+  line-height:1;
+}
+.ios-safari-step span{
+  min-width:0;
+  font-size:calc(14px * var(--app-font-scale,1));
+  font-weight:800;
+  line-height:1.45;
+  color:#3E362E;
+  word-break:keep-all;
+}
+.ios-safari-step img{
+  grid-column:1 / 3;
+  justify-self:center;
+  display:block;
+  max-width:100%;
+  max-height:180px;
+  object-fit:contain;
+  border-radius:14px;
+  background:#fff;
+  box-shadow:0 6px 18px rgba(31,42,68,.10);
+}
+.ios-safari-step:nth-child(1) img{max-height:150px;}
+.ios-safari-step:nth-child(2) img{max-height:210px;}
+.ios-safari-step:nth-child(3) img{max-height:225px;}
+.ios-safari-step:nth-child(4) img{max-height:245px;}
+@media (max-height:700px){
+  html.ios-kakao-inapp #cover .ios-safari-banner{
+    top:49%!important;
+    transform:translateY(-36%)!important;
+    padding:20px 16px 16px;
+    gap:10px;
+    border-radius:24px;
+  }
+  #cover .ios-safari-banner-text strong{font-size:calc(22px * var(--app-font-scale,1));}
+  #cover .ios-safari-banner-text span{font-size:calc(14px * var(--app-font-scale,1));}
+  #cover #ios-kakao-safari-help{min-height:56px;font-size:calc(19px * var(--app-font-scale,1));}
+  .ios-safari-step img{max-height:120px;}
+}
+
 /* app-active 시 qna-cover-btn 숨김 */
 html.app-active #qna-cover-btn, html.app-active #cover-action-row { display: none !important; }
 
 /* 작은 화면 보정 */
 @media (max-height:650px) {
-  #cover { padding-top: calc(9vh + env(safe-area-inset-top,0px)) !important; }
-  #cover .cover-header { padding-bottom: 4px !important; }
+  #cover { padding-top: calc((var(--cover-vh, 1vh) * 8) + env(safe-area-inset-top,0px)) !important; padding-bottom: calc((var(--cover-vh, 1vh) * 3) + env(safe-area-inset-bottom,0px)) !important; }
+  #cover .cover-header { padding-bottom: 12px !important; }
   #cover .cover-header .cover-title { font-size: clamp(18px,5vw,24px) !important; }
   #cover .cover-header .cover-subtitle { font-size: 10px !important; }
-  #cover .cover-grid,#cover .cv-grid { row-gap: clamp(2px,0.5vh,4px) !important; }
-  #cover .cover-card,#cover .cv-btn { padding: clamp(4px,0.8vh,8px) 6px !important; }
+  #cover .cover-grid,#cover .cv-grid { row-gap: clamp(2px, calc(var(--cover-vh, 1vh) * 0.5), 4px) !important; }
+  #cover .cover-card,#cover .cv-btn { padding: clamp(4px, calc(var(--cover-vh, 1vh) * 0.8), 8px) 6px !important; }
   #cover .cover-emoji { font-size: 18px !important; }
   #cover .cover-name,#cover .cv-btn-label { font-size: 12px !important; }
   #cover #qna-cover-btn { min-height: 34px !important; font-size: calc(10.5px * var(--app-font-scale,1)) !important; }
@@ -2266,12 +2541,15 @@ html.app-active #qna-cover-btn, html.app-active #cover-action-row { display: non
 html.oai-font-global #cover #cover-bottom-note,
 #cover #cover-bottom-note,
 #cover-bottom-note{
-  position:relative;
-  flex:0 0 auto;
+  position:fixed !important;
+  left:0 !important;
+  right:0 !important;
+  bottom:0 !important;
+  flex:none !important;
   width:100%;
   max-width:720px;
   margin:0 auto;
-  padding:4px 22px calc(12px + env(safe-area-inset-bottom, 0px)) 60px;
+  padding:4px 22px calc(10px + env(safe-area-inset-bottom, 0px)) 60px;
   text-align:center;
   font-size:9px !important;
   font-weight:500 !important;
@@ -2279,7 +2557,7 @@ html.oai-font-global #cover #cover-bottom-note,
   letter-spacing:-0.02em;
   color:rgba(96,86,76,.72);
   pointer-events:none;
-  z-index:5;
+  z-index:130 !important;
   box-sizing:border-box;
 }
 #cover #oai-build-marker{
@@ -2293,7 +2571,7 @@ html.oai-font-global #cover #cover-bottom-note,
 }
 
 
-/* V17: 출발 검색 모달 색상 기준 재정리
+/* V22: 출발 검색 모달 색상 기준 재정리
    - 성지/성당/피정 + 일반장소 탭: 활성은 금색, 비활성은 고유색 배경 위의 은은한 반투명 버튼
    - 검색창을 감싸는 영역은 성지/성당/피정 각 카테고리 고유색으로 통일
    - 실제 검색 입력창(.sm-si)은 기존 아이보리 계열 유지 */
@@ -2364,7 +2642,7 @@ html.retreat-mode #srch-modal #sm-tab-bar .sm-tab:not(.active){
 html #srch-modal #sm-tab-bar .sm-tab.active,
 html.parish-mode #srch-modal #sm-tab-bar .sm-tab.active,
 html.retreat-mode #srch-modal #sm-tab-bar .sm-tab.active{
-  /* V17: 바로 위 교구 활성화 버튼(.sm-fb.on)과 같은 금색 기준 사용 */
+  /* V22: 바로 위 교구 활성화 버튼(.sm-fb.on)과 같은 금색 기준 사용 */
   background:var(--gold,#d4aa6a)!important;
   background-image:none!important;
   color:#1F2937!important;
@@ -2376,7 +2654,7 @@ html.retreat-mode #srch-modal #sm-tab-bar .sm-tab.active{
 
 
 /* ══════════════════════════════════════════════════════════════════
-   V17 모듈 표준화
+   V22 모듈 표준화
    - 헤더: 기도문 헤더 기준 단색 네이비(그라데이션 제거)
    - 탭바/탭버튼: 관구·교구 탭 기준 높이·형태 통일
    - 활성 탭의 고유 색상은 각 모듈 기존 색상을 유지
@@ -2425,7 +2703,7 @@ html.retreat-mode #srch-modal #sm-tab-bar .sm-tab.active{
   background:#F5F0E8!important;
   color:#1F2A44!important;
   box-shadow:none!important;
-  font-size:calc(15px * var(--app-font-scale,1))!important;
+  font-size:calc(15px * var(--app-inner-font-scale,1))!important;
   font-weight:700!important;
   font-family:inherit!important;
   line-height:1!important;
@@ -2456,11 +2734,11 @@ html.retreat-mode #srch-modal #sm-tab-bar .sm-tab.active{
 html.oai-font-global #prayer-tabs .pr-tab,
 html.oai-font-global #web-view .web-cat-btn,
 html.oai-font-global #trail-view .trail-tab{
-  font-size:calc(15px * var(--app-font-scale,1))!important;
+  font-size:calc(15px * var(--app-inner-font-scale,1))!important;
 }
 
 /* ══════════════════════════════════════════════════════════════════
-   V17 주요 기능 안내 — 커버 전용, 별도 파일 없음
+   V22 주요 기능 안내 — 커버 전용, 별도 파일 없음
    ══════════════════════════════════════════════════════════════════ */
 #cover #cover-guide-btn{
   position:absolute;
@@ -2722,3 +3000,89 @@ html.app-active #cover-guide-btn{ display:none!important; }
   .guide-icon{ width:30px; height:30px; flex-basis:30px; font-size:16px; }
   .guide-mini-list{ grid-template-columns:66px 1fr; }
 }
+
+/* V22: iPhone 내부 화면 UI 밀도 보정
+   - 커버/설치 배너/지도 컨테이너는 그대로 두고, 내부 카드·버튼·여백만 조밀하게 조정한다.
+   - transform scale을 쓰지 않아 가장자리 빈 공간과 지도 터치 좌표 문제를 피한다. */
+html.ios-device{
+  --ios-ui-density:.96;
+  --mod-header-h:66px;
+  --module-tab-h:46px;
+  --mod-tabbar-h:50px;
+  --tab-btn-h:38px;
+  --oai-std-header-h:66px;
+  --oai-std-tab-h:34px;
+  --oai-std-btn-h:34px;
+  --oai-std-gap:7px;
+}
+html.ios-device #app .module-bar,
+html.ios-device #prayer-view .module-bar,
+html.ios-device #web-view .module-bar,
+html.ios-device #trail-view .module-bar,
+html.ios-device #diocese-view .module-bar,
+html.ios-device #qna-view .module-bar{
+  padding:calc(env(safe-area-inset-top,0px) + 12px) 14px 12px!important;
+  gap:10px!important;
+}
+html.ios-device #app .module-bar-main,
+html.ios-device #prayer-view .module-bar-main,
+html.ios-device #web-view .module-bar-main,
+html.ios-device #trail-view .module-bar-main,
+html.ios-device #diocese-view .module-bar-main,
+html.ios-device #qna-view .module-bar-main{gap:10px!important;}
+html.ios-device #app .module-bar-ico,
+html.ios-device #prayer-view .module-bar-ico,
+html.ios-device #web-view .module-bar-ico,
+html.ios-device #trail-view .module-bar-ico,
+html.ios-device #diocese-view .module-bar-ico,
+html.ios-device #qna-view .module-bar-ico{width:38px!important;height:38px!important;}
+html.ios-device .module-close,
+html.ios-device #diocese-close-btn,
+html.ios-device #prayer-close,
+html.ios-device #web-close,
+html.ios-device #trail-close{width:36px!important;height:36px!important;min-width:36px!important;}
+html.ios-device #app .tab-btn{min-height:46px!important;padding:8px 0 7px!important;gap:5px!important;border-radius:11px!important;}
+html.ios-device #app .tab-icon{font-size:19px!important;}
+html.ios-device #app .tab-btn.active .tab-icon{font-size:21px!important;}
+html.ios-device #app .filter-btn,
+html.ios-device #app .region-search-btn,
+html.ios-device #app .sm-fb,
+html.ios-device #app .sm-tab,
+html.ios-device .web-cat-btn,
+html.ios-device .trail-tab{min-height:34px!important;padding:4px 11px!important;border-radius:14px!important;}
+html.ios-device #app .sheet-hd{padding:11px 14px!important;}
+html.ios-device #app .sheet-title{letter-spacing:.02em!important;}
+html.ios-device #app .sheet-x,
+html.ios-device #app .route-sheet-x{width:30px!important;height:30px!important;font-size:19px!important;}
+html.ios-device #app #info-card{border-radius:21px 21px 0 0!important;max-height:50vh!important;}
+html.ios-device #app .ic-header{padding:13px 14px 6px!important;}
+html.ios-device #app .ic-close-btn{width:28px!important;height:28px!important;font-size:16px!important;}
+html.ios-device #app .ic-meta{padding:0 13px 7px!important;}
+html.ios-device #app .ic-addr-row{gap:9px!important;padding:0 13px 9px!important;}
+html.ios-device #app .ic-btn-row{gap:6px!important;padding:9px 13px 0!important;}
+html.ios-device #app .ic-tel-btn,
+html.ios-device #app .ic-route-btn,
+html.ios-device #app .ic-link-btn,
+html.ios-device #app .btn-kakao-nav,
+html.ios-device #app .btn-kakao-route,
+html.ios-device #app .btn-route-reset{height:43px!important;min-height:43px!important;border-radius:9px!important;}
+html.ios-device #app .region-item,
+html.ios-device #app .nearby-item,
+html.ios-device #app .list-item{padding:10px 12px!important;gap:9px!important;}
+html.ios-device #app .region-info-card{margin:6px 11px 7px!important;border-radius:9px!important;}
+html.ios-device #app .ric-hd{padding:12px 14px!important;gap:10px!important;}
+html.ios-device #app .ric-icon{width:35px!important;height:35px!important;font-size:18px!important;}
+html.ios-device #app .ric-body{padding:7px 14px 9px!important;}
+html.ios-device .web-card{border-radius:13px!important;margin-bottom:10px!important;}
+html.ios-device .web-card-top{padding:10px 12px 0!important;}
+html.ios-device .web-card-body{padding:8px 12px 9px!important;gap:10px!important;}
+html.ios-device .web-card-foot{padding:8px 12px!important;}
+html.ios-device .web-card-ico{width:48px!important;height:48px!important;border-radius:11px!important;font-size:25px!important;}
+html.ios-device .web-card-badge{min-height:22px!important;padding:0 9px!important;}
+html.ios-device .trail-card{border-radius:20px!important;}
+html.ios-device .trail-sheet{border-radius:23px 23px 0 0!important;padding-bottom:calc(24px + env(safe-area-inset-bottom,0))!important;}
+html.ios-device .trail-sheet-hd,
+html.ios-device .trail-sh-head{padding-left:14px!important;padding-right:14px!important;}
+html.ios-device .qna-tab{height:39px!important;border-radius:11px!important;}
+html.ios-device .qna-card,
+html.ios-device .qna-panel{border-radius:14px!important;}
