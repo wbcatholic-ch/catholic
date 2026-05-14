@@ -2349,8 +2349,7 @@ html.app-active #cover {
 #cover .ios-safari-banner{
   display:none;
 }
-html.ios-kakao-inapp #cover .ios-safari-banner,
-html.ios-install-preview-mode #cover .ios-safari-banner{
+html.ios-kakao-inapp #cover .ios-safari-banner{
   position:fixed!important;
   left:max(18px,calc(env(safe-area-inset-left,0px) + 18px))!important;
   right:max(18px,calc(env(safe-area-inset-right,0px) + 18px))!important;
@@ -2366,11 +2365,11 @@ html.ios-install-preview-mode #cover .ios-safari-banner{
   max-width:520px;
   margin:0 auto;
   padding:24px 18px 20px;
-  border:3px solid rgba(212,170,106,.96);
+  border:2.5px solid rgba(212,170,106,.72);
   border-radius:28px;
-  background:linear-gradient(180deg,#ffffff 0%,#fffaf1 100%);
+  background:rgba(255,248,232,.98);
   color:#1f2a44;
-  box-shadow:0 30px 70px rgba(14,21,53,.34),0 0 0 1px rgba(31,42,68,.08);
+  box-shadow:0 22px 54px rgba(31,42,68,.24);
   box-sizing:border-box;
   pointer-events:auto;
 }
@@ -2441,47 +2440,10 @@ html.ios-install-preview-mode #cover .ios-safari-banner{
   flex-direction:column;
   width:min(94vw,520px);
   max-height:min(88dvh,820px);
-  background:linear-gradient(180deg,#ffffff 0%,#fffdf8 100%)!important;
-  border:3px solid #d4aa6a!important;
-  box-shadow:0 30px 80px rgba(14,21,53,.42),0 0 0 1px rgba(255,255,255,.85) inset!important;
 }
 .ios-safari-guide-panel .guide-lead{
   min-height:0;
   margin-bottom:10px;
-}
-
-/* V38-29: iPhone 설치 안내 팝업 구분감 강화 */
-#ios-safari-guide-modal .guide-backdrop{
-  background:rgba(14,21,53,.58)!important;
-  -webkit-backdrop-filter:blur(3px);
-  backdrop-filter:blur(3px);
-}
-#ios-safari-guide-modal .guide-x{
-  background:#1f2a44!important;
-  color:#fff!important;
-  box-shadow:0 8px 18px rgba(14,21,53,.22)!important;
-}
-.ios-safari-guide-panel .guide-badge{
-  background:#1f2a44!important;
-  color:#fff!important;
-  border:1.5px solid #d4aa6a!important;
-  box-shadow:0 6px 14px rgba(31,42,68,.16)!important;
-}
-.ios-safari-guide-panel h2{
-  color:#0e1535!important;
-}
-.ios-safari-guide-panel .guide-lead{
-  color:#374151!important;
-  font-weight:800!important;
-}
-.ios-safari-guide-panel .guide-primary{
-  background:linear-gradient(135deg,#1f2a44,#31446c)!important;
-  color:#fff!important;
-  border:1.5px solid #d4aa6a!important;
-}
-#cover #ios-kakao-safari-help{
-  background:linear-gradient(135deg,#1f2a44,#31446c)!important;
-  border:1.5px solid rgba(212,170,106,.82)!important;
 }
 .ios-safari-steps{
   width:100%;
@@ -2501,8 +2463,8 @@ html.ios-install-preview-mode #cover .ios-safari-banner{
   gap:8px 10px!important;
   padding:12px 12px!important;
   border-radius:16px!important;
-  background:#ffffff!important;
-  border:1.5px solid rgba(212,170,106,.50)!important;
+  background:#fffaf2!important;
+  border:1px solid rgba(212,170,106,.32)!important;
 }
 .ios-safari-step b{
   display:flex;
@@ -2535,49 +2497,10 @@ html.ios-install-preview-mode #cover .ios-safari-banner{
   background:#fff;
   box-shadow:0 6px 18px rgba(31,42,68,.10);
 }
-.ios-safari-shot{
-  grid-column:1 / 3;
-  justify-self:center;
-  position:relative;
-  display:block;
-  max-width:100%;
-  border-radius:14px;
-  background:#fff;
-  box-shadow:0 6px 18px rgba(31,42,68,.10);
-  overflow:hidden;
-}
-.ios-safari-shot img{
-  grid-column:auto!important;
-  justify-self:auto!important;
-  width:100%;
-  height:auto;
-  max-width:100%!important;
-  max-height:none!important;
-  border-radius:14px!important;
-  box-shadow:none!important;
-  background:transparent!important;
-}
-.ios-safari-shot-more{
-  width:100%;
-  max-width:480px;
-}
-.ios-gold-highlight{
-  position:absolute;
-  right:2.6%;
-  top:8%;
-  width:24.5%;
-  height:84%;
-  border:4px solid #d4aa6a;
-  border-radius:28px;
-  box-shadow:0 0 0 1px rgba(255,255,255,.75) inset, 0 2px 8px rgba(31,42,68,.16);
-  pointer-events:none;
-  box-sizing:border-box;
-}
 .ios-safari-step:nth-child(1) img{max-height:150px;}
 .ios-safari-step:nth-child(2) img{max-height:210px;}
-.ios-safari-step:nth-child(3) img{max-height:260px;}
-.ios-safari-step:nth-child(4) img{max-height:225px;}
-.ios-safari-step:nth-child(5) img{max-height:245px;}
+.ios-safari-step:nth-child(3) img{max-height:225px;}
+.ios-safari-step:nth-child(4) img{max-height:245px;}
 @media (max-height:700px){
   html.ios-kakao-inapp #cover .ios-safari-banner{
     top:49%!important;
