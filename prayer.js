@@ -440,11 +440,7 @@ function prOpenDetail(prayer){
 window.prCloseDetail = function(){
   const detail = prG('prayer-detail');
   if(detail) detail.classList.remove('show');
-  /* [fix] _ensureAppBackTrap 호출 제거:
-     closeExtOrModule()가 history.go(1) 실행 직후 prCloseDetail()을 동기 호출하므로
-     여기서 pushState하면 go(1)의 forward 대상 엔트리가 파괴되어 history 스택 오염·
-     뒤로가기 1회 흡수 버그가 발생한다. trap 재확인은 closeExtOrModule의 setTimeout(0)
-     콜백(_ensureAppBackTrap('prayer-detail-to-list'))이 go(1) 완료 후 처리한다. */
+  try{ if(typeof window._ensureAppBackTrap === 'function') window._ensureAppBackTrap('prayer-list'); }catch(e){ console.warn('[가톨릭길동무]', e); }
 };
 
 /* ── IIFE 스코프 외부 노출 ── */

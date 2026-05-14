@@ -174,6 +174,8 @@ function _resetCoverExitReady(){
     clearTimeout(window._exitTimer);
     const bt = document.getElementById('_bt');
     if(bt) bt.remove();
+    const toast = document.getElementById('oai-cover-exit-toast');
+    if(toast) toast.classList.remove('show');
   }catch(e){ console.warn("[가톨릭길동무]", e); }
 }
 function _clearCoverExitArmed(){
@@ -569,15 +571,6 @@ function _tryResumeMassQuickSoon(){
   }catch(e){ console.warn("[가톨릭길동무]", e); }
   return false;
 }
-// 외부 복귀(pageshow/visibilitychange/focus) 중복 발화 방어용 디바운스
-var _resumeDebounceTimer = null;
-function _debouncedResumeMassQuick(){
-  if(_resumeDebounceTimer) clearTimeout(_resumeDebounceTimer);
-  _resumeDebounceTimer = setTimeout(function(){
-    _resumeDebounceTimer = null;
-    _tryResumeMassQuickSoon();
-  }, 60);
-}
 window.addEventListener('pageshow', function(){
   // 외부 복귀 시에는 빠른메뉴 복귀만 확인한다.
   // 커버 종료 대기값은 여기서 초기화하지 않는다.
@@ -591,13 +584,13 @@ window.addEventListener('pageshow', function(){
 }, true);
 document.addEventListener('visibilitychange', function(){
   if(document.visibilityState === 'visible'){
-    _debouncedResumeMassQuick();
-    setTimeout(_debouncedResumeMassQuick, 120);
+    _tryResumeMassQuickSoon();
+    setTimeout(_tryResumeMassQuickSoon, 120);
   }
 }, true);
 window.addEventListener('focus', function(){
-  _debouncedResumeMassQuick();
-  setTimeout(_debouncedResumeMassQuick, 120);
+  _tryResumeMassQuickSoon();
+  setTimeout(_tryResumeMassQuickSoon, 120);
 }, true);
 if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function(){ setTimeout(_tryResumeMassQuickSoon, 80); }, {once:true});
 else setTimeout(_tryResumeMassQuickSoon, 80);
@@ -903,9 +896,7 @@ function openPrayerBook(opts){
   const cv=$('cover');
   if(cv){ cv.style.opacity='0'; cv.style.display='none'; }
   document.documentElement.classList.add('app-active');
-  /* [fix] _ensureAppBackTrap('prayer-open') 제거: 50ms 후 setTimeout 안의
-     'prayer-list-ready' 호출로 통합. 중복 replaceState+pushState 쌍이 스택을
-     오염시키지 않도록 진입점 trap은 setup 완료 후 1회만 심는다. */
+  try{ if(typeof _ensureAppBackTrap==='function') _ensureAppBackTrap('prayer-open'); }catch(e){ console.warn("[가톨릭길동무]", e); }
   if(typeof oaiSetMainMapLayerHidden==='function') oaiSetMainMapLayerHidden(true);
   view.classList.add('open');
   if(typeof oaiEnterView==='function') oaiEnterView(view);
@@ -1630,21 +1621,8 @@ function attemptAppExit(){
 
   // 중요: 여기서 history.back()을 호출하면 외부사이트 방문 기록으로 되돌아갈 수 있다.
   // 따라서 종료 시도는 window.close까지만 하고, 히스토리 트랩은 다시 심지 않는다.
-  // PWA standalone 모드에서는 window.close()가 동작하지 않는 경우가 대부분이므로
-  // 일정 시간 후에도 페이지가 살아있으면 커버로 복귀한다.
-  var _closeTried = false;
-  try{ window.open('', '_self'); window.close(); _closeTried = true; }catch(e){ console.warn("[가톨릭길동무]", e); }
+  try{ window.open('', '_self'); window.close(); }catch(e){ console.warn("[가톨릭길동무]", e); }
   try{ document.documentElement.classList.add('app-exiting'); }catch(e){ console.warn("[가톨릭길동무]", e); }
-  // window.close()가 무효인 PWA/Safari에서는 300ms 후 커버로 복귀
-  setTimeout(function(){
-    try{
-      if(document.documentElement.classList.contains('app-exiting')){
-        document.documentElement.classList.remove('app-exiting');
-        window._appExiting = false;
-        if(typeof goToCover === 'function') goToCover();
-      }
-    }catch(e){ console.warn("[가톨릭길동무]", e); }
-  }, 300);
 }
 function closeExitDlg(){
   _exitReady=false;
