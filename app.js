@@ -1024,7 +1024,7 @@ function openDioceseView(opts){
       if(!restore) try{ frame.contentWindow && frame.contentWindow.resetDioceseFirstPage && frame.contentWindow.resetDioceseFirstPage(); }catch(e){ console.warn("[가톨릭길동무]", e); }
       if(typeof dioceseLoaded==='function') dioceseLoaded();
     };
-    frame.src='diocese.html?v=V1';
+    frame.src='diocese.html?v=V1-2';
   }else if(!restore){
     try{ frame.contentWindow && frame.contentWindow.resetDioceseFirstPage && frame.contentWindow.resetDioceseFirstPage(); }catch(e){ console.warn("[가톨릭길동무]", e); }
   }
@@ -1301,10 +1301,33 @@ function _kakaoRestProxyUrl(endpoint, params){
   if(!KAKAO_REST_PROXY_URL) return '';
   return _appendQueryToUrl(KAKAO_REST_PROXY_URL, Object.assign({ endpoint: endpoint }, params || {}));
 }
-function _kakaoRestFetch(endpoint, params){
-  const url = _kakaoRestProxyUrl(endpoint, params);
-  if(!url) return Promise.reject(new Error('missing kakao rest proxy url'));
-  return fetch(url, { method:'GET', credentials:'omit', cache:'no-store' });
+function _kakaoRestProxyCandidates(endpoint, params){
+  if(!KAKAO_REST_PROXY_URL) return [];
+  const base = String(KAKAO_REST_PROXY_URL).replace(/\/+$/, '');
+  const cleanParams = Object.assign({}, params || {});
+  const endpointPath = endpoint === 'directions' ? 'directions' : 'keyword';
+  const kakaoPath = endpoint === 'directions' ? '/v1/directions' : '/v2/local/search/keyword.json';
+  return [
+    _appendQueryToUrl(base, Object.assign({ endpoint: endpointPath }, cleanParams)),
+    _appendQueryToUrl(base + '/' + endpointPath, cleanParams),
+    _appendQueryToUrl(base, Object.assign({ path: kakaoPath }, cleanParams)),
+    _appendQueryToUrl(base, Object.assign({ url: kakaoPath }, cleanParams))
+  ].filter((url, idx, arr) => url && arr.indexOf(url) === idx);
+}
+async function _kakaoRestFetch(endpoint, params){
+  const urls = _kakaoRestProxyCandidates(endpoint, params);
+  if(!urls.length) throw new Error('missing kakao rest proxy url');
+  let lastErr = null;
+  for(const url of urls){
+    try{
+      const res = await fetch(url, { method:'GET', mode:'cors', credentials:'omit', cache:'no-store' });
+      if(res && res.ok) return res;
+      lastErr = new Error('kakao rest proxy status ' + (res ? res.status : 'empty'));
+    }catch(e){
+      lastErr = e;
+    }
+  }
+  throw lastErr || new Error('kakao rest proxy failed');
 }
 function _kakaoDirectionsFetch(origin, destination){
   return _kakaoRestFetch('directions', { origin: origin, destination: destination, priority:'RECOMMEND' });
@@ -3634,8 +3657,6 @@ async function _calcRoute(){
   note.textContent='';note.style.display='none';
   }
 
-  _drawLine(_rS, navDest, null);
-
   try{
   const res=await _kakaoDirectionsFetch(`${_rS.lng},${_rS.lat}`, `${navDest.lng},${navDest.lat}`);
   if(!res.ok) throw new Error(res.status);
@@ -3654,12 +3675,15 @@ async function _calcRoute(){
   _drawLine(_rS, navDest, path.length>1?path:null);
   if(!isJuk){ note.textContent='';note.style.display='none'; }
   } catch(e){
-  const d=calcDist(_rS.lat,_rS.lng,navDest.lat,navDest.lng)*1.4;
-  $('rs-km').textContent=d.toFixed(1);
-  $('rs-time').textContent=_fmtTime(d/70*3600);
-  if(!isJuk){
-   note.textContent='* 직선거리 기반 추정값';note.style.display='block';
-  }
+  if(_polyline){ _polyline.setMap(null); _polyline=null; }
+  _refreshRouteTmpMarkers();
+  $('rs-km').textContent='—';
+  $('rs-time').textContent='—';
+  note.innerHTML='자동차 경로를 불러오지 못했습니다.<br>현재 파일 문제가 아니라 <b>카카오 REST 프록시(Cloudflare Worker)</b> 연결 실패입니다. Worker 배포와 REST API 키 설정을 확인해야 지도 안에 자동차 경로가 표시됩니다.';
+  note.style.display='block';
+  const sBtn=$('rs-search-btn');
+  if(sBtn) sBtn.style.display='block';
+  console.warn('[가톨릭길동무] 자동차 경로 호출 실패', e);
   }
 }
 
