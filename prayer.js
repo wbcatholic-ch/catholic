@@ -423,6 +423,7 @@ function prOpenDetail(prayer){
   ttl.textContent = prayer.title;
   content.innerHTML = ((prayer.content||prayer.body||'')+'').replace(/class="symbol"/g,'class="pr-symbol"');
   detail.classList.add('show');
+  try{ if(typeof window._ensureAppBackTrap === 'function') window._ensureAppBackTrap('prayer-detail'); }catch(e){ console.warn('[가톨릭길동무]', e); }
   // 현재 기도문 ID 저장 → 본문 즐겨찾기 버튼에 반영
   detail.dataset.pid = prayer.id || '';
   var starBtn = prG('pr-detail-star');
@@ -439,6 +440,7 @@ function prOpenDetail(prayer){
 window.prCloseDetail = function(){
   const detail = prG('prayer-detail');
   if(detail) detail.classList.remove('show');
+  try{ if(typeof window._ensureAppBackTrap === 'function') window._ensureAppBackTrap('prayer-list'); }catch(e){ console.warn('[가톨릭길동무]', e); }
 };
 
 /* ── IIFE 스코프 외부 노출 ── */

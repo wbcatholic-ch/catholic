@@ -1,4 +1,4 @@
-/* style.css — 가톨릭 앱 전체 스타일
+/* style.css — 가톨릭길동무 전체 스타일
    공통 변수·레이아웃·성지·성당·피정·기도문·웹·순례길
    커버·탭바·인포카드·지도·모달 등 */
 
@@ -1324,10 +1324,15 @@ html.app-active
 html.retreat-mode .region-row{display:grid;grid-template-columns:minmax(0,1fr) auto!important;align-items:center!important;gap:8px!important;width:100%!important}
 html.retreat-mode .region-row .srch-inner{width:100%!important;min-width:0!important;height:42px!important;box-sizing:border-box}
 html.retreat-mode .region-search-btn{width:74px;min-width:74px!important;max-width:74px!important;height:42px!important;padding:0 6px!important;box-sizing:border-box;display:flex!important;align-items:center!important;justify-content:center;text-align:center!important;white-space:normal;word-break:keep-all;line-height:1.08!important;font-size:11px!important;letter-spacing:-.04em;border-radius:21px!important}
-/* 피정 리스트 카드: 오른쪽 배지/거리 때문에 본문 박스가 밀리지 않게 고정 */
+/* 피정 리스트 카드: 오른쪽 배지/거리 때문에 본문 박스가 밀리지 않게 고정
+   기존 width:100% + 좌우 margin 10px 조합은 실제 폭을 100%+20px로 만들어
+   내 주변/지역검색 10개 목록이 좌우로 흔들리는 원인이 되므로 카드 폭을 margin만큼 뺀다. */
+html.retreat-mode #list-body,
+html.retreat-mode #nearby-body,
+html.retreat-mode #region-body{overflow-x:hidden!important}
 html.retreat-mode .nearby-item,
 html.retreat-mode .list-item,
-html.retreat-mode .region-item{width:100%!important;min-width:0!important;box-sizing:border-box;align-items:flex-start!important}
+html.retreat-mode .region-item{width:calc(100% - 20px)!important;max-width:calc(100% - 20px)!important;min-width:0!important;margin-left:10px!important;margin-right:10px!important;box-sizing:border-box;align-items:flex-start!important}
 html.retreat-mode .nearby-info,
 html.retreat-mode .li-info{flex:1 1 auto!important;min-width:0!important}
 html.retreat-mode .nearby-meta{width:74px!important;min-width:74px!important;max-width:74px!important;flex:0 0 74px!important}
@@ -2344,7 +2349,8 @@ html.app-active #cover {
 #cover .ios-safari-banner{
   display:none;
 }
-html.ios-kakao-inapp #cover .ios-safari-banner{
+html.ios-kakao-inapp #cover .ios-safari-banner,
+html.ios-install-preview-mode #cover .ios-safari-banner{
   position:fixed!important;
   left:max(18px,calc(env(safe-area-inset-left,0px) + 18px))!important;
   right:max(18px,calc(env(safe-area-inset-right,0px) + 18px))!important;
@@ -2360,11 +2366,11 @@ html.ios-kakao-inapp #cover .ios-safari-banner{
   max-width:520px;
   margin:0 auto;
   padding:24px 18px 20px;
-  border:2.5px solid rgba(212,170,106,.72);
+  border:3px solid rgba(212,170,106,.96);
   border-radius:28px;
-  background:rgba(255,248,232,.98);
+  background:linear-gradient(180deg,#ffffff 0%,#fffaf1 100%);
   color:#1f2a44;
-  box-shadow:0 22px 54px rgba(31,42,68,.24);
+  box-shadow:0 30px 70px rgba(14,21,53,.34),0 0 0 1px rgba(31,42,68,.08);
   box-sizing:border-box;
   pointer-events:auto;
 }
@@ -2435,10 +2441,47 @@ html.ios-kakao-inapp #cover .ios-safari-banner{
   flex-direction:column;
   width:min(94vw,520px);
   max-height:min(88dvh,820px);
+  background:linear-gradient(180deg,#ffffff 0%,#fffdf8 100%)!important;
+  border:3px solid #d4aa6a!important;
+  box-shadow:0 30px 80px rgba(14,21,53,.42),0 0 0 1px rgba(255,255,255,.85) inset!important;
 }
 .ios-safari-guide-panel .guide-lead{
   min-height:0;
   margin-bottom:10px;
+}
+
+/* V38-29: iPhone 설치 안내 팝업 구분감 강화 */
+#ios-safari-guide-modal .guide-backdrop{
+  background:rgba(14,21,53,.58)!important;
+  -webkit-backdrop-filter:blur(3px);
+  backdrop-filter:blur(3px);
+}
+#ios-safari-guide-modal .guide-x{
+  background:#1f2a44!important;
+  color:#fff!important;
+  box-shadow:0 8px 18px rgba(14,21,53,.22)!important;
+}
+.ios-safari-guide-panel .guide-badge{
+  background:#1f2a44!important;
+  color:#fff!important;
+  border:1.5px solid #d4aa6a!important;
+  box-shadow:0 6px 14px rgba(31,42,68,.16)!important;
+}
+.ios-safari-guide-panel h2{
+  color:#0e1535!important;
+}
+.ios-safari-guide-panel .guide-lead{
+  color:#374151!important;
+  font-weight:800!important;
+}
+.ios-safari-guide-panel .guide-primary{
+  background:linear-gradient(135deg,#1f2a44,#31446c)!important;
+  color:#fff!important;
+  border:1.5px solid #d4aa6a!important;
+}
+#cover #ios-kakao-safari-help{
+  background:linear-gradient(135deg,#1f2a44,#31446c)!important;
+  border:1.5px solid rgba(212,170,106,.82)!important;
 }
 .ios-safari-steps{
   width:100%;
@@ -2458,8 +2501,8 @@ html.ios-kakao-inapp #cover .ios-safari-banner{
   gap:8px 10px!important;
   padding:12px 12px!important;
   border-radius:16px!important;
-  background:#fffaf2!important;
-  border:1px solid rgba(212,170,106,.32)!important;
+  background:#ffffff!important;
+  border:1.5px solid rgba(212,170,106,.50)!important;
 }
 .ios-safari-step b{
   display:flex;
@@ -2492,10 +2535,49 @@ html.ios-kakao-inapp #cover .ios-safari-banner{
   background:#fff;
   box-shadow:0 6px 18px rgba(31,42,68,.10);
 }
+.ios-safari-shot{
+  grid-column:1 / 3;
+  justify-self:center;
+  position:relative;
+  display:block;
+  max-width:100%;
+  border-radius:14px;
+  background:#fff;
+  box-shadow:0 6px 18px rgba(31,42,68,.10);
+  overflow:hidden;
+}
+.ios-safari-shot img{
+  grid-column:auto!important;
+  justify-self:auto!important;
+  width:100%;
+  height:auto;
+  max-width:100%!important;
+  max-height:none!important;
+  border-radius:14px!important;
+  box-shadow:none!important;
+  background:transparent!important;
+}
+.ios-safari-shot-more{
+  width:100%;
+  max-width:480px;
+}
+.ios-gold-highlight{
+  position:absolute;
+  right:2.6%;
+  top:8%;
+  width:24.5%;
+  height:84%;
+  border:4px solid #d4aa6a;
+  border-radius:28px;
+  box-shadow:0 0 0 1px rgba(255,255,255,.75) inset, 0 2px 8px rgba(31,42,68,.16);
+  pointer-events:none;
+  box-sizing:border-box;
+}
 .ios-safari-step:nth-child(1) img{max-height:150px;}
 .ios-safari-step:nth-child(2) img{max-height:210px;}
-.ios-safari-step:nth-child(3) img{max-height:225px;}
-.ios-safari-step:nth-child(4) img{max-height:245px;}
+.ios-safari-step:nth-child(3) img{max-height:260px;}
+.ios-safari-step:nth-child(4) img{max-height:225px;}
+.ios-safari-step:nth-child(5) img{max-height:245px;}
 @media (max-height:700px){
   html.ios-kakao-inapp #cover .ios-safari-banner{
     top:49%!important;
@@ -3122,3 +3204,51 @@ html.ios-device .qna-panel{border-radius:13px!important;}
   transition:transform .08s ease,filter .08s ease,box-shadow .08s ease!important;
 }
 
+
+
+/* V38-23 주요기도문 헤더 구조 정리: 이모지 제거, 닫기 왼쪽, 굿뉴스 기도문 오른쪽 */
+#prayer-bar{
+  justify-content:flex-start!important;
+}
+#prayer-bar .module-bar-ico{
+  display:none!important;
+}
+#prayer-bar .module-bar-main{
+  flex:1 1 auto!important;
+  min-width:0!important;
+  gap:0!important;
+}
+#prayer-close,
+#prayer-bar .module-close{
+  order:0!important;
+  margin-left:0!important;
+  margin-right:12px!important;
+  color:#fff!important;
+}
+#prayer-bar .module-bar-main{order:1!important;}
+#goodnews-prayer-btn{
+  order:2!important;
+  margin-left:auto!important;
+  margin-right:0!important;
+  max-width:118px!important;
+  padding:8px 10px!important;
+  font-size:12px!important;
+  border-radius:11px!important;
+}
+#prayer-detail-hd{
+  justify-content:flex-start!important;
+}
+#prayer-detail-hd #pr-back-btn{
+  order:0!important;
+  margin-left:0!important;
+  margin-right:8px!important;
+  flex:0 0 42px!important;
+  color:#1f2a44!important;
+}
+#prayer-detail-hd .pr-font-ctrl{
+  margin-left:auto!important;
+}
+#prayer-detail-hd #pr-detail-star{
+  margin-left:6px!important;
+  margin-right:0!important;
+}
