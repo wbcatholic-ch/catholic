@@ -4028,3 +4028,65 @@ html:not(.app-active) #cover{
   #cover #cover-bottom-note,
   #cover-bottom-note{ min-height:34px!important; }
 }
+
+/* ============================================================
+   V1-S 커버 세로 연결감 보정
+   - 주요기도문/뒤로가기/카테고리 기능과 무관한 커버 CSS 전용
+   - 하단 안내문구 자체는 그대로 두고, 문의·건의/새로고침 줄이
+     하단 문구 기준 약 3% 위에 오도록 메인 블록을 flex로 연결한다.
+   ============================================================ */
+#cover,
+html:not(.app-active) #cover{
+  padding-top:calc((var(--cover-vh, 1vh) * 7) + env(safe-area-inset-top,0px))!important;
+  padding-bottom:0!important;
+}
+#cover .cover-header{
+  flex:0 0 auto!important;
+  padding-bottom:clamp(12px, calc(var(--cover-vh, 1vh) * 2.0), 20px)!important;
+}
+#cover-main-block{
+  flex:1 1 auto!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  margin:0 auto calc(clamp(20px, calc(var(--cover-vh, 1vh) * 3), 38px) + clamp(34px, calc(var(--cover-vh, 1vh) * 4.8), 46px) + env(safe-area-inset-bottom,0px))!important;
+  padding-bottom:0!important;
+  display:flex!important;
+  flex-direction:column!important;
+  box-sizing:border-box!important;
+}
+#cover .cover-grid,
+#cover .cv-grid{
+  flex:1 1 auto!important;
+  min-height:0!important;
+  align-content:stretch!important;
+}
+#cover #cover-action-row{
+  flex:0 0 auto!important;
+  margin-top:clamp(7px, calc(var(--cover-vh, 1vh) * 0.9), 11px)!important;
+  margin-bottom:0!important;
+}
+@media (min-width:720px){
+  #cover-main-block{
+    max-width:min(468px, calc(100vw - 80px))!important;
+    height:auto!important;
+    max-height:none!important;
+  }
+}
+@media (max-height:720px){
+  #cover-main-block{
+    height:auto!important;
+    max-height:none!important;
+    margin-bottom:calc(clamp(16px, calc(var(--cover-vh, 1vh) * 2.6), 30px) + clamp(32px, calc(var(--cover-vh, 1vh) * 4.5), 42px) + env(safe-area-inset-bottom,0px))!important;
+  }
+  #cover #cover-action-row{margin-top:7px!important;}
+}
+html.ios-device #cover{
+  padding-bottom:0!important;
+}
+html.ios-device #cover-main-block{
+  height:auto!important;
+  max-height:none!important;
+  padding-bottom:0!important;
+  margin-bottom:calc(clamp(18px, calc(var(--cover-vh, 1vh) * 3), 34px) + clamp(34px, calc(var(--cover-vh, 1vh) * 4.8), 46px) + env(safe-area-inset-bottom,0px))!important;
+}
