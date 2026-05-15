@@ -732,7 +732,7 @@ function syncCoverUpdateVersionState(){
     var box = document.getElementById('cover-update-box');
     var marker = document.getElementById('oai-build-marker');
     if(!btn || !box) return;
-    var target = btn.getAttribute('data-target-version') || 'V2-3';
+    var target = btn.getAttribute('data-target-version') || 'V2-2';
     var current = '';
     if(window.APP_VERSION) current = String(window.APP_VERSION).trim();
     if(!current && marker) current = String(marker.textContent || '').trim();
@@ -1032,7 +1032,7 @@ function openDioceseView(opts){
       if(!restore) try{ frame.contentWindow && frame.contentWindow.resetDioceseFirstPage && frame.contentWindow.resetDioceseFirstPage(); }catch(e){ console.warn("[가톨릭길동무]", e); }
       if(typeof dioceseLoaded==='function') dioceseLoaded();
     };
-    frame.src='diocese.html?v=V2-3';
+    frame.src='diocese.html?v=V2-2';
   }else if(!restore){
     try{ frame.contentWindow && frame.contentWindow.resetDioceseFirstPage && frame.contentWindow.resetDioceseFirstPage(); }catch(e){ console.warn("[가톨릭길동무]", e); }
   }
@@ -1623,24 +1623,14 @@ function attemptAppExit(){
   try{ sessionStorage.removeItem('catholic_core_return_v1'); }catch(e){ console.warn("[가톨릭길동무]", e); }
   try{ sessionStorage.removeItem('catholic_integrated_return_v2'); }catch(e){ console.warn("[가톨릭길동무]", e); }
   try{ sessionStorage.removeItem('oai_force_cover_after_reload'); }catch(e){ console.warn("[가톨릭길동무]", e); }
-  try{ document.documentElement.classList.add('app-exiting'); }catch(e){ console.warn("[가톨릭길동무]", e); }
 
   // Cordova/WebView 계열에서는 네이티브 종료를 우선 시도한다.
   try{ if(navigator.app && typeof navigator.app.exitApp === 'function'){ navigator.app.exitApp(); return; } }catch(e){ console.warn("[가톨릭길동무]", e); }
 
-  // 커버 두 번째 Back에서는 더 이상 앱 내부 trap을 만들지 않는다.
-  // window.close()가 허용되는 환경에서는 즉시 닫고, Android Chrome/PWA처럼 close가 무시되는 환경에서는
-  // 현재 남아 있는 내부 history를 뒤로 진행시켜 실제 앱 이탈까지 이어지게 한다.
+  // 중요: 여기서 history.back()을 호출하면 외부사이트 방문 기록으로 되돌아갈 수 있다.
+  // 따라서 종료 시도는 window.close까지만 하고, 히스토리 트랩은 다시 심지 않는다.
   try{ window.open('', '_self'); window.close(); }catch(e){ console.warn("[가톨릭길동무]", e); }
-  setTimeout(function(){
-    try{
-      if(history && history.length > 1){
-        history.go(-Math.min(4, history.length - 1));
-      }else{
-        history.back();
-      }
-    }catch(e){ console.warn("[가톨릭길동무]", e); }
-  }, 60);
+  try{ document.documentElement.classList.add('app-exiting'); }catch(e){ console.warn("[가톨릭길동무]", e); }
 }
 function closeExitDlg(){
   _exitReady=false;
@@ -2321,7 +2311,7 @@ function _mkrImgRetreat(color,big){
 }
 function _mkrImg(color,big){
   const w=big?40:28,h=big?52:36;
-  // V2-3: iPhone/Android marker cross uses SVG bars, not an emoji/text glyph.
+  // V2-2: iPhone/Android marker cross uses SVG bars, not an emoji/text glyph.
   // This removes the purple emoji background and keeps a plain white cross.
   const crossBig = `<g fill="#fff" opacity="0.96"><rect x="18.45" y="10.5" width="3.1" height="18.5" rx="1.1"/><rect x="13.4" y="16.3" width="13.2" height="3.1" rx="1.1"/></g>`;
   const crossSmall = `<g fill="#fff" opacity="0.96"><rect x="12.85" y="7.8" width="2.3" height="12.8" rx="0.8"/><rect x="9.6" y="11.7" width="8.8" height="2.3" rx="0.8"/></g>`;
