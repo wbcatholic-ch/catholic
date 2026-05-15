@@ -242,8 +242,7 @@ body > header{display:none!important;visibility:hidden!important;height:0!import
 
 html.oai-dio-external-stabilize *,
 html.oai-dio-external-return *{transition:none!important;animation:none!important;scroll-behavior:auto!important;}
-html.oai-dio-external-stabilize body::before,
-html.oai-dio-external-return body::before{content:none!important;display:none!important;}
+/* V1-S: 부모 앱에서 복귀 상태를 복원하므로 iframe 자체 전체 덮개는 만들지 않는다. */
 
 </style>
 <style id="oai-diocese-tab-standard-20260504">
@@ -1881,7 +1880,7 @@ window.addEventListener('pageshow',function(){
   function setReturnTabSilently(tab){
     tab=tab||'gwangu';
     try{
-      document.documentElement.classList.add('oai-dio-returning','oai-dio-external-return');
+      document.documentElement.classList.add('oai-dio-returning');
       document.querySelectorAll('.tab').forEach(function(x){ x.classList.toggle('on', (x.dataset.tab||'')===tab); });
       var map=document.getElementById('map-view');
       var search=document.getElementById('search-view');
@@ -1901,7 +1900,7 @@ window.addEventListener('pageshow',function(){
     try{
       window.__OAI_DIO_PARENT_RETURNING__ = true;
       document.documentElement.classList.remove('oai-dio-external-stabilize');
-      document.documentElement.classList.add('oai-dio-returning','oai-dio-external-return');
+      document.documentElement.classList.add('oai-dio-returning');
     }catch(e){}
   };
 
@@ -1912,7 +1911,7 @@ window.addEventListener('pageshow',function(){
     // 목록 스크롤 재적용을 동반해 복귀 순간에 흔들림처럼 보일 수 있다.
     try{ window.__OAI_DIO_PARENT_RETURNING__ = true; }catch(e){}
     try{ document.documentElement.classList.remove('oai-dio-external-stabilize'); }catch(e){}
-    try{ document.documentElement.classList.add('oai-dio-returning','oai-dio-external-return'); }catch(e){}
+    try{ document.documentElement.classList.add('oai-dio-returning'); }catch(e){}
     var tab=state.tab||'gwangu';
     setReturnTabSilently(tab);
     if(state.searchValue && document.getElementById('si')){ document.getElementById('si').value=state.searchValue; if(typeof doSearch==='function') doSearch(); }
@@ -1994,8 +1993,12 @@ window.addEventListener('pageshow',function(){
   document.addEventListener('visibilitychange', function(){ if(document.visibilityState==='visible'){ setTimeout(clearDioceseStandaloneExternal, 180); setTimeout(clearDioceseStandaloneExternal, 1400); } }, true);
   window.openDioceseUrl = function(url, source){
     if(!url) return; var state=window.getDioceseReturnState(source||'link');
-    try{ document.documentElement.classList.remove('oai-dio-external-stabilize','oai-dio-external-return'); }catch(e){}
+    try{
+      document.documentElement.classList.add('oai-dio-external-stabilize');
+      if(window.parent && window.parent!==window && typeof window.parent.oaiHoldStabilityVeil==='function') window.parent.oaiHoldStabilityVeil('diocese-iframe-leave', 5200);
+    }catch(e){}
     if(window.parent && window.parent!==window && typeof window.parent.openDioceseExternal==='function'){
+      clearDioceseStandaloneExternal();
       window.parent.openDioceseExternal(url,state);
       // 실제로 부모 페이지가 외부로 이동하면 이 타이머는 보이지 않지만,
       // 이동이 지연되거나 복귀가 bfcache로 처리될 때 안정막이 남는 것을 방지한다.

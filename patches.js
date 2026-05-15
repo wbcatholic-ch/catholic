@@ -826,7 +826,8 @@
       setTimeout(function(){ try{ el.classList.remove('oai-swipe-left','oai-swipe-right'); }catch(e){ console.warn("[가톨릭길동무]", e); } }, 180);
     });
   };
-  /* 관구·교구 외부 홈페이지 이동/복귀는 app.js의 openDioceseExternal/restoreDioceseExternalState 한 곳에서만 처리한다. */
+  /* V1-S: 관구·교구 외부 홈페이지 복귀는 app.js의 openDioceseExternal/restoreDioceseExternalState 한 경로만 사용한다.
+     여기서 다시 덮어쓰면 pageshow/focus 복원이 중복되어 복귀 화면이 여러 번 깜빡인다. */
 })();
 (function(){
   'use strict';
