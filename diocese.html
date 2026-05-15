@@ -1859,9 +1859,12 @@ window.addEventListener('pageshow',function(){
     return {source:source||'link',tab:activeTab(),listScroll:(document.getElementById('list-view')||{}).scrollTop||0,searchScroll:(document.getElementById('search-view')||{}).scrollTop||0,searchValue:(document.getElementById('si')||{}).value||'',gw:(g&&g.dataset?g.dataset.gw:'')};
   };
   window.restoreDioceseReturnState = function(state){
-    state=state||{}; var tab=state.tab||'gwangu'; var btn=document.querySelector('.tab[data-tab="'+tab+'"]'); if(btn) btn.click();
+    state=state||{};
+    try{ document.documentElement.classList.add('oai-dio-returning','oai-dio-external-return'); }catch(e){}
+    var tab=state.tab||'gwangu'; var btn=document.querySelector('.tab[data-tab="'+tab+'"]'); if(btn) btn.click();
     if(state.searchValue && document.getElementById('si')){ document.getElementById('si').value=state.searchValue; if(typeof doSearch==='function') doSearch(); }
     setTimeout(function(){ var lv=document.getElementById('list-view'); if(lv) lv.scrollTop=Number(state.listScroll||0); var sv=document.getElementById('search-view'); if(sv) sv.scrollTop=Number(state.searchScroll||0); },80);
+    setTimeout(function(){ try{ document.documentElement.classList.remove('oai-dio-returning','oai-dio-external-return'); }catch(e){} }, 1250);
   };
 
   window.resetDioceseFirstPage = function(){
@@ -1898,8 +1901,12 @@ window.addEventListener('pageshow',function(){
   }, true);
   window.openDioceseUrl = function(url, source){
     if(!url) return; var state=window.getDioceseReturnState(source||'link');
+    try{
+      document.documentElement.classList.add('oai-dio-external-stabilize');
+      if(window.parent && window.parent!==window && typeof window.parent.oaiHoldStabilityVeil==='function') window.parent.oaiHoldStabilityVeil('diocese-iframe-leave', 1500);
+    }catch(e){}
     if(window.parent && window.parent!==window && typeof window.parent.openDioceseExternal==='function') window.parent.openDioceseExternal(url,state);
-    else { try{ sessionStorage.setItem('oai_diocese_standalone_return',JSON.stringify(state)); }catch(e){} markDioceseStandaloneExternal(); location.href=url; }
+    else { try{ sessionStorage.setItem('oai_diocese_standalone_return',JSON.stringify(state)); }catch(e){} markDioceseStandaloneExternal(); setTimeout(function(){ location.href=url; }, 90); }
   };
   document.addEventListener('click',function(e){ var t=e.target&&e.target.closest?e.target.closest('[data-dio-url]'):null; if(!t) return; e.preventDefault(); e.stopPropagation(); window.openDioceseUrl(t.getAttribute('data-dio-url'),t.getAttribute('data-dio-source')||'link'); },true);
 })();

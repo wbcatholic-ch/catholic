@@ -2220,9 +2220,9 @@ html.app-active #cover {
   max-height  : 620px !important;
   min-height  : 0 !important;
   width       : 100% !important;
-  max-width   : min(440px, calc(100vw - 32px)) !important;
+  max-width   : min(468px, calc(100vw - 20px)) !important;
   margin      : 0 auto !important;
-  padding     : 0 16px 8px !important;
+  padding     : 0 10px 8px !important;
   display     : flex !important;
   flex-direction: column ;
   align-items : stretch !important;
@@ -3949,4 +3949,82 @@ html.oai-category-entering #sheet-nearby.oai-preopen-nearby{
     opacity:1!important;
     transition:none!important;
   }
+}
+
+
+/* V1-S: 관구·교구 외부 홈페이지 이동/복귀 안정화
+   iframe 복원 중 헤더·목록·지도 진입 효과가 다시 보이지 않도록 부모 레이어도 고정한다. */
+html.oai-diocese-returning *,
+html.oai-diocese-returning #diocese-view,
+html.oai-diocese-returning #diocese-view *{
+  transition:none!important;
+  animation:none!important;
+  scroll-behavior:auto!important;
+  transform:none!important;
+}
+
+
+/* V1-S: Fold 화면 전환 + 짧은 새로고침 안정화
+   - 큰 화면↔작은 화면 전환 후 커버 하단 버튼/안내문구 겹침 방지
+   - 커버 높이 재계산 중 transition/active scale로 흔들리는 느낌 제거 */
+html.oai-cover-resizing #cover,
+html.oai-cover-resizing #cover *{
+  transition:none!important;
+  animation:none!important;
+}
+#cover,
+html:not(.app-active) #cover{
+  height:calc(var(--cover-vh, 1dvh) * 100)!important;
+  min-height:calc(var(--cover-vh, 1dvh) * 100)!important;
+  max-height:calc(var(--cover-vh, 1dvh) * 100)!important;
+}
+#cover-main-block{
+  /* fixed bottom note와 action row가 서로 겹치지 않도록 하단 여유를 더 확보 */
+  height:calc((var(--cover-vh, 1dvh) * 100) - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px) - 258px)!important;
+  max-height:590px!important;
+  padding-bottom:12px!important;
+  box-sizing:border-box!important;
+}
+#cover #cover-action-row{
+  margin-top:9px!important;
+  margin-bottom:4px!important;
+  flex:0 0 auto!important;
+}
+#cover #cover-bottom-note,
+#cover-bottom-note{
+  min-height:38px!important;
+  box-sizing:border-box!important;
+  z-index:35!important;
+  pointer-events:none!important;
+}
+#cover #oai-build-marker{
+  z-index:45!important;
+}
+#cover #cover-update-btn,
+#cover #cover-update-btn:active,
+#cover #cover-update-btn:focus{
+  transform:none!important;
+  transition:none!important;
+  outline:none!important;
+}
+@media (min-width:720px){
+  #cover-main-block{
+    max-width:min(468px, calc(100vw - 80px))!important;
+    max-height:560px!important;
+    height:calc((var(--cover-vh, 1dvh) * 100) - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px) - 278px)!important;
+  }
+  #cover #cover-bottom-note,
+  #cover-bottom-note{
+    padding-left:110px!important;
+    padding-right:110px!important;
+  }
+}
+@media (max-height:720px){
+  #cover-main-block{
+    height:calc((var(--cover-vh, 1dvh) * 100) - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px) - 226px)!important;
+    max-height:520px!important;
+  }
+  #cover #cover-action-row{ margin-top:7px!important; }
+  #cover #cover-bottom-note,
+  #cover-bottom-note{ min-height:34px!important; }
 }

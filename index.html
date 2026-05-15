@@ -45,15 +45,38 @@
   }
   var measured = measure();
   var stored = readStored();
-  // V1-S: 첫 로딩 때 저장된 예전 높이값을 먼저 쓰면 커버 십자가/카드가 한 번 내려가 보일 수 있다.
-  // 최초 진입은 항상 현재 화면 높이를 즉시 고정하고, 측정 실패 때만 저장값을 fallback으로 쓴다.
+  // V1-S: 첫 진입은 현재 화면 높이를 즉시 고정하고, 저장값은 측정 실패 때만 사용한다.
   apply(measured || stored || 8, true);
-  function settleOrientation(){
+
+  function isCoverVisible(){
+    try{
+      var c = document.getElementById('cover');
+      return !!c && !document.documentElement.classList.contains('app-active') && c.style.display !== 'none';
+    }catch(e){ return false; }
+  }
+  var settleTimer = 0;
+  function settleCoverSize(reason){
+    if(!isCoverVisible()) return;
     var next = measure();
     if(!next) return;
     apply(next, true);
+    try{
+      root.classList.add('oai-cover-resizing');
+      clearTimeout(settleTimer);
+      settleTimer = setTimeout(function(){ root.classList.remove('oai-cover-resizing'); }, 180);
+    }catch(e){}
   }
-  window.addEventListener('orientationchange', function(){ setTimeout(settleOrientation, 250); setTimeout(settleOrientation, 900); }, {passive:true});
+  function scheduleSettle(reason){
+    clearTimeout(settleTimer);
+    settleTimer = setTimeout(function(){ settleCoverSize(reason); }, 90);
+    setTimeout(function(){ settleCoverSize(reason + '-late'); }, 260);
+  }
+  window.addEventListener('orientationchange', function(){ scheduleSettle('orientation'); }, {passive:true});
+  window.addEventListener('resize', function(){ scheduleSettle('resize'); }, {passive:true});
+  if(window.visualViewport){
+    window.visualViewport.addEventListener('resize', function(){ scheduleSettle('visualViewport'); }, {passive:true});
+  }
+  window.oaiSettleCoverSize = settleCoverSize;
 })();
 </script>
 <script>
