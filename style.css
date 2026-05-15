@@ -3760,7 +3760,7 @@ html:not(.ios-device) #ios-safari-guide-modal{
   word-break:keep-all!important;
 }
 
-/* V1-T 화면 흔들림 안정화
+/* V1-S 화면 흔들림 안정화
    - 첫 커버는 index.html에서 --cover-vh를 최초 1회만 고정한다.
    - 헤더가 있는 모듈/웹사이트 화면은 한 프레임 prepaint 후 보여서 헤더가 본문을 밀어내는 느낌을 줄인다.
    - 뒤로가기/카테고리 로직은 변경하지 않는다. */
@@ -3793,7 +3793,7 @@ html:not(.ios-device) #ios-safari-guide-modal{
 }
 
 
-/* V1-T 화면 흔들림 재수정
+/* V1-S 화면 흔들림 재수정
    - 커버는 실제 사용 중인 --cover-vh 고정값만 사용한다.
    - 외부 사이트 복귀/모듈 진입·닫힘 순간에는 아주 짧은 안정막으로 헤더 재배치가 보이지 않게 한다.
    - 뒤로가기 로직은 변경하지 않는다. */
@@ -3846,7 +3846,7 @@ html.oai-external-return-freeze body::before{
 @keyframes oaiStabilitySpin{to{transform:rotate(360deg)}}
 
 
-/* V1-T: 성지·성당·피정의집 첫 진입 깜빡임 방지
+/* V1-S: 성지·성당·피정의집 첫 진입 깜빡임 방지
    지도 로딩 전에 내 주변 아이보리 시트를 먼저 고정해, 지도/배경이 먼저 보이는 순간을 숨긴다. */
 .sheet.oai-preopen-nearby{
   transform:translate(0,0)!important;
@@ -3862,7 +3862,7 @@ html.oai-category-entering #sheet-nearby.oai-preopen-nearby{
 }
 
 
-/* V1-T: 커버 아이콘 하단 잘림 보정
+/* V1-S: 커버 아이콘 하단 잘림 보정
    V1-19에서 십자가 위치 안정화를 위해 overflow:hidden을 적용했지만,
    일부 emoji/폰트가 아이콘 박스 아래에서 잘렸다. 위치 안정화는 유지하고 클리핑만 해제한다. */
 #cc-1 .cover-emoji,
@@ -3890,7 +3890,7 @@ html.oai-category-entering #sheet-nearby.oai-preopen-nearby{
 }
 
 
-/* V1-T: 내 주변 제목은 원래 색상 유지.
+/* V1-S: 내 주변 제목은 원래 색상 유지.
    '정확한 거리를 계산 중입니다...' 문구만 검정 + 살짝 크게 표시한다. */
 #nearby-body .nearby-distance-loading,
 #sheet-nearby.oai-preopen-nearby .nearby-distance-loading{
@@ -3900,7 +3900,7 @@ html.oai-category-entering #sheet-nearby.oai-preopen-nearby{
 }
 
 
-/* V1-T: 모든 카테고리 첫 진입 appearance/enter 효과 통일
+/* V1-S: 모든 카테고리 첫 진입 appearance/enter 효과 통일
    - 안정막/뒤로가기 로직은 건드리지 않고 화면 자체를 짧게 fade-in 한다.
    - 위쪽/아래쪽 이동 효과는 넣지 않아 흔들림처럼 보이지 않게 한다. */
 #app.oai-enter-ready,
@@ -3937,7 +3937,7 @@ html.oai-category-entering #sheet-nearby.oai-preopen-nearby{
 }
 
 
-/* V1-T: 관구·교구 외부 홈페이지 이동/복귀 안정화
+/* V1-S: 관구·교구 외부 홈페이지 이동/복귀 안정화
    iframe 복원 중 헤더·목록·지도 진입 효과가 다시 보이지 않도록 부모 레이어도 고정한다. */
 html.oai-diocese-returning *,
 html.oai-diocese-returning #diocese-view,
@@ -3949,7 +3949,7 @@ html.oai-diocese-returning #diocese-view *{
 }
 
 
-/* V1-T: Fold 화면 전환 + 짧은 새로고침 안정화
+/* V1-S: Fold 화면 전환 + 짧은 새로고침 안정화
    - 큰 화면↔작은 화면 전환 후 커버 하단 버튼/안내문구 겹침 방지
    - 커버 높이 재계산 중 transition/active scale로 흔들리는 느낌 제거 */
 html.oai-cover-resizing #cover,
@@ -3964,7 +3964,7 @@ html:not(.app-active) #cover{
   max-height:calc(var(--cover-vh, 1dvh) * 100)!important;
 }
 #cover-main-block{
-  /* V1-T: 상단 첫 문구 7%, 하단 문구↔문의·건의 약 3% 기준으로 세로 여백 반응형 재조정 */
+  /* V1-S: 상단 첫 문구 7%, 하단 문구↔문의·건의 약 3% 기준으로 세로 여백 반응형 재조정 */
   height:calc((var(--cover-vh, 1dvh) * 100) - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px) - 206px)!important;
   max-height:640px!important;
   padding-bottom:8px!important;
@@ -4074,7 +4074,7 @@ html.ios-device #cover-main-block{
 }
 
 
-/* V1-T: 주요기도문 탭 표시 복구 안전장치
+/* V1-S: 주요기도문 탭 표시 복구 안전장치
    V1-S3와 비교 시 prayer.js 자체 탭 생성 구조는 유지하고,
    화면 전환/캐시 상태에서 탭 컨테이너가 비어 보이지 않도록 표시값만 확정한다. */
 #prayer-view.open #prayer-tabs{
