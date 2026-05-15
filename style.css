@@ -4087,3 +4087,34 @@ html.ios-device #cover-main-block{
   height:calc((var(--cover-vh, 1dvh) * 100) - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px) - clamp(164px, calc(var(--cover-vh, 1vh) * 22), 204px))!important;
   max-height:700px!important;
 }
+
+
+/* V1-S: 주요기도문 탭 표시 복구 안전장치
+   V1-S3와 비교 시 prayer.js 자체 탭 생성 구조는 유지하고,
+   화면 전환/캐시 상태에서 탭 컨테이너가 비어 보이지 않도록 표시값만 확정한다. */
+#prayer-view.open #prayer-tabs{
+  display:flex!important;
+  visibility:visible!important;
+  opacity:1!important;
+  flex:0 0 var(--oai-std-tabbar-h,48px)!important;
+  height:var(--oai-std-tabbar-h,48px)!important;
+  min-height:var(--oai-std-tabbar-h,48px)!important;
+  max-height:var(--oai-std-tabbar-h,48px)!important;
+  align-items:center!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+}
+#prayer-view.open #prayer-tabs .pr-tab{
+  display:flex!important;
+  visibility:visible!important;
+  opacity:1!important;
+  align-items:center!important;
+  justify-content:center!important;
+  flex:0 0 auto!important;
+}
+html.ios-device #prayer-view.open #prayer-tabs{
+  flex-basis:var(--oai-ios-std-tabbar-h,46px)!important;
+  height:var(--oai-ios-std-tabbar-h,46px)!important;
+  min-height:var(--oai-ios-std-tabbar-h,46px)!important;
+  max-height:var(--oai-ios-std-tabbar-h,46px)!important;
+}

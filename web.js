@@ -20,7 +20,7 @@
    op:"천주교 서울대교구", url:"https://m.catholic.or.kr/web/addr/",
    desc:"교구·본당·기관 연락처와 주소를 모바일에서 빠르게 확인"},
   {cat:"신앙 포털", ico:"📘", name:"가톨릭 사전",
-   op:"Q&A 정보마당", url:"https://maria.catholic.or.kr/mobile/dictionary/dictionary.asp",
+   op:"서울대교구 굿뉴스", url:"https://maria.catholic.or.kr/mobile/dictionary/dictionary.asp",
    desc:"가톨릭 교리·전례·성경 용어를 모바일 사전으로 조회"},
   {cat:"신앙 포털", ico:"🌟", name:"성인/축일",
    op:"서울대교구 굿뉴스", url:"https://maria.catholic.or.kr/mobile/sa_ho/list/list.asp?menugubun=saint&today=on",

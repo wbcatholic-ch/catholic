@@ -227,6 +227,24 @@ function prApplyTabColors(){
   });
   if(activeBtn) activeBtn.scrollIntoView({behavior:'smooth', block:'nearest', inline:'center'});
 }
+
+// V1-S: 주요기도문 탭 표시 안전장치.
+// 일부 화면 전환/캐시 조합에서 목록은 렌더링되지만 탭 컨테이너가 비어 보이는 경우를 막는다.
+function prEnsureTabsVisible(){
+  const wrap = prG('prayer-tabs');
+  if(!wrap) return;
+  if(wrap.children.length < PR_CATS.length) prBuildTabs();
+  wrap.style.display = 'flex';
+  wrap.style.visibility = 'visible';
+  wrap.style.opacity = '1';
+  Array.from(wrap.children).forEach(function(btn){
+    btn.style.display = 'flex';
+    btn.style.visibility = 'visible';
+    btn.style.opacity = '1';
+  });
+  prApplyTabColors();
+}
+window.prEnsureTabsVisible = prEnsureTabsVisible;
 function prSwitchCat(cat){
   prCurCat = cat;
   const inp = prG('prayer-search-inp');
@@ -524,7 +542,7 @@ window.initPrayerView = function(){
   prCurCat = (prFavorites && prFavorites.length) ? 'favorites' : 'aim';
   prBuildTabs();
   prApplyFont();
-  prApplyTabColors();
+  prEnsureTabsVisible();
   prRenderList();
   // 상세뷰 초기화
   const detail = prG('prayer-detail');
