@@ -65,6 +65,71 @@
     }
   }
 
+  /* ── 주요기도문 전용 선형 뒤로가기 흐름
+     브라우저 history.go(1) 복원에 의존하지 않고 실제 단계 state를 쌓는다.
+     정상 흐름: 본문 → 목록 → 빠른메뉴 팝업 → 커버 → 종료 안내 → 종료 */
+  function prayerOpen(){
+    var pv = $b('prayer-view');
+    return !!(pv && pv.classList.contains('open'));
+  }
+  function prayerDetailOpen(){
+    var pd = $b('prayer-detail');
+    return !!(pd && pd.classList.contains('show'));
+  }
+  function prayerHref(){ return location.href.split('#')[0]; }
+  function primePrayerListHistory(reason){
+    try{
+      if(!prayerOpen()) return;
+      var st = history.state || {};
+      if(st.oai_prayer_stage === 'list') return;
+      history.pushState({_p:1, oai_prayer_stage:'list', reason:reason||'prayer-list'}, '', prayerHref());
+    }catch(e){ console.warn('[가톨릭길동무]', e); }
+  }
+  function pushPrayerDetailHistory(pid){
+    try{
+      if(!prayerOpen()) return;
+      var st = history.state || {};
+      if(st.oai_prayer_stage === 'detail') return;
+      history.pushState({_p:1, oai_prayer_stage:'detail', pid:pid||''}, '', prayerHref());
+    }catch(e){ console.warn('[가톨릭길동무]', e); }
+  }
+  function ensurePrayerListStateAfterDetailClose(){
+    try{
+      var st = history.state || {};
+      if(st.oai_prayer_stage === 'list') return;
+      history.replaceState({_p:1, oai_prayer_stage:'list', reason:'detail-close-normalized'}, '', prayerHref());
+    }catch(e){ console.warn('[가톨릭길동무]', e); }
+  }
+  function prayerDetailBackButton(){
+    try{
+      var st = history.state || {};
+      if(prayerOpen() && prayerDetailOpen() && st.oai_prayer_stage === 'detail'){
+        history.back();
+        return;
+      }
+    }catch(e){ console.warn('[가톨릭길동무]', e); }
+    if(typeof window.prCloseDetail === 'function') window.prCloseDetail({fromButton:true});
+    ensurePrayerListStateAfterDetailClose();
+  }
+  function handlePrayerLinearPopstate(){
+    try{
+      if(!prayerOpen()) return false;
+      if(prayerDetailOpen()){
+        if(typeof window.prCloseDetail === 'function') window.prCloseDetail({fromHistory:true});
+        ensurePrayerListStateAfterDetailClose();
+        return true;
+      }
+      if(typeof window._closePrayerAndReturn === 'function') window._closePrayerAndReturn({linearHistory:true});
+      else callGTC();
+      return true;
+    }catch(e){ console.warn('[가톨릭길동무]', e); return false; }
+  }
+  try{
+    window._primePrayerListHistory = primePrayerListHistory;
+    window._pushPrayerDetailHistory = pushPrayerDetailHistory;
+    window._prayerDetailBackButton = prayerDetailBackButton;
+  }catch(e){ console.warn('[가톨릭길동무]', e); }
+
   /* ── 외부·모듈 뷰 닫기 (닫으면 항상 goToCover) ── */
   function closeExtOrModule(){
     /* 매일미사 */
@@ -74,22 +139,21 @@
       else missa.classList.remove('open');
       return true;
     }
-    /* 기도문: 본문이면 목록으로, 목록이면 커버로 */
+    /* 기도문: 본문이면 목록으로, 목록이면 빠른메뉴 팝업 또는 커버로 */
     var prayer = $b('prayer-view');
     if(prayer && prayer.classList.contains('open')){
       var prayerDetail = $b('prayer-detail');
       if(prayerDetail && prayerDetail.classList.contains('show')){
         // 기도문 본문은 내부 레이어이므로 첫 뒤로가기는 본문만 닫고 목록을 유지한다.
-        // 닫은 뒤 다음 뒤로가기에서 목록 → 빠른메뉴 팝업 흐름을 탈 수 있도록 앱용 trap만 조용히 확인한다.
+        // history trap 복원은 이 popstate 핸들러의 _restoring 구간에서만 담당한다.
+        // 여기서 replaceState/pushState를 다시 실행하면 history.go(1) 복원과 충돌해
+        // 두 번째 기도문 본문에서 Back 1회 무반응 또는 앱 탈출이 발생한다.
         window.__APP_PRAYER_DETAIL_TS__ = Date.now();
-        if(typeof window.prCloseDetail === 'function') window.prCloseDetail();
+        if(typeof window.prCloseDetail === 'function') window.prCloseDetail({skipHistoryTrap:true});
         else prayerDetail.classList.remove('show');
         if(typeof window.showPrayerListOnly === 'function'){
           try{ window.showPrayerListOnly(); }catch(e){ console.warn('[가톨릭길동무]', e); }
         }
-        setTimeout(function(){
-          try{ if(typeof window._ensureAppBackTrap === 'function') window._ensureAppBackTrap('prayer-detail-to-list'); }catch(e){ console.warn('[가톨릭길동무]', e); }
-        }, 0);
         return true;
       }
       if(typeof window._closePrayerAndReturn === 'function') window._closePrayerAndReturn();
@@ -253,6 +317,10 @@
       }
     }catch(e){ console.warn('[가톨릭길동무]', e); }
 
+    /* 주요기도문은 본문/목록 단계를 실제 history state로 분리한다.
+       이 구간에서는 go(1) 복원을 쓰지 않아 Android/PWA에서 목록이 앱 종료로 빠지는 문제를 막는다. */
+    if(!_restoring && handlePrayerLinearPopstate()) return;
+
     /* 빠른메뉴/안내 팝업이 열려 있으면 어떤 복원 상태보다 먼저 닫는다.
        _restoring이 남은 상태에서 이 검사를 건너뛰면 Android PWA가 팝업을 닫지 못하고
        바로 앱 종료 흐름으로 빠질 수 있다. */
@@ -265,7 +333,15 @@
 
     if(_restoring){
       _restoring = false;
-      runPendingPrayerQuickPopup();
+      var _hadPopup = runPendingPrayerQuickPopup();
+      /* go(1) 복원 후 앱이 여전히 활성이면 트랩이 소멸된 상태이므로 반드시 재설정한다.
+         (closeExtOrModule이 본문닫기/레이어닫기 후 return true로 빠져나온 경우가 여기 해당) */
+      if(!_hadPopup && appActive()){
+        try{
+          history.replaceState({_p:0, oai_app_trap_from:'restoring'}, '', _href);
+          history.pushState({_p:1, oai_app_trap:'restoring'}, '', _href);
+        }catch(e){ console.warn('[가톨릭길동무]', e); }
+      }
       return;
     }
 
@@ -478,7 +554,7 @@
   if(window.__APP_FONT_SCALE_GUARD__) return;
   window.__APP_FONT_SCALE_GUARD__=true;
   // V37: 문의·건의는 qa-firebase.html 한 경로로만 통일한다.
-  var QA_URL="qa-firebase.html?v=V1";
+  var QA_URL="qa-firebase.html?v=V2-3";
   var FONT_KEY='prayer_font_size', BASE=16, SIZES=[13,14,15,16,17,18,19,20,21,22,24,26,28,30];
   function el(id){return document.getElementById(id)}
   function getPx(){var px=parseInt(localStorage.getItem(FONT_KEY)||BASE,10);return (px>=13&&px<=30)?px:BASE;}
