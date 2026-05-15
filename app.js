@@ -799,7 +799,7 @@ function syncCoverUpdateVersionState(){
     var box = document.getElementById('cover-update-box');
     var marker = document.getElementById('oai-build-marker');
     if(!btn || !box) return;
-    var target = btn.getAttribute('data-target-version') || 'v1-s';
+    var target = btn.getAttribute('data-target-version') || 'V1-S';
     var current = '';
     if(window.APP_VERSION) current = String(window.APP_VERSION).trim();
     if(!current && marker) current = String(marker.textContent || '').trim();
@@ -1127,7 +1127,7 @@ function openDioceseView(opts){
       if(!restore) try{ frame.contentWindow && frame.contentWindow.resetDioceseFirstPage && frame.contentWindow.resetDioceseFirstPage(); }catch(e){ console.warn("[가톨릭길동무]", e); }
       if(typeof dioceseLoaded==='function') dioceseLoaded();
     };
-    frame.src='diocese.html?v=v1-s';
+    frame.src='diocese.html?v=V1-S';
   }else if(!restore){
     try{ frame.contentWindow && frame.contentWindow.resetDioceseFirstPage && frame.contentWindow.resetDioceseFirstPage(); }catch(e){ console.warn("[가톨릭길동무]", e); }
   }
@@ -1839,7 +1839,7 @@ function oaiEnterView(el){
   try{
     var root=document.documentElement;
     if(root.classList.contains('oai-returning')) return;
-    // v1-s: 화면 진입 효과는 안정막으로 덮지 않고, 실제 화면 자체를 아주 짧게 fade-in 한다.
+    // V1-S: 화면 진입 효과는 안정막으로 덮지 않고, 실제 화면 자체를 아주 짧게 fade-in 한다.
     // 뒤로가기/history는 건드리지 않고, 카테고리 첫 진입의 시각 효과만 통일한다.
     el.classList.remove('oai-enter-ready','oai-enter-show','oai-prepaint-view');
     el.classList.add('oai-enter-ready');
