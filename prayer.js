@@ -226,6 +226,7 @@ function prApplyTabColors(){
     if(on) activeBtn = btn;
   });
   if(activeBtn) activeBtn.scrollIntoView({behavior:'smooth', block:'nearest', inline:'center'});
+  try{ if(typeof window.oaiKeepActiveTabsVisible === 'function') window.oaiKeepActiveTabsVisible('prayer'); }catch(e){ console.warn('[가톨릭길동무]', e); }
 }
 
 // V1-S: 주요기도문 탭 표시 안전장치.

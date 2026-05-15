@@ -699,6 +699,7 @@
     ig$('trail-panel-list')?.classList.toggle('on', v==='list');
     ig$('trail-tab-map')?.classList.toggle('on', v==='map');
     ig$('trail-tab-list')?.classList.toggle('on', v==='list');
+    try{ if(typeof window.oaiKeepActiveTabsVisible === 'function') window.oaiKeepActiveTabsVisible('trail'); }catch(e){ console.warn('[가톨릭길동무]', e); }
     if(v==='map'){
       trailCloseSheet();
       initTrailModule();

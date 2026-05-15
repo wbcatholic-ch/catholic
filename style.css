@@ -4118,3 +4118,13 @@ html.ios-device #prayer-view.open #prayer-tabs{
   min-height:var(--oai-ios-std-tabbar-h,46px)!important;
   max-height:var(--oai-ios-std-tabbar-h,46px)!important;
 }
+
+/* V1-S route/tab visibility refinement: 활성 탭이 스크롤 컨테이너 안에서 중앙에 잡히도록 여백만 보강 */
+#prayer-tabs .pr-tab,
+#web-cats .web-cat-btn,
+.trail-tabs .trail-tab,
+.qna-tabs .qna-tab,
+#srch-modal #sm-tab-bar .sm-tab,
+#tabbar .tab-btn{
+  scroll-margin-inline:18px;
+}

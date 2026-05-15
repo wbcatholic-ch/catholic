@@ -2375,7 +2375,47 @@ function _updateTabBtns(active){
   if(activeBtn){
     try{ activeBtn.scrollIntoView({behavior:'smooth', block:'nearest', inline:'center'}); }catch(e){ console.warn("[가톨릭길동무]", e); }
   }
+  try{ if(typeof window.oaiKeepActiveTabsVisible === 'function') window.oaiKeepActiveTabsVisible('map-tab'); }catch(e){ console.warn("[가톨릭길동무]", e); }
 }
+
+function oaiScrollActiveTabIntoView(container, behavior){
+  try{
+    if(!container) return false;
+    var active = container.querySelector('.active,.on,[aria-selected="true"],[aria-pressed="true"]');
+    if(!active) return false;
+    if(active === container) return false;
+    active.scrollIntoView({behavior: behavior || 'smooth', block:'nearest', inline:'center'});
+    return true;
+  }catch(e){ console.warn("[가톨릭길동무]", e); return false; }
+}
+function oaiKeepActiveTabsVisible(reason){
+  try{
+    var selectors = [
+      '#tabbar',
+      '#prayer-tabs',
+      '#web-cats',
+      '.trail-tabs',
+      '.qna-tabs',
+      '#srch-modal #sm-tab-bar',
+      '#sm-tab-bar'
+    ];
+    selectors.forEach(function(sel){
+      document.querySelectorAll(sel).forEach(function(container){
+        oaiScrollActiveTabIntoView(container, reason === 'instant' ? 'auto' : 'smooth');
+      });
+    });
+  }catch(e){ console.warn("[가톨릭길동무]", e); }
+}
+window.oaiKeepActiveTabsVisible = oaiKeepActiveTabsVisible;
+document.addEventListener('click', function(e){
+  try{
+    var t = e.target;
+    if(!t || !t.closest) return;
+    if(!t.closest('.tab-btn,.pr-tab,.web-cat-btn,.trail-tab,.qna-tab,.sm-tab,.filter-btn')) return;
+    setTimeout(function(){ oaiKeepActiveTabsVisible('click'); }, 30);
+    setTimeout(function(){ oaiKeepActiveTabsVisible('click-late'); }, 220);
+  }catch(err){ console.warn("[가톨릭길동무]", err); }
+}, true);
 
 function _getInfoCardCenterTargetY(mapH){
   // V37: 성지·성당·피정 지도 중심은 항상 인포카드가 올라왔을 때의 기준으로 통일한다.
@@ -2424,6 +2464,41 @@ function _setBoundsByInfoCardStandard(bounds, top, right, bottom, left){
   }
   return false;
 }
+
+function _getRouteBoundsPadding(){
+  const mapEl = $('map-wrap') || $('map');
+  const mapH = (mapEl && (mapEl.clientHeight || mapEl.offsetHeight)) || window.innerHeight || 700;
+  const tabH = ($('tabbar') && $('tabbar').offsetHeight) || 54;
+  const sheet = $('sheet-route');
+  let sheetH = 0;
+  try{
+    if(sheet && sheet.classList.contains('open')){
+      const r = sheet.getBoundingClientRect ? sheet.getBoundingClientRect() : null;
+      sheetH = Math.ceil((r && r.height) || sheet.offsetHeight || 0);
+    }
+  }catch(e){ console.warn('[가톨릭길동무]', e); }
+  const bottomMin = 172;
+  const bottomMax = Math.max(210, Math.round(mapH * 0.62));
+  const bottom = Math.min(bottomMax, Math.max(bottomMin, sheetH + 28));
+  return { top: tabH + 12, right: 52, bottom: bottom, left: 52 };
+}
+function _fitRouteBounds(bounds, opts){
+  if(!_map || !bounds) return false;
+  const pad = _getRouteBoundsPadding();
+  try{
+    _map.setBounds(bounds, pad.top, pad.right, pad.bottom, pad.left);
+    if(opts && opts.repeat){
+      setTimeout(function(){ try{ const p=_getRouteBoundsPadding(); _map.setBounds(bounds, p.top, p.right, p.bottom, p.left); }catch(e){ console.warn('[가톨릭길동무]', e); } }, 90);
+      setTimeout(function(){ try{ const p=_getRouteBoundsPadding(); _map.setBounds(bounds, p.top, p.right, p.bottom, p.left); }catch(e){ console.warn('[가톨릭길동무]', e); } }, 260);
+    }
+    return true;
+  }catch(e1){
+    try{ _map.setBounds(bounds); return true; }
+    catch(e2){ console.warn('[가톨릭길동무]', e2); }
+  }
+  return false;
+}
+
 function _focusMarkerAboveInfoCard(item){
   if(!_map || !item || !item.lat || !item.lng) return;
   try{
@@ -4030,20 +4105,18 @@ function _drawLine(s1,s2,path){
       o.marker.setMap(isRoute?_map:null);
     });
   }
+  }
+
   const bounds=new _LB();
   pts.forEach(p=>bounds.extend(p));
+  if(s1 && s1.lat && s1.lng) bounds.extend(new _LL(s1.lat,s1.lng));
+  if(s2 && s2.lat && s2.lng) bounds.extend(new _LL(s2.lat,s2.lng));
   if(_startTmpMkr) bounds.extend(new _LL(s1.lat,s1.lng));
   if(_endTmpMkr) bounds.extend(new _LL(s2.lat,s2.lng));
-  const tabH=($('tabbar')?.offsetHeight)||54;
-  // V37: 길찾기 경로도 성지·성당·피정의집 일반 인포카드와 같은 중심 기준을 사용한다.
-  // 아래 경로 카드가 떠 있어도 별도 55vh 보정을 쓰지 않고, 통일된 카드 기준 여백으로 맞춘다.
-  const routeBottomPad=142;
-  if(typeof _setBoundsByInfoCardStandard==='function'){
-    _setBoundsByInfoCardStandard(bounds,tabH+10,40,routeBottomPad,40);
-  }else{
-    try{_map.setBounds(bounds,tabH+10,40,routeBottomPad,40);}catch(e){ console.warn("[가톨릭길동무]", e); }
-  }
-  }
+  // 길찾기 결과는 아래 route 시트에 가려지기 쉬우므로,
+  // 일반 인포카드 중심 보정 대신 실제 route 시트 높이를 반영한 전용 bounds를 사용한다.
+  if(typeof _fitRouteBounds==='function') _fitRouteBounds(bounds, {repeat:true});
+  else { try{_map.setBounds(bounds,80,52,190,52);}catch(e){ console.warn("[가톨릭길동무]", e); } }
 }
 
 function _showJukrimgulParkingMkr(show){
