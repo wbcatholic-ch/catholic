@@ -7,7 +7,7 @@
   if(window.__APP_CACHE_LIFECYCLE_GUARD__) return;
   window.__APP_CACHE_LIFECYCLE_GUARD__ = true;
   var APP_VERSION = 'V1-S';
-  var SW_BUILD_VERSION = 'V1-S-routefit1';
+  var SW_BUILD_VERSION = 'V1-S-dio-return3';
   window.APP_VERSION = APP_VERSION;
 
   function now(){ return Date.now ? Date.now() : new Date().getTime(); }

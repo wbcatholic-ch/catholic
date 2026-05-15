@@ -1173,7 +1173,7 @@ function openDioceseView(opts){
       if(!restore) try{ frame.contentWindow && frame.contentWindow.resetDioceseFirstPage && frame.contentWindow.resetDioceseFirstPage(); }catch(e){ console.warn("[가톨릭길동무]", e); }
       if(typeof dioceseLoaded==='function') dioceseLoaded();
     };
-    frame.src='diocese.html?v=V1-S';
+    frame.src='diocese.html?v=V1-S-dio-return2';
   }else if(!restore){
     try{ frame.contentWindow && frame.contentWindow.resetDioceseFirstPage && frame.contentWindow.resetDioceseFirstPage(); }catch(e){ console.warn("[가톨릭길동무]", e); }
   }
@@ -1259,7 +1259,7 @@ function openDioceseExternal(url, state){
   // 레이아웃을 바꾸므로, 먼저 안정막을 확실히 띄운 뒤 다음 프레임에 이동한다.
   try{
     markExternalReturnStabilize('diocese-external');
-    if(typeof oaiHoldStabilityVeil === 'function') oaiHoldStabilityVeil('diocese-external-leave', 1500);
+    if(typeof oaiHoldStabilityVeil === 'function') oaiHoldStabilityVeil('diocese-external-leave', 5200);
   }catch(e){ console.warn('[가톨릭길동무]', e); }
   setTimeout(function(){
     try{ location.href = url; }catch(e){ try{ location.assign(url); }catch(_){ } }
@@ -1273,8 +1273,11 @@ function restoreDioceseExternalState(){
   try{ state=JSON.parse(raw); }catch(e){ state={}; }
   try{ sessionStorage.removeItem(DIOCESE_RETURN_KEY); }catch(e){ console.warn('[가톨릭길동무]', e); }
   try{
-    document.documentElement.classList.add('oai-diocese-returning');
-    if(typeof oaiHoldStabilityVeil === 'function') oaiHoldStabilityVeil('diocese-return', 1600);
+    var root=document.documentElement;
+    root.classList.add('oai-diocese-returning');
+    // 관구·교구는 iframe 안에서 지도/목록을 복원하므로 웹사이트 모듈보다 조금 더 오래 가린다.
+    // 복원 중간 프레임이 보이면 지도와 목록이 크게 흔들려 보이므로, 부모 덮개는 복원 완료 후에만 해제한다.
+    if(typeof oaiHoldStabilityVeil === 'function') oaiHoldStabilityVeil('diocese-return', 3200);
     if(typeof openDioceseView === 'function') openDioceseView({restore:true});
     if(typeof oaiSetMainMapLayerHidden === 'function') oaiSetMainMapLayerHidden(true);
     var frame=document.getElementById('diocese-frame');
@@ -1284,26 +1287,33 @@ function restoreDioceseExternalState(){
         if(w && typeof w.oaiReleaseDioceseStability === 'function') w.oaiReleaseDioceseStability();
       }catch(e){ console.warn('[가톨릭길동무]', e); }
     };
+    var beginIframeReturn=function(){
+      try{
+        var w=frame && frame.contentWindow;
+        if(w && typeof w.oaiBeginDioceseParentReturn === 'function') w.oaiBeginDioceseParentReturn();
+      }catch(e){ console.warn('[가톨릭길동무]', e); }
+    };
     var apply=function(){
       try{
         var w=frame && frame.contentWindow;
         if(w && typeof w.restoreDioceseReturnState === 'function') w.restoreDioceseReturnState(state || {});
-        releaseIframeVeil();
       }catch(e){ console.warn('[가톨릭길동무]', e); }
     };
-    setTimeout(apply, 80);
-    setTimeout(apply, 320);
-    setTimeout(apply, 720);
-    setTimeout(apply, 1120);
+    setTimeout(beginIframeReturn, 20);
+    setTimeout(apply, 120);
+    setTimeout(apply, 520);
+    setTimeout(apply, 980);
+    setTimeout(apply, 1500);
     setTimeout(function(){
-      try{ document.documentElement.classList.remove('oai-diocese-returning'); }catch(_e){}
+      try{ root.classList.remove('oai-diocese-returning'); }catch(_e){}
       try{ if(typeof oaiReleaseStabilityVeil === 'function') oaiReleaseStabilityVeil(); }catch(_e){}
       releaseIframeVeil();
-    }, 1650);
+    }, 3300);
     setTimeout(function(){
+      try{ root.classList.remove('oai-diocese-returning'); }catch(_e){}
       try{ if(typeof oaiReleaseStabilityVeil === 'function') oaiReleaseStabilityVeil(); }catch(_e){}
       releaseIframeVeil();
-    }, 2600);
+    }, 4600);
   }catch(e){ console.warn('[가톨릭길동무]', e); }
   return true;
 }
