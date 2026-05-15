@@ -1932,7 +1932,7 @@ window.addEventListener('pageshow',function(){
       var sv=document.getElementById('search-view'); if(sv) sv.scrollTop=Number(state.searchScroll||0);
       restoreOpenCard();
     },100);
-    setTimeout(function(){ try{ window.__OAI_DIO_PARENT_RETURNING__ = false; document.documentElement.classList.remove('oai-dio-returning','oai-dio-external-return','oai-dio-external-stabilize'); }catch(e){} }, 760);
+    setTimeout(function(){ try{ window.__OAI_DIO_PARENT_RETURNING__ = false; document.documentElement.classList.remove('oai-dio-returning','oai-dio-external-return','oai-dio-external-stabilize'); }catch(e){} }, 360);
   };
 
   window.resetDioceseFirstPage = function(){
@@ -1974,7 +1974,7 @@ window.addEventListener('pageshow',function(){
       if(p || (ts && Date.now()-ts<600000)){
         // 단독 diocese.html 복귀 때만 짧게 가리고, 반드시 해제한다.
         document.documentElement.classList.remove('oai-dio-external-stabilize');
-        document.documentElement.classList.add('oai-dio-external-return');
+        document.documentElement.classList.add('oai-dio-returning');
         setTimeout(clearDioceseStandaloneExternal, 650);
       }else{
         // 부모 PWA가 외부 이동을 담당한 경우에는 iframe 세션값이 없어서

@@ -3830,19 +3830,7 @@ html.oai-external-return-freeze *{
   animation:none!important;
   scroll-behavior:auto!important;
 }
-html.oai-stability-veil body::before,
-html.oai-external-return-freeze body::before{
-  content:"";
-  position:fixed;
-  inset:0;
-  z-index:2147483000;
-  background:#f5f0e8;
-  pointer-events:none;
-  transform:none!important;
-  transition:none!important;
-  opacity:1;
-}
-/* 안정막에는 로딩 원형을 표시하지 않는다. 화면이 가렸다가 사라지는 느낌을 줄이기 위함. */
+/* 안정화 클래스는 전환/애니메이션만 잠시 끄고, 화면을 덮는 보호막은 만들지 않는다. */
 @keyframes oaiStabilitySpin{to{transform:rotate(360deg)}}
 
 

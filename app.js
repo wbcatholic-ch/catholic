@@ -1178,7 +1178,7 @@ function openDioceseView(opts){
       if(!restore) try{ frame.contentWindow && frame.contentWindow.resetDioceseFirstPage && frame.contentWindow.resetDioceseFirstPage(); }catch(e){ console.warn("[가톨릭길동무]", e); }
       if(typeof dioceseLoaded==='function') dioceseLoaded();
     };
-    frame.src='diocese.html?v=V1-S-dio-return5';
+    frame.src='diocese.html?v=V1-S-dio-return6';
   }else if(!restore){
     try{ frame.contentWindow && frame.contentWindow.resetDioceseFirstPage && frame.contentWindow.resetDioceseFirstPage(); }catch(e){ console.warn("[가톨릭길동무]", e); }
   }
@@ -1277,7 +1277,6 @@ function restoreDioceseExternalState(){
     root.classList.add('oai-diocese-returning');
     // 관구·교구 복귀는 화면을 가리지 않고 애니메이션만 잠시 끈 상태로 복원한다.
     if(typeof openDioceseView === 'function') openDioceseView({restore:true});
-    if(typeof oaiSetMainMapLayerHidden === 'function') oaiSetMainMapLayerHidden(true);
     var frame=document.getElementById('diocese-frame');
     var releaseIframeVeil=function(){
       try{
@@ -1322,7 +1321,7 @@ function restoreDioceseExternalState(){
   return true;
 }
 window.addEventListener('pageshow', function(){ setTimeout(restoreDioceseExternalState, 80); }, true);
-window.addEventListener('focus', function(){ setTimeout(restoreDioceseExternalState, 100); }, true);
+window.addEventListener('focus', function(){ setTimeout(function(){ try{ oaiClearExternalNavigationState(); }catch(e){} }, 120); }, true);
 
 
 function clearRouteNoFocus(){
