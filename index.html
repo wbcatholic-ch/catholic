@@ -50,7 +50,15 @@
     var sr = parseInt(sessionStorage.getItem('oai_soft_refresh_requested') || '0', 10) || 0;
     softRefreshRecent = !!sr && (Date.now() - sr < 6000);
   }catch(e){}
-  // V1-S: 짧은 새로고침 직후에는 이전에 안정된 높이를 우선 사용해 첫 프레임 흔들림을 막는다.
+  // V1-S: 짧은 새로고침 직후에는 이전에 안정된 높이를 우선 사용하고,
+  // 첫 화면 페인트 동안 커버 카드/아이콘의 transition·active 잔상을 잠깐 잠가 좌우 흔들림을 막는다.
+  if(softRefreshRecent){
+    try{ root.classList.add('oai-soft-refresh-cover'); }catch(e){}
+    setTimeout(function(){ try{ root.classList.remove('oai-soft-refresh-cover'); }catch(e){} }, 1400);
+    window.addEventListener('load', function(){
+      setTimeout(function(){ try{ root.classList.remove('oai-soft-refresh-cover'); }catch(e){} }, 220);
+    }, {once:true});
+  }
   apply((softRefreshRecent && stored) ? stored : (stored || measured || 8), true);
 
   function isCoverVisible(){

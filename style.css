@@ -3964,6 +3964,36 @@ html.oai-diocese-returning #diocese-view *{
 }
 
 
+
+/* V1-S: 짧은 새로고침 직후 커버 카드/아이콘 좌우 떨림 방지
+   - 기능/배치 변경 없이 첫 페인트 동안 커버 영역의 transition·transform 잔상만 잠근다.
+   - cover-grid의 실제 폭을 100vw 기준으로 고정해 reload 직후 스크롤바/viewport 재계산에 따른 좌우 미세 이동을 막는다. */
+html.oai-soft-refresh-cover #cover,
+html.oai-soft-refresh-cover #cover-main-block,
+html.oai-soft-refresh-cover #cover .cover-grid,
+html.oai-soft-refresh-cover #cover .cover-card,
+html.oai-soft-refresh-cover #cover .cover-icon-wrap,
+html.oai-soft-refresh-cover #cover .cover-emoji,
+html.oai-soft-refresh-cover #cover #cover-action-row,
+html.oai-soft-refresh-cover #cover #cover-update-btn,
+html.oai-soft-refresh-cover #cover #qna-cover-btn{
+  transition:none!important;
+  animation:none!important;
+  transform:none!important;
+  scroll-behavior:auto!important;
+  backface-visibility:hidden!important;
+  will-change:auto!important;
+}
+html.oai-soft-refresh-cover #cover-main-block{
+  overflow:hidden!important;
+  inline-size:min(468px, calc(100vw - 20px))!important;
+}
+html.oai-soft-refresh-cover #cover .cover-grid{
+  inline-size:100%!important;
+  min-inline-size:0!important;
+  max-inline-size:100%!important;
+}
+
 /* V1-S: Fold 화면 전환 + 짧은 새로고침 안정화
    - 큰 화면↔작은 화면 전환 후 커버 하단 버튼/안내문구 겹침 방지
    - 커버 높이 재계산 중 transition/active scale로 흔들리는 느낌 제거 */

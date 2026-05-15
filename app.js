@@ -696,7 +696,7 @@ function _runRefreshAppFilesOnly(){
   try{
     if(btn){
       btn.disabled = true;
-      btn.textContent = '새로고침 중';
+      // 짧은 새로고침 직전 버튼 문구 폭이 바뀌며 커버 전체가 좌우로 흔들리지 않도록 기존 문구를 유지한다.
     }
     if(document.activeElement && document.activeElement.blur) document.activeElement.blur();
     // V37: 새로고침 전에는 레이아웃/스크롤/모달 DOM을 건드리지 않고,
