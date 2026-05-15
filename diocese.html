@@ -173,7 +173,7 @@ header{flex-shrink:0;background:var(--d);border-bottom:none;z-index:30;
 .lv-sec-bdg{font-size:15px;font-weight:800;padding:7px 20px;border-radius:20px;color:#fff;flex-shrink:0;min-width:100px;text-align:center;}
 .lv-sec-cnt{font-size:14px;color:var(--sub);font-weight:500;}
 /* 카드 */
-.lv-card{background:var(--card);border-radius:var(--r);border:1px solid var(--bdr);
+.lv-card{background:#F6EFE4;border-radius:var(--r);border:1px solid #D6C8B8;
   box-shadow:0 1px 8px rgba(0,0,0,.06);margin-bottom:12px;overflow:hidden;cursor:pointer;
   transition:transform .12s,box-shadow .12s;}
 .lv-card.oai-touch-pressed{transform:translateY(6px) scale(.982);box-shadow:none;filter:brightness(.96);}
@@ -183,7 +183,7 @@ header{flex-shrink:0;background:var(--d);border-bottom:none;z-index:30;
 .lv-op{font-size:11.5px;color:var(--dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 /* body: 아이콘 + 정보 */
 .lv-body{display:flex;align-items:center;gap:12px;padding:9px 14px 10px;}
-.lv-ico{width:52px;height:52px;flex-shrink:0;border-radius:var(--icon-r);display:flex;align-items:center;justify-content:center;font-size:28px;background:var(--card-sub);}
+.lv-ico{width:52px;height:52px;flex-shrink:0;border-radius:var(--icon-r);display:flex;align-items:center;justify-content:center;font-size:28px;background:#EFE4D6;}
 .lv-info{flex:1;min-width:0;}
 .lv-name{font-size:17px;font-weight:700;color:var(--tx);word-break:keep-all;line-height:1.35;margin-bottom:4px;}
 .lv-rg{font-size:13px;font-weight:500;color:var(--sub);line-height:1.4;margin-bottom:2px;}
@@ -192,7 +192,7 @@ header{flex-shrink:0;background:var(--d);border-bottom:none;z-index:30;
 .lv-parish-count b{display:block;font-size:12px;font-weight:500;letter-spacing:-.03em;line-height:1;margin:0;}
 .lv-parish-count span{font-size:7px;font-weight:500;opacity:.72;}
 /* foot: URL */
-.lv-foot{border-top:1px solid #EDE8E2;padding:9px 14px;display:flex;align-items:center;justify-content:space-between;background:#FAF8F4;}
+.lv-foot{border-top:1px solid #DCCFBE;padding:9px 14px;display:flex;align-items:center;justify-content:space-between;background:#EFE5D8;}
 .lv-url{font-size:12px;color:var(--d);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0;}
 .lv-arr{font-size:15px;color:var(--dim);flex-shrink:0;margin-left:6px;}
 
@@ -239,6 +239,12 @@ body > header{display:none!important;visibility:hidden!important;height:0!import
 
 /* v1: 헤더 아이콘 중앙 정렬 보정 */
 .hd-icon{line-height:1!important;display:flex!important;align-items:center!important;justify-content:center!important;overflow:hidden!important;font-family:"Apple SD Gothic Neo","Noto Sans KR",Arial,sans-serif!important;}
+
+html.oai-dio-external-stabilize *,
+html.oai-dio-external-return *{transition:none!important;animation:none!important;scroll-behavior:auto!important;}
+html.oai-dio-external-stabilize body::before,
+html.oai-dio-external-return body::before{content:"";position:fixed;inset:0;z-index:2147483000;background:#EDE8E0;pointer-events:none;}
+
 </style>
 <style id="oai-diocese-tab-standard-20260504">
 /* 관구교구 헤더 아래 탭 버튼 표준화 + 글자 크기 조절(지도 제외) */
@@ -1866,10 +1872,34 @@ window.addEventListener('pageshow',function(){
     var sv=document.getElementById('search-view'); if(sv) sv.scrollTop=0;
     var btn=document.querySelector('.tab[data-tab="gwangu"]'); if(btn) btn.click();
   };
+  function markDioceseStandaloneExternal(){
+    try{
+      sessionStorage.setItem('oai_diocese_external_pending','1');
+      sessionStorage.setItem('oai_diocese_external_ts', String(Date.now ? Date.now() : new Date().getTime()));
+      document.documentElement.classList.add('oai-dio-external-stabilize');
+    }catch(e){}
+  }
+  function clearDioceseStandaloneExternal(){
+    try{
+      document.documentElement.classList.remove('oai-dio-external-stabilize','oai-dio-external-return');
+      sessionStorage.removeItem('oai_diocese_external_pending');
+      sessionStorage.removeItem('oai_diocese_external_ts');
+    }catch(e){}
+  }
+  window.addEventListener('pageshow', function(){
+    try{
+      var p=sessionStorage.getItem('oai_diocese_external_pending')==='1';
+      var ts=parseInt(sessionStorage.getItem('oai_diocese_external_ts')||'0',10)||0;
+      if(p || (ts && Date.now()-ts<600000)){
+        document.documentElement.classList.add('oai-dio-external-return');
+        setTimeout(clearDioceseStandaloneExternal, 650);
+      }
+    }catch(e){}
+  }, true);
   window.openDioceseUrl = function(url, source){
     if(!url) return; var state=window.getDioceseReturnState(source||'link');
     if(window.parent && window.parent!==window && typeof window.parent.openDioceseExternal==='function') window.parent.openDioceseExternal(url,state);
-    else { try{ sessionStorage.setItem('oai_diocese_standalone_return',JSON.stringify(state)); }catch(e){} location.href=url; }
+    else { try{ sessionStorage.setItem('oai_diocese_standalone_return',JSON.stringify(state)); }catch(e){} markDioceseStandaloneExternal(); location.href=url; }
   };
   document.addEventListener('click',function(e){ var t=e.target&&e.target.closest?e.target.closest('[data-dio-url]'):null; if(!t) return; e.preventDefault(); e.stopPropagation(); window.openDioceseUrl(t.getAttribute('data-dio-url'),t.getAttribute('data-dio-source')||'link'); },true);
 })();
