@@ -828,7 +828,6 @@
   };
   /* 관구·교구 외부 홈페이지 이동/복귀는 app.js의 openDioceseExternal/restoreDioceseExternalState 한 곳에서만 처리한다. */
 })();
-
 (function(){
   'use strict';
   if(window.__APP_BACK_ROUTE_GUARD__) return;

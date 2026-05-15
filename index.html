@@ -45,9 +45,8 @@
   }
   var measured = measure();
   var stored = readStored();
-  // V1-S: 짧은 새로고침 때는 저장된 높이를 우선 사용해 첫 프레임 재측정 흔들림을 막는다.
-  // 측정값은 저장값이 없을 때만 즉시 반영하고, 이후 회전/큰 화면 변화 때만 갱신한다.
-  apply(stored || measured || 8, !stored);
+  // V1-S: 첫 진입은 현재 화면 높이를 즉시 고정하고, 저장값은 측정 실패 때만 사용한다.
+  apply(measured || stored || 8, true);
 
   function isCoverVisible(){
     try{
@@ -60,16 +59,17 @@
     if(!isCoverVisible()) return;
     var next = measure();
     if(!next) return;
-    var cur = readStored() || parseFloat(getComputedStyle(root).getPropertyValue('--cover-vh')) || 0;
-    // 모바일 브라우저의 주소창/새로고침 미세 변화는 화면 떨림의 원인이므로 무시한다.
-    // 폴드 화면 전환·회전처럼 실제 높이 차이가 큰 경우에만 커버 높이를 다시 저장한다.
-    if(cur && Math.abs(next - cur) < 0.75) return;
     apply(next, true);
+    try{
+      root.classList.add('oai-cover-resizing');
+      clearTimeout(settleTimer);
+      settleTimer = setTimeout(function(){ root.classList.remove('oai-cover-resizing'); }, 180);
+    }catch(e){}
   }
   function scheduleSettle(reason){
     clearTimeout(settleTimer);
-    settleTimer = setTimeout(function(){ settleCoverSize(reason); }, 140);
-    setTimeout(function(){ settleCoverSize(reason + '-late'); }, 420);
+    settleTimer = setTimeout(function(){ settleCoverSize(reason); }, 90);
+    setTimeout(function(){ settleCoverSize(reason + '-late'); }, 260);
   }
   window.addEventListener('orientationchange', function(){ scheduleSettle('orientation'); }, {passive:true});
   window.addEventListener('resize', function(){ scheduleSettle('resize'); }, {passive:true});
@@ -80,13 +80,27 @@
 })();
 </script>
 <script>
-/* 외부 사이트 복귀 시 별도 화면 덮개는 사용하지 않는다.
-   복귀 상태 정리는 app.js의 단일 루틴에서만 처리해 관구·교구 깜빡임을 막는다. */
+/* 외부 사이트 복귀 직후 한 프레임 흔들림을 숨기는 아주 짧은 안정막.
+   화면/뒤로가기 상태는 건드리지 않고, 복귀 직후 레이아웃 재계산이 보이지 않게만 한다. */
 (function(){
-  try{ document.documentElement.classList.remove('oai-external-return-freeze'); }catch(e){}
+  function now(){ return Date.now ? Date.now() : new Date().getTime(); }
+  function hasPendingExternalReturn(){
+    try{
+      var ts=parseInt(sessionStorage.getItem('oai_external_nav_started_at')||'0',10)||0;
+      return !!ts && (now()-ts) < 10*60*1000;
+    }catch(e){ return false; }
+  }
+  function hold(ms){
+    try{ document.documentElement.classList.add('oai-external-return-freeze'); }catch(e){}
+    setTimeout(function(){
+      try{ document.documentElement.classList.remove('oai-external-return-freeze'); }catch(e){}
+    }, ms || 650);
+  }
+  if(hasPendingExternalReturn()) hold(760);
+  window.addEventListener('pageshow', function(){ if(hasPendingExternalReturn()) hold(760); }, true);
 })();
 </script>
-<script src="parishes.js?v=V1-S-dio-return6"></script>
+<script src="parishes.js?v=V1-S-dio-return4"></script>
 <script>
 /* 공개 코드에는 Kakao JavaScript 키와 REST 프록시 주소만 둡니다.
    - Kakao JavaScript 키는 Kakao Developers에서 웹 도메인 제한을 반드시 적용하세요.
@@ -110,8 +124,8 @@ window.APP_CONFIG = {
 <meta name="application-name" content="가톨릭길동무">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0e1535">
-<link rel="manifest" href="manifest.json?v=V1-S-dio-return6">
-<link rel="apple-touch-icon" href="icon-192x192.png?v=V1-S-dio-return6">
+<link rel="manifest" href="manifest.json?v=V1-S-dio-return4">
+<link rel="apple-touch-icon" href="icon-192x192.png?v=V1-S-dio-return4">
 <meta name="format-detection" content="telephone=no">
 <meta name="description" content="가톨릭길동무 - 가톨릭 신앙생활 종합 앱">
 <title>가톨릭길동무</title>
@@ -121,7 +135,7 @@ window.APP_CONFIG = {
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <style id="oai-initial-bg">html,body{margin:0;background:#f5f0e8;}body{min-height:100vh;}#cover,#app{background:#f5f0e8;}</style>
-<link rel="stylesheet" href="style.css?v=V1-S-dio-return6">
+<link rel="stylesheet" href="style.css?v=V1-S-dio-return4">
 </head>
 <body>
 <div id="missa-view" role="dialog" aria-modal="true" aria-label="매일미사">
@@ -295,30 +309,30 @@ window.APP_CONFIG = {
         <div class="ios-safari-step">
           <b>1</b>
           <span>카카오톡 하단 버튼 4개 중 <strong>오른쪽 끝 버튼</strong>을 누르세요.</span>
-          <img src="ios-install-step1-kakao-bottom-buttons.png?v=V1-S-dio-return6" alt="카카오톡 오른쪽 아래 버튼 모양">
+          <img src="ios-install-step1-kakao-bottom-buttons.png?v=V1-S-dio-return4" alt="카카오톡 오른쪽 아래 버튼 모양">
         </div>
         <div class="ios-safari-step">
           <b>2</b>
           <span>공유 화면에서 <strong>Safari로 열기</strong>를 누르세요.</span>
-          <img src="ios-install-step2-safari-open.png?v=V1-S-dio-return6" alt="Safari로 열기 버튼">
+          <img src="ios-install-step2-safari-open.png?v=V1-S-dio-return4" alt="Safari로 열기 버튼">
         </div>
         <div class="ios-safari-step">
           <b>3</b>
           <span>Safari로 열린 뒤, 화면 <strong>오른쪽 아래 ··· 버튼</strong>을 누르세요.</span>
           <div class="ios-safari-shot ios-safari-shot-more">
-            <img src="KakaoTalk_20260514_134255658_04.jpg?v=V1-S-dio-return6" alt="Safari 오른쪽 아래 더보기 버튼">
+            <img src="KakaoTalk_20260514_134255658_04.jpg?v=V1-S-dio-return4" alt="Safari 오른쪽 아래 더보기 버튼">
             <i class="ios-gold-highlight" aria-hidden="true"></i>
           </div>
         </div>
         <div class="ios-safari-step">
           <b>4</b>
           <span>열린 메뉴에서 <strong>공유</strong>를 누르세요.</span>
-          <img src="ios-install-step3-share-menu.png?v=V1-S-dio-return6" alt="Safari 공유 버튼">
+          <img src="ios-install-step3-share-menu.png?v=V1-S-dio-return4" alt="Safari 공유 버튼">
         </div>
         <div class="ios-safari-step">
           <b>5</b>
           <span>목록을 아래로 내려 <strong>홈 화면에 추가</strong>를 누르세요.</span>
-          <img src="ios-install-step4-home-screen.png?v=V1-S-dio-return6" alt="홈 화면에 추가 버튼">
+          <img src="ios-install-step4-home-screen.png?v=V1-S-dio-return4" alt="홈 화면에 추가 버튼">
         </div>
       </div>
     </div>
@@ -398,7 +412,7 @@ window.APP_CONFIG = {
   📲 홈 화면에 앱 설치하기
 </button>
 </div>
-<script src="app.js?v=V1-S-dio-return6"></script>
+<script src="app.js?v=V1-S-dio-return4"></script>
 <div id="oai-category-entry-veil" aria-hidden="true"></div>
 <div id="app"><div id="tabbar"><button id="tab-btn-nearby" class="tab-btn" data-tab="nearby"><span class="tab-icon">📍</span><span id="tab-nearby-lbl">내주변</span></button><button id="tab-btn-list" class="tab-btn" data-tab="list"><span class="tab-icon">📋</span><span id="tab-list-lbl">목록</span></button><button id="tab-btn-region" class="tab-btn" data-tab="region"><span class="tab-icon">🔍</span>지역검색
     </button><button id="tab-btn-route" class="tab-btn" data-tab="route"><span class="tab-icon">🧭</span>길찾기
@@ -474,14 +488,14 @@ window.APP_CONFIG = {
     </div>
   </div>
 </div>
-<script src="web.js?v=V1-S-dio-return6"></script>
-<script src="prayer.js?v=V1-S-dio-return6"></script>
+<script src="web.js?v=V1-S-dio-return4"></script>
+<script src="prayer.js?v=V1-S-dio-return4"></script>
 
 <div id="qna-view" role="dialog" aria-modal="true" aria-label="문의·건의" class="module-view"><div class="module-bar qna"><div class="module-bar-main"><div class="module-bar-ico">✝</div><div class="module-bar-txt"><div class="module-bar-title">문의·건의 / Q&A</div><div class="module-bar-sub">질문, 오류, 수정요청을 남기고 답변을 확인하세요</div></div></div><button id="qna-close-btn" class="module-close" aria-label="문의·건의 닫기">×</button></div><div class="qna-body"><div class="qna-tabs"><button id="qna-tab-write" class="qna-tab on" type="button">작성</button><button id="qna-tab-answers" class="qna-tab" type="button">답변</button></div><div class="qna-list" id="qna-list"></div></div></div>
 
-<script src="patches.js?v=V1-S-dio-return6"></script>
+<script src="patches.js?v=V1-S-dio-return4"></script>
 
-<script src="sw-update.js?v=V1-S-dio-return6"></script>
+<script src="sw-update.js?v=V1-S-dio-return4"></script>
 
 
 
