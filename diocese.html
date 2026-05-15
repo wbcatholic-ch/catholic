@@ -1992,17 +1992,11 @@ window.addEventListener('pageshow',function(){
   document.addEventListener('visibilitychange', function(){ if(document.visibilityState==='visible'){ setTimeout(clearDioceseStandaloneExternal, 180); setTimeout(clearDioceseStandaloneExternal, 1400); } }, true);
   window.openDioceseUrl = function(url, source){
     if(!url) return; var state=window.getDioceseReturnState(source||'link');
-    try{
-      document.documentElement.classList.add('oai-dio-external-stabilize');
-      if(window.parent && window.parent!==window && typeof window.parent.oaiHoldStabilityVeil==='function') window.parent.oaiHoldStabilityVeil('diocese-iframe-leave', 5200);
-    }catch(e){}
+    // 부모 앱 안에서는 웹사이트 모듈과 동일하게 별도 안정막 없이 바로 이동한다.
+    // oai-dio-external-stabilize / parent oaiHoldStabilityVeil 이 입장·퇴장 1회 깜빡임의 원인이었다.
     if(window.parent && window.parent!==window && typeof window.parent.openDioceseExternal==='function'){
       clearDioceseStandaloneExternal();
       window.parent.openDioceseExternal(url,state);
-      // 실제로 부모 페이지가 외부로 이동하면 이 타이머는 보이지 않지만,
-      // 이동이 지연되거나 복귀가 bfcache로 처리될 때 안정막이 남는 것을 방지한다.
-      setTimeout(clearDioceseStandaloneExternal, 5200);
-      setTimeout(clearDioceseStandaloneExternal, 7200);
     }
     else { try{ sessionStorage.setItem('oai_diocese_standalone_return',JSON.stringify(state)); }catch(e){} markDioceseStandaloneExternal(); setTimeout(function(){ location.href=url; }, 90); }
   };
