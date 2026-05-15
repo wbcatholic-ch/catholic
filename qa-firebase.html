@@ -2,9 +2,6 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Cache-Control" content="no-cache, max-age=0, must-revalidate">
-<meta http-equiv="Pragma" content="no-cache">
-<meta http-equiv="Expires" content="0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>문의 · 건의 | 가톨릭길동무</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -217,23 +214,6 @@
     font-size: 16px; color: var(--gray-500); margin-bottom: 12px;
   }
 
-  /* ── 관리자 영역 ── */
-  .admin-area { margin-top: 20px; padding-top: 16px; border-top: 1px dashed var(--gray-200); }
-  #admin-toggle-btn {
-    width: 100%; background: #fffaf2; border: 1px dashed #e6dccb;
-    color: #8a7b68; border-radius: 10px; padding: 10px;
-    font-size: 16px; cursor: pointer; font-family: inherit;
-  }
-  #admin-form { background: #fffaf2; border: 1px solid #e6dccb; border-radius: var(--radius); padding: 14px; }
-  .admin-pin-row { display: flex; gap: 8px; margin-bottom: 10px; }
-  #admin-pin-input { flex: 1; }
-  #admin-pin-check { padding: 0 16px; background: #92400E; color: #fff; border: none; border-radius: 10px; font-size: 16px; cursor: pointer; font-family: inherit; }
-  #answer-textarea {
-    width: 100%; border: 1px solid #e6dccb; border-radius: 10px;
-    padding: 10px 12px; font-size: 16px; line-height: 1.75; resize: vertical;
-    font-family: inherit; background: #fffaf2; min-height: 100px;
-  }
-
   /* ── 글쓰기 ── */
   #write-view { padding: 16px; background:var(--bg); }
   .field-group { margin-bottom: 18px; }
@@ -402,9 +382,6 @@ const FIREBASE_CONFIG = {
   appId:             "1:952327785327:web:1576bc6d678ba42f8a369a"
 };
 
-
-const ADMIN_PASSWORD = "cksgurdltkfkdgo";
-
 /* ══════════════════════════════════════════════ */
 
 firebase.initializeApp(FIREBASE_CONFIG);
@@ -420,7 +397,6 @@ const FILTERS     = ["전체", ...CATEGORIES];
 let currentFilter  = "전체";
 let currentPost    = null;
 let selectedCat    = "문의";
-let adminUnlocked  = false;
 let unsubscribe    = null;
 
 function updatePostListScrollState(){
@@ -520,7 +496,6 @@ function goList(opt)   {
   try{ document.activeElement && document.activeElement.blur && document.activeElement.blur(); }catch(e){}
   opt = opt || {};
   showView('list-view', { history: opt.history !== false, historyMode: opt.historyMode || 'replace' });
-  adminUnlocked = false;
   currentPost = null;
 }
 function goWrite()  {
@@ -577,9 +552,9 @@ function renderList(posts) {
     return `
       <div class="card" style="animation-delay:${i*0.04}s" onclick="openPost('${p.id}')">
         <div class="card-top">
-          <span class="badge badge-${p.category}">${p.category}</span>
+          <span class="badge badge-${escHtml(p.category)}">${escHtml(p.category)}</span>
           ${statusBadge}
-          <span class="card-date">${p.date}</span>
+          <span class="card-date">${escHtml(p.date)}</span>
         </div>
         <div class="card-title">${escHtml(p.title)}</div>
         <div class="card-meta">${escHtml(p.author)}</div>
@@ -614,8 +589,7 @@ function openPost(id) {
 }
 
 function showDetailView(post) {
-  currentPost   = post;
-  adminUnlocked = false;
+  currentPost = post;
 
   const contentHTML = escHtml(post.content);
 
@@ -623,13 +597,13 @@ function showDetailView(post) {
     <div style="padding:16px;">
       <div class="detail-head">
         <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
-          <span class="badge badge-${post.category}">${post.category}</span>
+          <span class="badge badge-${escHtml(post.category)}">${escHtml(post.category)}</span>
           ${post.answered
             ? '<span class="badge badge-done">✓ 답변완료</span>'
             : '<span class="badge badge-wait">⏳ 답변대기</span>'}
         </div>
         <div class="detail-title">${escHtml(post.title)}</div>
-        <div class="detail-meta">${escHtml(post.author)} · ${post.date}</div>
+        <div class="detail-meta">${escHtml(post.author)} · ${escHtml(post.date)}</div>
       </div>
 
       <div class="detail-body">${contentHTML}</div>
@@ -640,73 +614,9 @@ function showDetailView(post) {
           <div class="answer-text">${escHtml(post.answer)}</div>
         </div>` : `
         <div class="pending-box">⏳ 답변을 준비 중입니다. 잠시 기다려 주세요.</div>`}
-
-      <div class="admin-area">
-        <button id="admin-toggle-btn" onclick="toggleAdminArea()">🔧 관리자 답변 달기</button>
-        <div id="admin-form" style="display:none;">
-          <div style="font-size:16px;font-weight:700;color:#92400E;margin-bottom:10px;">관리자 인증 후 답변 작성</div>
-          <div class="admin-pin-row" id="admin-pin-row">
-            <input type="password" id="admin-pin-input" placeholder="관리자 비밀번호" style="flex:1;">
-            <button id="admin-pin-check" onclick="verifyAdmin()">확인</button>
-          </div>
-          <div id="admin-write-area" style="display:none;">
-            <textarea id="answer-textarea" rows="4" placeholder="답변을 입력하세요…">${escHtml(post.answer || '')}</textarea>
-            <div class="btn-row">
-              <button class="btn-primary" style="font-size:16px;" onclick="submitAnswer()">답변 등록</button>
-              <button class="btn-secondary" onclick="deleteCurrentPost()">글 삭제</button>
-              <button class="btn-secondary" onclick="toggleAdminArea()">취소</button>
-            </div>
-          </div>
-          <div id="admin-error" class="error-msg" style="display:none;margin-top:8px;"></div>
-        </div>
-      </div>
     </div>`;
 
   goDetail();
-}
-
-/* ═══════════════════ 관리자 ═══════════════════ */
-function toggleAdminArea() {
-  const form = document.getElementById('admin-form');
-  form.style.display = form.style.display === 'none' ? 'block' : 'none';
-}
-function verifyAdmin() {
-  const pw = document.getElementById('admin-pin-input').value;
-  if (pw === ADMIN_PASSWORD) {
-    document.getElementById('admin-pin-row').style.display = 'none';
-    document.getElementById('admin-write-area').style.display = 'block';
-    document.getElementById('admin-error').style.display = 'none';
-    adminUnlocked = true;
-  } else {
-    document.getElementById('admin-error').textContent = '비밀번호가 틀렸습니다.';
-    document.getElementById('admin-error').style.display = 'block';
-  }
-}
-async function submitAnswer() {
-  if (!adminUnlocked) return;
-  const text = document.getElementById('answer-textarea').value.trim();
-  if (!text) return;
-  try {
-    await COL.doc(currentPost.id).update({ answer: text, answered: true });
-    currentPost = { ...currentPost, answer: text, answered: true };
-    alert('답변이 등록되었습니다.');
-    showDetailView(currentPost);
-  } catch(e) {
-    alert('저장 실패: ' + e.message);
-  }
-}
-
-async function deleteCurrentPost() {
-  if (!adminUnlocked || !currentPost) return;
-  if (!confirm('이 글을 삭제하시겠습니까? 삭제 후에는 되돌릴 수 없습니다.')) return;
-  try {
-    await COL.doc(currentPost.id).delete();
-    alert('삭제되었습니다.');
-    currentPost = null;
-    goList();
-  } catch(e) {
-    alert('삭제 실패: ' + e.message);
-  }
 }
 
 /* ═══════════════════ 글쓰기 ═══════════════════ */
@@ -843,7 +753,7 @@ subscribeList();
     '.btn-kakao-route','.btn-kakao-nav','.c-btn',
     '.web-card','.trail-foot','.web-card-foot','.trail-sh-foot',
     '#close-btn','.module-close','.sheet-x','.sm-x','.ic-close-btn','.c-x',
-    '.btn-primary','.btn-secondary','#write-btn','#sb','#admin-pin-check'
+    '.btn-primary','.btn-secondary','#write-btn','#sb'
   ].join(',');
 
   function closest(el, sel){
