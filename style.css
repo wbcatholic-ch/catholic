@@ -1605,8 +1605,9 @@ html.retreat-mode #sm-tab-bar .sm-tab.active{
 .app-pressing{transition:transform .16s ease,filter .16s ease;will-change:transform}
 .app-touchable{transition:transform .16s ease,filter .16s ease;will-change:transform}
 .tab.on,.tab.on:active{transform:none}
-.oai-enter-ready{opacity:0;transform:none!important}
-.oai-enter-ready.oai-enter-show{opacity:1;transform:none!important;transition:opacity .24s cubic-bezier(.22,.61,.36,1)}
+.oai-enter-ready{opacity:.01!important;transform:none!important;transition:none!important;will-change:opacity}
+.oai-enter-ready.oai-enter-show{opacity:1!important;transform:none!important;transition:opacity .22s ease-out!important}
+.oai-prepaint-view{visibility:hidden!important;opacity:1!important;transform:none!important;transition:none!important}
 html.oai-returning .oai-enter-ready{opacity:1;transform:none!important;transition:none!important}
 #oai-category-entry-veil{position:fixed;left:0;right:0;top:var(--tab-h,72px);bottom:0;z-index:790;display:none;align-items:center;justify-content:center;pointer-events:none;opacity:0;transition:opacity .22s cubic-bezier(.22,.61,.36,1);transform:translateZ(0);backface-visibility:hidden}
 html.oai-category-entering #oai-category-entry-veil{display:flex;opacity:1}
@@ -3757,4 +3758,195 @@ html:not(.ios-device) #ios-safari-guide-modal{
   font-weight:800!important;
   line-height:1.5!important;
   word-break:keep-all!important;
+}
+
+/* v1-s 화면 흔들림 안정화
+   - 첫 커버는 index.html에서 --cover-vh를 최초 1회만 고정한다.
+   - 헤더가 있는 모듈/웹사이트 화면은 한 프레임 prepaint 후 보여서 헤더가 본문을 밀어내는 느낌을 줄인다.
+   - 뒤로가기/카테고리 로직은 변경하지 않는다. */
+#web-view.module-view.open,
+#trail-view.module-view.open,
+#qna-view.module-view.open,
+#diocese-view.open,
+#prayer-view.open,
+#missa-view.open{
+  transform:none!important;
+  transition:none!important;
+  animation:none!important;
+  contain:layout paint!important;
+  will-change:auto!important;
+}
+#web-view .module-bar,
+#trail-view .module-bar,
+#qna-view .module-bar,
+#diocese-view .module-bar,
+#prayer-bar{
+  flex:0 0 calc(var(--oai-std-header-h,70px) + env(safe-area-inset-top,0px))!important;
+}
+#web-view .web-body,
+#trail-view .trail-body,
+#qna-view .qna-body,
+#prayer-list-view{
+  transform:none!important;
+  transition:none!important;
+  animation:none!important;
+}
+
+
+/* v1-s 화면 흔들림 재수정
+   - 커버는 실제 사용 중인 --cover-vh 고정값만 사용한다.
+   - 외부 사이트 복귀/모듈 진입·닫힘 순간에는 아주 짧은 안정막으로 헤더 재배치가 보이지 않게 한다.
+   - 뒤로가기 로직은 변경하지 않는다. */
+#cover,
+html:not(.app-active) #cover{
+  height:calc(var(--cover-vh, 1vh) * 100)!important;
+  min-height:calc(var(--cover-vh, 1vh) * 100)!important;
+  max-height:calc(var(--cover-vh, 1vh) * 100)!important;
+}
+#cover .cv-shell,
+#cover .cv-shell-stage{
+  height:calc(var(--cover-vh, 1vh) * 100)!important;
+  min-height:calc(var(--cover-vh, 1vh) * 100)!important;
+}
+#web-view.module-view.open,
+#trail-view.module-view.open,
+#qna-view.module-view.open,
+#diocese-view.open,
+#missa-view.open{
+  top:0!important;
+  bottom:0!important;
+  height:calc(var(--cover-vh, 1vh) * 100)!important;
+  min-height:calc(var(--cover-vh, 1vh) * 100)!important;
+  max-height:calc(var(--cover-vh, 1vh) * 100)!important;
+  transform:none!important;
+  transition:none!important;
+  animation:none!important;
+  overflow:hidden!important;
+  contain:layout paint size!important;
+}
+html.oai-stability-veil *,
+html.oai-external-return-freeze *{
+  transition:none!important;
+  animation:none!important;
+  scroll-behavior:auto!important;
+}
+html.oai-stability-veil body::before,
+html.oai-external-return-freeze body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:2147483000;
+  background:#f5f0e8;
+  pointer-events:none;
+  transform:none!important;
+  transition:none!important;
+  opacity:1;
+}
+html.oai-stability-veil body::after,
+html.oai-external-return-freeze body::after{
+  content:"";
+  position:fixed;
+  left:50%;
+  top:50%;
+  width:28px;
+  height:28px;
+  margin:-14px 0 0 -14px;
+  border-radius:50%;
+  border:3px solid rgba(31,42,68,.16);
+  border-top-color:#1f2a44;
+  z-index:2147483001;
+  pointer-events:none;
+  animation:oaiStabilitySpin .75s linear infinite!important;
+}
+@keyframes oaiStabilitySpin{to{transform:rotate(360deg)}}
+
+
+/* v1-s: 성지·성당·피정의집 첫 진입 깜빡임 방지
+   지도 로딩 전에 내 주변 아이보리 시트를 먼저 고정해, 지도/배경이 먼저 보이는 순간을 숨긴다. */
+.sheet.oai-preopen-nearby{
+  transform:translate(0,0)!important;
+  transition:none!important;
+  animation:none!important;
+  will-change:auto!important;
+}
+html.oai-category-entering #sheet-nearby.oai-preopen-nearby{
+  z-index:820!important;
+}
+#sheet-nearby.oai-preopen-nearby .sheet-body{
+  background:var(--ui-bg,#f7f4ee)!important;
+}
+
+
+/* v1-s: 커버 아이콘 하단 잘림 보정
+   V1-19에서 십자가 위치 안정화를 위해 overflow:hidden을 적용했지만,
+   일부 emoji/폰트가 아이콘 박스 아래에서 잘렸다. 위치 안정화는 유지하고 클리핑만 해제한다. */
+#cc-1 .cover-emoji,
+#cover .cover-emoji{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  line-height:1.16!important;
+  vertical-align:middle!important;
+  transform:none!important;
+  -webkit-transform:none!important;
+  text-rendering:geometricPrecision;
+}
+#cc-1 .cover-icon-wrap,
+#cover .cover-icon-wrap{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  line-height:1.16!important;
+  overflow:visible!important;
+}
+#cc-1 .cover-emoji{
+  font-family:'Times New Roman','Noto Sans Symbols 2','Segoe UI Symbol','Apple Symbols',serif!important;
+  font-size:var(--cover-emoji-size,34px)!important;
+}
+
+
+/* v1-s: 내 주변 제목은 원래 색상 유지.
+   '정확한 거리를 계산 중입니다...' 문구만 검정 + 살짝 크게 표시한다. */
+#nearby-body .nearby-distance-loading,
+#sheet-nearby.oai-preopen-nearby .nearby-distance-loading{
+  color:#111827!important;
+  font-size:15px!important;
+  font-weight:700!important;
+}
+
+
+/* v1-s: 모든 카테고리 첫 진입 appearance/enter 효과 통일
+   - 안정막/뒤로가기 로직은 건드리지 않고 화면 자체를 짧게 fade-in 한다.
+   - 위쪽/아래쪽 이동 효과는 넣지 않아 흔들림처럼 보이지 않게 한다. */
+#app.oai-enter-ready,
+#prayer-view.open.oai-enter-ready,
+#diocese-view.open.oai-enter-ready,
+#missa-view.open.oai-enter-ready,
+#web-view.module-view.open.oai-enter-ready,
+#trail-view.module-view.open.oai-enter-ready,
+#qna-view.module-view.open.oai-enter-ready,
+#mass-quick-modal.show.oai-enter-ready{
+  opacity:.01!important;
+  transform:none!important;
+  transition:none!important;
+  will-change:opacity!important;
+}
+#app.oai-enter-ready.oai-enter-show,
+#prayer-view.open.oai-enter-ready.oai-enter-show,
+#diocese-view.open.oai-enter-ready.oai-enter-show,
+#missa-view.open.oai-enter-ready.oai-enter-show,
+#web-view.module-view.open.oai-enter-ready.oai-enter-show,
+#trail-view.module-view.open.oai-enter-ready.oai-enter-show,
+#qna-view.module-view.open.oai-enter-ready.oai-enter-show,
+#mass-quick-modal.show.oai-enter-ready.oai-enter-show{
+  opacity:1!important;
+  transform:none!important;
+  transition:opacity .22s ease-out!important;
+}
+@media (prefers-reduced-motion: reduce){
+  .oai-enter-ready,
+  .oai-enter-ready.oai-enter-show{
+    opacity:1!important;
+    transition:none!important;
+  }
 }
