@@ -1880,7 +1880,7 @@ window.addEventListener('pageshow',function(){
   function setReturnTabSilently(tab){
     tab=tab||'gwangu';
     try{
-      document.documentElement.classList.add('oai-dio-returning','oai-dio-external-return');
+      document.documentElement.classList.add('oai-dio-returning');
       document.querySelectorAll('.tab').forEach(function(x){ x.classList.toggle('on', (x.dataset.tab||'')===tab); });
       var map=document.getElementById('map-view');
       var search=document.getElementById('search-view');
@@ -1900,7 +1900,7 @@ window.addEventListener('pageshow',function(){
     try{
       window.__OAI_DIO_PARENT_RETURNING__ = true;
       document.documentElement.classList.remove('oai-dio-external-stabilize');
-      document.documentElement.classList.add('oai-dio-returning','oai-dio-external-return');
+      document.documentElement.classList.add('oai-dio-returning');
     }catch(e){}
   };
 
@@ -1911,7 +1911,7 @@ window.addEventListener('pageshow',function(){
     // 목록 스크롤 재적용을 동반해 복귀 순간에 흔들림처럼 보일 수 있다.
     try{ window.__OAI_DIO_PARENT_RETURNING__ = true; }catch(e){}
     try{ document.documentElement.classList.remove('oai-dio-external-stabilize'); }catch(e){}
-    try{ document.documentElement.classList.add('oai-dio-returning','oai-dio-external-return'); }catch(e){}
+    try{ document.documentElement.classList.add('oai-dio-returning'); }catch(e){}
     var tab=state.tab||'gwangu';
     setReturnTabSilently(tab);
     if(state.searchValue && document.getElementById('si')){ document.getElementById('si').value=state.searchValue; if(typeof doSearch==='function') doSearch(); }
@@ -1932,11 +1932,7 @@ window.addEventListener('pageshow',function(){
       var sv=document.getElementById('search-view'); if(sv) sv.scrollTop=Number(state.searchScroll||0);
       restoreOpenCard();
     },100);
-    setTimeout(function(){ setReturnTabSilently(tab); restoreOpenCard(); }, 520);
-    setTimeout(function(){ setReturnTabSilently(tab); restoreOpenCard(); }, 1050);
-    setTimeout(function(){ setReturnTabSilently(tab); restoreOpenCard(); }, 1700);
-    setTimeout(function(){ try{ window.__OAI_DIO_PARENT_RETURNING__ = false; document.documentElement.classList.remove('oai-dio-returning','oai-dio-external-return','oai-dio-external-stabilize'); }catch(e){} }, 1400);
-    setTimeout(function(){ try{ window.__OAI_DIO_PARENT_RETURNING__ = false; document.documentElement.classList.remove('oai-dio-returning','oai-dio-external-return','oai-dio-external-stabilize'); }catch(e){} }, 2300);
+    setTimeout(function(){ try{ window.__OAI_DIO_PARENT_RETURNING__ = false; document.documentElement.classList.remove('oai-dio-returning','oai-dio-external-return','oai-dio-external-stabilize'); }catch(e){} }, 760);
   };
 
   window.resetDioceseFirstPage = function(){
@@ -1993,15 +1989,10 @@ window.addEventListener('pageshow',function(){
   document.addEventListener('visibilitychange', function(){ if(document.visibilityState==='visible'){ setTimeout(clearDioceseStandaloneExternal, 180); setTimeout(clearDioceseStandaloneExternal, 1400); } }, true);
   window.openDioceseUrl = function(url, source){
     if(!url) return; var state=window.getDioceseReturnState(source||'link');
-    try{
-      document.documentElement.classList.add('oai-dio-external-stabilize');
-    }catch(e){}
     if(window.parent && window.parent!==window && typeof window.parent.openDioceseExternal==='function'){
+      // 부모 앱 안에서 열리는 관구·교구는 iframe 내부 보호막을 켜지 않는다.
+      // 부모 복원 루틴이 상태만 되살리도록 해야 복귀 시 화면 깜빡임이 반복되지 않는다.
       window.parent.openDioceseExternal(url,state);
-      // 실제로 부모 페이지가 외부로 이동하면 이 타이머는 보이지 않지만,
-      // 이동이 지연되거나 복귀가 bfcache로 처리될 때 안정막이 남는 것을 방지한다.
-      setTimeout(clearDioceseStandaloneExternal, 1400);
-      setTimeout(clearDioceseStandaloneExternal, 2300);
     }
     else { try{ sessionStorage.setItem('oai_diocese_standalone_return',JSON.stringify(state)); }catch(e){} markDioceseStandaloneExternal(); try{ location.href=url; }catch(_e){ location.assign(url); } }
   };

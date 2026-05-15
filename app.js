@@ -1178,7 +1178,7 @@ function openDioceseView(opts){
       if(!restore) try{ frame.contentWindow && frame.contentWindow.resetDioceseFirstPage && frame.contentWindow.resetDioceseFirstPage(); }catch(e){ console.warn("[가톨릭길동무]", e); }
       if(typeof dioceseLoaded==='function') dioceseLoaded();
     };
-    frame.src='diocese.html?v=V1-S-dio-return4';
+    frame.src='diocese.html?v=V1-S-dio-return5';
   }else if(!restore){
     try{ frame.contentWindow && frame.contentWindow.resetDioceseFirstPage && frame.contentWindow.resetDioceseFirstPage(); }catch(e){ console.warn("[가톨릭길동무]", e); }
   }
@@ -1298,18 +1298,26 @@ function restoreDioceseExternalState(){
       }catch(e){ console.warn('[가톨릭길동무]', e); }
     };
     setTimeout(beginIframeReturn, 20);
-    setTimeout(apply, 120);
-    setTimeout(apply, 520);
-    setTimeout(apply, 980);
-    setTimeout(apply, 1500);
+    // 복귀 복원은 한 번만 성공시키고, iframe 준비가 늦을 때만 조용히 재시도한다.
+    // 이전처럼 0.5초/1초/1.5초마다 같은 복원을 반복하면 탭·인포카드가 여러 번 다시 그려져 깜빡인다.
+    var applied=false;
+    var tryApply=function(){
+      if(applied) return;
+      try{
+        var w=frame && frame.contentWindow;
+        if(w && typeof w.restoreDioceseReturnState === 'function'){
+          w.restoreDioceseReturnState(state || {});
+          applied=true;
+        }
+      }catch(e){ console.warn('[가톨릭길동무]', e); }
+    };
+    setTimeout(tryApply, 120);
+    setTimeout(tryApply, 360);
+    setTimeout(tryApply, 720);
     setTimeout(function(){
       try{ root.classList.remove('oai-diocese-returning'); }catch(_e){}
       releaseIframeVeil();
-    }, 1350);
-    setTimeout(function(){
-      try{ root.classList.remove('oai-diocese-returning'); }catch(_e){}
-      releaseIframeVeil();
-    }, 2200);
+    }, 900);
   }catch(e){ console.warn('[가톨릭길동무]', e); }
   return true;
 }
