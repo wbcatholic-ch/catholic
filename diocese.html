@@ -1860,11 +1860,17 @@ window.addEventListener('pageshow',function(){
   };
   window.restoreDioceseReturnState = function(state){
     state=state||{};
+    // 부모 앱에서 외부 교구 홈페이지로 나갔다가 돌아온 경우,
+    // 나가기 직전에 켜 둔 iframe 내부 안정막(oai-dio-external-stabilize)이
+    // pageshow 타이밍을 놓치면 계속 남아 지도를 덮을 수 있다.
+    // 복원 시작 전에 반드시 한 번 정리하고, 복원 중에는 return 안정막만 사용한다.
+    try{ document.documentElement.classList.remove('oai-dio-external-stabilize'); }catch(e){}
     try{ document.documentElement.classList.add('oai-dio-returning','oai-dio-external-return'); }catch(e){}
     var tab=state.tab||'gwangu'; var btn=document.querySelector('.tab[data-tab="'+tab+'"]'); if(btn) btn.click();
     if(state.searchValue && document.getElementById('si')){ document.getElementById('si').value=state.searchValue; if(typeof doSearch==='function') doSearch(); }
     setTimeout(function(){ var lv=document.getElementById('list-view'); if(lv) lv.scrollTop=Number(state.listScroll||0); var sv=document.getElementById('search-view'); if(sv) sv.scrollTop=Number(state.searchScroll||0); },80);
-    setTimeout(function(){ try{ document.documentElement.classList.remove('oai-dio-returning','oai-dio-external-return'); }catch(e){} }, 1250);
+    setTimeout(function(){ try{ document.documentElement.classList.remove('oai-dio-returning','oai-dio-external-return','oai-dio-external-stabilize'); }catch(e){} }, 1250);
+    setTimeout(function(){ try{ document.documentElement.classList.remove('oai-dio-returning','oai-dio-external-return','oai-dio-external-stabilize'); }catch(e){} }, 2200);
   };
 
   window.resetDioceseFirstPage = function(){
@@ -1884,28 +1890,45 @@ window.addEventListener('pageshow',function(){
   }
   function clearDioceseStandaloneExternal(){
     try{
-      document.documentElement.classList.remove('oai-dio-external-stabilize','oai-dio-external-return');
+      document.documentElement.classList.remove('oai-dio-external-stabilize','oai-dio-external-return','oai-dio-returning');
       sessionStorage.removeItem('oai_diocese_external_pending');
       sessionStorage.removeItem('oai_diocese_external_ts');
     }catch(e){}
   }
+  window.oaiReleaseDioceseStability = clearDioceseStandaloneExternal;
   window.addEventListener('pageshow', function(){
     try{
       var p=sessionStorage.getItem('oai_diocese_external_pending')==='1';
       var ts=parseInt(sessionStorage.getItem('oai_diocese_external_ts')||'0',10)||0;
       if(p || (ts && Date.now()-ts<600000)){
+        // 단독 diocese.html 복귀 때만 짧게 가리고, 반드시 해제한다.
+        document.documentElement.classList.remove('oai-dio-external-stabilize');
         document.documentElement.classList.add('oai-dio-external-return');
         setTimeout(clearDioceseStandaloneExternal, 650);
+      }else{
+        // 부모 PWA가 외부 이동을 담당한 경우에는 iframe 세션값이 없어서
+        // oai-dio-external-stabilize가 남을 수 있으므로 복귀 시 무조건 정리 안전망을 둔다.
+        setTimeout(clearDioceseStandaloneExternal, 160);
       }
+      setTimeout(clearDioceseStandaloneExternal, 1500);
+      setTimeout(clearDioceseStandaloneExternal, 2600);
     }catch(e){}
   }, true);
+  window.addEventListener('focus', function(){ setTimeout(clearDioceseStandaloneExternal, 180); setTimeout(clearDioceseStandaloneExternal, 1400); }, true);
+  document.addEventListener('visibilitychange', function(){ if(document.visibilityState==='visible'){ setTimeout(clearDioceseStandaloneExternal, 180); setTimeout(clearDioceseStandaloneExternal, 1400); } }, true);
   window.openDioceseUrl = function(url, source){
     if(!url) return; var state=window.getDioceseReturnState(source||'link');
     try{
       document.documentElement.classList.add('oai-dio-external-stabilize');
       if(window.parent && window.parent!==window && typeof window.parent.oaiHoldStabilityVeil==='function') window.parent.oaiHoldStabilityVeil('diocese-iframe-leave', 1500);
     }catch(e){}
-    if(window.parent && window.parent!==window && typeof window.parent.openDioceseExternal==='function') window.parent.openDioceseExternal(url,state);
+    if(window.parent && window.parent!==window && typeof window.parent.openDioceseExternal==='function'){
+      window.parent.openDioceseExternal(url,state);
+      // 실제로 부모 페이지가 외부로 이동하면 이 타이머는 보이지 않지만,
+      // 이동이 지연되거나 복귀가 bfcache로 처리될 때 안정막이 남는 것을 방지한다.
+      setTimeout(clearDioceseStandaloneExternal, 1800);
+      setTimeout(clearDioceseStandaloneExternal, 3200);
+    }
     else { try{ sessionStorage.setItem('oai_diocese_standalone_return',JSON.stringify(state)); }catch(e){} markDioceseStandaloneExternal(); setTimeout(function(){ location.href=url; }, 90); }
   };
   document.addEventListener('click',function(e){ var t=e.target&&e.target.closest?e.target.closest('[data-dio-url]'):null; if(!t) return; e.preventDefault(); e.stopPropagation(); window.openDioceseUrl(t.getAttribute('data-dio-url'),t.getAttribute('data-dio-source')||'link'); },true);

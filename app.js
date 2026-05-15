@@ -37,21 +37,28 @@ function markExternalReturnStabilize(kind){
   }catch(e){ console.warn("[가톨릭길동무]", e); }
 }
 
+function oaiReleaseStabilityVeil(){
+  try{
+    var root = document.documentElement;
+    clearTimeout(window.__oaiStabilityVeilTimer);
+    root.classList.remove('oai-stability-veil','oai-external-return-freeze','oai-external-leaving');
+    root.removeAttribute('data-oai-stability-reason');
+  }catch(e){ console.warn("[가톨릭길동무]", e); }
+}
 function oaiHoldStabilityVeil(reason, duration){
   try{
     var root = document.documentElement;
     root.classList.add('oai-stability-veil');
     root.setAttribute('data-oai-stability-reason', reason || 'stabilize');
     clearTimeout(window.__oaiStabilityVeilTimer);
-    window.__oaiStabilityVeilTimer = setTimeout(function(){
-      try{
-        root.classList.remove('oai-stability-veil','oai-external-return-freeze','oai-external-leaving');
-        root.removeAttribute('data-oai-stability-reason');
-      }catch(_e){}
-    }, duration || 420);
+    window.__oaiStabilityVeilTimer = setTimeout(oaiReleaseStabilityVeil, duration || 420);
+    // 외부 사이트 복귀/iframe 복원 타이밍이 어긋나도 덮개가 남지 않도록 최대 수명 안전망을 한 번 더 둔다.
+    clearTimeout(window.__oaiStabilityVeilHardTimer);
+    window.__oaiStabilityVeilHardTimer = setTimeout(oaiReleaseStabilityVeil, Math.max((duration || 420) + 650, 2200));
   }catch(e){ console.warn("[가톨릭길동무]", e); }
 }
 window.oaiHoldStabilityVeil = oaiHoldStabilityVeil;
+window.oaiReleaseStabilityVeil = oaiReleaseStabilityVeil;
 
 function oaiClearExternalNavigationState(){
   // 이전 버전에서 남았을 수 있는 외부 이동 보호막/클래스만 조용히 제거한다.
@@ -93,7 +100,8 @@ function applyExternalReturnStabilize(){
   }catch(e){ console.warn("[가톨릭길동무]", e); }
 }
 window.addEventListener('pageshow', applyExternalReturnStabilize, true);
-window.addEventListener('focus', function(){ setTimeout(applyExternalReturnStabilize, 40); }, true);
+window.addEventListener('pageshow', function(){ setTimeout(oaiReleaseStabilityVeil, 2600); }, true);
+window.addEventListener('focus', function(){ setTimeout(applyExternalReturnStabilize, 40); setTimeout(oaiReleaseStabilityVeil, 2600); }, true);
 window.addEventListener('pagehide', function(){
   try{ if(sessionStorage.getItem('oai_external_nav_pending') === '1') sessionStorage.setItem('oai_external_nav_pagehide','1'); }catch(e){ console.warn("[가톨릭길동무]", e); }
 }, true);
@@ -1270,10 +1278,17 @@ function restoreDioceseExternalState(){
     if(typeof openDioceseView === 'function') openDioceseView({restore:true});
     if(typeof oaiSetMainMapLayerHidden === 'function') oaiSetMainMapLayerHidden(true);
     var frame=document.getElementById('diocese-frame');
+    var releaseIframeVeil=function(){
+      try{
+        var w=frame && frame.contentWindow;
+        if(w && typeof w.oaiReleaseDioceseStability === 'function') w.oaiReleaseDioceseStability();
+      }catch(e){ console.warn('[가톨릭길동무]', e); }
+    };
     var apply=function(){
       try{
         var w=frame && frame.contentWindow;
         if(w && typeof w.restoreDioceseReturnState === 'function') w.restoreDioceseReturnState(state || {});
+        releaseIframeVeil();
       }catch(e){ console.warn('[가톨릭길동무]', e); }
     };
     setTimeout(apply, 80);
@@ -1282,7 +1297,13 @@ function restoreDioceseExternalState(){
     setTimeout(apply, 1120);
     setTimeout(function(){
       try{ document.documentElement.classList.remove('oai-diocese-returning'); }catch(_e){}
+      try{ if(typeof oaiReleaseStabilityVeil === 'function') oaiReleaseStabilityVeil(); }catch(_e){}
+      releaseIframeVeil();
     }, 1650);
+    setTimeout(function(){
+      try{ if(typeof oaiReleaseStabilityVeil === 'function') oaiReleaseStabilityVeil(); }catch(_e){}
+      releaseIframeVeil();
+    }, 2600);
   }catch(e){ console.warn('[가톨릭길동무]', e); }
   return true;
 }
