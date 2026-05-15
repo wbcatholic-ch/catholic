@@ -1010,8 +1010,9 @@ function openPrayerBook(opts){
   }catch(e){ console.warn("[가톨릭길동무]", e); }
   if(typeof oaiSetMainMapLayerHidden==='function') oaiSetMainMapLayerHidden(true);
   view.classList.add('open');
-  // 외부 교구 홈페이지에서 복귀할 때는 진입 효과를 다시 주지 않는다.
-  // 부모 안정막이 걷힌 뒤 iframe/헤더가 다시 움직여 보이는 흔들림을 막는다.
+  // V1-S: restore 변수 미정의 오류 방지. 주요기도문 초기화가 중간에 끊기면
+  // 탭/목록이 비어 보이므로 opts.restore 값을 명확히 계산해서 사용한다.
+  var restore = !!(opts && opts.restore);
   if(!restore && typeof oaiEnterView==='function') oaiEnterView(view);
   var setupDelay = (opts && opts.instant) ? 0 : 50;
   setTimeout(function(){
