@@ -1932,9 +1932,8 @@ window.addEventListener('pageshow',function(){
       var sv=document.getElementById('search-view'); if(sv) sv.scrollTop=Number(state.searchScroll||0);
       restoreOpenCard();
     },100);
-    setTimeout(function(){ setReturnTabSilently(tab); restoreOpenCard(); }, 520);
-    setTimeout(function(){ setReturnTabSilently(tab); restoreOpenCard(); }, 1050);
-    setTimeout(function(){ setReturnTabSilently(tab); restoreOpenCard(); }, 1700);
+    // 안전망: 한 번만 재확인 (이후엔 실행하지 않아 DOM 토글 반복으로 인한 깜빡임을 막는다)
+    setTimeout(function(){ setReturnTabSilently(tab); restoreOpenCard(); }, 550);
     setTimeout(function(){ try{ window.__OAI_DIO_PARENT_RETURNING__ = false; document.documentElement.classList.remove('oai-dio-returning','oai-dio-external-return','oai-dio-external-stabilize'); }catch(e){} }, 3350);
     setTimeout(function(){ try{ window.__OAI_DIO_PARENT_RETURNING__ = false; document.documentElement.classList.remove('oai-dio-returning','oai-dio-external-return','oai-dio-external-stabilize'); }catch(e){} }, 4700);
   };

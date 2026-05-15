@@ -1284,11 +1284,12 @@ function restoreDioceseExternalState(){
           w.restoreDioceseReturnState(state || {});
           applied=true;
           clearInterval(timer);
+          // diocese.html 내부 restore 타이밍(100ms+550ms 안전망)이 완전히 끝난 뒤 해제.
+          // oaiReleaseDioceseStability는 여기서 호출하지 않는다 — iframe 자체 cleanup(3350ms)이 담당.
           setTimeout(function(){
             try{ root.classList.remove('oai-diocese-returning'); }catch(_e){}
-            try{ if(typeof w.oaiReleaseDioceseStability === 'function') w.oaiReleaseDioceseStability(); }catch(_e){}
             window.__OAI_DIOCESE_RESTORING__ = false;
-          }, 180);
+          }, 650);
         }
       }catch(e){ console.warn('[가톨릭길동무]', e); }
       if(tries>18){
@@ -1300,7 +1301,15 @@ function restoreDioceseExternalState(){
   }catch(e){ console.warn('[가톨릭길동무]', e); window.__OAI_DIOCESE_RESTORING__ = false; }
   return true;
 }
-window.addEventListener('pageshow', function(){ setTimeout(restoreDioceseExternalState, 80); }, true);
+window.addEventListener('pageshow', function(){
+  // 교구 홈페이지 복귀 시: 첫 프레임부터 즉시 동결 → 커버·지도 노출 없이 바로 복원
+  try{
+    if(sessionStorage.getItem(DIOCESE_RETURN_KEY)){
+      document.documentElement.classList.add('oai-diocese-returning');
+    }
+  }catch(ex){}
+  setTimeout(restoreDioceseExternalState, 80);
+}, true);
 window.addEventListener('focus', function(){ setTimeout(restoreDioceseExternalState, 100); }, true);
 
 
