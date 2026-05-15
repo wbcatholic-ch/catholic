@@ -669,7 +669,7 @@
   if(window.__APP_FONT_SCALE_GUARD__) return;
   window.__APP_FONT_SCALE_GUARD__=true;
   // V37: 문의·건의는 qa-firebase.html 한 경로로만 통일한다.
-  var QA_URL="qa-firebase.html?v=V1-S";
+  var QA_URL="qa-firebase.html?v=V1-T";
   var FONT_KEY='prayer_font_size', BASE=16, SIZES=[13,14,15,16,17,18,19,20,21,22,24,26,28,30];
   function el(id){return document.getElementById(id)}
   function getPx(){var px=parseInt(localStorage.getItem(FONT_KEY)||BASE,10);return (px>=13&&px<=30)?px:BASE;}
@@ -826,30 +826,9 @@
       setTimeout(function(){ try{ el.classList.remove('oai-swipe-left','oai-swipe-right'); }catch(e){ console.warn("[가톨릭길동무]", e); } }, 180);
     });
   };
-  var DIO_KEY = 'oai_diocese_return_state_v3';
-  window.openDioceseExternal = function(url, state){
-    if(!url) return;
-    var payload = state || {};
-    try{ var frame = document.getElementById('diocese-frame'); if(frame && frame.contentWindow && typeof frame.contentWindow.getDioceseReturnState === 'function'){ payload = frame.contentWindow.getDioceseReturnState(payload.source || 'link') || payload; } }catch(e){ console.warn("[가톨릭길동무]", e); }
-    try{ sessionStorage.setItem(DIO_KEY, JSON.stringify(payload)); }catch(e){ console.warn("[가톨릭길동무]", e); }
-    // location.href 방식: PWA/모바일 팝업 차단 우회, 뒤로가기로 복귀 가능
-    location.href = url;
-  };
-  function restoreDioceseIfNeeded(){
-    var raw=null; try{ raw=sessionStorage.getItem(DIO_KEY); }catch(e){ console.warn("[가톨릭길동무]", e); }
-    if(!raw) return;
-    var state=null; try{ state=JSON.parse(raw); }catch(e){ console.warn("[가톨릭길동무]", e); }
-    try{ sessionStorage.removeItem(DIO_KEY); }catch(e){ console.warn("[가톨릭길동무]", e); }
-    if(!state) return;
-    if(typeof window.openDioceseView === 'function') window.openDioceseView({restore:true});
-    var tries=0, timer=setInterval(function(){
-      tries++; var frame=document.getElementById('diocese-frame');
-      try{ if(frame && frame.contentWindow && typeof frame.contentWindow.restoreDioceseReturnState === 'function'){ frame.contentWindow.restoreDioceseReturnState(state); clearInterval(timer); } }catch(e){ console.warn("[가톨릭길동무]", e); }
-      if(tries>25) clearInterval(timer);
-    },120);
-  }
-  window.addEventListener('pageshow', function(){ restoreDioceseIfNeeded(); setTimeout(restoreDioceseIfNeeded, 40); });
+  /* 관구·교구 외부 홈페이지 이동/복귀는 app.js의 openDioceseExternal/restoreDioceseExternalState 한 곳에서만 처리한다. */
 })();
+
 (function(){
   'use strict';
   if(window.__APP_BACK_ROUTE_GUARD__) return;
