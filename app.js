@@ -1173,7 +1173,7 @@ function openDioceseView(opts){
       if(!restore) try{ frame.contentWindow && frame.contentWindow.resetDioceseFirstPage && frame.contentWindow.resetDioceseFirstPage(); }catch(e){ console.warn("[가톨릭길동무]", e); }
       if(typeof dioceseLoaded==='function') dioceseLoaded();
     };
-    frame.src='diocese.html?v=V1-S-dio-noblink1';
+    frame.src='diocese.html?v=V1-S-prayer-title1';
   }else if(!restore){
     try{ frame.contentWindow && frame.contentWindow.resetDioceseFirstPage && frame.contentWindow.resetDioceseFirstPage(); }catch(e){ console.warn("[가톨릭길동무]", e); }
   }
@@ -1254,9 +1254,9 @@ const DIOCESE_RETURN_KEY='catholic_diocese_external_return_v1';
 function openDioceseExternal(url, state){
   url = normalizeCatholicExternalUrl(url);
   if(!url) return;
-  // V1-S: 웹사이트 모듈처럼 브라우저의 기본 bfcache 복원에 맡긴다.
-  // 별도 복귀 상태 저장/부모 freeze/iframe 재복원을 실행하면 입장·퇴장 순간 1회 깜빡임이 생긴다.
-  try{ sessionStorage.removeItem(DIOCESE_RETURN_KEY); }catch(e){ console.warn('[가톨릭길동무]', e); }
+  try{ sessionStorage.setItem(DIOCESE_RETURN_KEY, JSON.stringify(state || {})); }catch(e){ console.warn('[가톨릭길동무]', e); }
+  // V1-S: 관구·교구 홈페이지는 전용 복귀 상태만 저장한다.
+  // 공통 외부복귀 안정막(oai_external_nav_*)까지 함께 쓰면 부모/iframe/pageshow/focus가 겹쳐 큰 깜빡임이 반복된다.
   try{ document.activeElement && document.activeElement.blur && document.activeElement.blur(); }catch(e){ console.warn('[가톨릭길동무]', e); }
   try{ location.href = url; }catch(e){ try{ location.assign(url); }catch(_){ } }
 }

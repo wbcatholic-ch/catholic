@@ -604,6 +604,8 @@ html.retreat-mode .region-item .nearby-num{background:#4f46e5!important}
 #prayer-detail-ttl{display:none!important}
 #prayer-detail-body{padding:16px 14px 36px;flex:1 1 auto!important;min-height:0!important;overflow-y:auto!important;-webkit-overflow-scrolling:touch!important}
 .pr-content-card{background:#FFFBF2;border:1px solid #ddd5c8;border-radius:13px;padding:24px 18px;font-family:inherit;font-size:var(--pr-body-fs,16px);line-height:2.1;color:#111;font-weight:500;box-shadow:0 1px 4px rgba(80,60,30,.07)}
+
+.pr-body-title{margin:0 0 18px;padding:0 0 14px;border-bottom:1px solid #e6dfd3;color:#1f2a44;font-size:calc(var(--pr-body-fs,16px) * 1.08);font-weight:800;line-height:1.45;letter-spacing:-.03em;text-align:left;word-break:keep-all}
 .pr-content-card p{margin-bottom:16px;word-break:keep-all}
 .pr-content-card p:last-child{margin-bottom:0}
 .pr-symbol{color:#1565C0;font-weight:700}
