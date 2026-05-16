@@ -1308,9 +1308,8 @@ function buildListView(){
         card.dataset.dioUrl = m.url;
         card.dataset.dioSource = 'list';
         card.dataset.dioKey = dName;
-        card.addEventListener('click',(function(u,k){return function(){
-          openDioceseUrl(u,'list',{listKey:k,listUrl:u});
-        };})(m.url,dName));
+        /* 관구교구 목록 홈페이지 이동은 아래 전역 [data-dio-url] 캡처 핸들러 한 곳에서만 처리한다.
+           개별 카드 click 핸들러까지 함께 두면 외부 이동 직전/복귀 직후 중복 실행되어 화면이 흔들릴 수 있다. */
       }
       wrap.appendChild(card);
     });
@@ -1894,19 +1893,21 @@ window.addEventListener('pageshow',function(){
   function setReturnTabSilently(tab){
     tab=tab||'gwangu';
     try{
-      document.documentElement.classList.add('oai-dio-returning');
-      document.querySelectorAll('.tab').forEach(function(x){ x.classList.toggle('on', (x.dataset.tab||'')===tab); });
-      var map=document.getElementById('map-view');
-      var search=document.getElementById('search-view');
-      var list=document.getElementById('list-view');
-      if(map) map.classList.toggle('on',tab==='gwangu');
-      if(search) search.classList.toggle('on',tab==='search');
-      if(list) list.classList.toggle('on',tab==='list');
-      var gw=document.getElementById('gw-bar');
-      if(gw) gw.style.display=tab==='gwangu'?'flex':'none';
-      if(tab==='list'){
-        try{ if(!document.getElementById('list-content').hasChildNodes() && typeof buildListView==='function') buildListView(); }catch(e){}
+      var current=activeTab();
+      var listContent=document.getElementById('list-content');
+      var needsListBuild=(tab==='list' && listContent && !listContent.hasChildNodes());
+      if(current!==tab){
+        document.querySelectorAll('.tab').forEach(function(x){ x.classList.toggle('on', (x.dataset.tab||'')===tab); });
+        var map=document.getElementById('map-view');
+        var search=document.getElementById('search-view');
+        var list=document.getElementById('list-view');
+        if(map) map.classList.toggle('on',tab==='gwangu');
+        if(search) search.classList.toggle('on',tab==='search');
+        if(list) list.classList.toggle('on',tab==='list');
+        var gw=document.getElementById('gw-bar');
+        if(gw) gw.style.display=tab==='gwangu'?'flex':'none';
       }
+      if(needsListBuild){ try{ if(typeof buildListView==='function') buildListView(); }catch(e){} }
     }catch(e){}
   }
 
@@ -1923,7 +1924,7 @@ window.addEventListener('pageshow',function(){
     // 탭 click 이벤트를 다시 실행하지 않는다. click 이벤트는 지도 초기화, 카드 닫기,
     // 목록 스크롤 재적용을 동반해 복귀 순간에 흔들림처럼 보일 수 있다.
     try{ window.__OAI_DIO_PARENT_RETURNING__ = true; window.__OAI_DIO_EXTERNAL_LEAVING__ = false; }catch(e){}
-    try{ document.documentElement.classList.remove('oai-dio-external-stabilize','oai-dio-external-return'); document.documentElement.classList.add('oai-dio-returning'); }catch(e){}
+    try{ document.documentElement.classList.remove('oai-dio-external-stabilize','oai-dio-external-return','oai-dio-returning'); }catch(e){}
     var tab=state.tab||'gwangu';
     setReturnTabSilently(tab);
     if(state.searchValue && document.getElementById('si')){ document.getElementById('si').value=state.searchValue; if(typeof doSearch==='function') doSearch(); }
@@ -1942,29 +1943,19 @@ window.addEventListener('pageshow',function(){
     function restoreScrollQuietly(){
       try{
         var lv=document.getElementById('list-view');
-        if(lv){
-          lv.scrollTop=Number(state.listScroll||0);
-          var key=(state.listKey||'').trim();
-          var url=(state.listUrl||'').trim();
-          var target=null;
-          if(key){ target=document.querySelector('[data-dio-key="'+String(key).replace(/"/g,'\\"')+'"]'); }
-          if(!target && url){
-            document.querySelectorAll('[data-dio-url]').forEach(function(el){ if(!target && (el.getAttribute('data-dio-url')||'')===url) target=el; });
-          }
-          if(target && state.tab==='list'){
-            var top=target.offsetTop||0;
-            if(top>0) lv.scrollTop=Math.max(0, top-18);
-          }
+        if(lv && state.tab==='list'){
+          // 외부 홈페이지로 나가기 직전의 정확한 scrollTop만 복원한다.
+          // 이전처럼 클릭한 교구 카드를 화면 위로 맞추면, 사용자가 보던 원래 위치보다 카드가 위로 튀어 올라간다.
+          var saved=Number(state.listScroll||0);
+          if(!isNaN(saved)) lv.scrollTop=saved;
         }
       }catch(e){}
-      try{ var sv=document.getElementById('search-view'); if(sv) sv.scrollTop=Number(state.searchScroll||0); }catch(e){}
+      try{ var sv=document.getElementById('search-view'); if(sv && state.tab==='search') sv.scrollTop=Number(state.searchScroll||0); }catch(e){}
     }
     restoreScrollQuietly();
     requestAnimationFrame(function(){ restoreScrollQuietly(); restoreOpenCard(); });
-    setTimeout(function(){ restoreScrollQuietly(); restoreOpenCard(); },100);
-    // 안전망: 탭 재토글 없이 스크롤/카드만 한 번 더 확인한다.
-    setTimeout(function(){ restoreScrollQuietly(); restoreOpenCard(); }, 550);
-    setTimeout(function(){ try{ window.__OAI_DIO_PARENT_RETURNING__ = false; document.documentElement.classList.remove('oai-dio-returning','oai-dio-external-return','oai-dio-external-stabilize'); }catch(e){} }, 300);
+    setTimeout(function(){ restoreScrollQuietly(); restoreOpenCard(); },90);
+    setTimeout(function(){ try{ window.__OAI_DIO_PARENT_RETURNING__ = false; document.documentElement.classList.remove('oai-dio-returning','oai-dio-external-return','oai-dio-external-stabilize'); }catch(e){} }, 180);
   };
 
   window.resetDioceseFirstPage = function(){

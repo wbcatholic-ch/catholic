@@ -1173,7 +1173,7 @@ function openDioceseView(opts){
       if(!restore) try{ frame.contentWindow && frame.contentWindow.resetDioceseFirstPage && frame.contentWindow.resetDioceseFirstPage(); }catch(e){ console.warn("[가톨릭길동무]", e); }
       if(typeof dioceseLoaded==='function') dioceseLoaded();
     };
-    frame.src='diocese.html?v=V1-S';
+    frame.src='diocese.html?v=V1-S-dio-pos2';
   }else if(!restore){
     try{ frame.contentWindow && frame.contentWindow.resetDioceseFirstPage && frame.contentWindow.resetDioceseFirstPage(); }catch(e){ console.warn("[가톨릭길동무]", e); }
   }
@@ -1328,8 +1328,17 @@ function restoreDioceseExternalState(opts){
 }
 window.addEventListener('pageshow', function(ev){
   try{
-    if(sessionStorage.getItem(DIOCESE_RETURN_KEY) || localStorage.getItem(DIOCESE_RETURN_KEY)){
+    var hasReturn=sessionStorage.getItem(DIOCESE_RETURN_KEY) || localStorage.getItem(DIOCESE_RETURN_KEY);
+    if(hasReturn){
       document.documentElement.classList.remove('oai-diocese-returning','oai-stability-veil','oai-external-return-freeze','oai-external-leaving');
+      var view=document.getElementById('diocese-view');
+      var frame=document.getElementById('diocese-frame');
+      // 브라우저 bfcache로 돌아온 경우에는 iframe/list DOM과 스크롤이 이미 그대로 살아 있다.
+      // 여기서 다시 복원 함수를 실행하면 클릭한 교구 카드 기준으로 한 번 더 재배치되어 큰 흔들림이 생긴다.
+      if(ev && ev.persisted && view && view.classList.contains('open') && frame && frame.contentWindow){
+        try{ sessionStorage.removeItem(DIOCESE_RETURN_KEY); localStorage.removeItem(DIOCESE_RETURN_KEY); }catch(_e){}
+        return;
+      }
     }
   }catch(ex){}
   setTimeout(function(){ restoreDioceseExternalState({persisted: !!(ev && ev.persisted)}); }, 20);
