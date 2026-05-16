@@ -183,8 +183,22 @@
     url = (typeof normalizeCatholicExternalUrl === 'function') ? normalizeCatholicExternalUrl(url) : String(url||'').trim();
     if(!url) return;
 
-    // V37: 웹사이트와 순례길 모두 외부 복귀는 브라우저의 기본 복원에 맡긴다.
-    // 별도 sessionStorage 복원/지도 재초기화가 복귀 순간 덜컹거림을 만들 수 있어 저장하지 않는다.
+    // 웹사이트는 기존처럼 자연 복귀, 순례길은 현재 탭/목록 위치만 저장하고 덮개 없이 이동한다.
+    if(state && state.module === 'trail'){
+      try{
+        state.view = trailState.view || state.view || 'map';
+        state.scroll = ig$('trail-list') ? (ig$('trail-list').scrollTop || 0) : (state.scroll || 0);
+        if(trailState.map && window.kakao && kakao.maps){
+          var c = trailState.map.getCenter();
+          state.center = c ? {lat:c.getLat(), lng:c.getLng()} : null;
+          state.level = trailState.map.getLevel ? trailState.map.getLevel() : null;
+        }
+        saveReturnState(state);
+      }catch(e){ console.warn("[가톨릭길동무]", e); }
+      try{ document.activeElement && document.activeElement.blur && document.activeElement.blur(); }catch(e){ console.warn("[가톨릭길동무]", e); }
+      try{ location.href = url; }catch(e){ try{ location.assign(url); }catch(_){ } }
+      return;
+    }
     try{ sessionStorage.removeItem(RETURN_KEY); }catch(e){ console.warn("[가톨릭길동무]", e); }
     if(typeof oaiSmoothNavigate === 'function') oaiSmoothNavigate(url, 'integrated-external');
     else { try{ if(typeof markExternalReturnStabilize === 'function') markExternalReturnStabilize('integrated-external'); }catch(e){ console.warn("[가톨릭길동무]", e); } location.href = url; }
@@ -255,9 +269,11 @@
     enterIntegratedView('trail-view');
     initTrailModule();
     trailSetView(trailState.view || 'map');
-    relayoutTrailMap(80);
-    relayoutTrailMap(260);
-    relayoutTrailMap(520);
+    if(!restore){
+      relayoutTrailMap(80);
+      relayoutTrailMap(260);
+      relayoutTrailMap(520);
+    }
   };
 
   function restoreIntegratedState(){
@@ -276,7 +292,26 @@
     }
 
     if(state.module === 'trail'){
-      // V37: 순례길도 외부 복귀 시 강제 재오픈/지도 재생성을 하지 않는다.
+      // 순례길은 이미 열린 화면을 유지한 채 스크롤/지도 중심만 조용히 복원한다.
+      try{
+        if(!ig$('trail-view')?.classList.contains('open')) enterIntegratedView('trail-view');
+        trailState.view = state.view || trailState.view || 'map';
+        trailState.restoreCenter = state.center || null;
+        trailState.restoreLevel = state.level || null;
+        trailState.pendingFitBounds = false;
+        initTrailModule();
+        trailSetView(trailState.view || 'map');
+        if(state.view === 'list' || trailState.view === 'list'){
+          var list = ig$('trail-list');
+          if(list){
+            var y = Number(state.scroll || 0);
+            list.style.scrollBehavior='auto';
+            list.scrollTop = y;
+            setTimeout(function(){ try{ list.scrollTop = y; }catch(_e){} }, 80);
+            list.style.scrollBehavior='';
+          }
+        }
+      }catch(e){ console.warn("[가톨릭길동무]", e); }
       return;
     }
   }

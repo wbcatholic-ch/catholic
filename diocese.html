@@ -1899,8 +1899,7 @@ window.addEventListener('pageshow',function(){
   window.oaiBeginDioceseParentReturn = function(){
     try{
       window.__OAI_DIO_PARENT_RETURNING__ = true;
-      document.documentElement.classList.remove('oai-dio-external-stabilize');
-      document.documentElement.classList.add('oai-dio-returning');
+      document.documentElement.classList.remove('oai-dio-external-stabilize','oai-dio-external-return','oai-dio-returning');
     }catch(e){}
   };
 
@@ -1910,8 +1909,7 @@ window.addEventListener('pageshow',function(){
     // 탭 click 이벤트를 다시 실행하지 않는다. click 이벤트는 지도 초기화, 카드 닫기,
     // 목록 스크롤 재적용을 동반해 복귀 순간에 흔들림처럼 보일 수 있다.
     try{ window.__OAI_DIO_PARENT_RETURNING__ = true; }catch(e){}
-    try{ document.documentElement.classList.remove('oai-dio-external-stabilize'); }catch(e){}
-    try{ document.documentElement.classList.add('oai-dio-returning'); }catch(e){}
+    try{ document.documentElement.classList.remove('oai-dio-external-stabilize','oai-dio-external-return','oai-dio-returning'); }catch(e){}
     var tab=state.tab||'gwangu';
     setReturnTabSilently(tab);
     if(state.searchValue && document.getElementById('si')){ document.getElementById('si').value=state.searchValue; if(typeof doSearch==='function') doSearch(); }
@@ -1927,15 +1925,16 @@ window.addEventListener('pageshow',function(){
         }
       }catch(e){}
     }
-    setTimeout(function(){
-      var lv=document.getElementById('list-view'); if(lv) lv.scrollTop=Number(state.listScroll||0);
-      var sv=document.getElementById('search-view'); if(sv) sv.scrollTop=Number(state.searchScroll||0);
-      restoreOpenCard();
-    },100);
-    // 안전망: 한 번만 재확인 (이후엔 실행하지 않아 DOM 토글 반복으로 인한 깜빡임을 막는다)
-    setTimeout(function(){ setReturnTabSilently(tab); restoreOpenCard(); }, 550);
-    setTimeout(function(){ try{ window.__OAI_DIO_PARENT_RETURNING__ = false; document.documentElement.classList.remove('oai-dio-returning','oai-dio-external-return','oai-dio-external-stabilize'); }catch(e){} }, 3350);
-    setTimeout(function(){ try{ window.__OAI_DIO_PARENT_RETURNING__ = false; document.documentElement.classList.remove('oai-dio-returning','oai-dio-external-return','oai-dio-external-stabilize'); }catch(e){} }, 4700);
+    function restoreScrollQuietly(){
+      try{ var lv=document.getElementById('list-view'); if(lv) lv.scrollTop=Number(state.listScroll||0); }catch(e){}
+      try{ var sv=document.getElementById('search-view'); if(sv) sv.scrollTop=Number(state.searchScroll||0); }catch(e){}
+    }
+    restoreScrollQuietly();
+    requestAnimationFrame(function(){ restoreScrollQuietly(); restoreOpenCard(); });
+    setTimeout(function(){ restoreScrollQuietly(); restoreOpenCard(); },100);
+    // 안전망: 탭 재토글 없이 스크롤/카드만 한 번 더 확인한다.
+    setTimeout(function(){ restoreScrollQuietly(); restoreOpenCard(); }, 550);
+    setTimeout(function(){ try{ window.__OAI_DIO_PARENT_RETURNING__ = false; document.documentElement.classList.remove('oai-dio-returning','oai-dio-external-return','oai-dio-external-stabilize'); }catch(e){} }, 300);
   };
 
   window.resetDioceseFirstPage = function(){
@@ -1950,7 +1949,7 @@ window.addEventListener('pageshow',function(){
     try{
       sessionStorage.setItem('oai_diocese_external_pending','1');
       sessionStorage.setItem('oai_diocese_external_ts', String(Date.now ? Date.now() : new Date().getTime()));
-      document.documentElement.classList.add('oai-dio-external-stabilize');
+      /* 부모 앱 안에서는 진입 순간 안정막을 쓰지 않는다. */
     }catch(e){}
   }
   function clearDioceseStandaloneExternal(){
@@ -1976,9 +1975,8 @@ window.addEventListener('pageshow',function(){
       var ts=parseInt(sessionStorage.getItem('oai_diocese_external_ts')||'0',10)||0;
       if(p || (ts && Date.now()-ts<600000)){
         // 단독 diocese.html 복귀 때만 짧게 가리고, 반드시 해제한다.
-        document.documentElement.classList.remove('oai-dio-external-stabilize');
-        document.documentElement.classList.add('oai-dio-external-return');
-        setTimeout(clearDioceseStandaloneExternal, 650);
+        document.documentElement.classList.remove('oai-dio-external-stabilize','oai-dio-external-return','oai-dio-returning');
+        setTimeout(clearDioceseStandaloneExternal, 120);
       }else{
         // 부모 PWA가 외부 이동을 담당한 경우에는 iframe 세션값이 없어서
         // oai-dio-external-stabilize가 남을 수 있으므로 복귀 시 무조건 정리 안전망을 둔다.
@@ -1992,19 +1990,13 @@ window.addEventListener('pageshow',function(){
   document.addEventListener('visibilitychange', function(){ if(document.visibilityState==='visible'){ setTimeout(clearDioceseStandaloneExternal, 180); setTimeout(clearDioceseStandaloneExternal, 1400); } }, true);
   window.openDioceseUrl = function(url, source){
     if(!url) return; var state=window.getDioceseReturnState(source||'link');
-    try{
-      document.documentElement.classList.add('oai-dio-external-stabilize');
-      if(window.parent && window.parent!==window && typeof window.parent.oaiHoldStabilityVeil==='function') window.parent.oaiHoldStabilityVeil('diocese-iframe-leave', 5200);
-    }catch(e){}
+    // 부모 앱 안에서는 입장/복귀 순간의 큰 흔들림을 만들던 iframe 안정막과 부모 보호막을 쓰지 않는다.
+    // 필요한 것은 위치 상태 저장뿐이며, 실제 이동/복귀는 부모 openDioceseExternal 한 경로에서 처리한다.
     if(window.parent && window.parent!==window && typeof window.parent.openDioceseExternal==='function'){
       clearDioceseStandaloneExternal();
       window.parent.openDioceseExternal(url,state);
-      // 실제로 부모 페이지가 외부로 이동하면 이 타이머는 보이지 않지만,
-      // 이동이 지연되거나 복귀가 bfcache로 처리될 때 안정막이 남는 것을 방지한다.
-      setTimeout(clearDioceseStandaloneExternal, 5200);
-      setTimeout(clearDioceseStandaloneExternal, 7200);
     }
-    else { try{ sessionStorage.setItem('oai_diocese_standalone_return',JSON.stringify(state)); }catch(e){} markDioceseStandaloneExternal(); setTimeout(function(){ location.href=url; }, 90); }
+    else { try{ sessionStorage.setItem('oai_diocese_standalone_return',JSON.stringify(state)); }catch(e){} markDioceseStandaloneExternal(); try{ location.href=url; }catch(_e){ location.assign(url); } }
   };
   document.addEventListener('click',function(e){ var t=e.target&&e.target.closest?e.target.closest('[data-dio-url]'):null; if(!t) return; e.preventDefault(); e.stopPropagation(); window.openDioceseUrl(t.getAttribute('data-dio-url'),t.getAttribute('data-dio-source')||'link'); },true);
 })();

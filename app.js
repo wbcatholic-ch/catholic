@@ -1173,7 +1173,7 @@ function openDioceseView(opts){
       if(!restore) try{ frame.contentWindow && frame.contentWindow.resetDioceseFirstPage && frame.contentWindow.resetDioceseFirstPage(); }catch(e){ console.warn("[가톨릭길동무]", e); }
       if(typeof dioceseLoaded==='function') dioceseLoaded();
     };
-    frame.src='diocese.html?v=V1-S-prayer-title1';
+    frame.src='diocese.html?v=V1-S-restore-pos3';
   }else if(!restore){
     try{ frame.contentWindow && frame.contentWindow.resetDioceseFirstPage && frame.contentWindow.resetDioceseFirstPage(); }catch(e){ console.warn("[가톨릭길동무]", e); }
   }
@@ -1270,7 +1270,7 @@ function restoreDioceseExternalState(){
   try{ sessionStorage.removeItem(DIOCESE_RETURN_KEY); }catch(e){ console.warn('[가톨릭길동무]', e); }
   try{
     var root=document.documentElement;
-    root.classList.add('oai-diocese-returning');
+    root.classList.remove('oai-diocese-returning','oai-stability-veil','oai-external-return-freeze','oai-external-leaving');
     if(typeof openDioceseView === 'function') openDioceseView({restore:true});
     if(typeof oaiSetMainMapLayerHidden === 'function') oaiSetMainMapLayerHidden(true);
     var frame=document.getElementById('diocese-frame');
@@ -1289,7 +1289,7 @@ function restoreDioceseExternalState(){
           setTimeout(function(){
             try{ root.classList.remove('oai-diocese-returning'); }catch(_e){}
             window.__OAI_DIOCESE_RESTORING__ = false;
-          }, 650);
+          }, 220);
         }
       }catch(e){ console.warn('[가톨릭길동무]', e); }
       if(tries>18){
@@ -1305,12 +1305,12 @@ window.addEventListener('pageshow', function(){
   // 교구 홈페이지 복귀 시: 첫 프레임부터 즉시 동결 → 커버·지도 노출 없이 바로 복원
   try{
     if(sessionStorage.getItem(DIOCESE_RETURN_KEY)){
-      document.documentElement.classList.add('oai-diocese-returning');
+      document.documentElement.classList.remove('oai-diocese-returning','oai-stability-veil','oai-external-return-freeze','oai-external-leaving');
     }
   }catch(ex){}
-  setTimeout(restoreDioceseExternalState, 80);
+  setTimeout(restoreDioceseExternalState, 20);
 }, true);
-window.addEventListener('focus', function(){ setTimeout(restoreDioceseExternalState, 100); }, true);
+window.addEventListener('focus', function(){ setTimeout(restoreDioceseExternalState, 40); }, true);
 
 
 function clearRouteNoFocus(){

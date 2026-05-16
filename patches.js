@@ -531,9 +531,8 @@
     blurActive();
     var d=el('prayer-detail');
     if(d) d.classList.remove('show');
-    var lv=el('prayer-list-view');
-    if(lv){
-      try{ lv.style.scrollBehavior='auto'; lv.scrollTop=0; lv.style.scrollBehavior=''; }catch(_){ console.warn("[가톨릭길동무] silent catch"); }
+    if(typeof window.prRestoreListPosition === 'function'){
+      try{ window.prRestoreListPosition(); }catch(_){ console.warn("[가톨릭길동무] silent catch"); }
     }
   }
   try{ window.showPrayerListOnly = showPrayerListOnly; }catch(_){ console.warn("[가톨릭길동무] silent catch"); }
