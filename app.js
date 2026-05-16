@@ -1173,7 +1173,7 @@ function openDioceseView(opts){
       if(!restore) try{ frame.contentWindow && frame.contentWindow.resetDioceseFirstPage && frame.contentWindow.resetDioceseFirstPage(); }catch(e){ console.warn("[가톨릭길동무]", e); }
       if(typeof dioceseLoaded==='function') dioceseLoaded();
     };
-    frame.src='diocese.html?v=V1-S-dio-websame';
+    frame.src='diocese.html?v=V1-S-dio-websame3';
   }else if(!restore){
     try{ frame.contentWindow && frame.contentWindow.resetDioceseFirstPage && frame.contentWindow.resetDioceseFirstPage(); }catch(e){ console.warn("[가톨릭길동무]", e); }
   }
@@ -1258,9 +1258,14 @@ function openDioceseExternal(url, state){
     var payload=JSON.stringify(state || {});
     sessionStorage.setItem(DIOCESE_RETURN_KEY, payload);
     localStorage.setItem(DIOCESE_RETURN_KEY, payload);
+    window.__OAI_DIOCESE_EXTERNAL_LEAVING__ = true;
+    var frame=document.getElementById('diocese-frame');
+    if(frame && frame.contentWindow){
+      try{ frame.contentWindow.__OAI_DIO_EXTERNAL_LEAVING__ = true; }catch(_e){}
+    }
   }catch(e){ console.warn('[가톨릭길동무]', e); }
-  // V1-S: 관구·교구 홈페이지는 전용 복귀 상태만 저장한다.
-  // 공통 외부복귀 안정막(oai_external_nav_*)까지 함께 쓰면 부모/iframe/pageshow/focus가 겹쳐 큰 깜빡임이 반복된다.
+  // 관구·교구 홈페이지는 웹사이트/순례길처럼 상태 저장 후 즉시 이동한다.
+  // 보호막, 진입효과, 복귀 안정막을 켜지 않는다.
   try{ document.activeElement && document.activeElement.blur && document.activeElement.blur(); }catch(e){ console.warn('[가톨릭길동무]', e); }
   try{ location.href = url; }catch(e){ try{ location.assign(url); }catch(_){ } }
 }
@@ -1281,21 +1286,32 @@ function restoreDioceseExternalState(opts){
     var alreadyOpen=!!(view && view.classList.contains('open'));
     var frameAlive=!!(frame && frame.contentWindow);
 
-    // V1-S calm: 순례길/웹사이트처럼, 브라우저가 기존 관구교구 iframe을 살려서 되돌려 준 경우에는
-    // 복원 루틴을 절대 실행하지 않는다. 이 함수가 실행되면 목록 scrollTop이 다시 적용되고
-    // iframe 내부 pageshow/focus 정리와 겹쳐 화면이 크게 흔들린다.
+    // V1-S stable: frame.contentWindow가 있다는 이유만으로 '살아 있다'고 판단하면 안 된다.
+    // Android/카카오 WebView에서는 부모 iframe 객체는 남아 있어도, iframe 내부 diocese.html이
+    // 새로 초기화되어 목록이 맨 위로 돌아간 상태가 섞인다. 그래서 iframe 내부에 현재 탭/scrollTop이
+    // 저장값과 실제로 일치하는지 물어본 뒤, 일치할 때만 웹사이트처럼 아무 복원도 하지 않는다.
     if(alreadyOpen && frameAlive){
+      var preserved=false;
       try{
         var w=frame.contentWindow;
-        if(w){
-          w.__OAI_DIO_EXTERNAL_LEAVING__ = false;
-          w.__OAI_DIO_PARENT_RETURNING__ = false;
-          if(typeof w.oaiReleaseDioceseStability === 'function') w.oaiReleaseDioceseStability();
-        }
-      }catch(_e){}
-      try{ sessionStorage.removeItem(DIOCESE_RETURN_KEY); localStorage.removeItem(DIOCESE_RETURN_KEY); }catch(_e){}
-      window.__OAI_DIOCESE_RESTORING__ = false;
-      return true;
+        if(w && typeof w.isDioceseReturnPreserved === 'function') preserved = !!w.isDioceseReturnPreserved(state || {});
+        else if(w && w.__OAI_DIO_EXTERNAL_LEAVING__) preserved = true;
+      }catch(_e){ preserved=false; }
+      if(preserved){
+        try{
+          var ww=frame.contentWindow;
+          if(ww){
+            ww.__OAI_DIO_EXTERNAL_LEAVING__ = false;
+            ww.__OAI_DIO_PARENT_RETURNING__ = false;
+            if(typeof ww.oaiReleaseDioceseStability === 'function') ww.oaiReleaseDioceseStability({silent:true});
+          }
+        }catch(_e){}
+        try{ sessionStorage.removeItem(DIOCESE_RETURN_KEY); localStorage.removeItem(DIOCESE_RETURN_KEY); }catch(_e){}
+        window.__OAI_DIOCESE_EXTERNAL_LEAVING__ = false;
+        window.__OAI_DIOCESE_RESTORING__ = false;
+        return true;
+      }
+      // iframe은 존재하지만 보존 상태가 아니면 아래의 단일 복원 경로로 내려간다.
     }
 
     window.__OAI_DIOCESE_RESTORING__ = true;
@@ -1344,14 +1360,25 @@ window.addEventListener('pageshow', function(ev){
       // 핵심: persisted 여부와 무관하게, 관구교구 화면/iframe이 살아 있으면 웹사이트처럼 그대로 둔다.
       // Android/카카오/WebView에서는 persisted=false여도 실제 DOM과 스크롤이 살아 있는 경우가 많다.
       if(view && view.classList.contains('open') && frame && frame.contentWindow){
+        var state=null;
+        try{ state=JSON.parse(hasReturn); }catch(_e){ state={}; }
+        var preserved=false;
         try{
           var w=frame.contentWindow;
-          w.__OAI_DIO_EXTERNAL_LEAVING__ = false;
-          w.__OAI_DIO_PARENT_RETURNING__ = false;
-          if(typeof w.oaiReleaseDioceseStability === 'function') w.oaiReleaseDioceseStability();
-        }catch(_e){}
-        try{ sessionStorage.removeItem(DIOCESE_RETURN_KEY); localStorage.removeItem(DIOCESE_RETURN_KEY); }catch(_e){}
-        return;
+          if(w && typeof w.isDioceseReturnPreserved === 'function') preserved = !!w.isDioceseReturnPreserved(state || {});
+          else if(w && w.__OAI_DIO_EXTERNAL_LEAVING__) preserved = true;
+        }catch(_e){ preserved=false; }
+        if(preserved){
+          try{
+            var ww=frame.contentWindow;
+            ww.__OAI_DIO_EXTERNAL_LEAVING__ = false;
+            ww.__OAI_DIO_PARENT_RETURNING__ = false;
+            if(typeof ww.oaiReleaseDioceseStability === 'function') ww.oaiReleaseDioceseStability({silent:true});
+          }catch(_e){}
+          try{ sessionStorage.removeItem(DIOCESE_RETURN_KEY); localStorage.removeItem(DIOCESE_RETURN_KEY); }catch(_e){}
+          window.__OAI_DIOCESE_EXTERNAL_LEAVING__ = false;
+          return;
+        }
       }
     }
   }catch(ex){}

@@ -1351,13 +1351,10 @@ document.querySelectorAll('.tab').forEach(function(t){
         },120);
       }
     }
-    if(tab==='list'){
-      // 스크롤 위치 복귀
-      var sv=sessionStorage.getItem('listScroll');
-      if(sv){setTimeout(function(){document.getElementById('list-view').scrollTop=parseInt(sv);},10);}
-    } else if(tab!=='list'){
-      // list에서 떠날 때 스크롤 저장
-      sessionStorage.setItem('listScroll',document.getElementById('list-view').scrollTop);
+    if(tab!=='list'){
+      // 사용자가 목록 탭을 떠날 때만 저장한다. 목록 탭으로 돌아올 때 자동 복원하면
+      // 외부 홈페이지 복귀 직후 브라우저가 보존한 위치를 한 번 더 밀어 흔들림이 생긴다.
+      try{ sessionStorage.setItem('listScroll',document.getElementById('list-view').scrollTop); }catch(e){}
     }
     document.getElementById('gw-bar').style.display=tab==='gwangu'?'flex':'none';
     if(tab==='gwangu'){
@@ -1818,11 +1815,8 @@ document.addEventListener('click',function(e){
 },true);
 
 window.addEventListener('pageshow',function(){
-  var lv=document.getElementById('list-view');
-  if(lv && lv.classList.contains('on')){
-    var sv=sessionStorage.getItem('listScroll');
-    if(sv){setTimeout(function(){lv.scrollTop=parseInt(sv);},30);}
-  }
+  // 부모 앱 안에서 외부 교구 홈페이지를 다녀온 경우에는 브라우저가 보존한 목록 위치를 그대로 둔다.
+  // 여기서 sessionStorage의 예전 listScroll을 다시 적용하면 원래 보던 위치가 틀어진다.
 });
 /* ── 스와이프 탭 전환: 목록에서 관구별 지도로 복귀 가능, 지도 화면 자체에는 스와이프 없음 ── */
 (function(){
@@ -1890,6 +1884,33 @@ window.addEventListener('pageshow',function(){
       clickedSource: source || 'link'
     };
   };
+
+  window.isDioceseReturnPreserved = function(state){
+    // 부모 app.js가 "iframe이 진짜 살아 있는지" 확인할 때 호출한다.
+    // contentWindow 존재만으로 판단하면, WebView가 iframe을 새로 초기화한 경우에도 복원을 건너뛰어
+    // 목록 위치가 원래대로 돌아오지 않는 문제가 생긴다.
+    state = state || {};
+    try{
+      var tab = state.tab || 'gwangu';
+      if(activeTab() !== tab) return false;
+      if(tab === 'list'){
+        var lv=document.getElementById('list-view');
+        if(!lv) return false;
+        var saved=Number(state.listScroll||0);
+        if(isNaN(saved)) saved=0;
+        return Math.abs((lv.scrollTop||0)-saved) <= 24;
+      }
+      if(tab === 'search'){
+        var sv=document.getElementById('search-view');
+        if(!sv) return false;
+        var savedS=Number(state.searchScroll||0);
+        if(isNaN(savedS)) savedS=0;
+        var val=(document.getElementById('si')||{}).value||'';
+        return val === (state.searchValue||'') && Math.abs((sv.scrollTop||0)-savedS) <= 24;
+      }
+      return true;
+    }catch(e){ return false; }
+  };
   function setReturnTabSilently(tab){
     tab=tab||'gwangu';
     try{
@@ -1924,7 +1945,7 @@ window.addEventListener('pageshow',function(){
     // 탭 click 이벤트를 다시 실행하지 않는다. click 이벤트는 지도 초기화, 카드 닫기,
     // 목록 스크롤 재적용을 동반해 복귀 순간에 흔들림처럼 보일 수 있다.
     try{ window.__OAI_DIO_PARENT_RETURNING__ = true; window.__OAI_DIO_EXTERNAL_LEAVING__ = false; }catch(e){}
-    try{ document.documentElement.classList.remove('oai-dio-external-stabilize','oai-dio-external-return','oai-dio-returning'); }catch(e){}
+    try{ document.documentElement.classList.remove('oai-dio-external-stabilize','oai-dio-external-return'); document.documentElement.classList.add('oai-dio-returning'); }catch(e){}
     var tab=state.tab||'gwangu';
     setReturnTabSilently(tab);
     if(state.searchValue && document.getElementById('si')){ document.getElementById('si').value=state.searchValue; if(typeof doSearch==='function') doSearch(); }
@@ -1947,7 +1968,12 @@ window.addEventListener('pageshow',function(){
           // 외부 홈페이지로 나가기 직전의 정확한 scrollTop만 복원한다.
           // 이전처럼 클릭한 교구 카드를 화면 위로 맞추면, 사용자가 보던 원래 위치보다 카드가 위로 튀어 올라간다.
           var saved=Number(state.listScroll||0);
-          if(!isNaN(saved)) lv.scrollTop=saved;
+          if(!isNaN(saved)){
+            var oldBehavior=lv.style.scrollBehavior;
+            lv.style.scrollBehavior='auto';
+            lv.scrollTop=saved;
+            lv.style.scrollBehavior=oldBehavior||'';
+          }
         }
       }catch(e){}
       try{ var sv=document.getElementById('search-view'); if(sv && state.tab==='search') sv.scrollTop=Number(state.searchScroll||0); }catch(e){}
@@ -1955,7 +1981,7 @@ window.addEventListener('pageshow',function(){
     restoreScrollQuietly();
     requestAnimationFrame(function(){ restoreScrollQuietly(); restoreOpenCard(); });
     setTimeout(function(){ restoreScrollQuietly(); restoreOpenCard(); },90);
-    setTimeout(function(){ try{ window.__OAI_DIO_PARENT_RETURNING__ = false; document.documentElement.classList.remove('oai-dio-returning','oai-dio-external-return','oai-dio-external-stabilize'); }catch(e){} }, 180);
+    setTimeout(function(){ try{ window.__OAI_DIO_PARENT_RETURNING__ = false; document.documentElement.classList.remove('oai-dio-returning','oai-dio-external-return','oai-dio-external-stabilize'); }catch(e){} }, 240);
   };
 
   window.resetDioceseFirstPage = function(){
@@ -1984,31 +2010,33 @@ window.addEventListener('pageshow',function(){
   function forceClearDioceseStandaloneExternal(){
     try{
       window.__OAI_DIO_PARENT_RETURNING__ = false;
+      window.__OAI_DIO_EXTERNAL_LEAVING__ = false;
       document.documentElement.classList.remove('oai-dio-external-stabilize','oai-dio-external-return','oai-dio-returning');
       sessionStorage.removeItem('oai_diocese_external_pending');
       sessionStorage.removeItem('oai_diocese_external_ts');
     }catch(e){}
   }
   window.oaiReleaseDioceseStability = forceClearDioceseStandaloneExternal;
+  function inParentApp(){ try{ return !!(window.parent && window.parent!==window); }catch(e){ return false; } }
   window.addEventListener('pageshow', function(){
     try{
+      // 부모 앱 안에서는 pageshow/focus/visibility 복원 타이머를 쓰지 않는다.
+      // 웹사이트/순례길처럼 기존 iframe 화면을 그대로 두어야 흔들림이 사라진다.
+      if(inParentApp()){
+        document.documentElement.classList.remove('oai-dio-external-stabilize','oai-dio-external-return','oai-dio-returning');
+        return;
+      }
       var p=sessionStorage.getItem('oai_diocese_external_pending')==='1';
       var ts=parseInt(sessionStorage.getItem('oai_diocese_external_ts')||'0',10)||0;
       if(p || (ts && Date.now()-ts<600000)){
-        // 단독 diocese.html 복귀 때만 짧게 가리고, 반드시 해제한다.
         document.documentElement.classList.remove('oai-dio-external-stabilize','oai-dio-external-return','oai-dio-returning');
         setTimeout(clearDioceseStandaloneExternal, 120);
-      }else{
-        // 부모 PWA가 외부 이동을 담당한 경우에는 iframe 세션값이 없어서
-        // oai-dio-external-stabilize가 남을 수 있으므로 복귀 시 무조건 정리 안전망을 둔다.
-        setTimeout(clearDioceseStandaloneExternal, 160);
       }
       setTimeout(clearDioceseStandaloneExternal, 1500);
-      setTimeout(clearDioceseStandaloneExternal, 2600);
     }catch(e){}
   }, true);
-  window.addEventListener('focus', function(){ setTimeout(clearDioceseStandaloneExternal, 180); setTimeout(clearDioceseStandaloneExternal, 1400); }, true);
-  document.addEventListener('visibilitychange', function(){ if(document.visibilityState==='visible'){ setTimeout(clearDioceseStandaloneExternal, 180); setTimeout(clearDioceseStandaloneExternal, 1400); } }, true);
+  window.addEventListener('focus', function(){ if(!inParentApp()) setTimeout(clearDioceseStandaloneExternal, 180); }, true);
+  document.addEventListener('visibilitychange', function(){ if(!inParentApp() && document.visibilityState==='visible') setTimeout(clearDioceseStandaloneExternal, 180); }, true);
   window.openDioceseUrl = function(url, source, extra){
     if(!url || window.__OAI_DIO_EXTERNAL_LEAVING__) return;
     window.__OAI_DIO_EXTERNAL_LEAVING__ = true;
@@ -2017,7 +2045,9 @@ window.addEventListener('pageshow',function(){
     // 부모 앱 안에서는 입장/복귀 순간의 큰 흔들림을 만들던 iframe 안정막과 부모 보호막을 쓰지 않는다.
     // 위치 상태 저장 후 웹사이트 모듈처럼 바로 이동한다.
     if(window.parent && window.parent!==window && typeof window.parent.openDioceseExternal==='function'){
-      clearDioceseStandaloneExternal();
+      // 부모 앱에서는 안정막/복원 타이머를 정리하지 않고 바로 이동한다.
+      // clear 함수가 focus/pageshow 타이머와 겹치면 진입 직전 화면이 한 번 흔들린다.
+      document.documentElement.classList.remove('oai-dio-external-stabilize','oai-dio-external-return','oai-dio-returning');
       window.parent.openDioceseExternal(url,state);
     }
     else { try{ sessionStorage.setItem('oai_diocese_standalone_return',JSON.stringify(state)); }catch(e){} markDioceseStandaloneExternal(); try{ location.href=url; }catch(_e){ location.assign(url); } }
