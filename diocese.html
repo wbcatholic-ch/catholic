@@ -1304,9 +1304,14 @@ function buildListView(){
       foot.appendChild(url);foot.appendChild(arr);
 
       card.appendChild(top);card.appendChild(body);card.appendChild(foot);
-      if(m.url){card.addEventListener('click',(function(u){return function(){
-        openDioceseUrl(u,'list');
-      };})(m.url));}
+      if(m.url){
+        card.dataset.dioUrl = m.url;
+        card.dataset.dioSource = 'list';
+        card.dataset.dioKey = dName;
+        card.addEventListener('click',(function(u,k){return function(){
+          openDioceseUrl(u,'list',{listKey:k,listUrl:u});
+        };})(m.url,dName));
+      }
       wrap.appendChild(card);
     });
   });
@@ -1715,7 +1720,12 @@ function makeRow(disp,diocese,overlapDongs){
   const arr=document.createElement('span');arr.className='lv-arr';arr.textContent='›';
   foot.appendChild(urlEl);foot.appendChild(arr);
   card.appendChild(top);card.appendChild(body);card.appendChild(foot);
-  if(url){card.addEventListener('click',function(){openDioceseUrl(url,'list');});}
+  if(url){
+    card.dataset.dioUrl = url;
+    card.dataset.dioSource = 'list';
+    card.dataset.dioKey = diocese;
+    card.addEventListener('click',function(){openDioceseUrl(url,'list',{listKey:diocese,listUrl:url});});
+  }
   return card;
 }
 
@@ -1857,7 +1867,8 @@ window.addEventListener('pageshow',function(){
 (function(){
   'use strict';
   function activeTab(){ var t=document.querySelector('.tab.on'); return t ? (t.dataset.tab || 'gwangu') : 'gwangu'; }
-  window.getDioceseReturnState = function(source){
+  window.getDioceseReturnState = function(source, extra){
+    extra = extra || {};
     var g=document.querySelector('#gw-bar .gb.on');
     var card=document.getElementById('card');
     var cardOpen=!!(card&&card.classList&&card.classList.contains('on'));
@@ -1874,7 +1885,10 @@ window.addEventListener('pageshow',function(){
       searchValue:(document.getElementById('si')||{}).value||'',
       gw:(g&&g.dataset?g.dataset.gw:''),
       cardDiocese:cardOpen?cardName:'',
-      cardDetailOpen:cardOpen&&detOpen?1:0
+      cardDetailOpen:cardOpen&&detOpen?1:0,
+      listKey: extra.listKey || '',
+      listUrl: extra.listUrl || '',
+      clickedSource: source || 'link'
     };
   };
   function setReturnTabSilently(tab){
@@ -1926,7 +1940,23 @@ window.addEventListener('pageshow',function(){
       }catch(e){}
     }
     function restoreScrollQuietly(){
-      try{ var lv=document.getElementById('list-view'); if(lv) lv.scrollTop=Number(state.listScroll||0); }catch(e){}
+      try{
+        var lv=document.getElementById('list-view');
+        if(lv){
+          lv.scrollTop=Number(state.listScroll||0);
+          var key=(state.listKey||'').trim();
+          var url=(state.listUrl||'').trim();
+          var target=null;
+          if(key){ target=document.querySelector('[data-dio-key="'+String(key).replace(/"/g,'\\"')+'"]'); }
+          if(!target && url){
+            document.querySelectorAll('[data-dio-url]').forEach(function(el){ if(!target && (el.getAttribute('data-dio-url')||'')===url) target=el; });
+          }
+          if(target && state.tab==='list'){
+            var top=target.offsetTop||0;
+            if(top>0) lv.scrollTop=Math.max(0, top-18);
+          }
+        }
+      }catch(e){}
       try{ var sv=document.getElementById('search-view'); if(sv) sv.scrollTop=Number(state.searchScroll||0); }catch(e){}
     }
     restoreScrollQuietly();
@@ -1988,8 +2018,9 @@ window.addEventListener('pageshow',function(){
   }, true);
   window.addEventListener('focus', function(){ setTimeout(clearDioceseStandaloneExternal, 180); setTimeout(clearDioceseStandaloneExternal, 1400); }, true);
   document.addEventListener('visibilitychange', function(){ if(document.visibilityState==='visible'){ setTimeout(clearDioceseStandaloneExternal, 180); setTimeout(clearDioceseStandaloneExternal, 1400); } }, true);
-  window.openDioceseUrl = function(url, source){
-    if(!url) return; var state=window.getDioceseReturnState(source||'link');
+  window.openDioceseUrl = function(url, source, extra){
+    if(!url) return; var state=window.getDioceseReturnState(source||'link', extra || {});
+    try{ sessionStorage.setItem('oai_diocese_last_return_state', JSON.stringify(state)); localStorage.setItem('oai_diocese_last_return_state', JSON.stringify(state)); }catch(e){}
     // 부모 앱 안에서는 입장/복귀 순간의 큰 흔들림을 만들던 iframe 안정막과 부모 보호막을 쓰지 않는다.
     // 필요한 것은 위치 상태 저장뿐이며, 실제 이동/복귀는 부모 openDioceseExternal 한 경로에서 처리한다.
     if(window.parent && window.parent!==window && typeof window.parent.openDioceseExternal==='function'){
@@ -1998,7 +2029,7 @@ window.addEventListener('pageshow',function(){
     }
     else { try{ sessionStorage.setItem('oai_diocese_standalone_return',JSON.stringify(state)); }catch(e){} markDioceseStandaloneExternal(); try{ location.href=url; }catch(_e){ location.assign(url); } }
   };
-  document.addEventListener('click',function(e){ var t=e.target&&e.target.closest?e.target.closest('[data-dio-url]'):null; if(!t) return; e.preventDefault(); e.stopPropagation(); window.openDioceseUrl(t.getAttribute('data-dio-url'),t.getAttribute('data-dio-source')||'link'); },true);
+  document.addEventListener('click',function(e){ var t=e.target&&e.target.closest?e.target.closest('[data-dio-url]'):null; if(!t) return; e.preventDefault(); e.stopPropagation(); window.openDioceseUrl(t.getAttribute('data-dio-url'),t.getAttribute('data-dio-source')||'link',{listKey:t.getAttribute('data-dio-key')||'',listUrl:t.getAttribute('data-dio-url')||''}); },true);
 })();
 </script>
 

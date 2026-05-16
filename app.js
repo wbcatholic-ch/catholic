@@ -1173,7 +1173,7 @@ function openDioceseView(opts){
       if(!restore) try{ frame.contentWindow && frame.contentWindow.resetDioceseFirstPage && frame.contentWindow.resetDioceseFirstPage(); }catch(e){ console.warn("[가톨릭길동무]", e); }
       if(typeof dioceseLoaded==='function') dioceseLoaded();
     };
-    frame.src='diocese.html?v=V1-S-restore-pos3';
+    frame.src='diocese.html?v=V1-S-restore-pos4';
   }else if(!restore){
     try{ frame.contentWindow && frame.contentWindow.resetDioceseFirstPage && frame.contentWindow.resetDioceseFirstPage(); }catch(e){ console.warn("[가톨릭길동무]", e); }
   }
@@ -1254,7 +1254,11 @@ const DIOCESE_RETURN_KEY='catholic_diocese_external_return_v1';
 function openDioceseExternal(url, state){
   url = normalizeCatholicExternalUrl(url);
   if(!url) return;
-  try{ sessionStorage.setItem(DIOCESE_RETURN_KEY, JSON.stringify(state || {})); }catch(e){ console.warn('[가톨릭길동무]', e); }
+  try{
+    var payload=JSON.stringify(state || {});
+    sessionStorage.setItem(DIOCESE_RETURN_KEY, payload);
+    localStorage.setItem(DIOCESE_RETURN_KEY, payload);
+  }catch(e){ console.warn('[가톨릭길동무]', e); }
   // V1-S: 관구·교구 홈페이지는 전용 복귀 상태만 저장한다.
   // 공통 외부복귀 안정막(oai_external_nav_*)까지 함께 쓰면 부모/iframe/pageshow/focus가 겹쳐 큰 깜빡임이 반복된다.
   try{ document.activeElement && document.activeElement.blur && document.activeElement.blur(); }catch(e){ console.warn('[가톨릭길동무]', e); }
@@ -1263,11 +1267,11 @@ function openDioceseExternal(url, state){
 window.openDioceseExternal = openDioceseExternal;
 function restoreDioceseExternalState(){
   var raw=null, state=null;
-  try{ raw=sessionStorage.getItem(DIOCESE_RETURN_KEY); }catch(e){ console.warn('[가톨릭길동무]', e); }
+  try{ raw=sessionStorage.getItem(DIOCESE_RETURN_KEY) || localStorage.getItem(DIOCESE_RETURN_KEY); }catch(e){ console.warn('[가톨릭길동무]', e); }
   if(!raw || window.__OAI_DIOCESE_RESTORING__) return false;
   window.__OAI_DIOCESE_RESTORING__ = true;
   try{ state=JSON.parse(raw); }catch(e){ state={}; }
-  try{ sessionStorage.removeItem(DIOCESE_RETURN_KEY); }catch(e){ console.warn('[가톨릭길동무]', e); }
+  try{ sessionStorage.removeItem(DIOCESE_RETURN_KEY); localStorage.removeItem(DIOCESE_RETURN_KEY); }catch(e){ console.warn('[가톨릭길동무]', e); }
   try{
     var root=document.documentElement;
     root.classList.remove('oai-diocese-returning','oai-stability-veil','oai-external-return-freeze','oai-external-leaving');
@@ -1304,7 +1308,7 @@ function restoreDioceseExternalState(){
 window.addEventListener('pageshow', function(){
   // 교구 홈페이지 복귀 시: 첫 프레임부터 즉시 동결 → 커버·지도 노출 없이 바로 복원
   try{
-    if(sessionStorage.getItem(DIOCESE_RETURN_KEY)){
+    if(sessionStorage.getItem(DIOCESE_RETURN_KEY) || localStorage.getItem(DIOCESE_RETURN_KEY)){
       document.documentElement.classList.remove('oai-diocese-returning','oai-stability-veil','oai-external-return-freeze','oai-external-leaving');
     }
   }catch(ex){}
