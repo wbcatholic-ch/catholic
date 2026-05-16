@@ -1173,7 +1173,7 @@ function openDioceseView(opts){
       if(!restore) try{ frame.contentWindow && frame.contentWindow.resetDioceseFirstPage && frame.contentWindow.resetDioceseFirstPage(); }catch(e){ console.warn("[가톨릭길동무]", e); }
       if(typeof dioceseLoaded==='function') dioceseLoaded();
     };
-    frame.src='diocese.html?v=V1-S-dio-pos2';
+    frame.src='diocese.html?v=V1-S-dio-websame';
   }else if(!restore){
     try{ frame.contentWindow && frame.contentWindow.resetDioceseFirstPage && frame.contentWindow.resetDioceseFirstPage(); }catch(e){ console.warn("[가톨릭길동무]", e); }
   }
@@ -1271,9 +1271,7 @@ function restoreDioceseExternalState(opts){
   try{ raw=sessionStorage.getItem(DIOCESE_RETURN_KEY) || localStorage.getItem(DIOCESE_RETURN_KEY); }catch(e){ console.warn('[가톨릭길동무]', e); }
   if(!raw || window.__OAI_DIOCESE_RESTORING__) return false;
 
-  window.__OAI_DIOCESE_RESTORING__ = true;
   try{ state=JSON.parse(raw); }catch(e){ state={}; }
-  try{ sessionStorage.removeItem(DIOCESE_RETURN_KEY); localStorage.removeItem(DIOCESE_RETURN_KEY); }catch(e){ console.warn('[가톨릭길동무]', e); }
 
   try{
     var root=document.documentElement;
@@ -1283,46 +1281,56 @@ function restoreDioceseExternalState(opts){
     var alreadyOpen=!!(view && view.classList.contains('open'));
     var frameAlive=!!(frame && frame.contentWindow);
 
+    // V1-S calm: 순례길/웹사이트처럼, 브라우저가 기존 관구교구 iframe을 살려서 되돌려 준 경우에는
+    // 복원 루틴을 절대 실행하지 않는다. 이 함수가 실행되면 목록 scrollTop이 다시 적용되고
+    // iframe 내부 pageshow/focus 정리와 겹쳐 화면이 크게 흔들린다.
+    if(alreadyOpen && frameAlive){
+      try{
+        var w=frame.contentWindow;
+        if(w){
+          w.__OAI_DIO_EXTERNAL_LEAVING__ = false;
+          w.__OAI_DIO_PARENT_RETURNING__ = false;
+          if(typeof w.oaiReleaseDioceseStability === 'function') w.oaiReleaseDioceseStability();
+        }
+      }catch(_e){}
+      try{ sessionStorage.removeItem(DIOCESE_RETURN_KEY); localStorage.removeItem(DIOCESE_RETURN_KEY); }catch(_e){}
+      window.__OAI_DIOCESE_RESTORING__ = false;
+      return true;
+    }
+
+    window.__OAI_DIOCESE_RESTORING__ = true;
+    try{ sessionStorage.removeItem(DIOCESE_RETURN_KEY); localStorage.removeItem(DIOCESE_RETURN_KEY); }catch(e){ console.warn('[가톨릭길동무]', e); }
+
     function finish(){
       try{ root.classList.remove('oai-diocese-returning','oai-stability-veil','oai-external-return-freeze','oai-external-leaving'); }catch(_e){}
       window.__OAI_DIOCESE_RESTORING__ = false;
     }
     function restoreInFrame(){
       try{
+        frame=document.getElementById('diocese-frame');
         var w=frame && frame.contentWindow;
         if(w){
           w.__OAI_DIO_EXTERNAL_LEAVING__ = false;
           w.__OAI_DIO_PARENT_RETURNING__ = true;
         }
         if(w && typeof w.restoreDioceseReturnState === 'function'){
+          // 새로 로드되어 관구교구 iframe 자체가 사라졌던 경우에만 최소 복원한다.
           w.restoreDioceseReturnState(state || {});
-          setTimeout(finish, 180);
+          setTimeout(finish, 120);
           return true;
         }
       }catch(e){ console.warn('[가톨릭길동무]', e); }
       return false;
     }
 
-    // V1-S: 관구교구가 이미 열려 있고 iframe이 살아 있으면 절대 다시 열거나 src를 재설정하지 않는다.
-    // 웹사이트 모듈처럼 기존 화면을 그대로 두고, 목록 스크롤/카드 상태만 iframe 안에서 조용히 복원한다.
-    if(alreadyOpen && frameAlive){
-      var triesLive=0;
-      var liveTimer=setInterval(function(){
-        triesLive++;
-        if(restoreInFrame() || triesLive>8){ clearInterval(liveTimer); if(triesLive>8) finish(); }
-      }, 60);
-      return true;
-    }
-
     if(!alreadyOpen && typeof openDioceseView === 'function') openDioceseView({restore:true});
     if(!alreadyOpen && typeof oaiSetMainMapLayerHidden === 'function') oaiSetMainMapLayerHidden(true);
-    frame=document.getElementById('diocese-frame');
     var tries=0;
     var timer=setInterval(function(){
       tries++;
       if(restoreInFrame()){ clearInterval(timer); return; }
-      if(tries>14){ clearInterval(timer); finish(); }
-    }, 80);
+      if(tries>10){ clearInterval(timer); finish(); }
+    }, 70);
   }catch(e){ console.warn('[가톨릭길동무]', e); window.__OAI_DIOCESE_RESTORING__ = false; }
   return true;
 }
@@ -1333,9 +1341,15 @@ window.addEventListener('pageshow', function(ev){
       document.documentElement.classList.remove('oai-diocese-returning','oai-stability-veil','oai-external-return-freeze','oai-external-leaving');
       var view=document.getElementById('diocese-view');
       var frame=document.getElementById('diocese-frame');
-      // 브라우저 bfcache로 돌아온 경우에는 iframe/list DOM과 스크롤이 이미 그대로 살아 있다.
-      // 여기서 다시 복원 함수를 실행하면 클릭한 교구 카드 기준으로 한 번 더 재배치되어 큰 흔들림이 생긴다.
-      if(ev && ev.persisted && view && view.classList.contains('open') && frame && frame.contentWindow){
+      // 핵심: persisted 여부와 무관하게, 관구교구 화면/iframe이 살아 있으면 웹사이트처럼 그대로 둔다.
+      // Android/카카오/WebView에서는 persisted=false여도 실제 DOM과 스크롤이 살아 있는 경우가 많다.
+      if(view && view.classList.contains('open') && frame && frame.contentWindow){
+        try{
+          var w=frame.contentWindow;
+          w.__OAI_DIO_EXTERNAL_LEAVING__ = false;
+          w.__OAI_DIO_PARENT_RETURNING__ = false;
+          if(typeof w.oaiReleaseDioceseStability === 'function') w.oaiReleaseDioceseStability();
+        }catch(_e){}
         try{ sessionStorage.removeItem(DIOCESE_RETURN_KEY); localStorage.removeItem(DIOCESE_RETURN_KEY); }catch(_e){}
         return;
       }
@@ -1345,7 +1359,6 @@ window.addEventListener('pageshow', function(ev){
 }, true);
 window.addEventListener('focus', function(){
   // 관구교구 외부 홈페이지 복귀는 pageshow 한 경로에서만 처리한다.
-  // focus에서도 복원하면 Android/PWA에서 목록이 한 번 더 재배치되어 크게 흔들린다.
 }, true);
 
 
