@@ -6,8 +6,8 @@
   'use strict';
   if(window.__APP_CACHE_LIFECYCLE_GUARD__) return;
   window.__APP_CACHE_LIFECYCLE_GUARD__ = true;
-  var APP_VERSION = 'V1-S';
-  var SW_BUILD_VERSION = 'V1-S-stable-return1';
+  var APP_VERSION = 'V1-S-diocese-calm2';
+  var SW_BUILD_VERSION = 'V1-S-diocese-calm2';
   window.APP_VERSION = APP_VERSION;
 
   function now(){ return Date.now ? Date.now() : new Date().getTime(); }

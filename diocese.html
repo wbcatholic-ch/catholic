@@ -1724,7 +1724,7 @@ function makeRow(disp,diocese,overlapDongs){
     card.dataset.dioUrl = url;
     card.dataset.dioSource = 'list';
     card.dataset.dioKey = diocese;
-    card.addEventListener('click',function(){openDioceseUrl(url,'list',{listKey:diocese,listUrl:url});});
+    /* 목록 홈페이지 이동은 아래 전역 [data-dio-url] 핸들러 한 곳에서만 처리한다. */
   }
   return card;
 }
@@ -1923,7 +1923,7 @@ window.addEventListener('pageshow',function(){
     // 탭 click 이벤트를 다시 실행하지 않는다. click 이벤트는 지도 초기화, 카드 닫기,
     // 목록 스크롤 재적용을 동반해 복귀 순간에 흔들림처럼 보일 수 있다.
     try{ window.__OAI_DIO_PARENT_RETURNING__ = true; window.__OAI_DIO_EXTERNAL_LEAVING__ = false; }catch(e){}
-    try{ document.documentElement.classList.remove('oai-dio-external-stabilize','oai-dio-external-return','oai-dio-returning'); }catch(e){}
+    try{ document.documentElement.classList.remove('oai-dio-external-stabilize','oai-dio-external-return'); document.documentElement.classList.add('oai-dio-returning'); }catch(e){}
     var tab=state.tab||'gwangu';
     setReturnTabSilently(tab);
     if(state.searchValue && document.getElementById('si')){ document.getElementById('si').value=state.searchValue; if(typeof doSearch==='function') doSearch(); }
