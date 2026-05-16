@@ -316,9 +316,15 @@
     }
   }
 
-  window.addEventListener('pageshow', function(){
-    // V37: 외부사이트 복귀 시 순례길 지도 relayout을 강제로 반복하지 않는다.
-    // 브라우저 bfcache가 복원한 화면을 그대로 두는 것이 가장 덜 흔들린다.
+  window.addEventListener('pageshow', function(ev){
+    // 웹사이트처럼 bfcache로 복귀한 순례길 화면은 그대로 둔다.
+    // 복귀 직후 initTrailModule/trailSetView를 다시 실행하면 목록·지도·시트가 한 번씩 재배치되어 크게 흔들린다.
+    try{
+      if(ev && ev.persisted && ig$('trail-view') && ig$('trail-view').classList.contains('open')){
+        sessionStorage.removeItem(RETURN_KEY);
+        return;
+      }
+    }catch(e){ console.warn('[가톨릭길동무]', e); }
     setTimeout(restoreIntegratedState, 0);
   });
 

@@ -1922,7 +1922,7 @@ window.addEventListener('pageshow',function(){
     // 부모 앱에서 외부 교구 홈페이지로 나갔다가 돌아온 경우에는
     // 탭 click 이벤트를 다시 실행하지 않는다. click 이벤트는 지도 초기화, 카드 닫기,
     // 목록 스크롤 재적용을 동반해 복귀 순간에 흔들림처럼 보일 수 있다.
-    try{ window.__OAI_DIO_PARENT_RETURNING__ = true; }catch(e){}
+    try{ window.__OAI_DIO_PARENT_RETURNING__ = true; window.__OAI_DIO_EXTERNAL_LEAVING__ = false; }catch(e){}
     try{ document.documentElement.classList.remove('oai-dio-external-stabilize','oai-dio-external-return','oai-dio-returning'); }catch(e){}
     var tab=state.tab||'gwangu';
     setReturnTabSilently(tab);
@@ -2019,17 +2019,26 @@ window.addEventListener('pageshow',function(){
   window.addEventListener('focus', function(){ setTimeout(clearDioceseStandaloneExternal, 180); setTimeout(clearDioceseStandaloneExternal, 1400); }, true);
   document.addEventListener('visibilitychange', function(){ if(document.visibilityState==='visible'){ setTimeout(clearDioceseStandaloneExternal, 180); setTimeout(clearDioceseStandaloneExternal, 1400); } }, true);
   window.openDioceseUrl = function(url, source, extra){
-    if(!url) return; var state=window.getDioceseReturnState(source||'link', extra || {});
+    if(!url || window.__OAI_DIO_EXTERNAL_LEAVING__) return;
+    window.__OAI_DIO_EXTERNAL_LEAVING__ = true;
+    var state=window.getDioceseReturnState(source||'link', extra || {});
     try{ sessionStorage.setItem('oai_diocese_last_return_state', JSON.stringify(state)); localStorage.setItem('oai_diocese_last_return_state', JSON.stringify(state)); }catch(e){}
     // 부모 앱 안에서는 입장/복귀 순간의 큰 흔들림을 만들던 iframe 안정막과 부모 보호막을 쓰지 않는다.
-    // 필요한 것은 위치 상태 저장뿐이며, 실제 이동/복귀는 부모 openDioceseExternal 한 경로에서 처리한다.
+    // 위치 상태 저장 후 웹사이트 모듈처럼 바로 이동한다.
     if(window.parent && window.parent!==window && typeof window.parent.openDioceseExternal==='function'){
       clearDioceseStandaloneExternal();
       window.parent.openDioceseExternal(url,state);
     }
     else { try{ sessionStorage.setItem('oai_diocese_standalone_return',JSON.stringify(state)); }catch(e){} markDioceseStandaloneExternal(); try{ location.href=url; }catch(_e){ location.assign(url); } }
   };
-  document.addEventListener('click',function(e){ var t=e.target&&e.target.closest?e.target.closest('[data-dio-url]'):null; if(!t) return; e.preventDefault(); e.stopPropagation(); window.openDioceseUrl(t.getAttribute('data-dio-url'),t.getAttribute('data-dio-source')||'link',{listKey:t.getAttribute('data-dio-key')||'',listUrl:t.getAttribute('data-dio-url')||''}); },true);
+  document.addEventListener('click',function(e){
+    var t=e.target&&e.target.closest?e.target.closest('[data-dio-url]'):null;
+    if(!t) return;
+    e.preventDefault();
+    e.stopPropagation();
+    if(e.stopImmediatePropagation) e.stopImmediatePropagation();
+    window.openDioceseUrl(t.getAttribute('data-dio-url'),t.getAttribute('data-dio-source')||'link',{listKey:t.getAttribute('data-dio-key')||'',listUrl:t.getAttribute('data-dio-url')||''});
+  },true);
 })();
 </script>
 
