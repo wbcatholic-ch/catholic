@@ -1,19 +1,28 @@
-/* 가톨릭길동무 Service Worker - V1-S
+/* 가톨릭길동무 Service Worker
    캐시를 매번 삭제하지 않고, 버전 변경 시 오래된 캐시만 정리합니다.
-   localStorage/사용자 설정은 건드리지 않습니다. */
-const CACHE_VERSION = 'catholic-way-V1-S-parish-route-markers1';
+   localStorage/사용자 설정은 건드리지 않습니다.
+
+   ★ 버전 업그레이드 시 이 파일에서 BUILD_VERSION 한 줄만 수정하세요.
+      (sw-update.js의 APP_VERSION / SW_BUILD_VERSION도 동일하게 맞춰야 합니다.) */
+
+// ★ 버전 변경 시 이 한 줄만 수정
+const BUILD_VERSION  = 'V1-S-dio-websame3';
+
+const CACHE_VERSION  = 'catholic-way-' + BUILD_VERSION;
+const V              = '?v=' + BUILD_VERSION;
+
 const APP_SHELL = [
   './',
   './index.html',
   './diocese.html',
   './qa-firebase.html',
-  './parishes.js?v=V1-S-parish-route-markers1',
-  './style.css?v=V1-S-parish-route-markers1',
-  './app.js?v=V1-S-parish-route-markers1',
-  './web.js?v=V1-S-parish-route-markers1',
-  './prayer.js?v=V1-S-parish-route-markers1',
-  './patches.js?v=V1-S-parish-route-markers1',
-  './sw-update.js?v=V1-S-parish-route-markers1',
+  './parishes.js'   + V,
+  './style.css'     + V,
+  './app.js'        + V,
+  './web.js'        + V,
+  './prayer.js'     + V,
+  './patches.js'    + V,
+  './sw-update.js'  + V,
   './manifest.json',
   './icon-192x192.png',
   './icon-512x512.png',

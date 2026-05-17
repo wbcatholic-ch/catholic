@@ -179,8 +179,17 @@
   function saveReturnState(state){
     try{ sessionStorage.setItem(RETURN_KEY, JSON.stringify(state)); }catch(e){ console.warn("[가톨릭길동무]", e); }
   }
+  // 외부 URL 이동 함수들의 공통 전처리:
+  //   1) normalizeCatholicExternalUrl 호출  2) 빈 URL이면 null 반환
+  // openExternalUrl이 IIFE 안에 있으므로 헬퍼도 IIFE 안에 선언해 전역 누출을 방지한다.
+  function prepareExternalUrl(url){
+    url = (typeof normalizeCatholicExternalUrl === 'function')
+          ? normalizeCatholicExternalUrl(url)
+          : String(url || '').trim();
+    return url || null;
+  }
   function openExternalUrl(url, state){
-    url = (typeof normalizeCatholicExternalUrl === 'function') ? normalizeCatholicExternalUrl(url) : String(url||'').trim();
+    url = prepareExternalUrl(url);
     if(!url) return;
 
     // 웹사이트는 기존처럼 자연 복귀, 순례길은 현재 탭/목록 위치만 저장하고 덮개 없이 이동한다.
