@@ -1173,7 +1173,7 @@ function openDioceseView(opts){
       if(!restore) try{ frame.contentWindow && frame.contentWindow.resetDioceseFirstPage && frame.contentWindow.resetDioceseFirstPage(); }catch(e){ console.warn("[가톨릭길동무]", e); }
       if(typeof dioceseLoaded==='function') dioceseLoaded();
     };
-    frame.src='diocese.html?v=V1-S-dio-websame3';
+    frame.src='diocese.html?v=V1-S-parish-route-markers1';
   }else if(!restore){
     try{ frame.contentWindow && frame.contentWindow.resetDioceseFirstPage && frame.contentWindow.resetDioceseFirstPage(); }catch(e){ console.warn("[가톨릭길동무]", e); }
   }
@@ -2876,6 +2876,25 @@ function _refreshRouteTmpMarkers(){
   }
 }
 
+function _hideAllParishDioMarkersForRoute(){
+  // 성당 길찾기 경로가 표시되는 동안에는 출·도 임시마커만 남기고
+  // 선택 교구의 일반 성당 마커와 교구 라벨을 조용히 숨긴다.
+  if(_mode!=='parish') return;
+  try{
+    Object.keys(_dioMkrs||{}).forEach(function(code){
+      (_dioMkrs[code]||[]).forEach(function(mk){ try{ mk.setMap(null); }catch(_e){} });
+    });
+    _hideDioOverlays();
+  }catch(e){ console.warn('[가톨릭길동무]',e); }
+}
+function _applyRouteOnlyMarkers(){
+  if(!_map || !_rS || !_rE) return;
+  if(_mode==='parish'){
+    _hideAllParishDioMarkersForRoute();
+    _refreshRouteTmpMarkers();
+  }
+}
+
 function _typeColor(t){return t==='성지'?'#c0392b':t==='순례지'?'#1565c0':'#1b7a3e';}
 
 function _buildShrineMarkers(){
@@ -3432,6 +3451,10 @@ function _showParishDioMkrs(code){
 function _updateParishViewport(code){
   const mkrs=_dioMkrs[code];
   if(!mkrs||!_map) return;
+  if(_mode==='parish' && _routeMode && (_polyline || (_rS && _rE))){
+    _hideAllParishDioMarkersForRoute();
+    return;
+  }
   mkrs.forEach(mk=>{
     try{ mk.setMap(_map); }catch(e){ console.warn('[가톨릭길동무]',e); }
   });
@@ -4188,6 +4211,7 @@ function _drawLine(s1,s2,path){
   strokeOpacity:path?0.88:0.7,strokeStyle:path?'solid':'dashed'});
   _polyline.setMap(_map);
   _refreshRouteTmpMarkers();
+  if(_mode==='parish') _hideAllParishDioMarkersForRoute();
 
   if(path){
   _markers.forEach((m,i)=>{
@@ -4196,8 +4220,7 @@ function _drawLine(s1,s2,path){
    m.marker.setMap(isRoute?_map:null);
   });
   if(_mode==='parish'){
-    _hideDioOverlays();
-    if(_activeDio) _hideParishDioMkrs(_activeDio);
+    _hideAllParishDioMarkersForRoute();
   } else if(_mode==='retreat'){
     _retreatMarkers.forEach(o=>{
       const isRoute=(_rS&&_rS.idx===o.index)||(_rE&&_rE.idx===o.index);

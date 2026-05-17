@@ -1987,7 +1987,7 @@ window.addEventListener('pageshow',function(){
   window.resetDioceseFirstPage = function(){
     try{ sessionStorage.removeItem('listScroll'); }catch(e){}
     var si=document.getElementById('si'); if(si) si.value='';
-    var sres=document.getElementById('sres'); if(sres) sres.innerHTML='<div class="se">교구명, 지역명, 홈페이지 주소로 검색하세요</div>';
+    var sres=document.getElementById('sres'); if(sres) sres.innerHTML='<div class="se">교구명, 지역명, 주소로 검색하세요</div>';
     var lv=document.getElementById('list-view'); if(lv) lv.scrollTop=0;
     var sv=document.getElementById('search-view'); if(sv) sv.scrollTop=0;
     var btn=document.querySelector('.tab[data-tab="gwangu"]'); if(btn) btn.click();
