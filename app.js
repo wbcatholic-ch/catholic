@@ -885,14 +885,8 @@ window.addEventListener('load', syncCoverUpdateVersionState, true);
   var KEY_DISABLED = 'catholicGuideAutoDisabled';
   var KEY_INSTALLED_SHOWN = 'catholicGuideInstalledIntroShown';
   var SOFT_REFRESH_KEY = 'oai_soft_refresh_requested';
-  var FAVORITES_RESET_NOTICE_KEY = 'catholicV2FavoritesResetNoticeShown';
-  var wasInstalledAppUserBeforeThisLoad = false;
+  var FAVORITES_RESET_NOTICE_KEY = 'catholicV2SFavoritesResetNoticeShown';
   var skipAutoPopupsThisLoad = false;
-  try{
-    // 설치 직후 첫 실행에서는 기존 사용자로 보지 않는다.
-    // V2-S 안내는 이미 설치 앱을 사용하던 사용자에게만 1회 표시한다.
-    wasInstalledAppUserBeforeThisLoad = localStorage.getItem(KEY_INSTALLED_SHOWN) === '1';
-  }catch(e){ wasInstalledAppUserBeforeThisLoad = false; }
 
   function now(){ return Date.now ? Date.now() : new Date().getTime(); }
   function isStandaloneApp(){
@@ -983,13 +977,11 @@ window.addEventListener('load', syncCoverUpdateVersionState, true);
     if(wasOpen) setVal(FAVORITES_RESET_NOTICE_KEY, '1');
   }
   function shouldShowFavoritesResetNotice(){
-    if(skipAutoPopupsThisLoad) return false;
     try{
       // 설치 유도/브라우저/카카오에서는 표시하지 않고, 설치된 앱에서만 표시한다.
       if(isKakaoBrowser()) return false;
       if(!isStandaloneApp()) return false;
-      // 설치 직후 첫 앱 실행에는 표시하지 않는다.
-      if(!wasInstalledAppUserBeforeThisLoad) return false;
+      // 새로 설치하는 사용자는 appinstalled 시점에 이미 확인 처리한다.
       if(localStorage.getItem(FAVORITES_RESET_NOTICE_KEY) === '1') return false;
     }catch(e){ return false; }
     if(!isCoverVisible()) return false;
@@ -1032,6 +1024,14 @@ window.addEventListener('load', syncCoverUpdateVersionState, true);
       showModal('guide-intro-modal');
     }
   }
+  try{
+    window.addEventListener('appinstalled', function(){
+      // 새로 설치한 사용자는 즐겨찾기 초기화 안내 대상이 아니므로, 설치 시점에 1회 안내를 완료 처리한다.
+      setVal(FAVORITES_RESET_NOTICE_KEY, '1');
+      hideFavoritesResetNotice();
+    });
+  }catch(e){ console.warn('[가톨릭길동무]', e); }
+
   function bindGuide(){
     var btn=document.getElementById('cover-guide-btn');
     if(btn) btn.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); openGuideManual(); });

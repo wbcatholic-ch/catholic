@@ -2330,9 +2330,9 @@ html.app-active #cover-action-row { display: none; }
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
-  flex: 0 0 126px;
-  min-width: 126px;
-  max-width: 126px;
+  flex: 0 0 108px;
+  min-width: 108px;
+  max-width: 108px;
 }
 #cover-update-btn {
   width: 100%;
@@ -2341,12 +2341,12 @@ html.app-active #cover-action-row { display: none; }
   background: rgba(31,42,68,.10);
   color: #1f2a44;
   font-family: inherit;
-  font-size: calc(10.8px * var(--app-font-scale));
+  font-size: calc(11.5px * var(--app-font-scale));
   font-weight: 900;
   line-height: 1;
-  min-height: 32px;
-  height: 32px;
-  padding: 0 10px;
+  min-height: 36px;
+  height: 36px;
+  padding: 0 12px;
   box-shadow: inset 0 0 0 1px rgba(31,42,68,.12);
   cursor: pointer;
   user-select: none;
@@ -3004,7 +3004,7 @@ html.ios-device #cover .cover-card, html.ios-device #cover .cv-btn { padding: 7p
 html.ios-device #cover .cover-emoji, html.ios-device #cover .cover-icon-wrap { font-size: 34px; }
 html.ios-device #cover .cover-name { font-size: calc(14px * var(--app-font-scale)); line-height: 1.14; letter-spacing: -.035em; }
 html.ios-device #cover #cover-action-row { margin-top: 0; }
-html.ios-device #cover #cover-update-btn { min-height: 31px; height: 31px; font-size: calc(10px * var(--app-font-scale)); padding-left: 10px; padding-right: 10px; }
+html.ios-device #cover #cover-update-btn { min-height: 34px; height: 34px; font-size: calc(10.6px * var(--app-font-scale)); padding-left: 12px; padding-right: 12px; }
 html.ios-device #cover #qna-cover-btn { min-height: 34px; height: 34px; font-size: calc(10.6px * var(--app-font-scale)); padding-left: 12px; padding-right: 12px; }
 html.ios-device #cover #cover-bottom-note { padding: 3px 16px calc(8px + env(safe-area-inset-bottom, 0px)) 16px; font-size: 8.35px; line-height: 1.32; letter-spacing: -.045em; max-width: 430px; }
 html.ios-device #prayer-bar-ttl,
@@ -3145,7 +3145,7 @@ html.oai-font-global #region-body .dio-hd { font-size: calc(17px * var(--app-inn
   #cover .cover-emoji { font-size: 22px; }
   #cover .cover-name { font-size: 12px; }
   #cover #qna-cover-btn { min-height: 34px; font-size: calc(10.5px * var(--app-font-scale)); }
-  #cover #cover-update-btn { min-height: 30px; height: 30px; font-size: calc(9.8px * var(--app-font-scale)); padding: 0 9px; }
+  #cover #cover-update-btn { min-height: 32px; height: 32px; font-size: calc(10.2px * var(--app-font-scale)); padding: 0 10px; }
   #cover #cover-update-hint { font-size: 8.5px; }
   #cover #cover-guide-btn { height: 34px; min-height: 34px; font-size: calc(10.5px * var(--app-font-scale)); padding: 0 10px; }
   .guide-panel { max-height: 90dvh; padding: 16px 14px 14px; }
