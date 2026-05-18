@@ -9,7 +9,10 @@
   "background_color": "#0e1535",
   "theme_color": "#0e1535",
   "lang": "ko",
-  "categories": ["religion", "lifestyle"],
+  "categories": [
+    "religion",
+    "lifestyle"
+  ],
   "icons": [
     {
       "src": "icon-192x192.png",

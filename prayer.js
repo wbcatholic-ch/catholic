@@ -21,6 +21,8 @@ const PR_CAT_STYLE = {
 
 // 기도문 목록에서 좌우 스와이프 직후 즐겨찾기 별 오작동을 막는 공통 차단 시간
 let prSwipeBlockUntil = 0;
+// 첫 진입 때 활성 탭을 부드럽게 스크롤하면 탭바가 살짝 흔들려 보일 수 있어 첫 1회만 즉시 정렬한다.
+let prTabsFirstAlign = true;
 
 // 기도문 데이터 (항목 추가 시 여기에 추가)
 const PR_DATA = { 
@@ -181,7 +183,9 @@ function prNorm(t){ return (t||'').replace(/\s+/g,'').toLowerCase(); }
 
 function prLoadPrefs(){
   try{ prFavorites = JSON.parse(localStorage.getItem('pr_favorites')||'[]'); }catch(e){ prFavorites=[]; }
-  const saved = parseInt(localStorage.getItem(PR_FONT_KEY));
+  const saved = (typeof window.__APP_getSharedFontPx === 'function')
+    ? window.__APP_getSharedFontPx()
+    : parseInt(localStorage.getItem(PR_FONT_KEY), 10);
   const idx = PR_FONT_SIZES.indexOf(saved);
   prFontIdx = idx >= 0 ? idx : 3;
 }
@@ -190,21 +194,36 @@ function prSaveFavorites(){ try{ localStorage.setItem('pr_favorites', JSON.strin
 function prApplyFont(){
   const px = PR_FONT_SIZES[prFontIdx];
   const r = document.getElementById('prayer-view');
-  if(!r) return;
-  r.style.setProperty('--pr-item-fs',   px+'px');
-  r.style.setProperty('--pr-body-fs',   px+'px');
-  r.style.setProperty('--pr-detail-fs', (px+1)+'px');
-  r.style.setProperty('--pr-icon-sz',   Math.max(34,Math.round(px*2.2))+'px');
-  r.style.setProperty('--pr-icon-fs',   Math.max(17,Math.round(px*1.2))+'px');
+  if(r){
+    r.style.setProperty('--pr-item-fs',   px+'px');
+    r.style.setProperty('--pr-body-fs',   px+'px');
+    r.style.setProperty('--pr-detail-fs', (px+1)+'px');
+    r.style.setProperty('--pr-icon-sz',   Math.max(34,Math.round(px*2.2))+'px');
+    r.style.setProperty('--pr-icon-fs',   Math.max(17,Math.round(px*1.2))+'px');
+  }
   try{ localStorage.setItem(PR_FONT_KEY, px); }catch(e){ console.warn("[가톨릭길동무]", e); }
+  try{
+    if(typeof window.__APP_applyGlobalFont === 'function') window.__APP_applyGlobalFont();
+  }catch(e){ console.warn("[가톨릭길동무]", e); }
 }
 
 window.prAdjustFont = function(delta){
+  if(typeof window.__APP_adjustSharedFont === 'function'){
+    const px = window.__APP_adjustSharedFont(delta);
+    const idx = PR_FONT_SIZES.indexOf(px);
+    if(idx >= 0) prFontIdx = idx;
+    prApplyFont();
+    return;
+  }
+  const saved = parseInt(localStorage.getItem(PR_FONT_KEY), 10);
+  const savedIdx = PR_FONT_SIZES.indexOf(saved);
+  if(savedIdx >= 0) prFontIdx = savedIdx;
   const next = prFontIdx + delta;
   if(next < 0 || next >= PR_FONT_SIZES.length) return;
   prFontIdx = next;
   prApplyFont();
 };
+window.prApplyFont = prApplyFont;
 
 function prBuildTabs(){
   const wrap = prG('prayer-tabs');
@@ -228,11 +247,15 @@ function prApplyTabColors(){
     btn.classList.toggle('on', on);
     if(on) activeBtn = btn;
   });
-  if(activeBtn) activeBtn.scrollIntoView({behavior:'smooth', block:'nearest', inline:'center'});
+  if(activeBtn){
+    var behavior = prTabsFirstAlign ? 'auto' : 'smooth';
+    activeBtn.scrollIntoView({behavior:behavior, block:'nearest', inline:'center'});
+  }
+  prTabsFirstAlign = false;
   try{ if(typeof window.oaiKeepActiveTabsVisible === 'function') window.oaiKeepActiveTabsVisible('prayer'); }catch(e){ console.warn('[가톨릭길동무]', e); }
 }
 
-// V1-S: 주요기도문 탭 표시 안전장치.
+// V2-S: 주요기도문 탭 표시 안전장치.
 // 일부 화면 전환/캐시 조합에서 목록은 렌더링되지만 탭 컨테이너가 비어 보이는 경우를 막는다.
 function prEnsureTabsVisible(){
   const wrap = prG('prayer-tabs');
@@ -463,8 +486,8 @@ function prOpenDetail(prayer){
   content.innerHTML = '<div class="pr-body-title">' + safeTitle + '</div>' + rawContent;
   detail.classList.add('show');
   try{
-    // 본문은 기도문 전용 history state(detail)만 추가한다.
-    // 공통 앱 back trap과 섞지 않는다.
+    // 본문 진입 시 별도 history state를 만들지 않고, 공통 앱 back trap만 보강한다.
+    // 실제 뒤로가기는 patches.js의 공통 컨트롤러가 DOM 상태를 보고 처리한다.
     if(typeof window._oaiPrayerPushDetailState === 'function') window._oaiPrayerPushDetailState('prayer-detail-open');
     else if(typeof window._oaiArmPrayerBackTrap === 'function') window._oaiArmPrayerBackTrap('prayer-detail-open');
   }catch(e){
@@ -518,8 +541,8 @@ window.prCloseDetail = function(opts){
   prRestoreListPosition();
   if(!(opts && opts.skipTrap)){
     try{
-      // 버튼으로 본문을 닫는 경우 현재 history state가 detail일 수 있으므로
-      // 현재 state만 list로 바꾼다. 새 state를 push하지 않는다.
+      // 버튼으로 본문을 닫는 경우에도 별도 state를 만들지 않는다.
+      // 공통 앱 back trap만 유지해 목록 단계에서 앱이 바로 종료되지 않게 한다.
       if(typeof window._oaiPrayerReplaceListState === 'function') window._oaiPrayerReplaceListState('prayer-detail-button-to-list');
       else if(typeof window._oaiArmPrayerBackTrap === 'function') window._oaiArmPrayerBackTrap('prayer-detail-button-to-list');
     }catch(e){
@@ -586,7 +609,7 @@ window.prCloseDetail = window.prCloseDetail;
     if (dx < 0) goNext(); else goPrev();
   }, { passive: true });
 })();
-lyTabColors = prApplyTabColors;
+/* lyTabColors: 미선언 전역 변수 - 참조하는 코드 없음, 제거 */
 
 window.initPrayerView = function(){
   prLoadPrefs();

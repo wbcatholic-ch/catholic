@@ -6,8 +6,11 @@
   'use strict';
   if(window.__APP_CACHE_LIFECYCLE_GUARD__) return;
   window.__APP_CACHE_LIFECYCLE_GUARD__ = true;
-  var APP_VERSION = 'V1-S';
-  var SW_BUILD_VERSION = 'V1-S-dio-websame3';
+  // APP_VERSION:      화면 표시용 단축 버전 (build marker, data-target-version)
+  // SW_BUILD_VERSION:  SW 등록·캐시 키용 전체 버전 (sw.js BUILD_VERSION과 일치해야 함)
+  // ★ 버전 업그레이드 시 두 값 모두 수정, sw.js BUILD_VERSION과 SW_BUILD_VERSION을 동일하게 맞출 것
+  var APP_VERSION = 'V2-S';
+  var SW_BUILD_VERSION = 'V2-S';
   window.APP_VERSION = APP_VERSION;
 
   function now(){ return Date.now ? Date.now() : new Date().getTime(); }
@@ -43,6 +46,7 @@
       sessionStorage.removeItem('oai_prayer_quick_return');
       sessionStorage.removeItem('oai_prayer_quick_return_ts');
       sessionStorage.removeItem('oai_prayer_from_quick_lock');
+      sessionStorage.removeItem('oai_external_return_stabilize');
       sessionStorage.removeItem('oai_external_nav_pending');
       sessionStorage.removeItem('oai_external_nav_started_at');
       sessionStorage.removeItem('oai_external_nav_pagehide');
@@ -97,28 +101,11 @@
   function registerServiceWorker(){
     if(!('serviceWorker' in navigator)) return;
     try{
-      navigator.serviceWorker.register('./sw.js?v=' + encodeURIComponent(SW_BUILD_VERSION || APP_VERSION))
+      navigator.serviceWorker.register('./sw.js?v=' + encodeURIComponent(SW_BUILD_VERSION || APP_VERSION), { updateViaCache: 'none' })
         .then(function(reg){ try{ reg.update(); }catch(e){ console.warn("[가톨릭길동무]", e); } })
         .catch(function(){});
     }catch(e){ console.warn("[가톨릭길동무]", e); }
   }
-
-  /* build marker / cover-update-btn 버전 동기화
-     index.html의 ?v= query string은 SW 캐시가 처리하므로 건드리지 않습니다.
-     화면에 표시되는 버전 텍스트와 data-target-version만 여기서 세팅합니다. */
-  function updateVersionUI(){
-    try{
-      var marker = document.getElementById('oai-build-marker');
-      if(marker) marker.textContent = APP_VERSION;
-      var btn = document.getElementById('cover-update-btn');
-      if(btn) btn.setAttribute('data-target-version', APP_VERSION);
-    }catch(e){ console.warn("[가톨릭길동무]", e); }
-  }
-
-  function init(){
-    updateVersionUI();
-    registerServiceWorker();
-  }
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, {once:true});
-  else init();
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', registerServiceWorker, {once:true});
+  else registerServiceWorker();
 })();

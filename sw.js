@@ -1,37 +1,19 @@
-/* 가톨릭길동무 Service Worker
+/* 가톨릭길동무 Service Worker - V2-S
    캐시를 매번 삭제하지 않고, 버전 변경 시 오래된 캐시만 정리합니다.
-   localStorage/사용자 설정은 건드리지 않습니다.
-
-   ★ 버전 업그레이드 시 이 파일에서 BUILD_VERSION 한 줄만 수정하세요.
-      (sw-update.js의 APP_VERSION / SW_BUILD_VERSION도 동일하게 맞춰야 합니다.) */
-
-// ★ 버전 변경 시 이 한 줄만 수정
-const BUILD_VERSION  = 'V1-S-dio-websame3';
-
-const CACHE_VERSION  = 'catholic-way-' + BUILD_VERSION;
-const V              = '?v=' + BUILD_VERSION;
-
+   localStorage/사용자 설정은 건드리지 않습니다. */
+const CACHE_VERSION = 'catholic-way-V2-S';
 const APP_SHELL = [
   './',
   './index.html',
-  './diocese.html',
-  './qa-firebase.html',
-  './parishes.js'   + V,
-  './style.css'     + V,
-  './app.js'        + V,
-  './web.js'        + V,
-  './prayer.js'     + V,
-  './patches.js'    + V,
-  './sw-update.js'  + V,
-  './manifest.json',
+  './style.css?v=V2-S',
+  './app.js?v=V2-S',
+  './web.js?v=V2-S',
+  './patches.js?v=V2-S',
+  './sw-update.js?v=V2-S',
+  './manifest.json?v=V2-S',
   './icon-192x192.png',
   './icon-512x512.png',
   './icon-512x512-maskable.png',
-  './ios-install-step1-kakao-bottom-buttons.png',
-  './ios-install-step2-safari-open.png',
-  './KakaoTalk_20260514_134255658_04.jpg',
-  './ios-install-step3-share-menu.png',
-  './ios-install-step4-home-screen.png'
 ];
 
 self.addEventListener('install', (event) => {
@@ -60,7 +42,7 @@ function isVersionedAsset(request) {
   try {
     const url = new URL(request.url);
     return url.searchParams.has('v') ||
-      /parishes\.js|prayer\.js|app\.js|style\.css|web\.js|patches\.js|sw-update\.js/.test(url.pathname);
+      /parishes\.js|prayer\.js|retreats\.js|shrines\.js|app\.js|style\.css|web\.js|patches\.js|sw-update\.js/.test(url.pathname);
   } catch (e) { return false; }
 }
 async function networkFirst(request) {
