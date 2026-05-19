@@ -1,16 +1,37 @@
-/* 가톨릭길동무 Service Worker - V2-S-r2
+/* 가톨릭길동무 Service Worker - V2-S
    캐시를 매번 삭제하지 않고, 버전 변경 시 오래된 캐시만 정리합니다.
    localStorage/사용자 설정은 건드리지 않습니다. */
-const CACHE_VERSION = 'catholic-way-V2-S-r2';
+const CACHE_VERSION = 'catholic-way-V2-S';
 const APP_SHELL = [
   './',
   './index.html',
-  './style.css?v=V2-S-r2',
-  './app.js?v=V2-S-r2',
-  './web.js?v=V2-S-r2',
-  './patches.js?v=V2-S-r2',
-  './sw-update.js?v=V2-S-r2',
-  './manifest.json?v=V2-S-r2',
+  './style.css?v=V2-S',
+  './app.js?v=V2-S',
+  './web.js?v=V2-S',
+  './patches.js?v=V2-S',
+  './sw-update.js?v=V2-S',
+  './manifest.json?v=V2-S',
+  './diocese.html?v=V2-S',
+  './qa-firebase.html?v=V2-S',
+  './prayer.js?v=V2-S',
+  './retreats.js?v=V2-S',
+  './shrines.js?v=V2-S',
+  './parishes-seoul.js?v=V2-S',
+  './parishes-incheon.js?v=V2-S',
+  './parishes-suwon.js?v=V2-S',
+  './parishes-uijeongbu.js?v=V2-S',
+  './parishes-chuncheon.js?v=V2-S',
+  './parishes-wonju.js?v=V2-S',
+  './parishes-daejeon.js?v=V2-S',
+  './parishes-cheongju.js?v=V2-S',
+  './parishes-daegu.js?v=V2-S',
+  './parishes-busan.js?v=V2-S',
+  './parishes-andong.js?v=V2-S',
+  './parishes-masan.js?v=V2-S',
+  './parishes-gwangju.js?v=V2-S',
+  './parishes-jeonju.js?v=V2-S',
+  './parishes-jeju.js?v=V2-S',
+  './parishes-military.js?v=V2-S',
   './icon-192x192.png',
   './icon-512x512.png',
   './icon-512x512-maskable.png',
@@ -42,7 +63,7 @@ function isVersionedAsset(request) {
   try {
     const url = new URL(request.url);
     return url.searchParams.has('v') ||
-      /parishes\.js|prayer\.js|retreats\.js|shrines\.js|app\.js|style\.css|web\.js|patches\.js|sw-update\.js/.test(url.pathname);
+      /parishes(?:-[a-z-]+)?\.js|prayer\.js|retreats\.js|shrines\.js|diocese\.html|qa-firebase\.html|app\.js|style\.css|web\.js|patches\.js|sw-update\.js/.test(url.pathname);
   } catch (e) { return false; }
 }
 async function networkFirst(request) {

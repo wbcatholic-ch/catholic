@@ -441,7 +441,7 @@ html.ios-device .cb{width:34px!important;height:34px!important;border-radius:10p
   <div id="search-view">
     <div class="ss">
       <div class="sr">
-        <input id="si" type="text" placeholder="지역명 검색 (예 : 서울, 전주, 평창, 제주)">
+        <input id="si" type="text" placeholder="지역명 검색 (예 : 서울, 전주, 평창, 제주)" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" inputmode="search" enterkeyhint="done">
         <button id="sb" onclick="doSearch()">검색</button>
       </div>
       <div class="sh">도 · 시 · 군 이름으로 검색 &nbsp;|&nbsp; 3개 관구 · 16개 교구</div>
@@ -1345,10 +1345,12 @@ document.querySelectorAll('.tab').forEach(function(t){
     if(tab==='search'){
       var si=document.getElementById('si');
       if(si){
-        setTimeout(function(){
+        var focusSearchInput=function(){
           try{ si.focus({preventScroll:true}); }
           catch(e){ try{ si.focus(); }catch(_){} }
-        },120);
+        };
+        focusSearchInput();
+        setTimeout(focusSearchInput,60);
       }
     }
     if(tab!=='list'){

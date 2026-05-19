@@ -41,6 +41,8 @@
   --oai-std-gap:       8px;
   --oai-std-icon-sz:   28px;
   --oai-std-close-sz:  40px;
+  --oai-category-enter-ms: 700ms;
+  --oai-popup-enter-ms: 500ms;
   --oai-std-hdr-pad:   calc(10px + env(safe-area-inset-top, 0px));
 
   /* ── 타이포그래피 */
@@ -563,13 +565,13 @@ html.retreat-mode #tabbar .tab-btn.active {
   top: 10px;
   right: 12px;
   z-index: 3;
-  width: 40px;
-  height: 40px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   border: 1px solid rgba(31,42,68,.18);
   background: rgba(31,42,68,.86);
   color: #fff;
-  font-size: 28px;
+  font-size: 20px;
   font-weight: 900;
   line-height: 1;
   display: flex;
@@ -2179,13 +2181,18 @@ html.oai-cover-booting body { background: var(--navy); }
 html.oai-cover-booting #cover {
   background-color: var(--navy);
 }
+#cover > * {
+  opacity: 1;
+  transition: opacity 1.5s ease-out;
+}
 html.oai-cover-booting #cover, html.oai-cover-booting #cover * {
-  transition: none;
   animation: none;
   scroll-behavior: auto;
 }
 html.oai-cover-booting #cover > * {
-  visibility: hidden;
+  opacity: 0;
+  visibility: visible;
+  transition: none;
 }
 
 .cover-header {
@@ -2784,6 +2791,15 @@ html.oai-category-entering #oai-category-entry-veil { display: flex; opacity: 1;
 #oai-category-entry-veil.shrine { background: #1f2a44; }
 #oai-category-entry-veil.parish,
 #oai-category-entry-veil.retreat { background: #f5f0e8; }
+html.oai-category-dissolve #oai-category-entry-veil {
+  top: 0;
+  z-index: 2147480000;
+  background: #f5f0e8;
+  transition: none;
+}
+html.oai-category-dissolve.oai-category-dissolving #oai-category-entry-veil {
+  transition: opacity var(--oai-category-enter-ms) ease-out;
+}
 #oai-category-entry-veil::after {
   content: '';
   width: 30px; height: 30px;
@@ -2792,6 +2808,7 @@ html.oai-category-entering #oai-category-entry-veil { display: flex; opacity: 1;
   border-top-color: #d4aa6a;
   animation: oaiCategoryVeilSpin .8s linear infinite;
 }
+#oai-category-entry-veil.soft::after { display: none; }
 #oai-category-entry-veil.parish::after,
 #oai-category-entry-veil.retreat::after { border-color: rgba(31,42,68,.18); border-top-color: #1f2a44; }
 @keyframes oaiCategoryVeilSpin { to { transform: rotate(360deg); } }
@@ -2810,20 +2827,63 @@ html.oai-hide-main-map-layer #srch-modal { visibility: hidden; pointer-events: n
 html.oai-hide-main-map-layer #app { background: #ede8e0; }
 
 /* 안정막 */
+html.oai-stability-veil, html.oai-external-return-freeze { background: #f5f0e8 !important; }
 html.oai-stability-veil *, html.oai-external-return-freeze * { transition: none; animation: none; scroll-behavior: auto; }
-html.oai-stability-veil body::before,
-html.oai-external-return-freeze body::before { content: ""; position: fixed; inset: 0; z-index: 2147483000; background: #f5f0e8; pointer-events: none; opacity: 1; }
-html.oai-stability-veil body::after,
-html.oai-external-return-freeze body::after { content: ""; position: fixed; left: 50%; top: 50%; width: 28px; height: 28px; margin: -14px 0 0 -14px; border-radius: 50%; border: 3px solid rgba(31,42,68,.16); border-top-color: #1f2a44; z-index: 2147483001; pointer-events: none; animation: oaiStabilitySpin .75s linear infinite; }
+html.oai-stability-veil::before,
+html.oai-external-return-freeze::before { content: ""; position: fixed; inset: 0; z-index: 2147483000; background: #f5f0e8; pointer-events: none; opacity: 1; animation: oaiStabilityVeilIn .12s ease-out both; }
+html.oai-stability-veil.oai-stability-veil-releasing::before { animation: oaiStabilityVeilOut .18s ease-in both; }
+html.oai-stability-veil::after,
+html.oai-external-return-freeze::after { content: ""; position: fixed; left: 50%; top: 50%; width: 28px; height: 28px; margin: -14px 0 0 -14px; border-radius: 50%; border: 3px solid rgba(31,42,68,.16); border-top-color: #1f2a44; z-index: 2147483001; pointer-events: none; animation: oaiStabilitySpin .75s linear infinite; }
+@keyframes oaiStabilityVeilIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes oaiStabilityVeilOut { from { opacity: 1; } to { opacity: 0; } }
 @keyframes oaiStabilitySpin { to { transform: rotate(360deg); } }
+
 html.oai-returning *, html.oai-diocese-returning * { transition: none; animation: none; scroll-behavior: auto; }
 html.oai-cover-resizing #cover, html.oai-cover-resizing #cover * { transition: none; animation: none; }
 
-/* 진입 fade-in */
-.oai-enter-ready { opacity: .01; transform: none; transition: none; will-change: opacity; }
-.oai-enter-ready.oai-enter-show { opacity: 1; transform: none; transition: opacity .22s ease-out; }
-html.oai-returning .oai-enter-ready { opacity: 1; transform: none; transition: none; }
-@media (prefers-reduced-motion: reduce) { .oai-enter-ready, .oai-enter-ready.oai-enter-show { opacity: 1; transition: none; } }
+/* 진입 효과: 카테고리/문의는 0.7초 overlay dissolve, 팝업은 0.5초 fade. 지도형 3개는 제외한다. */
+#app.oai-enter-ready,
+#prayer-view.oai-enter-ready,
+#diocese-view.oai-enter-ready,
+.module-view.oai-enter-ready,
+.oai-enter-ready {
+  opacity: .01 !important;
+  transform: none !important;
+  transition: none !important;
+  will-change: opacity;
+}
+#app.oai-enter-ready.oai-enter-show,
+#prayer-view.oai-enter-ready.oai-enter-show,
+#diocese-view.oai-enter-ready.oai-enter-show,
+.module-view.oai-enter-ready.oai-enter-show,
+.oai-enter-ready.oai-enter-show {
+  opacity: 1 !important;
+  transform: none !important;
+  transition: opacity var(--oai-category-enter-ms) ease-out !important;
+}
+.oai-popup-ready {
+  opacity: .01 !important;
+  transform: none !important;
+  transition: none !important;
+  will-change: opacity;
+}
+.oai-popup-ready.oai-popup-show {
+  opacity: 1 !important;
+  transform: none !important;
+  transition: opacity var(--oai-popup-enter-ms) ease-out !important;
+}
+html.oai-returning .oai-enter-ready,
+html.oai-returning .oai-popup-ready {
+  opacity: 1 !important;
+  transform: none !important;
+  transition: none !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .oai-enter-ready,
+  .oai-enter-ready.oai-enter-show,
+  .oai-popup-ready,
+  .oai-popup-ready.oai-popup-show { opacity: 1 !important; transition: none !important; }
+}
 
 /* 내주변 preopen */
 .sheet.oai-preopen-nearby { transform: none; transition: none; animation: none; will-change: auto; }
@@ -2946,7 +3006,8 @@ html.ios-device #app .sm-tab,
 html.ios-device .web-cat-btn,
 html.ios-device .trail-tab { min-height: 30px; padding: 3px 9px; border-radius: 12px; }
 html.ios-device #app .sheet-hd { padding: 10px 12px; }
-html.ios-device #app .sheet-x, html.ios-device #app .route-sheet-x { width: 40px; height: 40px; min-width:40px; font-size: 28px; line-height:1; }
+html.ios-device #app .sheet-x { width: 40px; height: 40px; min-width:40px; font-size: 28px; line-height:1; }
+html.ios-device #app .route-sheet-x { width: 30px; height: 30px; min-width:30px; font-size: 20px; line-height:1; }
 html.ios-device #app #info-card { border-radius: 20px 20px 0 0; max-height: 48vh; }
 html.ios-device #app .ic-header { padding: 11px 12px 5px; }
 html.ios-device #app .ic-close-btn { width: 30px; height: 30px; font-size: 20px; line-height:1; }
