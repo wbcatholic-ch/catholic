@@ -29,13 +29,29 @@
   window.__OAI_FULL_BACK_CTRL_ACTIVE__ = true;
 
   var _href = location.href.split('#')[0];
-  var _trapHref = _href + '#oai-cover-trap';
+
+  function armCoverBackTrap(reason, opts){
+    /* V3-S: patches.js를 커버 뒤로가기 trap 생성의 최종 기준으로 둔다.
+       index.html의 조기 guard는 patches.js가 로드되기 전 첫 화면 안전망으로만 사용하고,
+       patches.js 로드 이후에는 여기서 직접 root/trap 한 쌍을 관리한다. */
+    try{
+      opts = opts || {};
+      var href = location.href.split('#')[0];
+      _href = href;
+      var st = history.state;
+      // 이미 커버 trap이 살아 있으면 force 호출이어도 중복으로 쌓지 않는다.
+      if(st && st._p === 1 && st.oai_cover_trap) return;
+      history.replaceState({_p:0, oai_cover_root:reason||'cover-root'}, '', href);
+      history.pushState({_p:1, oai_cover_trap:reason||'cover-trap'}, '', href);
+    }catch(e){
+      console.warn("[가톨릭길동무]", e);
+    }
+  }
+  try{ window._oaiArmCoverBackTrap = armCoverBackTrap; }catch(_e){}
 
   /* history 초기화
-     V2-1: index.html의 조기 커버 trap이 이미 살아 있으면 중복 push하지 않는다.
-     첫 표지의 trap 항목은 일부 Android/PWA에서 history 항목으로 확실히 인식되도록 #oai-cover-trap URL을 사용한다.
-     단, 사용자가 patches.js 로드 전에 Back을 한 번 눌러 root 상태로 내려온 경우에는
-     여기서 다시 trap 한 칸을 보장한다. 최종 popstate 처리는 이 파일 한 곳에서 담당한다. */
+     V3-S: 첫 커버 뒤로가기 실패를 만들던 hash/query trap 흔적을 제거하고,
+     최종 뒤로가기 판단은 이 patches.js popstate 컨트롤러로 단일화한다. */
   try{
     var refreshReason = '';
     try{
@@ -46,12 +62,10 @@
       sessionStorage.removeItem('oai_refresh_history_compact_until');
       sessionStorage.removeItem('oai_refresh_history_compact_reason');
     }catch(_e){}
-    var st = history.state || {};
-    if(st && st._p === 1){
-      try{ history.replaceState(Object.assign({}, st, {oai_cover_trap: st.oai_cover_trap || refreshReason || 'init'}), '', _trapHref); }catch(_e){}
+    if(refreshReason){
+      history.replaceState({_p:1, oai_cover_trap: refreshReason}, '', _href);
     }else{
-      history.replaceState({_p:0, oai_cover_root: refreshReason ? ('compact-' + refreshReason) : 'init'}, '', _href);
-      history.pushState({_p:1, oai_cover_trap: refreshReason || 'init'}, '', _trapHref);
+      armCoverBackTrap('init', {force:true});
     }
   }catch(e){ console.warn("[가톨릭길동무]", e); }
 
@@ -72,11 +86,25 @@
     return document.documentElement.classList.contains('app-active') && !coverVisible();
   }
 
+  function isRefreshDialogOpen(){
+    try{ return !!document.getElementById('oai-refresh-content-dialog'); }catch(e){ return false; }
+  }
+  function closeRefreshDialog(){
+    try{
+      var el = document.getElementById('oai-refresh-content-dialog');
+      if(!el) return false;
+      if(el.parentNode) el.parentNode.removeChild(el);
+      if(typeof window._resetCoverExitReady === 'function') window._resetCoverExitReady();
+      return true;
+    }catch(e){ console.warn('[가톨릭길동무]', e); return false; }
+  }
   function isGuideModalOpen(){
-    try{ return !!document.querySelector('.guide-modal.show'); }catch(e){ return false; }
+    try{ return !!document.querySelector('.guide-modal.show') || isRefreshDialogOpen(); }catch(e){ return false; }
   }
   function closeGuideModals(){
     try{
+      var rd = $b('oai-refresh-content-dialog');
+      if(rd && rd.parentNode){ rd.parentNode.removeChild(rd); return; }
       var mq = $b('mass-quick-modal');
       if(mq && mq.classList.contains('show') && typeof window.closeMassQuickMenu === 'function'){
         var fromPrayer = false;
@@ -235,7 +263,7 @@
 
 
   /* ─────────────────────────────────────────────
-     V2-1 기도문 전용 뒤로가기 컨트롤러 — history 단계 분리 제거
+     V3-S 기도문 전용 뒤로가기 컨트롤러 — history 단계 분리 제거
 
      원칙:
      1) 다른 정상 카테고리처럼 실제 history는 공통 root/trap 한 쌍만 사용한다.
@@ -287,7 +315,7 @@
     return !!yes;
   }
   function armPrayerBackTrap(reason){
-    /* 호환용 함수. V2-1부터 기도문 detail/list용 별도 pushState는 만들지 않는다.
+    /* 호환용 함수. V3-S부터 기도문 detail/list용 별도 pushState는 만들지 않는다.
        공통 컨트롤러가 이미 갖고 있는 root/trap을 유지하는 것만 필요하다. */
     try{
       if(isPrayerOpen() && typeof window._ensureAppBackTrap === 'function'){
@@ -342,7 +370,7 @@
     }catch(e){ console.warn('[가톨릭길동무]', e); }
   }
   function settleCoverTrapAfterPrayer(reason){
-    // V2-1: 기도문 팝업 → 커버 후에는 이미 공통 컨트롤러가 history.go(1)로 trap을 복원한 상태다.
+    // V3-S: 기도문 팝업 → 커버 후에는 이미 공통 컨트롤러가 history.go(1)로 trap을 복원한 상태다.
     // 여기서 replaceState/pushState를 강제로 반복하면 Android/PWA에서 다음 Back이 앱 종료로 오판될 수 있다.
     // 따라서 현재 trap이 살아 있으면 그대로 두고, 없을 때만 최소한으로 보강한다.
     function run(tag){
@@ -402,7 +430,7 @@
       var fromQuick = isPrayerQuickSource();
       if(!fromQuick) return resetPrayerToCover(reason || 'prayer-list-cover');
 
-      /* V2-1: 기도문 목록 → 빠른메뉴 팝업 복귀는 직접 팝업을 띄우지 않는다.
+      /* V3-S: 기도문 목록 → 빠른메뉴 팝업 복귀는 직접 팝업을 띄우지 않는다.
          사용자의 Back으로 공통 trap이 일단 소비된 직후라, 이 자리에서 openMassQuickMenu()를
          바로 호출하면 Android/PWA에서 history.go(1) 복원 타이밍과 겹쳐 팝업 Back이 앱 종료로
          먹힐 수 있다. 기존 안정 함수 _returnToMassQuickMenu('prayer')에게 맡기면,
@@ -538,10 +566,16 @@
       return;
     }
 
+    /* 새로고침 확인창이 열려 있으면 종료 안내로 넘기지 말고 확인창만 닫는다. */
+    if(closeRefreshDialog()){
+      try{ armCoverBackTrap('refresh-dialog-close', {force:true}); }catch(e){ console.warn('[가톨릭길동무]', e); }
+      return;
+    }
+
     /* 빠른메뉴/안내 팝업이 열려 있으면 먼저 닫는다. */
     if(isGuideModalOpen()){
       closeGuideModals();
-      try{ if(typeof window._ensureCoverBackTrap === 'function') window._ensureCoverBackTrap(); else history.replaceState({_p:1}, '', _trapHref); }catch(e){ console.warn("[가톨릭길동무]", e); }
+      try{ if(typeof window._ensureCoverBackTrap === 'function') window._ensureCoverBackTrap('guide-modal'); else armCoverBackTrap('guide-modal'); }catch(e){ console.warn("[가톨릭길동무]", e); }
       return;
     }
 
@@ -549,7 +583,7 @@
     if(!appActive()){
       var exiting = false;
       if(typeof window._showBackToast==='function') exiting = window._showBackToast() === true;
-      if(!exiting){ try{ history.pushState({_p:1, oai_cover_trap:'cover-toast'}, '', _trapHref); }catch(e){ console.warn("[가톨릭길동무]", e); } }
+      if(!exiting){ armCoverBackTrap('cover-toast'); }
       return;
     }
 
@@ -564,9 +598,12 @@
     if(closeLayer()) return;
     callGTC();
   }, false);
+
+
   /* Cordova 물리 백버튼 */
   document.addEventListener('backbutton', function(){
     if(handlePrayerBack('prayer-hardware-back')) return;
+    if(closeRefreshDialog()){ try{ armCoverBackTrap('refresh-dialog-hardware', {force:true}); }catch(e){} return; }
     if(isGuideModalOpen()){ closeGuideModals(); return; }
     if(!appActive()){
       if(typeof window._showBackToast==='function') window._showBackToast();
@@ -584,10 +621,11 @@
     try{
       var st = history.state;
       if(st && st._p === 1) return;  // 트랩 유지 중이면 스킵
-      history.replaceState({_p:0}, '', _href);
-      history.pushState({_p:1, oai_cover_trap:'pageshow'}, '', _trapHref);
+      if(!appActive()) armCoverBackTrap('pageshow-cover');
+      else { history.replaceState({_p:0}, '', _href); history.pushState({_p:1}, '', _href); }
     }catch(e){ console.warn("[가톨릭길동무]", e); }
   }, true);
+
 
 })();
 
@@ -720,9 +758,9 @@
 (function(){
   if(window.__APP_FONT_SCALE_GUARD__) return;
   window.__APP_FONT_SCALE_GUARD__=true;
-  // V2-1: 커버 글자 크기 조절은 prayer.js에 의존하지 않는 공통 함수가 담당한다.
+  // V3-S: 커버 글자 크기 조절은 prayer.js에 의존하지 않는 공통 함수가 담당한다.
   // prayer.js는 기도문 화면이 열렸을 때 같은 localStorage 값을 읽어 자체 UI를 맞춘다.
-  var QA_URL="qa-firebase.html?v=V2-1";
+  var QA_URL="qa-firebase.html?v=V3-S";
   var FONT_KEY='prayer_font_size';
   var BASE=16;
   var FONT_SIZES=[13,14,15,16,17,18,19,20,21,22,24,26,28,30];
@@ -792,8 +830,7 @@
   }
   function setEmojiIcons(){var icons={'cc-1':'✝️','cc-2':'⛪','cc-3':'🙏','cc-4':'🌿','cc-5':'🥾','cc-6':'🌐','cc-7':'🧭'};Object.keys(icons).forEach(function(id){var btn=el(id);if(!btn)return;var wrap=btn.querySelector('.cover-icon-wrap');if(wrap)wrap.innerHTML='<span class="cover-emoji" aria-hidden="true">'+icons[id]+'</span>';});}
   function configureQna(){
-    // V2-1: 문의·건의 버튼은 중간 안내 카드를 만들지 않고 실제 문의 페이지로 바로 이동한다.
-    // 기존 qna-view DOM은 호환을 위해 남기지만, 첫 화면에 추가 페이지처럼 보이는 qna-card는 비운다.
+    // V3-S: 문의·건의 버튼은 중간 안내 카드를 만들지 않고 실제 문의 페이지로 바로 이동한다.
     window.QNA_FORM_URL=QA_URL;
     var q=el('qna-list');
     if(q) q.innerHTML='';
@@ -1086,8 +1123,11 @@
       });
     }catch(e){ console.warn('[가톨릭길동무]', e); }
   }
+  function isRefreshDialogOpen(){
+    try{ return !!document.getElementById('oai-refresh-content-dialog'); }catch(e){ return false; }
+  }
   function isGuideModalOpen(){
-    try{ return !!document.querySelector('.guide-modal.show'); }catch(e){ return false; }
+    try{ return !!document.querySelector('.guide-modal.show') || isRefreshDialogOpen(); }catch(e){ return false; }
   }
   function closeGuideModals(){
     try{

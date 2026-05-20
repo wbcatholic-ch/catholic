@@ -242,7 +242,7 @@ body > header{display:none!important;visibility:hidden!important;height:0!import
 
 html.oai-dio-external-stabilize *,
 html.oai-dio-external-return *{transition:none!important;animation:none!important;scroll-behavior:auto!important;}
-/* V2-1: 부모 앱에서 복귀 상태를 복원하므로 iframe 자체 전체 덮개는 만들지 않는다. */
+/* V3-S: 부모 앱에서 복귀 상태를 복원하므로 iframe 자체 전체 덮개는 만들지 않는다. */
 
 </style>
 <style id="oai-diocese-tab-standard-20260504">
@@ -2040,17 +2040,43 @@ window.addEventListener('pageshow',function(){
   window.addEventListener('focus', function(){ if(!inParentApp()) setTimeout(clearDioceseStandaloneExternal, 180); }, true);
   document.addEventListener('visibilitychange', function(){ if(!inParentApp() && document.visibilityState==='visible') setTimeout(clearDioceseStandaloneExternal, 180); }, true);
   window.openDioceseUrl = function(url, source, extra){
-    if(!url || window.__OAI_DIO_EXTERNAL_LEAVING__) return;
-    window.__OAI_DIO_EXTERNAL_LEAVING__ = true;
+    if(!url) return;
+    try{
+      var now = Date.now ? Date.now() : new Date().getTime();
+      var leavingTs = Number(window.__OAI_DIO_EXTERNAL_LEAVING_TS__ || 0);
+      if(window.__OAI_DIO_EXTERNAL_LEAVING__ && leavingTs && now - leavingTs < 3500) return;
+      if(window.__OAI_DIO_EXTERNAL_LEAVING__ && leavingTs && now - leavingTs >= 3500){
+        window.__OAI_DIO_EXTERNAL_LEAVING__ = false;
+      }
+      window.__OAI_DIO_EXTERNAL_LEAVING__ = true;
+      window.__OAI_DIO_EXTERNAL_LEAVING_TS__ = now;
+    }catch(e){ window.__OAI_DIO_EXTERNAL_LEAVING__ = true; }
     var state=window.getDioceseReturnState(source||'link', extra || {});
     try{ sessionStorage.setItem('oai_diocese_last_return_state', JSON.stringify(state)); localStorage.setItem('oai_diocese_last_return_state', JSON.stringify(state)); }catch(e){}
-    // 부모 앱 안에서는 입장/복귀 순간의 큰 흔들림을 만들던 iframe 안정막과 부모 보호막을 쓰지 않는다.
-    // 위치 상태 저장 후 웹사이트 모듈처럼 바로 이동한다.
-    if(window.parent && window.parent!==window && typeof window.parent.openDioceseExternal==='function'){
-      // 부모 앱에서는 안정막/복원 타이머를 정리하지 않고 바로 이동한다.
-      // clear 함수가 focus/pageshow 타이머와 겹치면 진입 직전 화면이 한 번 흔들린다.
+    if(window.parent && window.parent!==window){
+      // V3-S: iframe 내부 클릭은 부모의 지연 이동에 맡기지 않고, 클릭 흐름 안에서 top을 즉시 이동한다.
+      // 이렇게 해야 웹페이지 카테고리처럼 Android/PWA에서도 외부 교구 홈페이지가 바로 열린다.
+      try{
+        if(typeof window.parent.prepareExternalUrl === 'function') url = window.parent.prepareExternalUrl(url) || url;
+      }catch(e){}
+      try{
+        var payload = JSON.stringify(state || {});
+        window.parent.sessionStorage.setItem('catholic_diocese_external_return_v1', payload);
+        window.parent.localStorage.setItem('catholic_diocese_external_return_v1', payload);
+        window.parent.__OAI_DIOCESE_EXTERNAL_LEAVING__ = true;
+      }catch(e){}
+      try{
+        if(typeof window.parent.markExternalReturnStabilize === 'function') window.parent.markExternalReturnStabilize('diocese-external');
+      }catch(e){}
       document.documentElement.classList.remove('oai-dio-external-stabilize','oai-dio-external-return','oai-dio-returning');
-      window.parent.openDioceseExternal(url,state);
+      try{ window.top.location.assign(url); }
+      catch(e){ try{ window.top.location.href = url; }catch(_e){ window.__OAI_DIO_EXTERNAL_LEAVING__ = false; } }
+      setTimeout(function(){
+        try{
+          if(document.visibilityState !== 'hidden') window.__OAI_DIO_EXTERNAL_LEAVING__ = false;
+        }catch(e){ window.__OAI_DIO_EXTERNAL_LEAVING__ = false; }
+      }, 3800);
+      return;
     }
     else { try{ sessionStorage.setItem('oai_diocese_standalone_return',JSON.stringify(state)); }catch(e){} markDioceseStandaloneExternal(); try{ location.href=url; }catch(_e){ location.assign(url); } }
   };
