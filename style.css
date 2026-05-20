@@ -2822,6 +2822,17 @@ html.oai-stability-veil *, html.oai-external-return-freeze * { transition: none;
 html.oai-stability-veil::before { content: ""; position: fixed; inset: 0; z-index: 2147483000; background: #f5f0e8; pointer-events: none; opacity: 1; animation: oaiStabilityVeilIn .12s ease-out both; }
 html.oai-stability-veil.oai-stability-veil-releasing::before { animation: oaiStabilityVeilOut .18s ease-in both; }
 html.oai-stability-veil::after { content: ""; position: fixed; left: 50%; top: 50%; width: 28px; height: 28px; margin: -14px 0 0 -14px; border-radius: 50%; border: 3px solid rgba(31,42,68,.16); border-top-color: #1f2a44; z-index: 2147483001; pointer-events: none; animation: oaiStabilitySpin .75s linear infinite; }
+html.oai-stability-veil[data-oai-stability-reason*="refresh"]::before,
+html.oai-stability-veil[data-oai-stability-reason*="reload"]::before,
+html.oai-stability-veil[data-oai-stability-reason*="background"]::before {
+  background: #f5f0e8 url('./refresh-logo.png?v=V3-S') center / 64px auto no-repeat;
+}
+html.oai-stability-veil[data-oai-stability-reason*="refresh"]::after,
+html.oai-stability-veil[data-oai-stability-reason*="reload"]::after,
+html.oai-stability-veil[data-oai-stability-reason*="background"]::after {
+  content: none;
+  display: none;
+}
 @keyframes oaiStabilityVeilIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes oaiStabilityVeilOut { from { opacity: 1; } to { opacity: 0; } }
 @keyframes oaiStabilitySpin { to { transform: rotate(360deg); } }

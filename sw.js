@@ -13,6 +13,7 @@ const APP_SHELL = [
   './patches.js?v=V3-S',
   './sw-update.js?v=V3-S',
   './manifest.json?v=V3-S',
+  './refresh-logo.png?v=V3-S',
   './icon-192x192.png',
   './icon-512x512.png',
   './icon-512x512-maskable.png',
