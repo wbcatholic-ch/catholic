@@ -760,7 +760,7 @@
   window.__APP_FONT_SCALE_GUARD__=true;
   // V3-S: 커버 글자 크기 조절은 prayer.js에 의존하지 않는 공통 함수가 담당한다.
   // prayer.js는 기도문 화면이 열렸을 때 같은 localStorage 값을 읽어 자체 UI를 맞춘다.
-  var QA_URL="qa-firebase.html?v=V3-S";
+  var QA_URL="qa-firebase.html?v=V1-11";
   var FONT_KEY='prayer_font_size';
   var BASE=16;
   var FONT_SIZES=[13,14,15,16,17,18,19,20,21,22,24,26,28,30];
@@ -849,69 +849,7 @@
 
 // user-cache mode: keep app cache stable; refresh changed files through versioned URLs.
 
-// ── PWA 설치 버튼 로직 ──
-(function(){
-  /* PWA 설치 버튼 통합 컨트롤러
-     ① standalone(설치된 앱) 상태이면 버튼 즉시 숨기고 종료
-     ② 아닌 경우: beforeinstallprompt 감지 → 버튼 표시
-        app-active 클래스·matchMedia 변화 → 즉시 재평가 */
-  if(window.__APP_PWA_INSTALL_GUARD__) return;
-  window.__APP_PWA_INSTALL_GUARD__ = true;
-
-  var prompt = null;
-
-  function isStandaloneNow(){
-    return window.matchMedia('(display-mode: standalone)').matches ||
-           window.navigator.standalone === true ||
-           document.documentElement.classList.contains('app-active');
-  }
-
-  function getBtn(){ return document.getElementById('pwa-install-btn'); }
-
-  function hideInstallBtn(){
-    var btn = getBtn();
-    if(btn) btn.style.setProperty('display','none','important');
-  }
-
-  function applyVisibility(){
-    if(isStandaloneNow()) hideInstallBtn();
-  }
-
-  if(isStandaloneNow()){ hideInstallBtn(); return; }
-
-  window.addEventListener('beforeinstallprompt', function(e){
-    e.preventDefault();
-    prompt = e;
-    if(!isStandaloneNow()){
-      var btn = getBtn();
-      if(btn) btn.style.display = 'flex';
-    }
-  });
-
-  window.addEventListener('appinstalled', function(){
-    hideInstallBtn();
-    prompt = null;
-  });
-
-  window.triggerPwaInstall = function(){
-    if(!prompt) return;
-    prompt.prompt();
-    prompt.userChoice.then(function(r){
-      if(r.outcome === 'accepted') hideInstallBtn();
-      prompt = null;
-    });
-  };
-
-  new MutationObserver(applyVisibility)
-    .observe(document.documentElement, {attributes:true, attributeFilter:['class']});
-
-  try{
-    window.matchMedia('(display-mode: standalone)').addEventListener('change', applyVisibility);
-  }catch(e){ console.warn("[가톨릭길동무]", e); }
-
-  window.addEventListener('load', applyVisibility);
-  window.addEventListener('pageshow', applyVisibility);
-})();
+// Google Play 정리본: 별도 설치 버튼/설치 유도 로직 제거.
 
 /* ====== 성능 최적화 보정 ====== */
 (function(){
@@ -1323,7 +1261,7 @@
     '.btn-kakao-route','.btn-kakao-nav','.c-btn',
     '.trail-foot','.web-card-foot','.trail-sh-foot','.trail-sh-body',
     '#close-btn','.module-close','.sheet-x','.sm-x','.ic-close-btn','.c-x',
-    '#qna-cover-btn','#pwa-install-btn','.missa-open-link',
+    '#qna-cover-btn','.missa-open-link',
     '.btn-primary','.btn-secondary','#write-btn','#sb',
     '.filter-btn','.cat-opt','.tab','.tab-btn','.trail-tab','.web-cat-btn',
     '#prayer-search-input','#prayer-search-bar button'
