@@ -1022,15 +1022,11 @@ function _runRefreshAppFilesOnly(){
       oaiPrepareRefreshVeil('short-refresh', OAI_REFRESH_VEIL_MS, OAI_REFRESH_CARRY_MS, true, OAI_REFRESH_PRE_NAV_HOLD_MS, false);
   }catch(e){ console.warn('[가톨릭길동무]', e); }
   oaiAfterRefreshVeilPaint(function(){
-    // 짧은 새로고침도 긴 새로고침처럼 보호창이 실제로 보인 뒤 최소 1초 유지되게 한다.
-    // reload를 너무 빨리 시작하면 로고/보호창이 따로 fade되는 느낌이 나므로 현재 문서에서 유지 시간을 보장한다.
-    setTimeout(function(){
-      try{
-        location.reload();
-      }catch(e){
-        location.href = location.href.split('#')[0];
-      }
-    }, Math.max(1000, OAI_REFRESH_VEIL_MS || 1000));
+    try{
+      location.reload();
+    }catch(e){
+      location.href = location.href.split('#')[0];
+    }
   });
 }
 function _showRefreshContentDialog(onConfirm){
