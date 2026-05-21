@@ -4219,3 +4219,27 @@ html.retreat-mode #srch-modal #sm-tab-bar .sm-tab.active{
   color:#fff!important;
   border-color:transparent!important;
 }
+
+/* V3-S: 커버 하단 안정화 / 하단 버전 숨김 / 안내문구 중앙 정렬 */
+#cover #oai-build-marker {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+#cover-bottom-note {
+  left: 50% !important;
+  right: auto !important;
+  bottom: 0 !important;
+  transform: translateX(-50%) !important;
+  width: min(100vw, 720px) !important;
+  max-width: min(100vw, 720px) !important;
+  padding: 3px max(18px, env(safe-area-inset-left, 0px)) calc(8px + env(safe-area-inset-bottom, 0px)) max(18px, env(safe-area-inset-right, 0px)) !important;
+  text-align: center !important;
+  margin: 0 auto !important;
+}
+html.ios-device #cover #cover-bottom-note {
+  max-width: min(100vw, 720px) !important;
+  padding-left: max(18px, env(safe-area-inset-left, 0px)) !important;
+  padding-right: max(18px, env(safe-area-inset-right, 0px)) !important;
+  text-align: center !important;
+}

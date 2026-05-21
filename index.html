@@ -212,8 +212,8 @@ html.oai-stability-veil::after { content:""; position:fixed; left:50%; top:50%; 
 /* 커버 실제 화면 높이 고정: 모바일/PWA 첫 실행·새로고침 때 첫 화면과 로딩 후 화면의 기준 높이가 달라지는 현상을 줄인다. */
 (function(){
   try{ if('scrollRestoration' in history) history.scrollRestoration = 'manual'; }catch(e){}
-  var KEY = 'oai_cover_vh_px_v47';
-  var WIDTH_KEY = 'oai_cover_width_px_v47';
+  var KEY = 'oai_cover_vh_px_v48';
+  var WIDTH_KEY = 'oai_cover_width_px_v48';
   var root = document.documentElement;
   root.classList.add('oai-cover-booting');
   function now(){ return Date.now ? Date.now() : new Date().getTime(); }
@@ -225,18 +225,23 @@ html.oai-stability-veil::after { content:""; position:fixed; left:50%; top:50%; 
     }catch(e){ return {vh:0,width:0}; }
   }
   function measure(){
+    var docH = 0, innerH = 0, vvH = 0;
+    try{ docH = parseFloat(document.documentElement && document.documentElement.clientHeight || 0); }catch(e){}
+    try{ innerH = parseFloat(window.innerHeight || 0); }catch(e){}
+    try{ vvH = parseFloat(window.visualViewport && window.visualViewport.height || 0); }catch(e){}
     var values = [];
     function add(v){
       v = parseFloat(v || 0);
       if(v > 300 && v < 2000) values.push(v);
     }
-    try{ add(document.documentElement && document.documentElement.clientHeight); }catch(e){}
-    try{ add(window.innerHeight); }catch(e){}
-    try{ add(window.visualViewport && window.visualViewport.height); }catch(e){}
+    add(docH); add(innerH); add(vvH);
     if(!values.length) return 0;
-    // 하단 시스템 내비게이션 바가 잠깐 사라질 때 커지는 높이를 기준으로 잡지 않는다.
-    // 첫 화면은 관측 가능한 값 중 가장 작은 실제 표시 높이를 사용해 내비게이션 바 영역을 침범하지 않는다.
-    var h = Math.min.apply(Math, values);
+    // V3-S: iOS/Android에서 저장된 작은 viewport 또는 visualViewport 값 때문에
+    // 커버 하단이 위로 뜨는 현상을 줄인다. 키보드가 열린 것으로 보이는 경우만
+    // visualViewport 축소값을 제외하고, 일반 커버 화면은 가장 넓은 높이 기준을 쓴다.
+    var keyboardLikely = !!(vvH && innerH && vvH / innerH < 0.78);
+    var h = keyboardLikely ? Math.max(docH || 0, innerH || 0) : Math.max.apply(Math, values);
+    if(!(h > 300 && h < 2000)) h = Math.max.apply(Math, values);
     return h ? (h * 0.01) : 0;
   }
   function measureWidth(){
@@ -262,9 +267,10 @@ html.oai-stability-veil::after { content:""; position:fixed; left:50%; top:50%; 
     softRefreshRecent = !!sr && (now() - sr < 120000);
   }catch(e){}
   var widthMatches = !!(stored.width && currentWidth && Math.abs(stored.width - currentWidth) < 24);
-  // 새로고침뿐 아니라 같은 화면 폭의 일반 재진입에서도 직전 커버 높이를 먼저 써서
-  // 첫 페인트와 로딩 후 페인트의 상하 위치가 달라지는 것을 막는다.
-  var useStored = !!(stored.vh && (softRefreshRecent || widthMatches));
+  var storedDiffersFromNow = !!(measured && stored.vh && Math.abs(measured - stored.vh) > 0.55);
+  // 새로고침뿐 아니라 같은 화면 폭의 일반 재진입에서도 직전 커버 높이를 먼저 쓰되,
+  // 저장된 값이 현재 실제 높이와 크게 다르면 그 값 때문에 하단이 위로 뜰 수 있으므로 즉시 갱신한다.
+  var useStored = !!(stored.vh && (softRefreshRecent || widthMatches) && !storedDiffersFromNow);
   var firstVh = useStored ? stored.vh : (measured || stored.vh || 8);
   apply(firstVh, !useStored, currentWidth);
   var baseCoverWidth = currentWidth;

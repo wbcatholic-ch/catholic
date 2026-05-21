@@ -1370,8 +1370,10 @@ window.addEventListener('load', syncCoverUpdateVersionState, true);
       hideModal('guide-manual-modal');
       closeFavoritesResetNotice();
     });
-    setTimeout(maybeShowIntro, 650);
-    setTimeout(maybeShowFavoritesResetNotice, 1150);
+    // V3-S: 첫 접속 시 자동으로 뜨던 주요기능/업데이트 안내 배너는 표시하지 않는다.
+    // 커버의 '주요기능' 버튼을 누르면 기존 상세 안내는 그대로 볼 수 있다.
+    // setTimeout(maybeShowIntro, 650);
+    // setTimeout(maybeShowFavoritesResetNotice, 1150);
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', bindGuide, {once:true});
   else bindGuide();
