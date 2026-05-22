@@ -4201,3 +4201,35 @@ html.ios-device #cover #cover-bottom-note {
   opacity: 0 !important;
   pointer-events: none !important;
 }
+
+/* V3-S: iPhone/PWA 전체 viewport 높이 안정화
+   - 상태바 아이보리 색은 유지
+   - iOS에서 작게 잡힌 viewport 값 때문에 기도문/목록/관구교구 지도 아래에 빈 공간이 생기는 현상을 줄인다.
+   - Android 레이아웃에는 적용하지 않는다. */
+html.ios-device,
+html.ios-device body {
+  min-height: var(--oai-app-h, 100dvh);
+}
+html.ios-device #app,
+html.ios-device .module-view.open {
+  height: var(--oai-app-h, 100dvh) !important;
+  min-height: var(--oai-app-h, 100dvh) !important;
+  max-height: var(--oai-app-h, 100dvh) !important;
+}
+html.ios-device #cover {
+  height: var(--oai-app-h, var(--cover-h)) !important;
+  min-height: var(--oai-app-h, var(--cover-h)) !important;
+  max-height: var(--oai-app-h, var(--cover-h)) !important;
+}
+html.ios-device #diocese-view.open #diocese-frame {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  height: auto !important;
+}
+html.ios-device #prayer-view.open,
+html.ios-device #web-view.open,
+html.ios-device #trail-view.open,
+html.ios-device #diocese-view.open,
+html.ios-device #qna-view.open {
+  overflow: hidden !important;
+}
