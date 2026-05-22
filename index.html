@@ -479,7 +479,7 @@ window.APP_CONFIG = {
   </div>
 </div>
 <div id="cover">
-<div id="oai-build-marker" aria-label="수정 단계 표시" style="position:absolute;left:8px;bottom:calc(env(safe-area-inset-bottom,0px) + 6px);z-index:120;display:inline-flex;align-items:center;justify-content:center;min-width:46px;height:20px;padding:0 8px;border-radius:999px;background:rgba(31,42,68,.72);color:#fff;font-size:10px;font-weight:800;line-height:1;pointer-events:none;opacity:.74;"></div>
+<div id="oai-build-marker" aria-label="수정 단계 표시" style="position:absolute;left:8px;bottom:calc(env(safe-area-inset-bottom,0px) + 6px);z-index:120;display:none;align-items:center;justify-content:center;min-width:46px;height:20px;padding:0 8px;border-radius:999px;background:rgba(31,42,68,.72);color:#fff;font-size:10px;font-weight:800;line-height:1;pointer-events:none;opacity:0;visibility:hidden;"></div>
   <div id="cv-pull-modern" aria-hidden="true">
   <div class="cv-pull-ring">
     <svg viewBox="0 0 24 24" class="cv-pull-icon">
@@ -616,30 +616,6 @@ window.APP_CONFIG = {
 </div>
 
 <!-- 주요 기능 안내 팝업 (커버 전용, 별도 파일 없음) -->
-<div id="guide-intro-modal" class="guide-modal" role="dialog" aria-modal="true" aria-labelledby="guide-intro-title" aria-hidden="true">
-  <div class="guide-backdrop" data-guide-close="intro"></div>
-  <div class="guide-panel guide-intro-panel">
-    <button class="guide-x" type="button" data-guide-close="intro" aria-label="주요 기능 안내 닫기">×</button>
-    <div class="guide-badge">주요 기능</div>
-    <h2 id="guide-intro-title">가톨릭길동무 주요 기능</h2>
-    <p class="guide-lead">처음사용하시는 분을 위한 안내</p>
-    <p class="guide-intro-note">성당 찾기, 기도문, 성지·피정, 순례길, 웹사이트, 새로고침 기능을 한눈에 확인할 수 있습니다.</p>
-    <div class="guide-actions">
-      <button id="guide-open-detail-btn" type="button" class="guide-primary">주요 기능 보기</button>
-      <button id="guide-later-btn" type="button" class="guide-secondary">나중에</button>
-    </div>
-  </div>
-</div>
-
-<!-- V3-S: 설치된 앱 기존 사용자에게만 1회 표시하는 즐겨찾기 초기화 안내 배너 -->
-<div id="favorites-reset-notice-banner" class="favorites-reset-banner" aria-live="polite" hidden>
-  <div class="favorites-reset-text">
-    <strong>업데이트 안내</strong>
-    <span>앱 안정화를 위한 업데이트가 진행되었습니다.<br>기존 즐겨찾기는 초기화되었으니 다시 등록해 주세요.</span>
-  </div>
-  <button id="favorites-reset-notice-ok" type="button">확인</button>
-</div>
-
 <div id="guide-manual-modal" class="guide-modal" role="dialog" aria-modal="true" aria-labelledby="guide-manual-title" aria-hidden="true">
   <div class="guide-backdrop" data-guide-close="manual"></div>
   <div class="guide-panel guide-manual-panel">
