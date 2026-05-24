@@ -82,7 +82,7 @@ function oaiReleaseStabilityVeil(){
         pageHidden = sessionStorage.getItem('oai_external_nav_pagehide') === '1' || document.visibilityState === 'hidden';
         forceAt = parseInt(sessionStorage.getItem('oai_external_nav_force_release_at') || '0', 10) || 0;
       }catch(_e){}
-      // V3-S: 외부사이트가 실제로 열려 앱이 hidden/pagehide 상태가 된 경우에는
+      // V3-S-1: 외부사이트가 실제로 열려 앱이 hidden/pagehide 상태가 된 경우에는
       // 보호창을 현재 문서에서 지우지 않는다. 사용자가 돌아온 뒤 external-return 안정화가 해제한다.
       if(pending && pageHidden){
         clearTimeout(window.__oaiStabilityVeilTimer);
@@ -153,7 +153,7 @@ function oaiPrepareRefreshVeil(reason, duration, carryDuration, showBeforeNaviga
     var carry = Math.max(d + 1200, carryDuration || OAI_REFRESH_CARRY_MS || d);
     var now = Date.now ? Date.now() : new Date().getTime();
     /*
-       V3-S: 수동 짧은/긴 새로고침은 OK 직후 현재 문서 보호막을 먼저 보여 주되,
+       V3-S-1: 수동 짧은/긴 새로고침은 OK 직후 현재 문서 보호막을 먼저 보여 주되,
        새 문서 첫 페인트 보호막을 다시 예약하지 않는다.
        두 문서가 각각 1번씩 보호창을 켜서 '두 번 열림'처럼 보이던 흐름을 끊는다.
        자동/백그라운드 reload처럼 현재 문서에서 먼저 보여 줄 수 없는 경우만 carryToNextDocument 기본값(true)을 사용한다.
@@ -313,7 +313,7 @@ function oaiGetExternalNavInfo(){
 function oaiHasExternalReturnPending(){
   try{
     var info = oaiGetExternalNavInfo();
-    // V3-S: 실제로 앱이 hidden/pagehide 된 적이 있을 때만 "외부사이트에서 복귀"로 본다.
+    // V3-S-1: 실제로 앱이 hidden/pagehide 된 적이 있을 때만 "외부사이트에서 복귀"로 본다.
     // 단순 클릭 실패/미열림 상태까지 external-return 안정화로 처리하면 뒤로올 때 버벅임이 생긴다.
     return !!(info.ts && info.pageHidden && info.now && info.now - info.ts < 10 * 60 * 1000);
   }catch(_e){ return false; }
@@ -367,7 +367,7 @@ function oaiStartExternalReturnStabilize(){
 }
 function applyExternalReturnStabilize(){
   // 외부 사이트에서 돌아온 직후에는 공통 안정막을 유지한 뒤, 화면 높이/스크롤이 안정된 후에만 해제한다.
-  // V3-S: 실제 pagehide/hidden이 확인되지 않은 "열기 시도 중" 상태는 복귀로 오판하지 않는다.
+  // V3-S-1: 실제 pagehide/hidden이 확인되지 않은 "열기 시도 중" 상태는 복귀로 오판하지 않는다.
   try{
     if(oaiHasExternalReturnPending()){
       oaiStartExternalReturnStabilize();
@@ -596,7 +596,7 @@ function _ensureCoverBackTrap(reason){
 }
 
 function _resetCoverBackTrap(reason){
-  /* V3-S: 커버 trap 재설정도 patches.js의 공통 armCoverBackTrap을 우선 사용한다.
+  /* V3-S-1: 커버 trap 재설정도 patches.js의 공통 armCoverBackTrap을 우선 사용한다.
      이미 trap이 살아 있으면 중복 root/trap을 다시 쌓지 않아 Back을 여러 번 눌러야 하는 상태를 줄인다. */
   try{
     if(_isAppScreenActive()) return;
@@ -1112,7 +1112,7 @@ async function _runClearAppFilesCacheCompletely(){
   }catch(e){
     console.warn('[가톨릭길동무]', e);
   }
-  // V3-S: 긴 새로고침은 현재 문서 보호막 하나만 사용한다.
+  // V3-S-1: 긴 새로고침은 현재 문서 보호막 하나만 사용한다.
   // 새 문서 첫 페인트 보호막을 다시 예약하면 보호창이 두 번 열린 것처럼 보인다.
   oaiAfterRefreshVeilPaint(function(){
     try{
@@ -1168,7 +1168,7 @@ function syncCoverUpdateVersionState(){
     var box = document.getElementById('cover-update-box');
     var marker = document.getElementById('oai-build-marker');
     if(!btn || !box) return;
-    var target = btn.getAttribute('data-target-version') || 'V3-S';
+    var target = btn.getAttribute('data-target-version') || 'V3-S-1';
     var current = '';
     if(window.APP_VERSION) current = String(window.APP_VERSION).trim();
     if(!current && marker) current = String(marker.textContent || '').trim();
@@ -1187,7 +1187,7 @@ document.addEventListener('DOMContentLoaded', function(){
 }, true);
 window.addEventListener('load', syncCoverUpdateVersionState, true);
 
-// V3-S: 커버 전용 주요 기능 안내. 자동 배너는 제거하고, 사용자가 주요기능 버튼을 누를 때만 상세 안내를 연다.
+// V3-S-1: 커버 전용 주요 기능 안내. 자동 배너는 제거하고, 사용자가 주요기능 버튼을 누를 때만 상세 안내를 연다.
 (function(){
   'use strict';
   function resetGuideScroll(id){
@@ -1275,7 +1275,7 @@ function openPrayerBook(opts){
   }catch(e){ console.warn("[가톨릭길동무]", e); }
   if(typeof oaiSetMainMapLayerHidden==='function') oaiSetMainMapLayerHidden(true);
   view.classList.add('open');
-  // V3-S: restore 변수 미정의 오류 방지. 주요기도문 초기화가 중간에 끊기면
+  // V3-S-1: restore 변수 미정의 오류 방지. 주요기도문 초기화가 중간에 끊기면
   // 탭/목록이 비어 보이므로 opts.restore 값을 명확히 계산해서 사용한다.
   var restore = !!(opts && opts.restore);
   if(!restore && typeof oaiEnterView==='function') oaiEnterView(view);
@@ -1440,7 +1440,7 @@ function openDioceseView(opts){
       if(!restore) try{ frame.contentWindow && frame.contentWindow.resetDioceseFirstPage && frame.contentWindow.resetDioceseFirstPage(); }catch(e){ console.warn("[가톨릭길동무]", e); }
       if(typeof dioceseLoaded==='function') dioceseLoaded();
     };
-    frame.src='diocese.html?v=V3-S';
+    frame.src='diocese.html?v=V3-S-1';
   }else if(!restore){
     try{ frame.contentWindow && frame.contentWindow.resetDioceseFirstPage && frame.contentWindow.resetDioceseFirstPage(); }catch(e){ console.warn("[가톨릭길동무]", e); }
   }
@@ -1499,7 +1499,7 @@ function normalizeCatholicExternalUrl(url){
     // 경로 내 이중 슬래시 제거: cathms.kr//E_2/... → cathms.kr/E_2/...
     u.pathname = u.pathname.replace(/\/\/+/g, '/');
     var host = u.hostname.toLowerCase();
-    // V3-S: 원주·인천교구 대표 홈페이지는 공식 등록 주소가 HTTP이므로
+    // V3-S-1: 원주·인천교구 대표 홈페이지는 공식 등록 주소가 HTTP이므로
     // 프로토콜을 강제로 바꾸지 않는다. www 보정만 수행한다.
     if(host === 'wjcatholic.or.kr') u.hostname = 'www.wjcatholic.or.kr';
     if(host === 'caincheon.or.kr') u.hostname = 'www.caincheon.or.kr';
@@ -1538,7 +1538,7 @@ function openDioceseExternal(url, state){
       try{ frame.contentWindow.__OAI_DIO_EXTERNAL_LEAVING__ = true; frame.contentWindow.__OAI_DIO_EXTERNAL_LEAVING_TS__ = Date.now ? Date.now() : new Date().getTime(); }catch(_e){}
     }
   }catch(e){ console.warn('[가톨릭길동무]', e); }
-  // V3-S: iframe에서 온 교구 홈페이지 클릭은 지연 setTimeout 없이 즉시 top 페이지를 이동한다.
+  // V3-S-1: iframe에서 온 교구 홈페이지 클릭은 지연 setTimeout 없이 즉시 top 페이지를 이동한다.
   // 지연 이동은 일부 Android/PWA에서 사용자 클릭 흐름이 끊겨 사이트가 열리지 않거나 pending만 남을 수 있다.
   try{ if(typeof markExternalReturnStabilize === 'function') markExternalReturnStabilize('diocese-external'); }catch(_e){}
   try{ location.assign(url); }
@@ -1575,7 +1575,7 @@ function restoreDioceseExternalState(opts){
     var alreadyOpen=!!(view && view.classList.contains('open'));
     var frameAlive=!!(frame && frame.contentWindow);
 
-    // V3-S stable: frame.contentWindow가 있다는 이유만으로 '살아 있다'고 판단하면 안 된다.
+    // V3-S-1 stable: frame.contentWindow가 있다는 이유만으로 '살아 있다'고 판단하면 안 된다.
     // Android/카카오 WebView에서는 부모 iframe 객체는 남아 있어도, iframe 내부 diocese.html이
     // 새로 초기화되어 목록이 맨 위로 돌아간 상태가 섞인다. 그래서 iframe 내부에 현재 탭/scrollTop이
     // 저장값과 실제로 일치하는지 물어본 뒤, 일치할 때만 웹사이트처럼 아무 복원도 하지 않는다.
@@ -1805,7 +1805,7 @@ let _parishDataLoadPromise=null;
 let _parishAllDataLoadPromise=null;
 const _PARISH_SPLIT_LAZY_MODE=true;
 
-// V3-S: 성당 데이터를 교구별 parishes-*.js 파일로 실제 분리한다.
+// V3-S-1: 성당 데이터를 교구별 parishes-*.js 파일로 실제 분리한다.
 // 지도·마커·길찾기·뒤로가기 로직은 그대로 두고, 데이터 배열만 필요한 시점에 채운다.
 const _PARISH_DIOCESE_ORDER=[
   'SE','IC','SW','UJ','CC','WJ','DJ','CJ',
@@ -1831,7 +1831,7 @@ const _PARISH_DIOCESE_ASSETS={
 };
 const _PARISH_DIOCESE_LOAD_STATE={};
 const _PARISH_DIOCESE_LOAD_PROMISES={};
-const _PARISH_ASSET_VERSION='V3-S';
+const _PARISH_ASSET_VERSION='V3-S-1';
 function _getParishDioceseAsset(code){
   return _PARISH_DIOCESE_ASSETS[code] || null;
 }
@@ -1994,7 +1994,7 @@ function _ensureParishDataLoaded(){
 }
 _initParishDataFromGlobal();
 
-const _PRAYER_ASSET_VERSION='V3-S';
+const _PRAYER_ASSET_VERSION='V3-S-1';
 let _prayerModuleLoadPromise=null;
 function _isPrayerModuleReady(){
   return typeof window.initPrayerView === 'function' &&
@@ -2039,7 +2039,7 @@ try{ window.ensurePrayerModuleLoaded=ensurePrayerModuleLoaded; }catch(e){ consol
 let _RT_RAW = [];
 let _retreatRawLoaded = false;
 let _retreatDataLoadPromise = null;
-const _RETREAT_ASSET_VERSION='V3-S';
+const _RETREAT_ASSET_VERSION='V3-S-1';
 
 let RETREATS = [];
 function _buildRetreatList(raw){
@@ -2094,6 +2094,8 @@ _initRetreatDataFromGlobal();
 function _getCurrentItems(){return _mode==='shrine'?SHRINES:(_mode==='retreat'?RETREATS:PARISHES);}
 function _getModeTypeText(){return _mode==='shrine'?'성지':(_mode==='retreat'?'피정의 집':'성당');}
 function _getModeTypeLabel(item){return _mode==='shrine'?item.type:(_mode==='retreat'?'🏔 피정의 집':'⛪ 성당');}
+function _itemSearchBlob(item){return String((item&&item.name)||'')+' '+String((item&&item.diocese)||'')+' '+String((item&&item.addr)||'')+' '+String((item&&item.kw)||'');}
+function _itemSearchNorm(item){return _itemSearchBlob(item).replace(/\s+/g,'');}
 const _RETREAT_DIO_COLORS={'SE':'#c0392b','IC':'#c0392b','SW':'#c0392b','UJ':'#c0392b','CC':'#1565c0','WJ':'#1565c0','DJ':'#c0392b','CJ':'#1565c0','DG':'#1b7a3e','AD':'#1b7a3e','BS':'#1565c0','MS':'#1b7a3e','GJ':'#1b7a3e','JJ':'#1b7a3e','JE':'#1b7a3e','ML':'#c0392b'};
 const OAI_CATHEDRAL_CATEGORY_COLOR = '#3F4752';
 const OAI_RETREAT_CATEGORY_COLOR = '#3F6F5A';
@@ -2284,7 +2286,7 @@ const _TY={'A':'성지','B':'순례지','C':'순교 사적지'};
 
 let _shrineRawLoaded = false;
 let _shrineDataLoadPromise = null;
-const _SHRINE_ASSET_VERSION='V3-S';
+const _SHRINE_ASSET_VERSION='V3-S-1';
 let SHRINES = [];
 let JUKRIMGUL_IDX = -1;
 function _decodeShrineHomePage(hp){
@@ -2386,6 +2388,8 @@ const AppState = {
   regionName:      '',
   regionPlaceName: '',
   regionCache:     [],   // 지역검색 결과 캐시
+  regionMarker:    null, // 지역검색 선택 장소 보라색 마커
+  regionResultMarkers: [], // 성당 지역검색 결과 전용 임시 마커
 
   // ── 내주변 ──
   nearbyCache: [],       // 내주변 결과 캐시
@@ -2456,6 +2460,8 @@ const AppState = {
     ['_regionName',       'regionName'],
     ['_regionPlaceName',  'regionPlaceName'],
     ['_regionCache',      'regionCache'],
+    ['_regionMarker',     'regionMarker'],
+    ['_regionResultMarkers','regionResultMarkers'],
     ['_nearbyCache',      'nearbyCache'],
     ['_routeMode',        'routeMode'],
     ['_rS',               'rS'],
@@ -2624,7 +2630,7 @@ function oaiEnterView(el){
   try{
     var root=document.documentElement;
     if(root.classList.contains('oai-returning')) return;
-    // V3-S: 카테고리 진입은 화면 자체를 fade하지 않고, 완성된 화면 위의
+    // V3-S-1: 카테고리 진입은 화면 자체를 fade하지 않고, 완성된 화면 위의
     // 얇은 아이보리 overlay가 0.7초 동안 사라지는 dissolve 방식으로 통일한다.
     // 성지·성당·피정의집 지도형 화면(#app)은 진입 효과를 적용하지 않는다.
     el.classList.remove('oai-enter-ready','oai-enter-show','oai-popup-ready','oai-popup-show','oai-prepaint-view');
@@ -2956,7 +2962,7 @@ function _onMapReady(){
   else if(_mode==='retreat') _buildRetreatMarkers();
   // _noAutoNearby 플래그: 복귀 시 내주변 탭 자동 열기 방지
   if(!window._noAutoNearby){
-    // V3-S: 성당 첫 진입도 기존 기준대로 내주변 탭을 먼저 연다.
+    // V3-S-1: 성당 첫 진입도 기존 기준대로 내주변 탭을 먼저 연다.
     // 교구별 분리 구조는 유지하되, 성당찾기 탭으로 자동 전환하지 않는다.
     openTab('nearby');
   }
@@ -3150,6 +3156,8 @@ function _resetTabWork(name){
     _filterDio='all';
     $$('.filter-btn').forEach((b,i)=>b.classList.toggle('active', i===0 || b.textContent.trim()==='전체'));
     _regionLat=null;_regionLng=null;_regionCache=[];
+    _clearRegionMarker();
+    _clearRegionResultMarkers();
     _routeRegionStart=null;
     const ri=$('region-inp'); if(ri) ri.value='';
     const rb=$('region-body');
@@ -3167,6 +3175,8 @@ function toggleTab(name){
     else if(name==='list') { renderList(); oaiFocusSearchKeyboardInput('list-srch-inp'); }
     else if(name==='region'){
       _regionLat=null;_regionLng=null;_regionCache=[];
+      _clearRegionMarker();
+      _clearRegionResultMarkers();
       const ri=$('region-inp'); if(ri) ri.value='';
       const rb=$('region-body');
       if(rb) rb.innerHTML=_regionGuideHtml();
@@ -3329,10 +3339,14 @@ function selectItem(idx, opts={}){
   const item  = items[idx];
   if(!item) return;
   const fromSearchList = !!(_listSrch && _listSrch.trim());
-  _curFromRegion = !!(opts.fromRegion && _regionLat);
+  const fromRegionState = !!((opts.fromRegion || _isRegionSearchActiveForItem(item)) && _regionLat && _regionLng);
+  _curFromRegion = fromRegionState;
+  if(fromRegionState) _rememberRegionStart(_regionLat,_regionLng,_regionPlaceName||_regionName||'검색지');
   closeAllTabs();
   if(_mode==='shrine'){
-  if(opts.fromRegion || fromSearchList){
+  if(fromRegionState){
+   _showRegionResultsOnMap(_regionCache,_regionLat,_regionLng,_regionPlaceName||_regionName||'검색지');
+  } else if(fromSearchList){
    _restoreAllCategoryMarkersForSelection();
   } else if(opts.fromNearby && _nearbyCache.length>0){
    _showItemsOnMap(_nearbyCache);
@@ -3341,9 +3355,11 @@ function selectItem(idx, opts={}){
   }
   _selectShrineMarker(idx);
   } else if(_mode==='parish') {
+  if(fromRegionState) _showRegionResultsOnMap(_regionCache,_regionLat,_regionLng,_regionPlaceName||_regionName||'검색지');
   _selectParishMarker(item);
   } else {
-  if(opts.fromRegion || fromSearchList) _restoreAllCategoryMarkersForSelection();
+  if(fromRegionState) _showRegionResultsOnMap(_regionCache,_regionLat,_regionLng,_regionPlaceName||_regionName||'검색지');
+  else if(fromSearchList) _restoreAllCategoryMarkersForSelection();
   _selectRetreatMarker(item);
   }
   _showInfoCard(item, idx);
@@ -3509,14 +3525,20 @@ function openKakaoNav(){
   const isJuk = _mode==='shrine' && idx === JUKRIMGUL_IDX && JUKRIMGUL_IDX >= 0;
   const navItem = isJuk ? {...item, lat:JUKRIMGUL_PARKING.lat, lng:JUKRIMGUL_PARKING.lng, kw:JUKRIMGUL_PARKING.kw, name:JUKRIMGUL_PARKING.name} : item;
   const ep=_EC(navItem.kw||navItem.name);
-  function launch(spLat,spLng){
-  const w=spLat?`https://map.kakao.com/link/from/${_EC('현위치')},${spLat},${spLng}/to/${ep},${navItem.lat},${navItem.lng}`:
+  function launch(spLat,spLng,spName){
+  const startName=spName||'현위치';
+  const w=spLat?`https://map.kakao.com/link/from/${_EC(startName)},${spLat},${spLng}/to/${ep},${navItem.lat},${navItem.lng}`:
          `https://map.kakao.com/link/to/${ep},${navItem.lat},${navItem.lng}`;
   const a=spLat?`kakaomap://route?sp=${spLat},${spLng}&ep=${navItem.lat},${navItem.lng}&by=CAR`:
          `kakaomap://route?ep=${navItem.lat},${navItem.lng}&by=CAR`;
   _kakaoLaunch(w,a);
   }
-  if(_myLat) launch(_myLat,_myLng);
+  if((_curFromRegion || _isRegionSearchActiveForItem(item)) && _regionLat && _regionLng){
+    const placeName=_regionPlaceName||_regionName||'검색지';
+    _rememberRegionStart(_regionLat,_regionLng,placeName);
+    launch(_regionLat,_regionLng,'📍 '+placeName);
+  }
+  else if(_myLat) launch(_myLat,_myLng,'현위치');
   else if(_GEO){
   _GEO.getCurrentPosition(p=>launch(p.coords.latitude,p.coords.longitude),
    ()=>launch(null,null),{enableHighAccuracy:true,timeout:8000,maximumAge:60000});
@@ -3614,7 +3636,7 @@ function _buildShrineMarkers(){
    (function(index){
     kakao.maps.event.addListener(mk,'click',()=>{
      if(_routeMode) _selectRouteItem(index);
-     else selectItem(index);
+     else selectItem(index,{fromRegion:_isRegionSearchActiveForItem(SHRINES[index])});
     });
    })(i);
    _markers[i]={marker:mk,shrine:s,index:i};
@@ -3656,7 +3678,7 @@ function _restoreMapMarkers(){
   if(!m) return;
   const s=m.shrine;
   const ok=(_filterDio==='all'||s.diocese===_filterDio)&&
-      (!_listSrch||s.name.includes(_listSrch)||s.diocese.includes(_listSrch)||s.addr.includes(_listSrch));
+      (!_listSrch||_itemSearchBlob(s).includes(_listSrch)||_itemSearchNorm(s).includes(String(_listSrch).replace(/\s+/g,'')));
   m.marker.setMap(ok?_map:null);
   });
 }
@@ -3976,7 +3998,7 @@ function _buildParishDioSystem(){
   _parishSysInited=true;
   const lvl=_map.getLevel();
   Object.entries(_DIO_CFG).forEach(([code,cfg])=>{
-    // V3-S: 군종교구는 데이터/검색에는 남기되 지도 위 교구 라벨에서는 제외한다.
+    // V3-S-1: 군종교구는 데이터/검색에는 남기되 지도 위 교구 라벨에서는 제외한다.
     if(code==='ML') return;
     const el=document.createElement('div');
     el.className='dio-label';
@@ -4170,7 +4192,7 @@ function _showParishDioMkrs(code){
       kakao.maps.event.addListener(mk,'click',function(){
         const idx=PARISHES.indexOf(p);
         if(_routeMode) _selectRouteItem(idx);
-        else selectItem(idx,{fromNearby:false,fromRegion:false});
+        else selectItem(idx,{fromNearby:false,fromRegion:_isRegionSearchActiveForItem(PARISHES[idx])});
       });
       // setMap은 _updateParishViewport에서 뷰포트 기준으로 처리
       _dioMkrs[code].push(mk);
@@ -4228,7 +4250,7 @@ function _buildRetreatMarkers(){
       });
       (function(idx){kakao.maps.event.addListener(mk,'click',function(){
         if(_routeMode) _selectRouteItem(idx);
-        else selectItem(idx,{fromNearby:false,fromRegion:false});
+        else selectItem(idx,{fromNearby:false,fromRegion:_isRegionSearchActiveForItem(RETREATS[idx])});
       });})(i);
       _retreatMarkers.push({marker:mk,item:p,index:i});
     });
@@ -4242,7 +4264,7 @@ function _clearRetreatMarkers(){
 function _restoreRetreatMarkers(){
   _retreatMarkers.forEach(o=>{
     const s=o.item;
-    const ok=(_filterDio==='all'||s.diocese===_filterDio)&&(!_listSrch||s.name.includes(_listSrch)||s.diocese.includes(_listSrch)||s.addr.includes(_listSrch));
+    const ok=(_filterDio==='all'||s.diocese===_filterDio)&&(!_listSrch||_itemSearchBlob(s).includes(_listSrch)||_itemSearchNorm(s).includes(String(_listSrch).replace(/\s+/g,'')));
     o.marker.setMap(ok?_map:null);
   });
 }
@@ -4478,15 +4500,16 @@ function renderList(){
     const nameNorm=String(s.name||'').replace(/\s+/g,'');
     const dioNorm=String(s.diocese||'').replace(/\s+/g,'');
     const addrNorm=String(s.addr||'').replace(/\s+/g,'');
+    const allNorm=_itemSearchNorm(s);
     let matchAll=false;
     if(_mode==='parish'){
-      /* V3-S: 성당찾기는 선택한 교구 안에서 성당명 첫 글자 일치 또는 주소 포함으로만 찾는다. */
+      /* V3-S-1: 성당찾기는 선택한 교구 안에서 성당명 첫 글자 일치 또는 주소 포함으로만 찾는다. */
       matchAll = nameNorm.startsWith(nq) || addrNorm.includes(nq);
     } else {
       const tokens=q.trim().split(/\s+/);
       matchAll=tokens.length>=2
-        ?tokens.every(t=>{const nt=t.replace(/\s+/g,'');return nameNorm.includes(nt)||dioNorm.includes(nt)||addrNorm.includes(nt);})
-        :nameNorm.includes(nq)||dioNorm.includes(nq)||addrNorm.includes(nq);
+        ?tokens.every(t=>{const nt=t.replace(/\s+/g,'');return nameNorm.includes(nt)||dioNorm.includes(nt)||addrNorm.includes(nt)||allNorm.includes(nt);})
+        :nameNorm.includes(nq)||dioNorm.includes(nq)||addrNorm.includes(nq)||allNorm.includes(nq);
     }
     if(!matchAll) return;
   }
@@ -4615,6 +4638,78 @@ function _regionGuideHtml(){
   return '<div class="empty-msg region-guide-empty">🏞 여행지나 숙소 지역을 검색하면<br>근처 ' + _regionModeLabel() + ' 목록이 나타납니다</div>';
 }
 
+function _clearRegionMarker(){
+  try{ if(_regionMarker){ _regionMarker.setMap(null); _regionMarker=null; } }catch(e){ console.warn('[가톨릭길동무]', e); }
+}
+function _clearRegionResultMarkers(){
+  try{ (_regionResultMarkers||[]).forEach(function(mk){ try{ mk.setMap(null); }catch(e){} }); }catch(e){ console.warn('[가톨릭길동무]', e); }
+  _regionResultMarkers=[];
+}
+function _isRegionSearchActiveForItem(item){
+  return !!(_regionLat && _regionLng && Array.isArray(_regionCache) && _regionCache.indexOf(item)>=0);
+}
+function _rememberRegionStart(lat,lng,name){
+  if(!lat || !lng) return;
+  const placeName = name || _regionPlaceName || _regionName || '검색지';
+  _regionLat=Number(lat); _regionLng=Number(lng);
+  _regionName=placeName; _regionPlaceName=placeName;
+  _routeRegionStart={lat:_regionLat,lng:_regionLng,name:'📍 '+placeName,placeName:placeName};
+}
+function _showRegionPlaceMarker(lat,lng,name){
+  if(!_map || !lat || !lng || typeof _LL==='undefined' || typeof _MM==='undefined') return;
+  try{
+    _clearRegionMarker();
+    _regionMarker=new _MM({
+      position:new _LL(lat,lng),
+      image:_mkrImg('#7E22CE',true),
+      title:name||'검색 위치',
+      zIndex:360
+    });
+    _regionMarker.setMap(_map);
+  }catch(e){ console.warn('[가톨릭길동무]', e); }
+}
+function _focusRegionSearchCenter(lat,lng){
+  if(!_map || !lat || !lng || typeof _LL==='undefined') return;
+  try{
+    if(typeof _map.setLevel==='function') _map.setLevel(6);
+    if(typeof _setMapCenterByInfoCardStandard==='function') _setMapCenterByInfoCardStandard(new _LL(lat,lng));
+    else _map.setCenter(new _LL(lat,lng));
+  }catch(e){ console.warn('[가톨릭길동무]', e); }
+}
+function _showRegionResultsOnMap(items, lat, lng, name){
+  if(!_map) return;
+  items=Array.isArray(items)?items:[];
+  _rememberRegionStart(lat,lng,name);
+  _showRegionPlaceMarker(lat,lng,name);
+  _clearRegionResultMarkers();
+  try{
+    if(_mode==='shrine'){
+      _markers.forEach(function(m){ if(m&&m.marker) m.marker.setMap(null); });
+      items.forEach(function(s){ const i=SHRINES.indexOf(s); if(i>=0&&_markers[i]) _markers[i].marker.setMap(_map); });
+    }else if(_mode==='retreat'){
+      (_retreatMarkers||[]).forEach(function(o){ if(o&&o.marker) o.marker.setMap(null); });
+      items.forEach(function(s){ const found=(_retreatMarkers||[]).find(function(o){ return o&&o.item===s; }); if(found&&found.marker) found.marker.setMap(_map); });
+    }else if(_mode==='parish'){
+      try{ _clearParishNearbyMarkers(); }catch(e){}
+      try{ if(_activeDio){ _hideParishDioMkrs(_activeDio); _activeDio=null; } _hideDioOverlays(); }catch(e){}
+      items.forEach(function(p){
+        if(!p||!p.lat||!p.lng) return;
+        const idx=PARISHES.indexOf(p);
+        const mk=new _MM({position:new _LL(p.lat,p.lng),image:_mkrImg(OAI_CATHEDRAL_CATEGORY_COLOR,false),title:p.name,zIndex:55});
+        kakao.maps.event.addListener(mk,'click',function(){ if(_routeMode) _selectRouteItem(idx); else selectItem(idx,{fromRegion:true}); });
+        mk.setMap(_map);
+        _regionResultMarkers.push(mk);
+      });
+    }
+  }catch(e){ console.warn('[가톨릭길동무]', e); }
+  _focusRegionSearchCenter(lat,lng);
+}
+function _openRegionMapFromCard(){
+  if(!_regionLat || !_regionLng) return;
+  closeAllTabs();
+  _showRegionResultsOnMap(_regionCache,_regionLat,_regionLng,_regionPlaceName||_regionName||'검색지');
+}
+
 const DIOCESE_CENTER={
   '서울대교구':{lat:37.53,lng:126.97,mob:10},'인천교구':{lat:37.60,lng:126.55,mob:10},
   '수원교구':{lat:37.20,lng:127.05,mob:10},'의정부교구':{lat:37.85,lng:127.05,mob:10},
@@ -4657,7 +4752,7 @@ function doRegionSearch(){
       body.onclick=null;
       const clat=parseFloat(cand.dataset.lat),clng=parseFloat(cand.dataset.lng),cname=cand.dataset.name;
       const caddr=cand.dataset.addr||'', ccat=cand.dataset.cat||'', curl=cand.dataset.url||'';
-      _regionLat=clat;_regionLng=clng;_regionName=cname;_regionPlaceName=cname;
+      _rememberRegionStart(clat,clng,cname);
       body.innerHTML='<div class="empty-msg">🚗 자동차 거리 계산 중...</div>';
       _showRegionResults(cname,clat,clng,{place_name:cname,road_address_name:caddr,address_name:caddr,category_name:ccat,place_url:curl});
       if(_map){
@@ -4672,6 +4767,12 @@ function _showRegionResults(q,lat,lng,doc){
   const items=_getCurrentItems();
   const POOL=items.filter(s=>s.lat&&s.lng);
   const prelim=POOL.map(s=>({s,d:calcDist(lat,lng,s.lat,s.lng)})).sort((a,b)=>a.d-b.d).slice(0,30);
+  if(!prelim.length){
+    _regionCache=[];
+    _showRegionResultsOnMap([],lat,lng,doc.place_name||q);
+    $('region-body').innerHTML='<div class="empty-msg">표시할 '+_regionModeLabel()+' 목록이 없습니다</div>';
+    return;
+  }
   const placeName=doc.place_name||q;
   const placeAddr=doc.road_address_name||doc.address_name||'';
   const placeCat=doc.category_name?doc.category_name.split(' > ').pop():'';
@@ -4681,7 +4782,7 @@ function _showRegionResults(q,lat,lng,doc){
   const safePlaceAddr=_regionHtmlEsc(placeAddr);
   const safePlaceCat=_regionHtmlEsc(placeCat);
   const safePlaceUrl=_regionAttrEsc(placeUrl);
-  const infoCard=`<div class="region-info-card"><div class="ric-hd"><div class="ric-icon">📍</div><div class="ric-name-wrap"><div class="ric-name">${safePlaceName}</div>${placeAddr?`<div class="ric-addr">${safePlaceAddr}</div>`:''}${placeCat?`<div class="ric-cat">${safePlaceCat}</div>`:''}</div>${placeUrl?`<a class="ric-map-link" href="${safePlaceUrl}" target="_blank" rel="noopener">지도 ↗</a>`:''}</div></div>`;
+  const infoCard=`<div class="region-info-card"><div class="ric-hd"><div class="ric-icon">📍</div><div class="ric-name-wrap"><div class="ric-name">${safePlaceName}</div>${placeAddr?`<div class="ric-addr">${safePlaceAddr}</div>`:''}${placeCat?`<div class="ric-cat">${safePlaceCat}</div>`:''}</div><button type="button" class="ric-map-link" onclick="_openRegionMapFromCard()">지도 보기</button></div></div>`;
   const listHd=`<div class="region-list-hd">${isParish?'⛪ 근처 성당':(isRetreat?'🏔 근처 피정의 집':'✝ 근처 성지')} <span style="font-size:13px;font-weight:500;color:#aaa">· 자동차 거리순 10곳</span></div>`;
   $('region-body').innerHTML=infoCard+listHd+'<div id="rg-loading" style="text-align:center;padding:10px;font-size:12px;color:#888;">🚗 정확한 거리 계산 중입니다…</div><div id="rg-list" style="background:#fff"></div>';
   const results=new Array(prelim.length).fill(null);let done=0;
@@ -4693,7 +4794,7 @@ function _showRegionResults(q,lat,lng,doc){
       if(done===prelim.length){
         const sorted=prelim.map((x,i)=>({x,r:results[i]||{km:x.d*1.35,dur:null}})).sort((a,b)=>a.r.km-b.r.km).slice(0,10);
         _regionCache=sorted.map(o=>o.x.s);
-        if(_mode==='shrine'&&_map) _showItemsOnMap(_regionCache);
+        _showRegionResultsOnMap(_regionCache,lat,lng,placeName);
         const rgl=$('rg-list');
         const loadEl=$('rg-loading');
         if(loadEl) loadEl.style.display='none';
@@ -4710,7 +4811,7 @@ function _showRegionResults(q,lat,lng,doc){
 function _showRegionFallback(q){
   _regionPlaceName=q;
   const items=_getCurrentItems();
-  var _matched_all=items.filter(function(s){return s.addr.includes(q)||s.name.includes(q)||(s.diocese&&s.diocese.includes(q));});
+  var _matched_all=items.filter(function(s){return s.addr.includes(q)||s.name.includes(q)||(s.diocese&&s.diocese.includes(q))||(s.kw&&String(s.kw).includes(q))||_itemSearchNorm(s).includes(String(q).replace(/\s+/g,''));});
   /* 이름 정확 일치 → 이름 시작 일치 → 이름 포함 → 주소 포함 순으로 정렬 */
   _matched_all.sort(function(a,b){
     var an=a.name,bn=b.name;
@@ -4726,6 +4827,8 @@ function _showRegionFallback(q){
   return;
   }
   _regionCache=matched;
+  _clearRegionMarker();
+  _clearRegionResultMarkers();
   if(_mode==='shrine'&&_map) _showItemsOnMap(_regionCache);
   const items2=_getCurrentItems();
   const list=matched.map((s,i)=>{
@@ -5361,15 +5464,16 @@ function filterModal(q){
     const nameNorm=String(s.name||'').replace(/\s+/g,'');
     const dioNorm=String(s.diocese||'').replace(/\s+/g,'');
     const addrNorm=String(s.addr||'').replace(/\s+/g,'');
+    const allNorm=_itemSearchNorm(s);
     let matchAll=false;
     if(_mode==='parish'){
-      /* V3-S: 성당 길찾기 검색도 선택한 교구 안에서 성당명 첫 글자 일치 또는 주소 포함으로만 찾는다. */
+      /* V3-S-1: 성당 길찾기 검색도 선택한 교구 안에서 성당명 첫 글자 일치 또는 주소 포함으로만 찾는다. */
       matchAll = nameNorm.startsWith(nq) || addrNorm.includes(nq);
     } else {
       const tokens=q.trim().split(/\s+/);
       matchAll=tokens.length>=2
-        ?tokens.every(t=>{const nt=t.replace(/\s+/g,'');return nameNorm.includes(nt)||dioNorm.includes(nt)||addrNorm.includes(nt);})
-        :nameNorm.includes(nq)||dioNorm.includes(nq)||addrNorm.includes(nq);
+        ?tokens.every(t=>{const nt=t.replace(/\s+/g,'');return nameNorm.includes(nt)||dioNorm.includes(nt)||addrNorm.includes(nt)||allNorm.includes(nt);})
+        :nameNorm.includes(nq)||dioNorm.includes(nq)||addrNorm.includes(nq)||allNorm.includes(nq);
     }
     if(!matchAll) return;
   }
