@@ -2355,7 +2355,7 @@ html.app-active #cover-action-row { display: none; }
 #cover-update-btn:active { transform: scale(.985); }
 #cover-update-btn:disabled { opacity: .62; }
 
-/* V3-3: 커버 새로고침 버튼 버전 세부번호 축소 표시 */
+/* V3-6: 커버 새로고침 버튼 버전 세부번호 축소 표시 */
 #cover-update-btn .oai-cover-version-sub {
   font-size: 0.68em;
   vertical-align: baseline;
@@ -3407,7 +3407,7 @@ html.ios-device #app #sheet-list .sheet-hd { bottom: 0; }
 /* 키보드 오픈 시 sheet 위치 보정 */
 html.kb-open .sheet.open { bottom: 0; }
 
-/* V3-3: 성당 글로시 슬레이트 그레이 · 피정의집 세이지 그린 재조정 */
+/* V3-6: 성당 글로시 슬레이트 그레이 · 피정의집 세이지 그린 재조정 */
 html.parish-mode #srch-modal #sm-tab-bar .sm-tab.active{background:linear-gradient(135deg,#374151,#4B5563)!important;color:#fff!important;border-color:transparent!important}
 html.retreat-mode #srch-modal #sm-tab-bar .sm-tab.active{background:linear-gradient(135deg,#3F6F5A,#4F846C)!important;color:#fff!important;border-color:transparent!important}
 html.parish-mode .nearby-num{background:#4B5563!important;color:#fff!important}
@@ -3416,7 +3416,7 @@ html.parish-mode .nearby-dist,html.parish-mode .region-list-hd,html.parish-mode 
 html.retreat-mode .nearby-dist,html.retreat-mode .region-list-hd,html.retreat-mode .ric-lbl{color:#4F846C!important}
 
 /* ============================================================
-   V3-3 색상 정리 — 성지 고유색 유지 / 성당 그레이 / 피정의집 세이지
+   V3-6 색상 정리 — 성지 고유색 유지 / 성당 그레이 / 피정의집 세이지
    - 기능·HTML·JS 변경 없음
    - 성지의 기존 고유색(red/green/blue)은 건드리지 않음
    - 모든 목록 이름은 검정으로 통일
@@ -3586,7 +3586,7 @@ html.retreat-mode #srch-modal #sm-tab-bar .sm-tab.active{
 
 
 /* ============================================================
-   V3-3 색상 보정 — 목록명 검정 / 제목 흰색 / 검색 탭바 흰색 / 번호색 통일
+   V3-6 색상 보정 — 목록명 검정 / 제목 흰색 / 검색 탭바 흰색 / 번호색 통일
    - 기능·HTML·JS 변경 없음
    - 성지 고유색(red/green/blue)은 유지
    ============================================================ */
@@ -3710,7 +3710,7 @@ html.retreat-mode .sm-fb.on{
 
 
 /* ============================================================
-   V3-3 최종 색상 보정
+   V3-6 최종 색상 보정
    - 성지 고유색은 유지하되 상단 활성 탭만 성지 카테고리색으로 통일
    - 성당 내주변 번호색은 성당 카테고리색으로 통일
    - 피정의집 카테고리색과 내주변 번호색을 동일 기준으로 통일
@@ -3832,7 +3832,7 @@ html.retreat-mode .sm-fb.on{
 
 
 /* ============================================================
-   V3-3 현재 위치/피정의집 색상 재정리
+   V3-6 현재 위치/피정의집 색상 재정리
    - 피정의집 카테고리색 = 내주변 번호색(#3F6F5A)
    - 현재 위치는 출발지 라벨에 표시
    ============================================================ */
@@ -3889,7 +3889,7 @@ html.retreat-mode .ic-type-badge{
 
 
 /* ============================================================
-   V3-3 인포카드 글자 + 피정의집 글로시 세이지 최종 보정
+   V3-6 인포카드 글자 + 피정의집 글로시 세이지 최종 보정
    - 기능/JS/뒤로가기/보호창/외부복귀 변경 없음
    - 인포카드 텍스트 1px 확대
    - 피정의집 카테고리 색을 파스텔이 아닌 고급 세이지 그린으로 통일
@@ -3993,7 +3993,7 @@ html.retreat-mode .sm-fb.on{
 
 
 /* ============================================================
-   V3-3 럭셔리 색상 최종 보강
+   V3-6 럭셔리 색상 최종 보강
    - 성당: 글로시 차콜 그레이
    - 피정의집: 글로시 올리브 세이지
    - 성지 고유색은 변경하지 않음
@@ -4110,7 +4110,7 @@ html.retreat-mode #srch-modal #sm-tab-bar .sm-tab.active{
 
 
 /* ============================================================
-   V3-3 최종 색상 보정
+   V3-6 최종 색상 보정
    - 성당: 글로시 차콜 그레이
    - 피정의집: 글로시 올리브 세이지
    - 피정의집 찾기 목록 앞 점: 빨간색
@@ -4183,7 +4183,7 @@ html.retreat-mode #srch-modal #sm-tab-bar .sm-tab.active{
   border-color:transparent!important;
 }
 
-/* V3-3: 커버 하단 안정화 / 하단 버전 표시 숨김 / 안내문구 중앙 정렬 */
+/* V3-6: 커버 하단 안정화 / 하단 버전 표시 숨김 / 안내문구 중앙 정렬 */
 #cover-bottom-note {
   left: 50% !important;
   right: auto !important;
@@ -4202,7 +4202,7 @@ html.ios-device #cover #cover-bottom-note {
   text-align: center !important;
 }
 
-/* V3-3: 하단 버전 배지는 내부 비교용으로만 유지하고 화면에서는 숨김 */
+/* V3-6: 하단 버전 배지는 내부 비교용으로만 유지하고 화면에서는 숨김 */
 #cover #oai-build-marker {
   display: none !important;
   visibility: hidden !important;
@@ -4210,7 +4210,7 @@ html.ios-device #cover #cover-bottom-note {
   pointer-events: none !important;
 }
 
-/* V3-3: iPhone/PWA 전체 viewport 높이 안정화
+/* V3-6: iPhone/PWA 전체 viewport 높이 안정화
    - 상태바 아이보리 색은 유지
    - iOS에서 작게 잡힌 viewport 값 때문에 기도문/목록/관구교구 지도 아래에 빈 공간이 생기는 현상을 줄인다.
    - Android 레이아웃에는 적용하지 않는다. */
@@ -4243,14 +4243,14 @@ html.ios-device #qna-view.open {
 }
 
 
-/* V3-3: 성당 카테고리 로딩 십자가 기준으로 내부 로딩 통일
+/* V3-6: 성당 카테고리 로딩 십자가 기준으로 내부 로딩 통일
    - .map-loading-icon의 금빛 십자가 회전 기준을 유지
    - 피정의집·성지·외부복귀·새로고침 안정막도 같은 십자가/속도 사용
    - transform translate와 회전 애니메이션이 충돌하지 않도록 margin 중심 정렬 사용 */
 .map-loading-icon {
   color: var(--gold, #d4aa6a) !important;
   font-size: 36px !important;
-  animation: oaiLoadingCrossSpinV3-37 2s linear infinite !important;
+  animation: oaiLoadingCrossSpinV3-67 2s linear infinite !important;
   transform-origin: 50% 50% !important;
 }
 
@@ -4276,7 +4276,7 @@ html.oai-external-return-freeze::after {
   font-weight: 800 !important;
   line-height: 1 !important;
   transform-origin: 50% 50% !important;
-  animation: oaiLoadingCrossSpinV3-37 2s linear infinite !important;
+  animation: oaiLoadingCrossSpinV3-67 2s linear infinite !important;
   pointer-events: none !important;
   z-index: 2147483647 !important;
 }
@@ -4288,7 +4288,7 @@ html.oai-external-return-freeze::after {
 }
 
 
-/* V3-3: 관구·교구 / 문의 이동 로딩도 성당 십자가 회전 기준으로 통일
+/* V3-6: 관구·교구 / 문의 이동 로딩도 성당 십자가 회전 기준으로 통일
    - diocese-loading의 기존 missa-spinner를 십자가 회전으로 표시
    - 관구·교구 외부 홈페이지 복귀 중에도 같은 십자가 기준 유지
    - 문의 페이지 이동 전 안정막도 같은 십자가 기준 사용 */
@@ -4304,7 +4304,7 @@ html.oai-external-return-freeze::after {
   justify-content: center !important;
   margin: 0 0 14px !important;
   color: var(--gold, #d4aa6a) !important;
-  animation: oaiLoadingCrossSpinV3-37 2s linear infinite !important;
+  animation: oaiLoadingCrossSpinV3-67 2s linear infinite !important;
   transform-origin: 50% 50% !important;
 }
 #diocese-loading .missa-spinner::before {
@@ -4318,10 +4318,10 @@ html.oai-external-return-freeze::after {
   color: #6B7280 !important;
   font-weight: 600 !important;
 }
-/* V3-3: 로딩 십자가 회전 고정
+/* V3-6: 로딩 십자가 회전 고정
    - transform:none !important가 keyframe transform을 막지 않도록 별도 키프레임 사용
    - 성당/성지/피정의집/관구교구/외부복귀/새로고침 안정막 모두 같은 회전 속도 */
-@keyframes oaiLoadingCrossSpinV3-37 {
+@keyframes oaiLoadingCrossSpinV3-67 {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
@@ -4330,7 +4330,7 @@ html.oai-external-return-freeze::after {
 #oai-category-entry-veil::after,
 html.oai-stability-veil::after,
 html.oai-external-return-freeze::after {
-  animation-name: oaiLoadingCrossSpinV3-37 !important;
+  animation-name: oaiLoadingCrossSpinV3-67 !important;
   animation-duration: 2s !important;
   animation-timing-function: linear !important;
   animation-iteration-count: infinite !important;
@@ -4338,11 +4338,11 @@ html.oai-external-return-freeze::after {
 }
 
 
-/* V3-3: 짧은 화면 전환에서는 회전 십자가를 바로 보이지 않게 함
+/* V3-6: 짧은 화면 전환에서는 회전 십자가를 바로 보이지 않게 함
    - 짧은 카테고리 진입/복귀에서는 어지럽지 않게 숨김
    - 로딩이 길어질 때만 십자가가 나타나 회전
    - 첫 진입 화면/앱 아이콘/기존 로직은 변경하지 않음 */
-@keyframes oaiLoadingCrossDelayedRevealV3-310 {
+@keyframes oaiLoadingCrossDelayedRevealV3-610 {
   from { opacity: 0; }
   to { opacity: 1; }
 }
@@ -4352,7 +4352,7 @@ html.oai-external-return-freeze::after {
 html.oai-stability-veil::after,
 html.oai-external-return-freeze::after {
   opacity: 0 !important;
-  animation-name: oaiLoadingCrossSpinV3-37, oaiLoadingCrossDelayedRevealV3-310 !important;
+  animation-name: oaiLoadingCrossSpinV3-67, oaiLoadingCrossDelayedRevealV3-610 !important;
   animation-duration: 2s, .12s !important;
   animation-timing-function: linear, ease-out !important;
   animation-iteration-count: infinite, 1 !important;
@@ -4361,8 +4361,8 @@ html.oai-external-return-freeze::after {
 }
 
 
-/* V3-3: 새로고침 / 외부 페이지 복귀 때는 로딩 십자가 즉시 표시
-   - 카테고리 짧은 진입은 V3-3처럼 지연 표시 유지
+/* V3-6: 새로고침 / 외부 페이지 복귀 때는 로딩 십자가 즉시 표시
+   - 카테고리 짧은 진입은 V3-6처럼 지연 표시 유지
    - refresh/reload/background/external-leave/external-return 안정막은 바로 십자가가 보이도록 override */
 html.oai-stability-veil[data-oai-stability-reason*="refresh"]::after,
 html.oai-stability-veil[data-oai-stability-reason*="reload"]::after,
@@ -4371,11 +4371,63 @@ html.oai-stability-veil[data-oai-stability-reason*="external"]::after,
 html.oai-stability-veil.oai-external-leaving::after,
 html.oai-external-return-freeze::after {
   opacity: 1 !important;
-  animation-name: oaiLoadingCrossSpinV3-37 !important;
+  animation-name: oaiLoadingCrossSpinV3-67 !important;
   animation-duration: 2s !important;
   animation-timing-function: linear !important;
   animation-iteration-count: infinite !important;
   animation-delay: 0s !important;
   animation-fill-mode: none !important;
+}
+
+
+/* V3-6: 첫 진입 십자가 표시/사라짐 전환
+   - 아이보리 배경 유지
+   - 십자가가 바로 끊기지 않도록 0.65초 페이드아웃 */
+html.oai-cover-booting body::before {
+  content: "" !important;
+  position: fixed !important;
+  inset: 0 !important;
+  background: var(--cream, #f5f0e8) !important;
+  z-index: 2147482900 !important;
+  pointer-events: none !important;
+  opacity: 1 !important;
+  transition: opacity .65s ease !important;
+}
+html.oai-cover-booting body::after {
+  content: "" !important;
+  position: fixed !important;
+  left: 50% !important;
+  top: 50% !important;
+  width: clamp(100px, 27vw, 152px) !important;
+  height: clamp(100px, 27vw, 152px) !important;
+  transform: translate(-50%, -50%) !important;
+  background-image: url('icon-512x512.png?v=V3-6') !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  background-size: contain !important;
+  z-index: 2147482901 !important;
+  pointer-events: none !important;
+  opacity: 1 !important;
+  transition: opacity .65s ease !important;
+}
+html.oai-cover-booting.oai-cover-boot-fading body::before,
+html.oai-cover-booting.oai-cover-boot-fading body::after {
+  opacity: 0 !important;
+}
+html.oai-cover-booting.oai-cover-boot-fading #cover > * {
+  opacity: 0 !important;
+}
+
+
+/* V3-6: 첫 진입 십자가가 사라질 때 빈 아이보리 화면이 보이지 않도록
+   - 십자가 페이드아웃과 커버 페이드인을 겹친다.
+   - 부팅 배경은 아이보리 유지 */
+html.oai-cover-booting.oai-cover-revealing #cover > * {
+  opacity: 1 !important;
+  visibility: visible !important;
+  transition: opacity .65s ease !important;
+}
+html.oai-cover-booting.oai-cover-revealing #cover {
+  background-color: var(--cream, #f5f0e8) !important;
 }
 
