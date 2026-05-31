@@ -255,7 +255,7 @@ function prApplyTabColors(){
   try{ if(typeof window.oaiKeepActiveTabsVisible === 'function') window.oaiKeepActiveTabsVisible('prayer'); }catch(e){ console.warn('[가톨릭길동무]', e); }
 }
 
-// V3-S-1: 주요기도문 탭 표시 안전장치.
+// V3-S: 주요기도문 탭 표시 안전장치.
 // 일부 화면 전환/캐시 조합에서 목록은 렌더링되지만 탭 컨테이너가 비어 보이는 경우를 막는다.
 function prEnsureTabsVisible(){
   const wrap = prG('prayer-tabs');
@@ -322,8 +322,8 @@ window.prRenderList = function(){
       '</div>'+
       '<div class="pr-item-right">'+
       '<button type="button" class="pr-star '+(isFav?'on':'')+'" data-pid="'+prayer.id+'" aria-label="즐겨찾기">'+
-        '<i class="fa-solid fa-star"></i></button>'+
-      '<i class="fa-solid fa-chevron-right pr-chevron"></i>'+
+        '<span aria-hidden="true">★</span></button>'+
+      '<span class="pr-chevron" aria-hidden="true">›</span>'+
       '</div>';
     const starBtn = li.querySelector('.pr-star');
     let ignoreListClickUntil = 0;
@@ -571,9 +571,10 @@ window.prOpenDetail = prOpenDetail;
 window.prCloseDetail = window.prCloseDetail;
 
 /* ── 기도문 좌우 스와이프 (순환) — 웹사이트 기준 감도와 동일화 */
-(function(){
+function prBindSwipeTabs(){
   var el = document.getElementById('prayer-list-view');
-  if (!el) return;
+  if (!el || el.__prSwipeTabsBound) return;
+  el.__prSwipeTabsBound = true;
   var sx = 0, sy = 0;
   var THRESHOLD = 32;
   var HORIZONTAL_RATIO = 1.03;
@@ -622,7 +623,45 @@ window.prCloseDetail = window.prCloseDetail;
     if (!isHorizontalSwipe(dx, dy)) return;
     if (dx < 0) goNext(); else goPrev();
   }, { passive: true });
-})();
+}
+window.prBindSwipeTabs = prBindSwipeTabs;
+prBindSwipeTabs();
+
+
+/* V1-28: 기도문 본문 좌우 스와이프 시 웹사이트와 같은 화살표 피드백만 복구 */
+function prBindDetailSwipeArrow(){
+  var body = document.getElementById('prayer-detail-body');
+  if (!body || body.__prDetailSwipeArrowBound) return;
+  body.__prDetailSwipeArrowBound = true;
+
+  var sx = 0, sy = 0;
+  var THRESHOLD = 44;
+  var HORIZONTAL_RATIO = 1.18;
+
+  body.addEventListener('touchstart', function(e){
+    if(!e.touches || !e.touches[0]) return;
+    sx = e.touches[0].clientX;
+    sy = e.touches[0].clientY;
+  }, { passive: true });
+
+  body.addEventListener('touchend', function(e){
+    if (!e.changedTouches || !e.changedTouches[0]) return;
+    var detail = document.getElementById('prayer-detail');
+    if (!detail || !detail.classList.contains('show')) return;
+
+    var dx = e.changedTouches[0].clientX - sx;
+    var dy = e.changedTouches[0].clientY - sy;
+    if (Math.abs(dx) < THRESHOLD) return;
+    if (Math.abs(dx) < Math.abs(dy) * HORIZONTAL_RATIO) return;
+
+    if (typeof window.oaiSwipeAction === 'function') {
+      window.oaiSwipeAction(body, dx < 0 ? 'left' : 'right');
+    }
+  }, { passive: true });
+}
+window.prBindDetailSwipeArrow = prBindDetailSwipeArrow;
+prBindDetailSwipeArrow();
+
 /* lyTabColors: 미선언 전역 변수 - 참조하는 코드 없음, 제거 */
 
 window.initPrayerView = function(){
@@ -632,6 +671,8 @@ window.initPrayerView = function(){
   prApplyFont();
   prEnsureTabsVisible();
   prRenderList();
+  prBindSwipeTabs();
+  prBindDetailSwipeArrow();
   // 상세뷰 초기화
   const detail = prG('prayer-detail');
   const listView = prG('prayer-list-view');
@@ -642,5 +683,28 @@ window.initPrayerView = function(){
     listView.style.scrollBehavior = '';
   }
 };
+
+/* ─── 굿뉴스 기도문 버튼: 외부복귀 안정화 경로로 연결 ───────────────
+   index.html의 <a target="_blank">를 JS로 오버라이드하여
+   oaiSmoothNavigate() → markExternalReturnStabilize() → pageshow 복귀 흐름을 탄다.
+   prayer.js는 동적 로드(첫 기도문 진입 시 1회)되므로 여기서 한 번만 바인딩한다. */
+(function(){
+  try{
+    var btn = document.getElementById('goodnews-prayer-btn');
+    if(!btn || btn.__oaiHandled) return;
+    btn.__oaiHandled = true;
+    btn.removeAttribute('target');
+    btn.addEventListener('click', function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      var url = btn.getAttribute('href') || 'https://maria.catholic.or.kr/mobile/prayer/';
+      if(typeof oaiSmoothNavigate === 'function'){
+        oaiSmoothNavigate(url, 'prayer-goodnews');
+      } else {
+        try{ location.assign(url); }catch(_e){ location.href = url; }
+      }
+    });
+  }catch(e){ console.warn('[가톨릭길동무]', e); }
+})();
 
 })();
