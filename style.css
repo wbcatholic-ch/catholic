@@ -2194,7 +2194,7 @@ html.oai-cover-booting #cover > * {
   box-sizing: border-box;
 }
 .cover-title {
-  font-size: clamp(28px, 8.2vw, 38px);
+  font-size: clamp(32px, 9.4vw, 44px);
   font-weight: 800;
   letter-spacing: -.03em;
   color: #3e362e;
@@ -3096,7 +3096,6 @@ html.oai-font-global .c-gw, html.oai-font-global .c-rg, html.oai-font-global .c-
 html.oai-font-global .dd, html.oai-font-global .sg { font-size: calc(12px * var(--app-inner-font-scale)); line-height: 1.45; }
 
 /* 커버는 font-global 연동에서 제외 (별도 --app-font-scale만 사용) */
-html.oai-font-global #cover .cover-title { font-size: clamp(28px, 8.2vw, 38px); }
 html.oai-font-global #cover .cover-subtitle { font-size: 16px; }
 html.oai-font-global #cover .cover-name { font-size: calc(16px * var(--app-font-scale)); }
 html.oai-font-global #cover .cover-emoji { font-size: calc(40px * var(--app-font-scale)); background: transparent; box-shadow: none; }
@@ -3150,7 +3149,6 @@ html.oai-font-global #region-body .dio-hd { font-size: calc(17px * var(--app-inn
 @media (max-height: 650px) {
   #cover { --cover-top-safe: calc(env(safe-area-inset-top, 0px) + clamp(58px, calc(var(--cover-vh, 1vh) * 9.4), 74px)); --cover-bottom-safe: calc(env(safe-area-inset-bottom, 0px) + clamp(48px, calc(var(--cover-vh, 1vh) * 7.2), 64px)); padding-top: var(--cover-top-safe); padding-bottom: var(--cover-bottom-safe); }
   #cover .cover-header { padding-bottom: 12px; }
-  #cover .cover-title { font-size: clamp(18px, 5vw, 24px); }
   #cover .cover-subtitle { font-size: 10px; }
   #cover .cover-grid { row-gap: clamp(2px, calc(var(--cover-vh, 1vh) * 0.5), 4px); }
   #cover .cover-card { padding: clamp(4px, calc(var(--cover-vh, 1vh) * 0.8), 8px) 6px; }
