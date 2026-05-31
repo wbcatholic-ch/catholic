@@ -2194,7 +2194,8 @@ html.oai-cover-booting #cover > * {
   box-sizing: border-box;
 }
 .cover-title {
-  font-size: clamp(34px, 9.8vw, 46px);
+  font-size: clamp(32px, 8.9vw, 43px);
+  font-family: "Noto Sans KR", "Apple SD Gothic Neo", sans-serif;
   font-weight: 800;
   letter-spacing: -.03em;
   color: #3e362e;
