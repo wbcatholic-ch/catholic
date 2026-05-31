@@ -115,7 +115,7 @@
       box-shadow: 0 6px 15px rgba(31,42,68,.2);
     }
   
-    /* V1-23 privacy confirm button only */
+    /* V1-83 privacy confirm button only */
     #privacy-back-app-link.privacy-confirm-button {
       width: min(360px, 100%);
       min-height: 52px;
@@ -143,7 +143,7 @@
     }
 
   
-    /* V1-23 privacy confirm no effect */
+    /* V1-83 privacy confirm no effect */
     #privacy-back-app-link.privacy-confirm-button {
       transition: none !important;
       animation: none !important;
@@ -305,7 +305,6 @@ var oaiPrivacyReturning = false;
 function oaiPreparePrivacyNoReturnEffectToApp(){
   try{
     sessionStorage.setItem('oai_internal_return_no_effect_once','1');
-    sessionStorage.setItem('oai_internal_return_no_effect_until', String((Date.now ? Date.now() : new Date().getTime()) + 7000));
     sessionStorage.setItem('oai_internal_page_nav','privacy');
     sessionStorage.removeItem('oai_external_nav_started_at');
     sessionStorage.removeItem('oai_external_nav_pagehide');

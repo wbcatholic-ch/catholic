@@ -35,15 +35,15 @@
   --r:12px;
   /* ── 치수 변수 ── */
   --header-h:   70px;
-  --tab-h:      52px;
+  --tab-h:      55px;
   --tab-btn-h:  40px;
   --icon-size:  35px;
   --icon-r:     12px;
   --icon-fs:    15px;
   /* ── 글자 크기 변수 ── */
-  --fs-header:  18px;
+  --fs-header:  22px;
   --fs-tab:     15px;
-  --fs-sub:     12px;
+  --fs-sub:     10px;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html,body{height:100%;overflow:hidden;}
@@ -242,22 +242,22 @@ body > header{display:none!important;visibility:hidden!important;height:0!import
 
 html.oai-dio-external-stabilize *,
 html.oai-dio-external-return *{transition:none!important;animation:none!important;scroll-behavior:auto!important;}
-/* V3-S: 부모 앱에서 복귀 상태를 복원하므로 iframe 자체 전체 덮개는 만들지 않는다. */
+/* V3: 부모 앱에서 복귀 상태를 복원하므로 iframe 자체 전체 덮개는 만들지 않는다. */
 
 </style>
 <style id="oai-diocese-tab-standard-20260504">
 /* 관구교구 헤더 아래 탭 버튼 표준화 + 글자 크기 조절(지도 제외) */
 :root{
   --diocese-font-scale:1;--dio-font-scale:1;--dio-effective-font-scale:calc(var(--dio-font-scale,1) * var(--ios-dio-font-scale,1));--diocese-effective-font-scale:calc(var(--diocese-font-scale,1) * var(--ios-dio-font-scale,1));}
-.tab-bar{height:52px!important;padding:9px 14px!important;gap:8px!important;background:#FFFBF2!important;border-top:0!important;border-bottom:1px solid #DDD5C8!important;align-items:center!important;}
-.tab{height:40px!important;min-height:40px!important;max-height:40px!important;border-radius:14px!important;font-size:15px!important;font-weight:800!important;background:#F8FAFC!important;color:#475569!important;border:1.5px solid #dde3ee!important;display:flex!important;align-items:center!important;justify-content:center!important;}
+.tab-bar{height:55px!important;padding:8px 10px!important;gap:8px!important;background:#FFFBF2!important;border-top:0!important;border-bottom:1px solid #DDD5C8!important;align-items:center!important;}
+.tab{height:40px!important;border-radius:12px!important;font-size:calc(15px * var(--dio-effective-font-scale,1))!important;font-weight:800!important;background:#F8FAFC!important;color:#475569!important;border:1.5px solid #dde3ee!important;display:flex!important;align-items:center!important;justify-content:center!important;}
 .tab.on{background:#1F2A44!important;color:#fff!important;border-color:#1F2A44!important;box-shadow:0 3px 10px rgba(31,42,68,.22)!important;}
 
 
 
 
 
-#search-view #si,#search-view #sb{font-size:15px!important;}
+#search-view #si,#search-view #sb{font-size:calc(15px * var(--dio-effective-font-scale,1))!important;}
 #search-view .sh{font-size:calc(11px * var(--dio-effective-font-scale,1))!important;}
 #search-view .se{font-size:calc(13px * var(--dio-effective-font-scale,1))!important;}
 #search-view .sl{font-size:calc(12px * var(--dio-effective-font-scale,1))!important;}
@@ -265,11 +265,11 @@ html.oai-dio-external-return *{transition:none!important;animation:none!importan
 #search-view .sd{font-size:calc(16px * var(--dio-effective-font-scale,1))!important;}
 #search-view .sg{font-size:calc(12px * var(--dio-effective-font-scale,1))!important;}
 #search-view .si-r-url{font-size:calc(11px * var(--dio-effective-font-scale,1))!important;}
-#search-view .si-r-arr{font-size:15px!important;}
+#search-view .si-r-arr{font-size:calc(15px * var(--dio-effective-font-scale,1))!important;}
 #search-view .sot{font-size:calc(12px * var(--dio-effective-font-scale,1))!important;}
 #search-view .sod{font-size:calc(13px * var(--dio-effective-font-scale,1))!important;}
 #search-view .sodd{font-size:calc(12px * var(--dio-effective-font-scale,1))!important;}
-#list-view .lv-sec-bdg{font-size:15px!important;}
+#list-view .lv-sec-bdg{font-size:calc(15px * var(--dio-effective-font-scale,1))!important;}
 #list-view .lv-sec-cnt{font-size:calc(14px * var(--dio-effective-font-scale,1))!important;}
 #list-view .lv-bdg{font-size:calc(12px * var(--dio-effective-font-scale,1))!important;}
 #list-view .lv-op{font-size:calc(11.5px * var(--dio-effective-font-scale,1))!important;}
@@ -279,7 +279,7 @@ html.oai-dio-external-return *{transition:none!important;animation:none!importan
 #list-view .lv-parish-count b{font-size:calc(12px * var(--dio-effective-font-scale,1))!important;}
 #list-view .lv-parish-count span{font-size:calc(7px * var(--dio-effective-font-scale,1))!important;}
 #list-view .lv-url{font-size:calc(12px * var(--dio-effective-font-scale,1))!important;}
-#list-view .lv-arr{font-size:15px!important;}
+#list-view .lv-arr{font-size:calc(15px * var(--dio-effective-font-scale,1))!important;}
 @media(max-width:360px){}
 </style>
 
@@ -308,8 +308,8 @@ html.oai-dio-returning #map-view.on,html.oai-dio-returning #list-view.on,html.oa
 <style id="oai-ios-ui-density-v22">
 /* iPhone 관구·교구 iframe 내부 UI 밀도 보정 */
 html.ios-device{--ios-dio-ui-scale:.96;}
-html.ios-device .tab-bar{height:52px!important;padding:9px 14px!important;gap:8px!important;align-items:center!important;}
-html.ios-device .tab{height:40px!important;min-height:40px!important;max-height:40px!important;border-radius:14px!important;font-size:15px!important;line-height:1.1!important;}
+html.ios-device .tab-bar{height:46px!important;padding:7px 10px!important;gap:6px!important;align-items:center!important;}
+html.ios-device .tab{height:32px!important;min-height:32px!important;border-radius:10px!important;font-size:calc(14px * var(--dio-effective-font-scale,1))!important;line-height:1!important;}
 html.ios-device #gw-bar{gap:6px!important;padding:7px 9px!important;}
 html.ios-device .gb{min-height:34px!important;padding:0 10px!important;border-radius:11px!important;}
 html.ios-device #card{width:170px!important;border-radius:13px!important;}
@@ -333,63 +333,6 @@ html.ios-device .cb{width:34px!important;height:34px!important;border-radius:10p
 .hd-icon::before,.hd-icon::after{content:"";position:absolute;left:50%;background:#fff;border-radius:2px;display:block;}
 .hd-icon::before{top:50%;width:3px;height:24px;transform:translate(-50%,-50%);}
 .hd-icon::after{top:42%;width:14px;height:3px;transform:translate(-50%,-50%);}
-</style>
-
-
-<style id="oai-diocese-website-ui-standard-V1-23">
-/* 관구·교구 내부 화면도 웹사이트 카드/탭 기준으로 맞춘다. */
-:root{
-  --header-h:70px;
-  --tab-h:52px;
-  --tab-btn-h:40px;
-  --fs-header:18px;
-  --fs-sub:12px;
-  --fs-tab:15px;
-}
-header{height:var(--header-h)!important;min-height:var(--header-h)!important;max-height:var(--header-h)!important;}
-.hd h1{font-size:18px!important;line-height:1.2!important;}
-.hd-sub{font-size:12px!important;line-height:1.2!important;}
-.tab-bar{height:52px!important;min-height:52px!important;max-height:52px!important;padding:9px 14px!important;gap:8px!important;box-sizing:border-box!important;}
-.tab{height:40px!important;min-height:40px!important;max-height:40px!important;border-radius:14px!important;font-size:15px!important;line-height:1.1!important;}
-#search-view .sl,#list-view .lv-bdg{font-size:calc(12px * var(--dio-effective-font-scale,1))!important;}
-#search-view .si-r-op,#list-view .lv-op{font-size:calc(11.5px * var(--dio-effective-font-scale,1))!important;}
-#search-view .sd,#list-view .lv-name{font-size:calc(17px * var(--dio-effective-font-scale,1))!important;line-height:1.38!important;}
-#search-view .sg,#list-view .lv-rg,#list-view .lv-det{font-size:calc(13px * var(--dio-effective-font-scale,1))!important;line-height:1.55!important;}
-#search-view .si-r-url,#list-view .lv-url{font-size:calc(12px * var(--dio-effective-font-scale,1))!important;}
-#search-view .si-r-arr,#list-view .lv-arr{font-size:15px!important;}
-</style>
-
-
-<style id="oai-diocese-card-spacing-website-standard-V1-23">
-/* 관구·교구 목록 카드 간격을 웹사이트 목록 카드 기준으로 맞춘다. */
-#list-view .lv-card{margin-bottom:4px!important;}
-#list-view .lv-card:last-child{margin-bottom:0!important;}
-</style>
-
-
-
-<style id="oai-diocese-search-input-standard-V1-23">
-#search-view #si{
-  font-size:15px!important;
-  color:#374151!important;
-  -webkit-text-fill-color:#374151!important;
-  font-weight:600!important;
-}
-#search-view #si::placeholder{
-  color:#9ca3af!important;
-  -webkit-text-fill-color:#9ca3af!important;
-  opacity:1!important;
-  font-weight:500!important;
-}
-</style>
-
-<style id="oai-diocese-structure-font-lock-V1-23">
-/* V1-23: 관구·교구 헤더/탭은 A 글자 크기 조절과 분리한다. */
-.hd h1{font-size:20px!important;line-height:1.24!important;}
-.hd-sub{font-size:11px!important;line-height:1.25!important;}
-.tab{font-size:15px!important;line-height:1.1!important;}
-.gb{font-size:12px!important;}
-#si{font-size:15px!important;}
 </style>
 </head>
 <body>
@@ -2111,7 +2054,7 @@ window.addEventListener('pageshow',function(){
     var state=window.getDioceseReturnState(source||'link', extra || {});
     try{ sessionStorage.setItem('oai_diocese_last_return_state', JSON.stringify(state)); localStorage.setItem('oai_diocese_last_return_state', JSON.stringify(state)); }catch(e){}
     if(window.parent && window.parent!==window){
-      // V3-S: iframe 내부 클릭은 부모의 지연 이동에 맡기지 않고, 클릭 흐름 안에서 top을 즉시 이동한다.
+      // V3: iframe 내부 클릭은 부모의 지연 이동에 맡기지 않고, 클릭 흐름 안에서 top을 즉시 이동한다.
       // 이렇게 해야 웹페이지 카테고리처럼 Android/PWA에서도 외부 교구 홈페이지가 바로 열린다.
       try{
         if(typeof window.parent.prepareExternalUrl === 'function') url = window.parent.prepareExternalUrl(url) || url;
@@ -2122,9 +2065,7 @@ window.addEventListener('pageshow',function(){
         window.parent.localStorage.setItem('catholic_diocese_external_return_v1', payload);
         window.parent.__OAI_DIOCESE_EXTERNAL_LEAVING__ = true;
       }catch(e){}
-      try{
-        if(typeof window.parent.markExternalReturnStabilize === 'function') window.parent.markExternalReturnStabilize('diocese-external');
-      }catch(e){}
+      // 관구·교구 외부 홈페이지 복귀 시 부모 앱의 안정막/페이드 효과를 호출하지 않는다.
       document.documentElement.classList.remove('oai-dio-external-stabilize','oai-dio-external-return','oai-dio-returning');
       try{ window.top.location.assign(url); }
       catch(e){ try{ window.top.location.href = url; }catch(_e){ window.__OAI_DIO_EXTERNAL_LEAVING__ = false; } }
