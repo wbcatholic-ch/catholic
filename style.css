@@ -4393,7 +4393,7 @@ html.oai-cover-booting #cover > * {
 }
 
 
-/* V3-18: 첫 스플래시/로딩 보호막의 금색 십자가를 완전히 숨기고 중립 로딩 원으로 정리 */
+/* V3-19: 첫 스플래시/로딩 보호막의 금색 십자가를 완전히 숨기고 중립 로딩 원으로 정리 */
 html.oai-first-entry-intro::before {
   content: "" !important;
   display: none !important;
@@ -4417,7 +4417,7 @@ html.oai-first-entry-intro::before {
   line-height: 0 !important;
   text-shadow: none !important;
   transform-origin: 50% 50% !important;
-  animation: oaiLoadingCircleSpinV3-18 .75s linear infinite !important;
+  animation: oaiLoadingCircleSpinV3-19 .75s linear infinite !important;
 }
 #diocese-loading .missa-spinner::before {
   content: "" !important;
@@ -4444,17 +4444,17 @@ html.oai-external-return-freeze::after {
   line-height: 0 !important;
   text-shadow: none !important;
   transform-origin: 50% 50% !important;
-  animation: oaiLoadingCircleSpinV3-18 .75s linear infinite !important;
+  animation: oaiLoadingCircleSpinV3-19 .75s linear infinite !important;
   pointer-events: none !important;
   z-index: 2147483647 !important;
 }
-@keyframes oaiLoadingCircleSpinV3-18 {
+@keyframes oaiLoadingCircleSpinV3-19 {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
 
 
-/* V3-18: 남아 있는 금색 십자가 로더를 마지막 단계에서 한 번 더 무력화 */
+/* V3-19: 남아 있는 금색 십자가 로더를 마지막 단계에서 한 번 더 무력화 */
 .map-loading-icon,
 #diocese-loading .missa-spinner,
 #oai-category-entry-veil::after,
@@ -4474,7 +4474,7 @@ html.oai-external-return-freeze::after {
   border-radius: 50% !important;
   background: transparent !important;
   box-shadow: none !important;
-  animation: oaiLoadingCircleSpinV3-18 .75s linear infinite !important;
+  animation: oaiLoadingCircleSpinV3-19 .75s linear infinite !important;
 }
 .map-loading-icon::before,
 .map-loading-icon::after,

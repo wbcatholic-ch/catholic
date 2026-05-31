@@ -2,6 +2,7 @@
 <html lang="ko" class="oai-font-global" style="background:#f5f0e8;">
 <head>
 <style id="oai-first-entry-bg">html,body{margin:0;width:100%;min-height:100%;background:#f5f0e8;color-scheme:light;}body{background:#f5f0e8;}</style>
+<link rel="preload" href="intro-cross-jesus.jpg?v=V3-19" as="image" fetchpriority="high">
 <style id="oai-refresh-veil-early-style">
 /* 새로고침 직후 style.css가 아직 도착하지 않은 첫 페인트도 아이보리 보호막으로 덮는다. */
 html.oai-stability-veil { background:#f5f0e8 !important; }
@@ -25,26 +26,102 @@ html.oai-internal-no-return-effect #cover > * {
   opacity:1 !important;
   visibility:visible !important;
 }
-/* V3-18: 첫 진입 사진/금색 십자가 연출을 중단하고 커버를 바로 표시한다. */
+/* V3-19: 기본 금색 십자가 레이어는 쓰지 않고, 첨부한 십자고상 사진만 첫 진입에 짧게 표시한다. */
 html.oai-first-entry-intro,
 html.oai-first-entry-intro body,
 html.oai-first-entry-intro #cover {
   background:#f5f0e8 !important;
 }
-html.oai-first-entry-intro::before,
-html.oai-first-entry-intro::after {
-  content:"" !important;
-  display:none !important;
+html.oai-first-entry-intro #cover > * {
   opacity:0 !important;
+  visibility:hidden !important;
+  transition:none !important;
   animation:none !important;
-  background-image:none !important;
 }
-html.oai-first-entry-intro #cover > *,
-html.oai-first-entry-intro.oai-cover-under-intro-reveal #cover > *,
-html.oai-cover-first-reveal #cover > * {
+html.oai-first-entry-intro.oai-cover-under-intro-reveal #cover > * {
   opacity:1 !important;
   visibility:visible !important;
-  animation:none !important;
+  animation:oaiCoverFirstRevealV319 .72s ease-out both !important;
+}
+html.oai-first-entry-intro::before {
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:2147483400;
+  background:#f5f0e8;
+  pointer-events:none;
+  opacity:1;
+}
+html.oai-first-entry-intro::after {
+  content:"";
+  position:fixed;
+  left:50%;
+  top:50%;
+  z-index:2147483401;
+  width:min(78vw, 470px);
+  height:min(78vh, 660px);
+  transform:translate(-50%,-50%) scale(.985);
+  background-image:
+    linear-gradient(to right, #f5f0e8 0%, rgba(245,240,232,.96) 5%, rgba(245,240,232,.60) 13%, rgba(245,240,232,.16) 24%, rgba(245,240,232,0) 36%, rgba(245,240,232,0) 64%, rgba(245,240,232,.16) 76%, rgba(245,240,232,.60) 87%, rgba(245,240,232,.96) 95%, #f5f0e8 100%),
+    linear-gradient(to bottom, #f5f0e8 0%, rgba(245,240,232,.90) 6%, rgba(245,240,232,.36) 17%, rgba(245,240,232,0) 30%, rgba(245,240,232,0) 70%, rgba(245,240,232,.36) 83%, rgba(245,240,232,.90) 94%, #f5f0e8 100%),
+    radial-gradient(ellipse 96% 88% at 50% 48%, rgba(245,240,232,0) 50%, rgba(245,240,232,.08) 62%, rgba(245,240,232,.34) 76%, rgba(245,240,232,.76) 90%, rgba(245,240,232,1) 100%),
+    url("intro-cross-jesus.jpg?v=V3-19");
+  background-position:center center, center center, center center, center center;
+  background-size:100% 100%, 100% 100%, 100% 100%, auto 96%;
+  background-repeat:no-repeat, no-repeat, no-repeat, no-repeat;
+  pointer-events:none;
+  opacity:0;
+  border-radius:38px;
+  background-color:#f5f0e8;
+  box-shadow:
+    0 0 0 999px #f5f0e8,
+    0 8px 18px rgba(80,54,18,.05),
+    inset 0 0 72px rgba(245,240,232,.28),
+    inset 0 0 150px rgba(245,240,232,.18);
+  -webkit-mask-image:
+    linear-gradient(to right, transparent 0%, rgba(0,0,0,.35) 6%, rgba(0,0,0,.82) 15%, #000 28%, #000 72%, rgba(0,0,0,.82) 85%, rgba(0,0,0,.35) 94%, transparent 100%),
+    linear-gradient(to bottom, transparent 0%, rgba(0,0,0,.50) 5%, rgba(0,0,0,.90) 13%, #000 24%, #000 76%, rgba(0,0,0,.90) 87%, rgba(0,0,0,.50) 95%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(to right, transparent 0%, rgba(0,0,0,.35) 6%, rgba(0,0,0,.82) 15%, #000 28%, #000 72%, rgba(0,0,0,.82) 85%, rgba(0,0,0,.35) 94%, transparent 100%),
+    linear-gradient(to bottom, transparent 0%, rgba(0,0,0,.50) 5%, rgba(0,0,0,.90) 13%, #000 24%, #000 76%, rgba(0,0,0,.90) 87%, rgba(0,0,0,.50) 95%, transparent 100%);
+  mask-composite: intersect;
+  filter:contrast(1.015) saturate(1.02) drop-shadow(0 6px 16px rgba(80,54,18,.05));
+  animation:oaiJesusIntroPhotoV319 2.55s cubic-bezier(.18,.76,.22,1) both;
+}
+html.oai-cover-first-reveal #cover > * {
+  animation:oaiCoverFirstRevealV319 .72s ease-out both !important;
+}
+@media (max-width: 540px) and (max-aspect-ratio: 3/4) {
+  html.oai-first-entry-intro::after {
+    left:0;
+    top:0;
+    width:100vw;
+    height:100vh;
+    transform:none;
+    border-radius:0;
+    background-size:100% 100%, 100% 100%, 100% 100%, cover;
+    -webkit-mask-image:none;
+    mask-image:none;
+    box-shadow:0 0 0 999px #f5f0e8;
+    animation:oaiJesusIntroPhotoMobileV319 2.55s cubic-bezier(.18,.76,.22,1) both;
+  }
+}
+@keyframes oaiJesusIntroPhotoMobileV319 {
+  0%{opacity:.16; transform:scale(.985);}
+  35%{opacity:1; transform:scale(1);}
+  84%{opacity:1; transform:scale(1);}
+  100%{opacity:0; transform:scale(1.006);}
+}
+@keyframes oaiJesusIntroPhotoV319 {
+  0%{opacity:.16; transform:translate(-50%,-49%) scale(.965);}
+  35%{opacity:1; transform:translate(-50%,-50%) scale(1);}
+  84%{opacity:1; transform:translate(-50%,-50%) scale(1);}
+  100%{opacity:0; transform:translate(-50%,-51%) scale(1.006);}
+}
+@keyframes oaiCoverFirstRevealV319 {
+  0%{opacity:0; transform:translateY(6px) scale(.99);}
+  100%{opacity:1; transform:translateY(0) scale(1);}
 }
 </style>
 
@@ -66,7 +143,7 @@ html.oai-cover-first-reveal #cover > * {
 })();
 </script>
 <script>
-/* V3-18: patches.js가 로드되기 전 첫 커버 Back도 먼저 잡는 최소 조기 가드.
+/* V3-19: patches.js가 로드되기 전 첫 커버 Back도 먼저 잡는 최소 조기 가드.
    실패했던 hash/query URL trap은 사용하지 않고, 같은 URL의 root/trap 한 쌍만 만든다. */
 (function(){
   'use strict';
@@ -259,14 +336,23 @@ html.oai-cover-first-reveal #cover > * {
   function storageFlag(key){ try{ return sessionStorage.getItem(key); }catch(_e){ return null; } }
   function storageSet(key, value){ try{ sessionStorage.setItem(key, value); }catch(_e){} }
   function shouldShowFirstIntro(){
-    // V3-18: 첫 진입 사진/금색 십자가 레이어를 완전히 사용하지 않는다.
-    return false;
+    try{
+      if(isInternalNoEffectReturn) return false;
+      if(storageFlag('oai_first_intro_seen_session_v3_19') === '1') return false;
+      var nowTs = now();
+      var refreshUntil = parseInt(storageFlag('oai_refresh_veil_until') || '0', 10) || 0;
+      if(refreshUntil && refreshUntil > nowTs) return false;
+      var extTs = parseInt(storageFlag('oai_external_nav_started_at') || '0', 10) || 0;
+      var extPending = storageFlag('oai_external_nav_pending') === '1' || storageFlag('oai_external_nav_pagehide') === '1';
+      if(extPending || (extTs && (nowTs - extTs) < 10 * 60 * 1000)) return false;
+      return true;
+    }catch(_e){ return !isInternalNoEffectReturn; }
   }
   var showFirstIntro = shouldShowFirstIntro();
   if(!isInternalNoEffectReturn){
     root.classList.add('oai-cover-booting');
     if(showFirstIntro){
-      storageSet('oai_first_intro_seen_session', '1');
+      storageSet('oai_first_intro_seen_session_v3_19', '1');
       root.classList.add('oai-first-entry-intro');
       setTimeout(function(){
         try{ root.classList.add('oai-cover-under-intro-reveal'); }catch(_e){}
@@ -303,7 +389,7 @@ html.oai-cover-first-reveal #cover > * {
     }
     add(docH); add(innerH); add(vvH);
     if(!values.length) return 0;
-    // V3-18: iOS/Android에서 저장된 작은 viewport 또는 visualViewport 값 때문에
+    // V3-19: iOS/Android에서 저장된 작은 viewport 또는 visualViewport 값 때문에
     // 커버 하단이 위로 뜨는 현상을 줄인다. 키보드가 열린 것으로 보이는 경우만
     // visualViewport 축소값을 제외하고, 일반 커버 화면은 가장 넓은 높이 기준을 쓴다.
     var keyboardLikely = !!(vvH && innerH && vvH / innerH < 0.78);
@@ -387,7 +473,7 @@ html.oai-cover-first-reveal #cover > * {
   if(window.visualViewport){
     window.visualViewport.addEventListener('resize', function(){ scheduleSettle('visualViewport'); }, {passive:true});
   }
-  // V3-18: 첫 진입 사진/금색 십자가 연출은 중단하고 커버 높이 안정화만 유지한다.
+  // V3-19: 금색 십자가 없이 첨부한 십자고상 사진 첫 진입 연출과 커버 높이 안정화를 함께 유지한다.
   if(!isInternalNoEffectReturn){
     if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function(){ afterStableFirstPaint(releaseBooting); }, {once:true});
     else afterStableFirstPaint(releaseBooting);
@@ -397,7 +483,7 @@ html.oai-cover-first-reveal #cover > * {
 })();
 </script>
 <script>
-/* V3-18: iPhone/PWA 전체 화면 높이 안정화.
+/* V3-19: iPhone/PWA 전체 화면 높이 안정화.
    iOS에서 visualViewport가 일시적으로 작아진 값을 오래 붙잡아
    기도문·목록·관구교구 지도 하단에 큰 빈 공간이 생기는 현상을 줄인다.
    상태바 색상과 Android 레이아웃은 건드리지 않는다. */
@@ -556,29 +642,29 @@ window.APP_CONFIG = {
 <meta name="application-name" content="가톨릭길동무">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#f5f0e8">
-<link rel="manifest" href="manifest.json?v=V3-18">
-<link rel="apple-touch-icon" href="icon-192x192.png?v=V3-18">
+<link rel="manifest" href="manifest.json?v=V3-19">
+<link rel="apple-touch-icon" href="icon-192x192.png?v=V3-19">
 <meta name="format-detection" content="telephone=no">
 <meta name="description" content="가톨릭길동무 - 가톨릭 신앙생활 종합 앱">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="가톨릭길동무">
 <meta property="og:title" content="가톨릭길동무">
 <meta property="og:description" content="성지 · 성당 · 기도문 · 순례길 · 가톨릭 웹사이트 안내">
-<meta property="og:image" content="icon-512x512.png?v=V3-18">
+<meta property="og:image" content="icon-512x512.png?v=V3-19">
 <meta property="og:image:width" content="512">
 <meta property="og:image:height" content="512">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="가톨릭길동무">
 <meta name="twitter:description" content="성지 · 성당 · 기도문 · 순례길 · 가톨릭 웹사이트 안내">
-<meta name="twitter:image" content="icon-512x512.png?v=V3-18">
+<meta name="twitter:image" content="icon-512x512.png?v=V3-19">
 <title>가톨릭길동무</title>
-<link rel="icon" type="image/png" href="icon-192x192.png?v=V3-18">
+<link rel="icon" type="image/png" href="icon-192x192.png?v=V3-19">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <style id="oai-initial-bg">html,body{margin:0;width:100%;height:100%;min-height:100%;background:#f5f0e8;overflow:hidden;color-scheme:light;}#cover{background:#f5f0e8;min-height:100%;}#app{background:#f8f6f2;display:none;}</style>
-<link rel="stylesheet" href="style.css?v=V3-18">
+<link rel="stylesheet" href="style.css?v=V3-19">
 </head>
 <body>
 <div id="missa-view" role="dialog" aria-modal="true" aria-label="매일미사">
@@ -722,8 +808,8 @@ window.APP_CONFIG = {
       <!-- 커버 하단 작업줄: 새로고침 + 문의·건의 -->
       <div id="cover-action-row" aria-label="커버 보조 기능">
         <div id="cover-update-box">
-          <button id="cover-update-btn" type="button" data-target-version="V3-2" aria-label="짧게 누르면 새로고침, 더 길게 누르면 앱 캐시 초기화">
-            V3-2 새로고침
+          <button id="cover-update-btn" type="button" data-target-version="V3-3" aria-label="짧게 누르면 새로고침, 더 길게 누르면 앱 캐시 초기화">
+            V3-3 새로고침
           </button>
           <div id="cover-update-hint" aria-live="polite">아래 버전과 다릅니다. 눌러서 최신 파일을 다시 받아 주세요.</div>
         </div>
@@ -752,30 +838,30 @@ window.APP_CONFIG = {
         <div class="ios-safari-step">
           <b>1</b>
           <span>카카오톡 하단 버튼 4개 중 <strong>오른쪽 끝 버튼</strong>을 누르세요.</span>
-          <img data-src="ios-install-step1-kakao-bottom-buttons.png?v=V3-18" alt="카카오톡 오른쪽 아래 버튼 모양" width="945" height="248" loading="lazy" decoding="async">
+          <img data-src="ios-install-step1-kakao-bottom-buttons.png?v=V3-19" alt="카카오톡 오른쪽 아래 버튼 모양" width="945" height="248" loading="lazy" decoding="async">
         </div>
         <div class="ios-safari-step">
           <b>2</b>
           <span>공유 화면에서 <strong>Safari로 열기</strong>를 누르세요.</span>
-          <img data-src="ios-install-step2-safari-open.png?v=V3-18" alt="Safari로 열기 버튼" width="880" height="755" loading="lazy" decoding="async" fetchpriority="low">
+          <img data-src="ios-install-step2-safari-open.png?v=V3-19" alt="Safari로 열기 버튼" width="880" height="755" loading="lazy" decoding="async" fetchpriority="low">
         </div>
         <div class="ios-safari-step">
           <b>3</b>
           <span>Safari로 열린 뒤, 화면 <strong>오른쪽 아래 ··· 버튼</strong>을 누르세요.</span>
           <div class="ios-safari-shot ios-safari-shot-more">
-            <img data-src="KakaoTalk_20260514_134255658_04.jpg?v=V3-18" alt="Safari 오른쪽 아래 더보기 버튼" width="960" height="307" loading="lazy" decoding="async">
+            <img data-src="KakaoTalk_20260514_134255658_04.jpg?v=V3-19" alt="Safari 오른쪽 아래 더보기 버튼" width="960" height="307" loading="lazy" decoding="async">
             <i class="ios-gold-highlight" aria-hidden="true"></i>
           </div>
         </div>
         <div class="ios-safari-step">
           <b>4</b>
           <span>열린 메뉴에서 <strong>공유</strong>를 누르세요.</span>
-          <img data-src="ios-install-step3-share-menu.png?v=V3-18" alt="Safari 공유 버튼" width="750" height="580" loading="lazy" decoding="async" fetchpriority="low">
+          <img data-src="ios-install-step3-share-menu.png?v=V3-19" alt="Safari 공유 버튼" width="750" height="580" loading="lazy" decoding="async" fetchpriority="low">
         </div>
         <div class="ios-safari-step">
           <b>5</b>
           <span>목록을 아래로 내려 <strong>홈 화면에 추가</strong>를 누르세요.</span>
-          <img data-src="ios-install-step4-home-screen.png?v=V3-18" alt="홈 화면에 추가 버튼" width="865" height="750" loading="lazy" decoding="async" fetchpriority="low">
+          <img data-src="ios-install-step4-home-screen.png?v=V3-19" alt="홈 화면에 추가 버튼" width="865" height="750" loading="lazy" decoding="async" fetchpriority="low">
         </div>
       </div>
     </div>
@@ -840,7 +926,7 @@ window.APP_CONFIG = {
   📲 홈 화면에 앱 설치하기
 </button>
 </div>
-<script src="app.js?v=V3-18"></script>
+<script src="app.js?v=V3-19"></script>
 <div id="oai-category-entry-veil" aria-hidden="true"></div>
 <div id="app"><div id="tabbar"><button id="tab-btn-nearby" class="tab-btn" data-tab="nearby"><span class="tab-icon">📍</span><span id="tab-nearby-lbl">내주변</span></button><button id="tab-btn-list" class="tab-btn" data-tab="list"><span class="tab-icon">📋</span><span id="tab-list-lbl">목록</span></button><button id="tab-btn-region" class="tab-btn" data-tab="region"><span class="tab-icon">🔍</span>지역검색
     </button><button id="tab-btn-route" class="tab-btn" data-tab="route"><span class="tab-icon">🧭</span>길찾기
@@ -916,13 +1002,13 @@ window.APP_CONFIG = {
     </div>
   </div>
 </div>
-<script src="web.js?v=V3-18"></script>
+<script src="web.js?v=V3-19"></script>
 
 <div id="qna-view" role="dialog" aria-modal="true" aria-label="문의·건의" class="module-view"><div class="module-bar qna"><div class="module-bar-main"><div class="module-bar-ico">✝</div><div class="module-bar-txt"><div class="module-bar-title">문의·건의</div><div class="module-bar-sub">질문, 오류, 수정요청을 남겨주세요</div></div></div><button id="qna-close-btn" class="module-close" aria-label="문의·건의 닫기">×</button></div><div class="qna-body"><div class="qna-tabs"><button id="qna-tab-write" class="qna-tab on" type="button">작성</button></div><div class="qna-list" id="qna-list"></div></div></div>
 
-<script src="patches.js?v=V3-18"></script>
+<script src="patches.js?v=V3-19"></script>
 
-<script src="sw-update.js?v=V3-18"></script>
+<script src="sw-update.js?v=V3-19"></script>
 
 
 
