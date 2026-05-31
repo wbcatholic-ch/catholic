@@ -4391,3 +4391,64 @@ html.oai-cover-booting #cover > * {
   visibility: visible;
   transition: none;
 }
+
+
+/* V3-16: 첫 스플래시/로딩 보호막의 금색 십자가를 완전히 숨기고 중립 로딩 원으로 정리 */
+html.oai-first-entry-intro::before {
+  content: "" !important;
+  display: none !important;
+  opacity: 0 !important;
+  animation: none !important;
+}
+.map-loading-icon,
+#diocese-loading .missa-spinner {
+  width: 28px !important;
+  height: 28px !important;
+  min-width: 28px !important;
+  min-height: 28px !important;
+  margin: 0 auto 14px !important;
+  border: 3px solid rgba(31,42,68,.16) !important;
+  border-top-color: #1f2a44 !important;
+  border-radius: 50% !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: transparent !important;
+  font-size: 0 !important;
+  line-height: 0 !important;
+  text-shadow: none !important;
+  transform-origin: 50% 50% !important;
+  animation: oaiLoadingCircleSpinV3-16 .75s linear infinite !important;
+}
+#diocese-loading .missa-spinner::before {
+  content: "" !important;
+  display: none !important;
+}
+#oai-category-entry-veil::after,
+html.oai-stability-veil::after,
+html.oai-external-return-freeze::after {
+  content: "" !important;
+  position: fixed !important;
+  left: 50% !important;
+  top: 50% !important;
+  width: 28px !important;
+  height: 28px !important;
+  margin: -14px 0 0 -14px !important;
+  display: block !important;
+  border: 3px solid rgba(31,42,68,.16) !important;
+  border-top-color: #1f2a44 !important;
+  border-radius: 50% !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: transparent !important;
+  font-size: 0 !important;
+  line-height: 0 !important;
+  text-shadow: none !important;
+  transform-origin: 50% 50% !important;
+  animation: oaiLoadingCircleSpinV3-16 .75s linear infinite !important;
+  pointer-events: none !important;
+  z-index: 2147483647 !important;
+}
+@keyframes oaiLoadingCircleSpinV3-16 {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
