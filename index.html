@@ -87,7 +87,7 @@ html.oai-first-entry-intro::after {
     linear-gradient(to bottom, transparent 0%, rgba(0,0,0,.50) 5%, rgba(0,0,0,.90) 13%, #000 24%, #000 76%, rgba(0,0,0,.90) 87%, rgba(0,0,0,.50) 95%, transparent 100%);
   mask-composite: intersect;
   filter:contrast(1.015) saturate(1.02) drop-shadow(0 6px 16px rgba(80,54,18,.05));
-  animation:oaiJesusIntroPhotoV319 2.55s cubic-bezier(.18,.76,.22,1) both;
+  animation:oaiJesusIntroPhotoV319 1.6s cubic-bezier(.18,.76,.22,1) both;
 }
 html.oai-cover-first-reveal #cover > * {
   animation:oaiCoverFirstRevealV319 .72s ease-out both !important;
@@ -104,19 +104,19 @@ html.oai-cover-first-reveal #cover > * {
     -webkit-mask-image:none;
     mask-image:none;
     box-shadow:0 0 0 999px #f5f0e8;
-    animation:oaiJesusIntroPhotoMobileV319 2.55s cubic-bezier(.18,.76,.22,1) both;
+    animation:oaiJesusIntroPhotoMobileV319 1.6s cubic-bezier(.18,.76,.22,1) both;
   }
 }
 @keyframes oaiJesusIntroPhotoMobileV319 {
-  0%{opacity:.10; transform:scale(.988);}
-  22%{opacity:1; transform:scale(1);}
-  72%{opacity:1; transform:scale(1);}
+  0%{opacity:0; transform:scale(.988);}
+  18%{opacity:1; transform:scale(1);}
+  65%{opacity:1; transform:scale(1);}
   100%{opacity:0; transform:scale(1.004);}
 }
 @keyframes oaiJesusIntroPhotoV319 {
-  0%{opacity:.10; transform:translate(-50%,-49.4%) scale(.975);}
-  22%{opacity:1; transform:translate(-50%,-50%) scale(1);}
-  72%{opacity:1; transform:translate(-50%,-50%) scale(1);}
+  0%{opacity:0; transform:translate(-50%,-49.4%) scale(.975);}
+  18%{opacity:1; transform:translate(-50%,-50%) scale(1);}
+  65%{opacity:1; transform:translate(-50%,-50%) scale(1);}
   100%{opacity:0; transform:translate(-50%,-50.6%) scale(1.004);}
 }
 @keyframes oaiCoverFirstRevealV319 {
@@ -356,14 +356,14 @@ html.oai-cover-first-reveal #cover > * {
       root.classList.add('oai-first-entry-intro');
       setTimeout(function(){
         try{ root.classList.add('oai-cover-under-intro-reveal'); }catch(_e){}
-      }, 950);
+      }, 600);
       setTimeout(function(){
         try{
           root.classList.remove('oai-first-entry-intro','oai-cover-under-intro-reveal');
           root.classList.add('oai-cover-first-reveal');
           setTimeout(function(){ try{ root.classList.remove('oai-cover-first-reveal'); }catch(__e){} }, 760);
         }catch(_e){}
-      }, 1650);
+      }, 1050);
     }
   }else{
     root.classList.remove('oai-cover-booting','oai-first-entry-intro','oai-cover-under-intro-reveal');
