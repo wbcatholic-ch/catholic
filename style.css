@@ -141,7 +141,7 @@
   --bg-color:   #f7f0e5;
   /* 커버 화면 비율 기준 보호 영역 */
   --cover-top-safe: calc(env(safe-area-inset-top, 0px) + clamp(60px, calc(var(--cover-vh, 1vh) * 9.2), 82px));
-  --cover-bottom-safe: calc(env(safe-area-inset-bottom, 0px) + clamp(52px, calc(var(--cover-vh, 1vh) * 7.6), 72px));
+  --cover-bottom-safe: calc(env(safe-area-inset-bottom, 0px) + clamp(40px, calc(var(--cover-vh, 1vh) * 5.8), 54px));
   --cover-h:    calc(var(--cover-vh, 1vh) * 100);
   --text-main:  #3e362e;
   --text-sub:   #7a7065;
@@ -3008,7 +3008,7 @@ html.ios-device #prayer-view.open #prayer-tabs {
 html.ios-device #cover { padding-bottom: var(--cover-bottom-safe); }
 html.ios-device #cover .cover-header { padding-bottom: 16px; }
 html.ios-device #cover-main-block {
-  height: calc((var(--cover-vh, 1vh) * 100) - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - clamp(178px, calc(var(--cover-vh, 1vh) * 24), 222px));
+  height: calc((var(--cover-vh, 1vh) * 100) - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - clamp(158px, calc(var(--cover-vh, 1vh) * 21.5), 198px));
   max-height: 670px;
   padding-bottom: 4px;
 }
@@ -3148,7 +3148,7 @@ html.oai-font-global #region-body .dio-hd { font-size: calc(17px * var(--app-inn
   .mass-quick-panel .guide-badge { font-size: calc(18px * var(--app-font-scale)); min-height: 40px; margin-bottom: 16px; }
 }
 @media (max-height: 650px) {
-  #cover { --cover-top-safe: calc(env(safe-area-inset-top, 0px) + clamp(58px, calc(var(--cover-vh, 1vh) * 9.4), 74px)); --cover-bottom-safe: calc(env(safe-area-inset-bottom, 0px) + clamp(48px, calc(var(--cover-vh, 1vh) * 7.2), 64px)); padding-top: var(--cover-top-safe); padding-bottom: var(--cover-bottom-safe); }
+  #cover { --cover-top-safe: calc(env(safe-area-inset-top, 0px) + clamp(58px, calc(var(--cover-vh, 1vh) * 9.4), 74px)); --cover-bottom-safe: calc(env(safe-area-inset-bottom, 0px) + clamp(36px, calc(var(--cover-vh, 1vh) * 5.2), 48px)); padding-top: var(--cover-top-safe); padding-bottom: var(--cover-bottom-safe); }
   #cover .cover-header { padding-bottom: 12px; }
   #cover .cover-title { font-size: clamp(18px, 5vw, 24px); }
   #cover .cover-subtitle { font-size: 10px; }
@@ -4393,7 +4393,7 @@ html.oai-cover-booting #cover > * {
 }
 
 
-/* V3-16: 첫 스플래시/로딩 보호막의 금색 십자가를 완전히 숨기고 중립 로딩 원으로 정리 */
+/* V3-17: 첫 스플래시/로딩 보호막의 금색 십자가를 완전히 숨기고 중립 로딩 원으로 정리 */
 html.oai-first-entry-intro::before {
   content: "" !important;
   display: none !important;
@@ -4417,7 +4417,7 @@ html.oai-first-entry-intro::before {
   line-height: 0 !important;
   text-shadow: none !important;
   transform-origin: 50% 50% !important;
-  animation: oaiLoadingCircleSpinV3-16 .75s linear infinite !important;
+  animation: oaiLoadingCircleSpinV3-17 .75s linear infinite !important;
 }
 #diocese-loading .missa-spinner::before {
   content: "" !important;
@@ -4444,11 +4444,42 @@ html.oai-external-return-freeze::after {
   line-height: 0 !important;
   text-shadow: none !important;
   transform-origin: 50% 50% !important;
-  animation: oaiLoadingCircleSpinV3-16 .75s linear infinite !important;
+  animation: oaiLoadingCircleSpinV3-17 .75s linear infinite !important;
   pointer-events: none !important;
   z-index: 2147483647 !important;
 }
-@keyframes oaiLoadingCircleSpinV3-16 {
+@keyframes oaiLoadingCircleSpinV3-17 {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
+}
+
+
+/* V3-17: 남아 있는 금색 십자가 로더를 마지막 단계에서 한 번 더 무력화 */
+.map-loading-icon,
+#diocese-loading .missa-spinner,
+#oai-category-entry-veil::after,
+html.oai-stability-veil::after,
+html.oai-external-return-freeze::after {
+  content: "" !important;
+  color: transparent !important;
+  text-shadow: none !important;
+  font-size: 0 !important;
+  line-height: 0 !important;
+  width: 28px !important;
+  height: 28px !important;
+  min-width: 28px !important;
+  min-height: 28px !important;
+  border: 3px solid rgba(31,42,68,.16) !important;
+  border-top-color: #1f2a44 !important;
+  border-radius: 50% !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  animation: oaiLoadingCircleSpinV3-17 .75s linear infinite !important;
+}
+.map-loading-icon::before,
+.map-loading-icon::after,
+#diocese-loading .missa-spinner::before,
+#diocese-loading .missa-spinner::after {
+  content: "" !important;
+  display: none !important;
 }
