@@ -2188,26 +2188,45 @@ html.oai-cover-booting #cover > * {
 .cover-header {
   flex: 0 0 auto;
   width: 100%;
-  padding: 0 18px clamp(6px, calc(var(--cover-vh, 1vh) * 1.15), 14px);
+  padding: 0 18px clamp(5px, calc(var(--cover-vh, 1vh) * .72), 9px);
   margin: 0;
   text-align: center;
   box-sizing: border-box;
+  position: relative;
+  overflow: visible;
+  border-radius: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
 }
 .cover-title {
+  display: inline-block;
   font-size: clamp(32px, 8.9vw, 43px);
   font-family: "Noto Sans KR", "Apple SD Gothic Neo", sans-serif;
   font-weight: 800;
   letter-spacing: -.03em;
-  color: #3e362e;
+  color: #2f3742;
   margin: 0;
   line-height: 1.14;
+  text-shadow: none;
+}
+.cover-title::after {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 2px;
+  margin: clamp(5px, calc(var(--cover-vh, 1vh) * .62), 8px) 0 0;
+  border-radius: 999px;
+  background: #d4aa6a;
+  opacity: .82;
+  box-shadow: none;
 }
 .cover-subtitle {
-  font-size: 16px;
-  font-weight: 600;
-  color: #81b29a;
-  margin: 0 0 8px;
-  line-height: 1.45;
+  font-size: 15px;
+  font-weight: 650;
+  color: #6b7280;
+  margin: 0 0 5px;
+  line-height: 1.38;
 }
 
 #cover-main-block {
@@ -2224,11 +2243,12 @@ html.oai-cover-booting #cover > * {
   flex-direction: column;
   align-items: stretch;
   justify-content: center;
-  gap: clamp(5px, calc(var(--cover-vh, 1vh) * 0.8), 10px);
+  gap: clamp(7px, calc(var(--cover-vh, 1vh) * 0.92), 12px);
   box-sizing: border-box;
 }
 
 .cover-grid {
+  position: relative;
   flex: 1 1 auto;
   min-height: 0;
   width: 100%;
@@ -2237,31 +2257,89 @@ html.oai-cover-booting #cover > * {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   grid-template-rows: repeat(4, 1fr);
-  row-gap: clamp(3px, calc(var(--cover-vh, 1vh) * 0.7), 6px);
-  column-gap: clamp(4px, 1.2vw, 8px);
+  row-gap: clamp(5px, calc(var(--cover-vh, 1vh) * 0.82), 8px);
+  column-gap: clamp(5px, 1.4vw, 9px);
   align-content: stretch;
   box-sizing: border-box;
+  isolation: isolate;
+}
+/* V3-55: 커버 제목 박스 제거 / 카테고리 박스 비율 조정 */
+.cover-grid::after {
+  content: none;
+  display: none;
 }
 .cover-card {
+  --cover-card-point: #d4aa6a;
+  position: relative;
+  overflow: hidden;
   width: 100%;
   height: 100%;
   min-height: 0;
-  padding: clamp(5px, calc(var(--cover-vh, 1vh) * 1.05), 10px) 7px;
-  border-radius: 18px;
+  padding: clamp(7px, calc(var(--cover-vh, 1vh) * 1.1), 11px) 8px clamp(6px, calc(var(--cover-vh, 1vh) * .95), 10px);
+  border-radius: 17px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 7px;
+  gap: 6px;
   text-align: center;
   cursor: pointer;
-  background: var(--card-bg);
-  border: 1px solid rgba(0,0,0,.05);
-  box-shadow: 0 4px 6px rgba(0,0,0,.02);
+  background: linear-gradient(180deg, #fffdf8 0%, #f1e5d3 100%);
+  border: 1px solid rgba(126,104,74,.24);
+  box-shadow:
+    0 1px 2px rgba(31,42,68,.045),
+    inset 0 1px 0 rgba(255,255,255,.96),
+    inset 0 -7px 13px rgba(136,112,78,.13),
+    inset 0 0 0 1px rgba(255,255,255,.34);
   outline: none;
   box-sizing: border-box;
 }
-.cover-card.app-pressing { transform: translateY(8px) scale(.974); box-shadow: 0 2px 3px rgba(0,0,0,.02); filter: brightness(.94); transition: transform .16s, filter .16s; }
+.cover-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--cover-card-point);
+  opacity: .34;
+  border-radius: 0;
+}
+.cover-card::after {
+  content: "";
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  top: 4px;
+  bottom: 4px;
+  border-radius: 13px;
+  border: 1px solid rgba(255,255,255,.42);
+  pointer-events: none;
+}
+
+#cc-1 { --cover-card-point: #c49a57; }
+#cc-2 { --cover-card-point: #3F4752; }
+#cc-3 { --cover-card-point: #1f2a44; }
+#cc-4 { --cover-card-point: #3F6F5A; }
+#cc-5 { --cover-card-point: #5c4a37; }
+#cc-6 { --cover-card-point: #2563EB; }
+#cc-7 { --cover-card-point: #1a3560; }
+.cover-card .cover-icon-wrap,
+.cover-card .cover-name {
+  position: relative;
+  z-index: 1;
+}
+
+.cover-card.app-pressing {
+  transform: translateY(7px) scale(.978);
+  box-shadow:
+    0 1px 2px rgba(31,42,68,.035),
+    inset 0 1px 0 rgba(255,255,255,.96),
+    inset 0 -7px 13px rgba(136,112,78,.16),
+    inset 0 0 0 1px rgba(255,255,255,.36);
+  filter: brightness(.97);
+  transition: transform .16s, filter .16s, box-shadow .16s;
+}
 
 .cover-icon-wrap {
   width: clamp(44px, 12.6vw, 58px);
@@ -3007,7 +3085,7 @@ html.ios-device #prayer-view.open #prayer-tabs {
   display: flex;
 }
 html.ios-device #cover { padding-bottom: var(--cover-bottom-safe); }
-html.ios-device #cover .cover-header { padding-bottom: 16px; }
+html.ios-device #cover .cover-header { padding-bottom: clamp(5px, calc(var(--cover-vh, 1vh) * .72), 9px); }
 html.ios-device #cover-main-block {
   height: calc((var(--cover-vh, 1vh) * 100) - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - clamp(178px, calc(var(--cover-vh, 1vh) * 24), 222px));
   max-height: 670px;
@@ -3132,7 +3210,7 @@ html.oai-font-global #region-body .dio-hd { font-size: calc(17px * var(--app-inn
   #prayer-bar, #diocese-bar, .module-bar { width: 100vw; max-width: 100vw; }
 }
 @media (max-height: 720px) {
-  #cover .cover-header { padding-bottom: clamp(5px, calc(var(--cover-vh, 1vh) * .9), 10px); }
+  #cover .cover-header { padding-bottom: clamp(4px, calc(var(--cover-vh, 1vh) * .58), 7px); }
   #cover-main-block {
     max-height: 100%;
     gap: clamp(4px, calc(var(--cover-vh, 1vh) * .55), 7px);
@@ -3149,7 +3227,7 @@ html.oai-font-global #region-body .dio-hd { font-size: calc(17px * var(--app-inn
 }
 @media (max-height: 650px) {
   #cover { --cover-top-safe: calc(env(safe-area-inset-top, 0px) + clamp(58px, calc(var(--cover-vh, 1vh) * 9.4), 74px)); --cover-bottom-safe: calc(env(safe-area-inset-bottom, 0px) + clamp(48px, calc(var(--cover-vh, 1vh) * 7.2), 64px)); padding-top: var(--cover-top-safe); padding-bottom: var(--cover-bottom-safe); }
-  #cover .cover-header { padding-bottom: 12px; }
+  #cover .cover-header { padding-bottom: 6px; }
   #cover .cover-subtitle { font-size: 10px; }
   #cover .cover-grid { row-gap: clamp(2px, calc(var(--cover-vh, 1vh) * 0.5), 4px); }
   #cover .cover-card { padding: clamp(4px, calc(var(--cover-vh, 1vh) * 0.8), 8px) 6px; }
@@ -4507,3 +4585,88 @@ html.oai-cover-first-reveal #cover > * {
   animation: none !important;
   transition: none !important;
 }
+
+/* V3-38: 기도문 공식 원문 외부 이동/복귀 전용 안정 안내
+   - 기도문 링크에서만 사용
+   - 상단 앱 헤더가 비쳐 보이지 않도록 전체 배경을 불투명하게 덮는다
+   - 별도 상단 헤더 없이 중앙 안내와 금색 회전 십자가만 표시 */
+#pr-external-guide {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  box-sizing: border-box;
+  background: #f5f0e8;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .08s ease;
+  overflow: hidden;
+}
+#pr-external-guide.show { opacity: 1; }
+.pr-external-guide-card {
+  min-width: min(272px, calc(100vw - 48px));
+  max-width: min(352px, calc(100vw - 48px));
+  border-radius: 22px;
+  background: rgba(255,253,249,.98);
+  border: 1px solid rgba(212,170,106,.22);
+  box-shadow: 0 16px 38px rgba(14,21,53,.13);
+  padding: 22px 20px 21px;
+  text-align: center;
+  color: #1f2937;
+}
+.pr-external-guide-cross {
+  width: 42px;
+  height: 42px;
+  margin: 0 auto 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #d4aa6a;
+  font-size: 36px;
+  font-weight: 900;
+  line-height: 1;
+  text-shadow: 0 2px 8px rgba(184,150,90,.20);
+  animation: prExternalCrossSpinV3-38 2.4s linear infinite !important;
+  animation-delay: 0s !important;
+  transform-origin: 50% 50%;
+  will-change: transform;
+}
+.pr-external-guide-text {
+  font-size: 15px;
+  line-height: 1.55;
+  font-weight: 800;
+  letter-spacing: -.02em;
+  word-break: keep-all;
+}
+@keyframes prExternalCrossSpinV3-38 {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* V3-38: 기도문 외부 이동 안내 중에는 앱 내부 기도문 헤더와 공통 로딩 표시가 겹쳐 보이지 않게 한다. */
+html.pr-external-guide-active #prayer-bar,
+html.pr-external-guide-active #prayer-tabs,
+html.pr-external-guide-active #prayer-search-bar {
+  visibility: hidden !important;
+}
+html.pr-external-guide-active.oai-stability-veil::before,
+html.pr-external-guide-active.oai-stability-veil::after {
+  content: none !important;
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  animation: none !important;
+}
+#pr-external-guide::before,
+#pr-external-guide::after,
+.pr-external-guide-card::before,
+.pr-external-guide-card::after,
+.pr-external-guide-cross::before,
+.pr-external-guide-cross::after {
+  content: none !important;
+  display: none !important;
+}
+
