@@ -952,7 +952,28 @@ html.retreat-mode #nearby-body { overflow-x: hidden; }
   background: var(--mode-srch-modal-bg);
   border-top: 1px solid rgba(255,255,255,.10);
   border-bottom: 2px solid var(--gold);
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
+#srch-modal .sm-si { flex: 1 1 auto; min-width: 0; }
+.sm-map-select-btn{
+  flex:0 0 auto;
+  height:38px;
+  min-height:38px;
+  padding:0 11px;
+  border-radius:18px;
+  border:1.5px solid rgba(212,167,92,.65);
+  background:#fff8e6;
+  color:#7a4f00;
+  font-size:12px;
+  font-weight:900;
+  font-family:inherit;
+  letter-spacing:-.04em;
+  white-space:nowrap;
+  box-shadow:none;
+}
+.sm-map-select-btn:active{transform:scale(.985);}
 .sm-body { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; border-top: 2px solid rgba(255,255,255,.30); }
 #sm-body-place { border-top: 2px solid rgba(255,255,255,.30); }
 .sm-grp {
@@ -4670,3 +4691,66 @@ html.pr-external-guide-active.oai-stability-veil::after {
   display: none !important;
 }
 
+
+
+#route-choice-modal{
+  position:fixed;
+  inset:0;
+  z-index:14000;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+  box-sizing:border-box;
+}
+#route-choice-modal.open{display:flex;}
+.route-choice-backdrop{
+  position:absolute;
+  inset:0;
+  background:rgba(17,24,39,.36);
+  backdrop-filter:blur(2px);
+}
+.route-choice-panel{
+  position:relative;
+  width:min(320px,calc(100vw - 48px));
+  background:#fffdf8;
+  border:1px solid rgba(31,41,55,.12);
+  border-radius:18px;
+  box-shadow:0 18px 45px rgba(17,24,39,.22);
+  padding:18px 16px 16px;
+  box-sizing:border-box;
+  text-align:center;
+}
+.route-choice-title{
+  font-size:18px;
+  font-weight:900;
+  color:#1f2937;
+  line-height:1.25;
+  letter-spacing:-.04em;
+  margin-bottom:6px;
+}
+.route-choice-desc{
+  font-size:12px;
+  color:#6b7280;
+  font-weight:700;
+  line-height:1.35;
+  margin-bottom:14px;
+}
+.route-choice-actions{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.route-choice-btn{
+  width:100%;
+  height:42px;
+  border-radius:13px;
+  border:1.5px solid transparent;
+  font-size:14px;
+  font-weight:900;
+  font-family:inherit;
+  letter-spacing:-.04em;
+}
+.route-choice-btn.start{background:#fef2f2;color:#b91c1c;border-color:rgba(185,28,28,.18);}
+.route-choice-btn.end{background:#eff6ff;color:#1d4ed8;border-color:rgba(29,78,216,.18);}
+.route-choice-btn.cancel{background:#ffffff;color:#4b5563;border-color:rgba(107,114,128,.22);}
