@@ -2489,6 +2489,7 @@ const AppState = {
   rS:               null,  // 출발지 {lat, lng, name, idx}
   rE:               null,  // 도착지
   routeRegionStart: null,  // 지역검색에서 길찾기 시작 시 출발지 보존
+  routeStartMarkerExplicitCurrent: false, // 길찾기 탭의 '현위치' 버튼을 눌렀을 때만 출발지 임시 마커 표시
 
   // ── 검색 모달 ──
   smRole: 'start',
@@ -2557,6 +2558,7 @@ const AppState = {
     ['_rS',               'rS'],
     ['_rE',               'rE'],
     ['_routeRegionStart', 'routeRegionStart'],
+    ['_routeStartMarkerExplicitCurrent', 'routeStartMarkerExplicitCurrent'],
     ['_smRole',           'smRole'],
     ['_smDio',            'smDio'],
     ['_curInfoItem',      'curInfoItem'],
@@ -3577,13 +3579,14 @@ function openInAppRoute(){
   function doRoute(spLat, spLng, spName){
     closeInfoCard({keepMap:true});
     openTab('route');
+    _routeStartMarkerExplicitCurrent=false;
     _rS={idx:-1, name:spName, lat:spLat, lng:spLng};
     _rE={idx, name:item.name, lat:item.lat, lng:item.lng};
     _setRouteLabel('start', spName);
     _setRouteLabel('end', item.name);
     if(_mode==='shrine'){
      if(idx>=0&&_markers[idx]){ _markers[idx].marker.setImage(_mkrImgRoute('#0000ff','도')); _setRouteMarkerZ(idx,'end'); }
-     if(_rS.idx>=0&&_markers[_rS.idx]){ _markers[_rS.idx].marker.setImage(_mkrImgRoute('#ff0000','출')); _setRouteMarkerZ(_rS.idx,'start'); }
+     if(_shouldShowRouteStartMarker()&&_rS.idx>=0&&_markers[_rS.idx]){ _markers[_rS.idx].marker.setImage(_mkrImgRoute('#ff0000','출')); _setRouteMarkerZ(_rS.idx,'start'); }
     }
     _refreshRouteTmpMarkers();
     _enterRouteMode();
@@ -3645,11 +3648,12 @@ function _setRoutePointFromItem(role,item,idx){
   if(role==='start'){
     _restoreRouteMarkerVisual('start',_rS);
     _routeRegionStart=null;
+    _routeStartMarkerExplicitCurrent=false;
     _rS={idx:idx,name:item.name,lat:item.lat,lng:item.lng};
     _rE=null;
     _setRouteLabel('start',item.name);
     _setRouteLabel('end','');
-    if(_mode==='shrine'&&idx>=0&&_markers[idx]){ _markers[idx].marker.setImage(_mkrImgRoute('#ff0000','출')); _setRouteMarkerZ(idx,'start'); }
+    if(_mode==='shrine'&&_shouldShowRouteStartMarker()&&idx>=0&&_markers[idx]){ _markers[idx].marker.setImage(_mkrImgRoute('#ff0000','출')); _setRouteMarkerZ(idx,'start'); }
     _refreshRouteTmpMarkers();
     _showRouteGuideText(`도착 ${_getRouteGuideTarget()}를 탭하세요`);
   }else{
@@ -3699,6 +3703,7 @@ function _setInfoRouteStart(){
   _setRoutePointFromItem('start',item,idx);
 }
 function _runInfoRouteToEndWithStart(startObj,item,idx){
+  _routeStartMarkerExplicitCurrent=!!(startObj && startObj.showStartMarker === true);
   _rS=startObj;
   _setRouteLabel('start', startObj.name==='현재 위치' ? '현위치' : (startObj.name||'출발지'));
   _setRoutePointFromItem('end',item,idx);
@@ -3821,10 +3826,17 @@ function _routeEndMarkerColor(){
   }
   return '#0000ff';
 }
+function _shouldShowRouteStartMarker(){
+  // 출발지 임시 마커는 길찾기 탭의 출발지 칸에서 '현위치' 버튼을
+  // 사용자가 직접 눌렀을 때만 표시한다. 자동 현재 위치, 지역검색 출발지,
+  // 성당/성지/피정의집을 출발지로 선택한 경우에는 출발 마커를 숨긴다.
+  return !!(_routeStartMarkerExplicitCurrent && _rS && _rS.idx < 0 &&
+    (_rS.name === '현재 위치' || _rS.name === '현위치'));
+}
 function _refreshRouteTmpMarkers(){
   if(!_map) return;
   _clearRouteTmpMarkers();
-  const needStart = !!(_rS && (_mode!=='shrine' || _rS.idx<0 || !_markers[_rS.idx]));
+  const needStart = !!(_rS && _shouldShowRouteStartMarker() && (_mode!=='shrine' || _rS.idx<0 || !_markers[_rS.idx]));
   const needEnd = !!(_rE && (_mode!=='shrine' || _rE.idx<0 || !_markers[_rE.idx]));
   if(needStart){
     _startTmpMkr = new _MM({
@@ -5208,6 +5220,7 @@ function _setImplicitCurrentLocationStartLabelVisible(visible){
 function _ensureCurrentLocationStart(){
   if(_rS&&_rS.lat&&_rS.lng) return;
   if(_routeRegionStart&&_routeRegionStart.lat&&_routeRegionStart.lng){
+    _routeStartMarkerExplicitCurrent=false;
     _rS={idx:-1,name:_routeRegionStart.name||'📍 검색지',lat:_routeRegionStart.lat,lng:_routeRegionStart.lng,isRegionStart:true};
     _setRouteLabel('start',_rS.name);
     _refreshRouteTmpMarkers();
@@ -5215,6 +5228,7 @@ function _ensureCurrentLocationStart(){
     return;
   }
   if(_myLat&&_myLng){
+    _routeStartMarkerExplicitCurrent=false;
     _rS={idx:-1,name:'현재 위치',lat:_myLat,lng:_myLng,isImplicitCurrentLocation:true};
     _setRouteLabel('start','');
     _refreshRouteTmpMarkers();
@@ -5225,6 +5239,7 @@ function _ensureCurrentLocationStart(){
   _GEO.getCurrentPosition(p=>{
     _setMyLoc(p.coords.latitude,p.coords.longitude);
     if(!_rS){
+      _routeStartMarkerExplicitCurrent=false;
       _rS={idx:-1,name:'현재 위치',lat:p.coords.latitude,lng:p.coords.longitude,isImplicitCurrentLocation:true};
       _setRouteLabel('start','');
       _refreshRouteTmpMarkers();
@@ -5265,7 +5280,8 @@ function setMyLocAsStart(){
   _setMyLoc(p.coords.latitude,p.coords.longitude);
   _clearRouteTmpMarkers();
   if(_mode==='shrine'&&_rS&&_rS.idx>=0&&_markers[_rS.idx]) _markers[_rS.idx].marker.setImage(_mkrImg(_typeColor(_markers[_rS.idx].shrine.type),false));
-  _rS={idx:-1,name:'현재 위치',lat:p.coords.latitude,lng:p.coords.longitude,isImplicitCurrentLocation:false};
+  _routeStartMarkerExplicitCurrent=true;
+  _rS={idx:-1,name:'현재 위치',lat:p.coords.latitude,lng:p.coords.longitude,isImplicitCurrentLocation:false,showStartMarker:true};
   _setRouteLabel('start','현위치');
   _refreshRouteTmpMarkers();
   if(_rE) _updateSearchBtn();
@@ -5306,8 +5322,9 @@ function swapRoute(){
   _setRouteLabel('start',el.includes('선택하세요')?'':el);
   _setRouteLabel('end',sl.includes('선택하세요')?'':sl);
   const tmp=_rS; _rS=_rE; _rE=tmp;
+  _routeStartMarkerExplicitCurrent=!!(_rS && _rS.showStartMarker === true);
   if(_mode==='shrine'){
-   if(_rS&&_rS.idx>=0&&_markers[_rS.idx]){ _markers[_rS.idx].marker.setImage(_mkrImgRoute('#ff0000','출')); _setRouteMarkerZ(_rS.idx,'start'); }
+   if(_rS&&_shouldShowRouteStartMarker()&&_rS.idx>=0&&_markers[_rS.idx]){ _markers[_rS.idx].marker.setImage(_mkrImgRoute('#ff0000','출')); _setRouteMarkerZ(_rS.idx,'start'); }
    if(_rE&&_rE.idx>=0&&_markers[_rE.idx]){ _markers[_rE.idx].marker.setImage(_mkrImgRoute(_typeColor(_markers[_rE.idx].shrine.type),'도')); _setRouteMarkerZ(_rE.idx,'end'); }
   }
   _refreshRouteTmpMarkers();
@@ -5340,6 +5357,7 @@ function resetRoute(opts){
     if(_rE&&_rE.idx>=0&&_markers[_rE.idx]) _markers[_rE.idx].marker.setImage(_mkrImg(_typeColor(_markers[_rE.idx].shrine.type),false));
   }
   _rS=_rE=null;
+  _routeStartMarkerExplicitCurrent=false;
   _setRouteLabel('start','');_setRouteLabel('end','');
   _hide($('rs-result'));
   $('rs-hint').style.display='block';
@@ -5835,10 +5853,11 @@ function selectFromModal(idx){
   const role=_smRole;
   if(role==='start'){
   _routeRegionStart=null;
+  _routeStartMarkerExplicitCurrent=false;
   if(_mode==='shrine'&&_rS&&_rS.idx>=0&&_markers[_rS.idx]) _markers[_rS.idx].marker.setImage(_mkrImg(_typeColor(_markers[_rS.idx].shrine.type),false));
   _clearRouteTmpMarkers();
   _rS={idx,name:s.name,lat:s.lat,lng:s.lng};
-  if(_mode==='shrine'){ _markers[idx]?.marker.setImage(_mkrImgRoute(_typeColor(s.type),'출')); _setRouteMarkerZ(idx,'start'); }
+  if(_mode==='shrine'&&_shouldShowRouteStartMarker()){ _markers[idx]?.marker.setImage(_mkrImgRoute(_typeColor(s.type),'출')); _setRouteMarkerZ(idx,'start'); }
   _setRouteLabel('start',s.name);
   _refreshRouteTmpMarkers();
   _enterRouteMode();
