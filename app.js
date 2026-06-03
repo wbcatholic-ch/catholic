@@ -4774,6 +4774,7 @@ function _setListFilterActive(v){
   }
 }
 function _syncListFilterActiveByScroll(){
+  if(_mode==='parish') return;
   const body=$('list-body');
   if(!body) return;
   const heads=Array.from(body.querySelectorAll('.dio-hd[data-dio]'));
@@ -4795,6 +4796,7 @@ function _bindListSectionScrollSync(){
   body.dataset.dioScrollSync='1';
   let raf=0;
   body.addEventListener('scroll', function(){
+    if(_mode==='parish') return;
     if(raf) return;
     raf=requestAnimationFrame(function(){
       raf=0;
@@ -4884,13 +4886,13 @@ function renderList(){
    body.appendChild(d);
   });
   });
-  _bindListSectionScrollSync();
+  if(_mode!=='parish') _bindListSectionScrollSync();
   setTimeout(function(){
     const first=body.querySelector('.dio-hd[data-dio]');
     if(!_filterDio && first) _filterDio=first.dataset.dio;
     if(_filterDio && !body.querySelector('.dio-hd[data-dio="'+String(_filterDio).replace(/"/g,'\\"')+'"]') && first) _filterDio=first.dataset.dio;
     if(_filterDio) _setListFilterActive(_filterDio);
-    _syncListFilterActiveByScroll();
+    if(_mode!=='parish') _syncListFilterActiveByScroll();
   }, 0);
 }
 
@@ -4915,7 +4917,7 @@ function setDioFilter(v,btn){
   const go=function(){
     renderList();
     setTimeout(function(){
-      if(!_scrollListToDiocese(v)) _syncListFilterActiveByScroll();
+      if(!_scrollListToDiocese(v) && _mode!=='parish') _syncListFilterActiveByScroll();
     },0);
   };
   if(_mode==='parish'){
