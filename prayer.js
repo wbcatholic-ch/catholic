@@ -544,12 +544,37 @@ function prMaybeShowExternalReturnGuide(){
   }catch(e){ console.warn('[가톨릭길동무]', e); }
 }
 
+function prMakeFreshDaeguPrayerUrl(rawUrl, prayer){
+  var url = String(rawUrl || '').trim();
+  if(!url) return url;
+  try{
+    if(!/daegu-archdiocese\.or\.kr\/page\/catholic_life\.html/i.test(url) || !/srl=prayer/i.test(url)){
+      return url;
+    }
+    var hash = '';
+    var hashIdx = url.indexOf('#');
+    if(hashIdx >= 0){
+      hash = url.slice(hashIdx);
+      url = url.slice(0, hashIdx);
+    }
+    var sep = url.indexOf('?') >= 0 ? '&' : '?';
+    url += sep + 'oai_open=' + encodeURIComponent(String(Date.now()));
+    if(prayer && prayer.id){
+      url += '&oai_pid=' + encodeURIComponent(String(prayer.id));
+    }
+    return url + hash;
+  }catch(e){
+    return String(rawUrl || '').trim();
+  }
+}
+
 function prOpenOfficialPrayer(prayer){
   var url = prayer && prayer.url ? String(prayer.url).trim() : '';
   if(!url){
     prShowExternalGuide('공식 원문 링크를 준비 중입니다.', 900);
     return;
   }
+  url = prMakeFreshDaeguPrayerUrl(url, prayer);
   try{
     var lv=prG('prayer-list-view');
     PrayerState.listScroll = lv ? (lv.scrollTop || 0) : 0;
