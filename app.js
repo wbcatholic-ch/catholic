@@ -4743,6 +4743,7 @@ function _loadNearbyRetreats(lat,lng){
 
 
 function _getListSectionTabs(){
+  if(_mode==='parish') return _DIOS.slice();
   return _DIOS.filter(function(pair){ return pair && pair[0] !== 'all'; });
 }
 function _renderListFilterTabs(){
@@ -4807,6 +4808,13 @@ function _bindListSectionScrollSync(){
 function _scrollListToDiocese(v, opts){
   const body=$('list-body');
   if(!body || !v) return false;
+  if(v==='all'){
+    try{ body.scrollTo({top:0, behavior:(opts&&opts.instant)?'auto':'smooth'}); }
+    catch(e){ body.scrollTop=0; }
+    _filterDio='all';
+    _setListFilterActive('all');
+    return true;
+  }
   const hd=body.querySelector('.dio-hd[data-dio="'+String(v).replace(/"/g,'\\"')+'"]');
   if(!hd) return false;
   const top=Math.max(0, hd.offsetTop - 2);
@@ -4889,6 +4897,10 @@ function renderList(){
   if(_mode!=='parish') _bindListSectionScrollSync();
   setTimeout(function(){
     const first=body.querySelector('.dio-hd[data-dio]');
+    if(_mode==='parish' && _filterDio==='all'){
+      _setListFilterActive('all');
+      return;
+    }
     if(!_filterDio && first) _filterDio=first.dataset.dio;
     if(_filterDio && !body.querySelector('.dio-hd[data-dio="'+String(_filterDio).replace(/"/g,'\\"')+'"]') && first) _filterDio=first.dataset.dio;
     if(_filterDio) _setListFilterActive(_filterDio);
@@ -4910,17 +4922,26 @@ function clearListSearch(){
   setTimeout(()=>_scrollSheetTop('list'),0);
 }
 function setDioFilter(v,btn){
-  if(!v || v==='all') return;
+  if(!v) return;
   _filterDio=v;
   $$('#list-filter-bar .filter-btn').forEach(function(b){ b.classList.remove('active'); });
   if(btn) btn.classList.add('active');
   const go=function(){
     renderList();
     setTimeout(function(){
+      if(v==='all'){
+        _scrollListToDiocese('all');
+        return;
+      }
       if(!_scrollListToDiocese(v) && _mode!=='parish') _syncListFilterActiveByScroll();
     },0);
   };
   if(_mode==='parish'){
+    if(v==='all' && !_areAllParishDiocesesReady()){
+      _showParishDataLoadingMessage('전체 성당 정보를 불러오는 중입니다...');
+      _ensureAllParishDiocesesLoaded().then(go).catch(function(err){ console.warn('[가톨릭길동무] 전체 성당 데이터 로드 실패', err); });
+      return;
+    }
     const code=_PARISH_DIO_CODE_MAP[v]||null;
     if(code && !_isParishDioceseReady(code)){
       _showParishDataLoadingMessage((_DIO[code]||v)+' 성당 정보를 불러오는 중입니다...');
