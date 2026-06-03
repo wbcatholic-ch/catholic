@@ -5369,13 +5369,18 @@ function resetRoute(opts){
     _ensureCurrentLocationStart();
     if(destItem && destItem.lat && _map){
       try{
+        // 다시선택은 새 출발/도착을 고르는 상태로 돌아가는 동작이므로
+        // 이전 도착지의 노란 선택 마커는 다시 표시하지 않는다.
+        if(_mode==='shrine') _clearShrineMarkerSel();
+        else if(_paSelMkr){ try{ _paSelMkr.setMap(null); }catch(e){ console.warn("[가톨릭길동무]", e); } _paSelMkr=null; }
+
         const _items=_getCurrentItems();
         const _idx=(typeof destItem.idx==='number' && destItem.idx>=0) ? destItem.idx : _items.findIndex(p=>Number(p.lat)===Number(destItem.lat) && Number(p.lng)===Number(destItem.lng));
-        if(_idx>=0 && _items[_idx]){
-          if(_mode==='shrine') _selectShrineMarker(_idx);
-          else if(_mode==='parish') _selectParishMarker(_items[_idx]);
-          else _selectRetreatMarker(_items[_idx]);
-          _focusMarkerAboveInfoCard(_items[_idx]);
+        const _target=(_idx>=0 && _items[_idx]) ? _items[_idx] : destItem;
+        if(_target && _target.lat && _target.lng && typeof _LL!=='undefined'){
+          const pos=new _LL(_target.lat,_target.lng);
+          if(typeof _map.panTo==='function') _map.panTo(pos);
+          else _map.setCenter(pos);
         }
       }catch(e){ console.warn("[가톨릭길동무]", e); }
     }
