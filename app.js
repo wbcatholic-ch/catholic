@@ -1918,7 +1918,7 @@ const _PARISH_DIOCESE_ASSETS={
 };
 const _PARISH_DIOCESE_LOAD_STATE={};
 const _PARISH_DIOCESE_LOAD_PROMISES={};
-const _PARISH_ASSET_VERSION='V3-61';
+const _PARISH_ASSET_VERSION='V3-62';
 function _getParishDioceseAsset(code){
   return _PARISH_DIOCESE_ASSETS[code] || null;
 }
@@ -2332,6 +2332,7 @@ const _navCache = new Map();
 const _NAV_CONCURRENCY = 5;
 let _navActive = 0;
 const _navQueue = [];
+let _suppressNextRouteGuide = false;
 
 function _navFetch(origin, dest) {
   const key = `${origin}→${dest}`;
@@ -3663,8 +3664,11 @@ function _setRoutePointFromItem(role,item,idx){
 }
 function _infoRouteHasFixedStart(){
   try{
+    // 지역검색에서 열린 인포카드는 이미 출발지가 별도로 지정된 상태이므로
+    // 출발/도착 선택창을 띄우지 않고 바로 도착지로 처리한다.
     if(_curFromRegion && _regionLat && _regionLng) return true;
-    if(_routeRegionStart && _routeRegionStart.lat && _routeRegionStart.lng) return true;
+    // 길찾기 탭 안에서 사용자가 다시 선택하는 경우에는
+    // 현재 길찾기 탭의 출발지 상태만 기준으로 판단한다.
     if(_routeHasVisibleStart()) return true;
   }catch(e){ console.warn('[가톨릭길동무]', e); }
   return false;
@@ -3706,16 +3710,19 @@ function _setInfoRouteEnd(){
   const useRegionStart=!!(_curFromRegion && _regionLat && _regionLng);
   _closeInfoRouteChoice();
   closeInfoCard({keepMap:true});
+  if(useRegionStart){
+    const placeName=_regionPlaceName||_regionName||'검색지';
+    const startObj={idx:-1,name:'📍 '+placeName,lat:_regionLat,lng:_regionLng,isRegionStart:true};
+    _routeRegionStart={lat:_regionLat,lng:_regionLng,name:startObj.name,placeName:placeName};
+    _suppressNextRouteGuide=true;
+    openTab('route');
+    _runInfoRouteToEndWithStart(startObj,item,idx);
+    return;
+  }
   openTab('route');
   if(_routeHasVisibleStart()){
     _setRoutePointFromItem('end',item,idx);
     setTimeout(function(){ try{ _calcRoute(); }catch(e){ console.warn('[가톨릭길동무]', e); } }, OAI_ROUTE_VISUAL_DELAY_MS);
-    return;
-  }
-  if(useRegionStart){
-    const placeName=_regionPlaceName||_regionName||'검색지';
-    _routeRegionStart={lat:_regionLat,lng:_regionLng,name:'📍 '+placeName,placeName:placeName};
-    _runInfoRouteToEndWithStart({idx:-1,name:'📍 '+placeName,lat:_regionLat,lng:_regionLng,isRegionStart:true},item,idx);
     return;
   }
   if(_myLat&&_myLng){
@@ -5211,6 +5218,15 @@ function _enterRouteMode(){
   const rs=$('sheet-route');
   if(rs){ rs.style.display=''; rs.classList.add('open'); }
   _ensureCurrentLocationStart();
+  if(_suppressNextRouteGuide){
+    _suppressNextRouteGuide=false;
+    _hideRouteGuide();
+    return;
+  }
+  if(_rS&&_rE){
+    _hideRouteGuide();
+    return;
+  }
   _showRouteGuideText(_rS?`도착 ${_getRouteGuideTarget()}를 탭하세요`:`출발지를 탭하거나 지도에서 ${_getRouteGuideTarget()}를 선택하세요`);
 }
 
