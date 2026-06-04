@@ -3704,6 +3704,7 @@ function _setInfoRouteStart(){
 }
 function _runInfoRouteToEndWithStart(startObj,item,idx){
   _routeStartMarkerExplicitCurrent=!!(startObj && startObj.showStartMarker === true);
+  if(startObj && startObj.showStartMarker !== true) delete startObj.showStartMarker;
   _rS=startObj;
   _setRouteLabel('start', startObj.name==='현재 위치' ? '현위치' : (startObj.name||'출발지'));
   _setRoutePointFromItem('end',item,idx);
@@ -3717,7 +3718,8 @@ function _setInfoRouteEnd(){
   closeInfoCard({keepMap:true});
   if(useRegionStart){
     const placeName=_regionPlaceName||_regionName||'검색지';
-    const startObj={idx:-1,name:'📍 '+placeName,lat:_regionLat,lng:_regionLng,isRegionStart:true};
+    const startObj={idx:-1,name:'📍 '+placeName,lat:_regionLat,lng:_regionLng,isRegionStart:true,showStartMarker:false};
+    _routeStartMarkerExplicitCurrent=false;
     _routeRegionStart={lat:_regionLat,lng:_regionLng,name:startObj.name,placeName:placeName};
     _suppressNextRouteGuide=true;
     openTab('route');
@@ -3830,7 +3832,9 @@ function _shouldShowRouteStartMarker(){
   // 출발지 임시 마커는 길찾기 탭의 출발지 칸에서 '현위치' 버튼을
   // 사용자가 직접 눌렀을 때만 표시한다. 자동 현재 위치, 지역검색 출발지,
   // 성당/성지/피정의집을 출발지로 선택한 경우에는 출발 마커를 숨긴다.
-  return !!(_routeStartMarkerExplicitCurrent && _rS && _rS.idx < 0 &&
+  return !!(_activeTab === 'route' &&
+    _routeStartMarkerExplicitCurrent &&
+    _rS && _rS.idx < 0 && _rS.showStartMarker === true &&
     (_rS.name === '현재 위치' || _rS.name === '현위치'));
 }
 function _refreshRouteTmpMarkers(){
