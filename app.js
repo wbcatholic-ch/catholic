@@ -2081,7 +2081,7 @@ function _ensureParishDataLoaded(){
 }
 _initParishDataFromGlobal();
 
-const _PRAYER_ASSET_VERSION='V3-71';
+const _PRAYER_ASSET_VERSION='V3-72';
 let _prayerModuleLoadPromise=null;
 function _isPrayerModuleReady(){
   return typeof window.initPrayerView === 'function' &&
@@ -2374,7 +2374,7 @@ const _TY={'A':'성지','B':'순례지','C':'순교 사적지'};
 
 let _shrineRawLoaded = false;
 let _shrineDataLoadPromise = null;
-const _SHRINE_ASSET_VERSION='V3-71';
+const _SHRINE_ASSET_VERSION='V3-72';
 let SHRINES = [];
 let JUKRIMGUL_IDX = -1;
 function _decodeShrineHomePage(hp){
@@ -3642,6 +3642,36 @@ function _restoreRouteMarkerVisual(role, routeItem){
     }
   }catch(e){ console.warn('[가톨릭길동무]', e); }
 }
+function _restoreMarkersForRouteDestinationSelection(){
+  try{
+    if(!_map || !_routeMode || !_rS || _rE || _polyline) return;
+    if(_mode==='parish'){
+      if(_paSelMkr){ try{ _paSelMkr.setMap(null); }catch(e){ console.warn('[가톨릭길동무]', e); } _paSelMkr=null; }
+      const items=_getCurrentItems ? _getCurrentItems() : [];
+      const startItem=(_rS.idx>=0 && items && items[_rS.idx]) ? items[_rS.idx] : null;
+      const code=startItem ? _parishDioCodeOf(startItem) : (_activeDio || null);
+      if(code){
+        if(_mode==='parish' && !_isParishDioceseReady(code)){
+          _ensureParishDioceseDataLoaded(code).then(function(){
+            try{ _restoreMarkersForRouteDestinationSelection(); }catch(e){ console.warn('[가톨릭길동무]', e); }
+          }).catch(function(err){ console.warn('[가톨릭길동무] 성당 교구 데이터 로드 실패', err); });
+          return;
+        }
+        if(_activeDio && _activeDio!==code) _hideParishDioMkrs(_activeDio);
+        _activeDio=code;
+        _showParishDioMkrs(code);
+        _syncParishDioLabels();
+      }else{
+        _restoreMapMarkers();
+      }
+      _refreshRouteTmpMarkers();
+      return;
+    }
+    if(_mode==='shrine' || _mode==='retreat') _restoreAllCategoryMarkersForSelection();
+    else _restoreMapMarkers();
+    _refreshRouteTmpMarkers();
+  }catch(e){ console.warn('[가톨릭길동무]', e); }
+}
 function _setRoutePointFromItem(role,item,idx){
   if(!item||!item.lat||!item.lng) return;
   _clearRouteVisualOnly();
@@ -3656,6 +3686,7 @@ function _setRoutePointFromItem(role,item,idx){
     if(_mode==='shrine'&&_shouldShowRouteStartMarker()&&idx>=0&&_markers[idx]){ _markers[idx].marker.setImage(_mkrImgRoute('#ff0000','출')); _setRouteMarkerZ(idx,'start'); }
     _refreshRouteTmpMarkers();
     _showRouteGuideText(`도착 ${_getRouteGuideTarget()}를 탭하세요`);
+    _restoreMarkersForRouteDestinationSelection();
   }else{
     _restoreRouteMarkerVisual('end',_rE);
     _rE={idx:idx,name:item.name,lat:item.lat,lng:item.lng};
@@ -3840,7 +3871,10 @@ function _shouldShowRouteStartMarker(){
 function _refreshRouteTmpMarkers(){
   if(!_map) return;
   _clearRouteTmpMarkers();
-  const needStart = !!(_rS && _shouldShowRouteStartMarker() && (_mode!=='shrine' || _rS.idx<0 || !_markers[_rS.idx]));
+  const routeResultShowing = !!_polyline;
+  // 선택 단계의 출발지 임시 마커는 현위치 버튼 직접 클릭 때만 표시한다.
+  // 단, 실제 경로가 그려진 뒤에는 출발 방식과 관계없이 출발 마커를 보여 준다.
+  const needStart = !!(_rS && (routeResultShowing || _shouldShowRouteStartMarker()));
   const needEnd = !!(_rE && (_mode!=='shrine' || _rE.idx<0 || !_markers[_rE.idx]));
   if(needStart){
     _startTmpMkr = new _MM({
