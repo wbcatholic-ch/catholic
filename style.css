@@ -712,9 +712,9 @@ html.retreat-mode .region-search-btn {
   background: #f8f5ef;
   border-top: 1px solid var(--ui-line);
   border-bottom: 1px solid var(--ui-line);
-  position: static;
-  top: auto;
-  z-index: auto;
+  position: sticky;
+  top: 0;
+  z-index: 1;
   color: #b65a59;
 }
 
