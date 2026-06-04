@@ -2081,7 +2081,7 @@ function _ensureParishDataLoaded(){
 }
 _initParishDataFromGlobal();
 
-const _PRAYER_ASSET_VERSION='V3-72';
+const _PRAYER_ASSET_VERSION='V3-74';
 let _prayerModuleLoadPromise=null;
 function _isPrayerModuleReady(){
   return typeof window.initPrayerView === 'function' &&
@@ -2374,7 +2374,7 @@ const _TY={'A':'성지','B':'순례지','C':'순교 사적지'};
 
 let _shrineRawLoaded = false;
 let _shrineDataLoadPromise = null;
-const _SHRINE_ASSET_VERSION='V3-72';
+const _SHRINE_ASSET_VERSION='V3-74';
 let SHRINES = [];
 let JUKRIMGUL_IDX = -1;
 function _decodeShrineHomePage(hp){
@@ -3860,20 +3860,19 @@ function _routeEndMarkerColor(){
   return '#0000ff';
 }
 function _shouldShowRouteStartMarker(){
-  // 출발지 임시 마커는 길찾기 탭의 출발지 칸에서 '현위치' 버튼을
-  // 사용자가 직접 눌렀을 때만 표시한다. 자동 현재 위치, 지역검색 출발지,
-  // 성당/성지/피정의집을 출발지로 선택한 경우에는 출발 마커를 숨긴다.
-  return !!(_activeTab === 'route' &&
-    _routeStartMarkerExplicitCurrent &&
-    _rS && _rS.idx < 0 && _rS.showStartMarker === true &&
-    (_rS.name === '현재 위치' || _rS.name === '현위치'));
+  if(!(_activeTab === 'route' && _routeMode && _rS && _rS.lat && _rS.lng)) return false;
+  // 자동으로 잡힌 현재 위치는 선택 단계에서 숨긴다.
+  // 사용자가 출발지 칸의 현위치 버튼을 직접 누르거나, 목록/지도/지역검색에서
+  // 출발지를 직접 지정한 경우에는 도착지를 고르는 동안에도 출발 마커를 보여 준다.
+  if(_rS.isImplicitCurrentLocation && !_routeStartMarkerExplicitCurrent && _rS.showStartMarker !== true) return false;
+  return true;
 }
 function _refreshRouteTmpMarkers(){
   if(!_map) return;
   _clearRouteTmpMarkers();
   const routeResultShowing = !!_polyline;
-  // 선택 단계의 출발지 임시 마커는 현위치 버튼 직접 클릭 때만 표시한다.
-  // 단, 실제 경로가 그려진 뒤에는 출발 방식과 관계없이 출발 마커를 보여 준다.
+  // 실제 경로가 그려진 뒤에는 출발 방식과 관계없이 출발 마커를 보여 주고,
+  // 경로 선택 단계에서는 사용자가 직접 지정한 출발지만 출발 마커로 보여 준다.
   const needStart = !!(_rS && (routeResultShowing || _shouldShowRouteStartMarker()));
   const needEnd = !!(_rE && (_mode!=='shrine' || _rE.idx<0 || !_markers[_rE.idx]));
   if(needStart){
