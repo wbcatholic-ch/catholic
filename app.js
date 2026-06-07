@@ -5309,6 +5309,56 @@ function clearRoute(role){
   }
 }
 
+function _restoreParishMarkersForRouteReselect(){
+  if(_mode!=='parish' || !_map) return;
+  function showLoadedParishMarkers(){
+    try{
+      if(typeof _refreshParishDataFromLoadedDioceses==='function') _refreshParishDataFromLoadedDioceses();
+      if(typeof _clearParishNearbyMarkers==='function') _clearParishNearbyMarkers();
+      if(_paSelMkr){ try{ _paSelMkr.setMap(null); }catch(e){ console.warn('[가톨릭길동무]', e); } _paSelMkr=null; }
+      try{ _hideDioOverlays(); }catch(e){ console.warn('[가톨릭길동무]', e); }
+      try{
+        if(_parishIdleListener){
+          kakao.maps.event.removeListener(_parishIdleListener);
+          _parishIdleListener=null;
+        }
+      }catch(e){ console.warn('[가톨릭길동무]', e); }
+      if(!_PA_BY_DIO || !Object.keys(_PA_BY_DIO).length) _rebuildParishDioIndex();
+      Object.keys(_PA_BY_DIO||{}).forEach(function(code){
+        try{ _showParishDioMkrs(code); }catch(e){ console.warn('[가톨릭길동무]', e); }
+      });
+      try{
+        if(_parishIdleListener){
+          kakao.maps.event.removeListener(_parishIdleListener);
+          _parishIdleListener=null;
+        }
+      }catch(e){ console.warn('[가톨릭길동무]', e); }
+      _activeDio=null;
+    }catch(e){ console.warn('[가톨릭길동무]', e); }
+  }
+  showLoadedParishMarkers();
+  try{
+    if(typeof _ensureAllParishDiocesesLoaded==='function' && typeof _areAllParishDiocesesReady==='function' && !_areAllParishDiocesesReady()){
+      _ensureAllParishDiocesesLoaded().then(function(){
+        try{ showLoadedParishMarkers(); }catch(e){ console.warn('[가톨릭길동무]', e); }
+      }).catch(function(err){ console.warn('[가톨릭길동무] 전체 성당 마커 복구 실패', err); });
+    }
+  }catch(e){ console.warn('[가톨릭길동무]', e); }
+}
+
+function _restoreRouteReselectMarkers(regionStart){
+  try{
+    if(typeof _clearRegionResultMarkers==='function') _clearRegionResultMarkers();
+    if(_mode==='shrine' || _mode==='retreat') _restoreAllCategoryMarkersForSelection();
+    else if(_mode==='parish') _restoreParishMarkersForRouteReselect();
+    else _restoreMapMarkers();
+    if(regionStart && regionStart.lat && regionStart.lng && typeof _showRegionPlaceMarker==='function'){
+      const placeName = regionStart.placeName || String(regionStart.name || '검색지').replace(/^📍\s*/, '') || '검색지';
+      _showRegionPlaceMarker(regionStart.lat, regionStart.lng, placeName);
+    }
+  }catch(e){ console.warn('[가톨릭길동무]', e); }
+}
+
 function resetRoute(opts){
   opts = opts || {};
   const fromButton = !!opts.fromButton;
@@ -5335,11 +5385,12 @@ function resetRoute(opts){
   _clearRouteTmpMarkers();
   _showJukrimgulParkingMkr(false);
   _hideRouteGuide();
-  if(_mode==='shrine'||_mode==='retreat') _restoreAllCategoryMarkersForSelection();
+  if(fromButton) _restoreRouteReselectMarkers(regionStart);
+  else if(_mode==='shrine'||_mode==='retreat') _restoreAllCategoryMarkersForSelection();
   else _restoreMapMarkers();
 
-  // 다시선택 버튼: 뒤로가기처럼 지도를 도착지로 돌리되,
-  // 일반 장소 인포카드는 열지 않고 길찾기 선택 카드(출발/도착 입력 화면)를 유지한다.
+  // 다시선택 버튼: 지도 중심/줌은 그대로 두고, 경로선·결과·출/도 임시 마커만 정리한다.
+  // 지역검색 출발지는 유지하고, 성지/피정의집은 전체 일반 마커, 성당은 본당 마커만 복구한다.
   if(fromButton){
     if(_activeTab!=='route') openTab('route');
     const rs=$('sheet-route');
@@ -5353,30 +5404,8 @@ function resetRoute(opts){
       _regionName=regionStart.placeName || regionStart.name || _regionName;
     }
     _ensureCurrentLocationStart();
-    if(regionStart && keepRouteCenter && _map){
-      try{
-        // 지역검색 출발지는 유지하되, 다시선택 시 지도 중심을 보라색 검색 마커로
-        // 되돌리지 않는다. 사용자가 보고 있던 경로/도착지 부근의 중심을 유지한다.
-        if(keepRouteLevel !== null && typeof _map.setLevel === 'function') _map.setLevel(keepRouteLevel);
-        _map.setCenter(keepRouteCenter);
-      }catch(e){ console.warn("[가톨릭길동무]", e); }
-    }else if(destItem && destItem.lat && _map){
-      try{
-        // 다시선택은 새 출발/도착을 고르는 상태로 돌아가는 동작이므로
-        // 이전 도착지의 노란 선택 마커는 다시 표시하지 않는다.
-        if(_mode==='shrine') _clearShrineMarkerSel();
-        else if(_paSelMkr){ try{ _paSelMkr.setMap(null); }catch(e){ console.warn("[가톨릭길동무]", e); } _paSelMkr=null; }
-
-        const _items=_getCurrentItems();
-        const _idx=(typeof destItem.idx==='number' && destItem.idx>=0) ? destItem.idx : _items.findIndex(p=>Number(p.lat)===Number(destItem.lat) && Number(p.lng)===Number(destItem.lng));
-        const _target=(_idx>=0 && _items[_idx]) ? _items[_idx] : destItem;
-        if(_target && _target.lat && _target.lng && typeof _LL!=='undefined'){
-          const pos=new _LL(_target.lat,_target.lng);
-          if(typeof _map.panTo==='function') _map.panTo(pos);
-          else _map.setCenter(pos);
-        }
-      }catch(e){ console.warn("[가톨릭길동무]", e); }
-    }
+    // 다시선택은 지역검색과 길찾기 탭 모두에서 지도 중심/줌을 절대 변경하지 않는다.
+    // 이전 도착지나 보라색 지역검색 마커 기준으로 panTo/setCenter/setBounds를 실행하지 않는다.
     if(regionStart){
       try{
         // 노란 선택 마커는 다시 표시하지 않는다.
