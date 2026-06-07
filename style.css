@@ -4751,6 +4751,8 @@ html.pr-external-guide-active.oai-stability-veil::after {
   font-family:inherit;
   letter-spacing:-.04em;
 }
-.route-choice-btn.start{background:#fef2f2;color:#b91c1c;border-color:rgba(185,28,28,.18);}
-.route-choice-btn.end{background:#eff6ff;color:#1d4ed8;border-color:rgba(29,78,216,.18);}
-.route-choice-btn.cancel{background:#ffffff;color:#4b5563;border-color:rgba(107,114,128,.22);}
+.route-choice-btn.start{background:#991b1b;color:#fff;border-color:#7f1d1d;box-shadow:0 6px 14px rgba(127,29,29,.16);}
+.route-choice-btn.end{background:#1e3a8a;color:#fff;border-color:#1e40af;box-shadow:0 6px 14px rgba(30,64,175,.16);}
+.route-choice-btn.cancel{background:#374151;color:#fff;border-color:#1f2937;box-shadow:0 6px 14px rgba(31,41,55,.12);}
+.route-choice-btn.keep{background:#374151;color:#fff;border-color:#1f2937;box-shadow:0 6px 14px rgba(31,41,55,.12);}
+.route-choice-btn.danger{background:#991b1b;color:#fff;border-color:#7f1d1d;box-shadow:0 6px 14px rgba(127,29,29,.16);}

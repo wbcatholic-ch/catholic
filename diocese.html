@@ -131,7 +131,7 @@ header{flex-shrink:0;background:var(--d);border-bottom:none;z-index:30;
 /* ── 검색 뷰 ── */
 #search-view{position:absolute;inset:0;overflow-y:auto;padding:16px;display:none;background:var(--bg);}
 #search-view.on{display:block;}
-.ss{position:sticky;top:0;background:var(--bg);padding-bottom:12px;z-index:10;}
+.ss{position:sticky;top:0;background:var(--bg);padding:16px 16px 12px;margin:-16px -16px 0;z-index:10;}
 .sr{display:flex;gap:8px;}
 #si{flex:1;padding:0 14px;height:44px;border:1.5px solid var(--bdr);border-radius:10px;
   font-size:15px;font-family:inherit;background:var(--card);outline:none;color:var(--tx);}
@@ -139,7 +139,7 @@ header{flex-shrink:0;background:var(--d);border-bottom:none;z-index:30;
 #sb{padding:0 18px;height:44px;background:var(--d);color:white;border:none;border-radius:10px;
   font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;}
 #sb:hover{opacity:.88;}
-.sh{font-size:11px;color:var(--dim);margin-top:6px;line-height:1.6;}
+.sh{font-size:11px;color:#111827;margin-top:6px;line-height:1.6;font-weight:600;}
 #sres{margin-top:4px;}
 .se{text-align:center;padding:36px 0;color:var(--dim);font-size:13px;}
 /* 검색 결과 카드 — 기도문 .card 구조 적용 */
@@ -318,7 +318,7 @@ html.ios-device .c-bd{padding:10px 13px 12px!important;}
 html.ios-device .c-x{width:26px!important;height:26px!important;font-size:18px!important;}
 html.ios-device .c-dtbtn,
 html.ios-device .c-btn{min-height:38px!important;border-radius:10px!important;}
-html.ios-device #search-view .ss{padding:10px 11px!important;}
+html.ios-device #search-view .ss{padding:10px 11px!important;margin:-16px -16px 0!important;background:var(--bg)!important;}
 html.ios-device #search-view #si,
 html.ios-device #search-view #sb{height:38px!important;border-radius:10px!important;}
 html.ios-device #sres{padding:10px 11px!important;}
@@ -444,7 +444,7 @@ html.ios-device .cb{width:34px!important;height:34px!important;border-radius:10p
         <input id="si" type="text" placeholder="지역명 검색 (예 : 서울, 전주, 평창, 제주)" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" inputmode="search" enterkeyhint="done">
         <button id="sb" onclick="doSearch()">검색</button>
       </div>
-      <div class="sh">도 · 시 · 군 이름으로 검색 &nbsp;|&nbsp; 3개 관구 · 16개 교구</div>
+      <div class="sh">도·시·군·구 이름으로 검색</div>
     </div>
     <div id="sres"><div class="se">검색어를 입력하세요</div></div>
   </div>
@@ -1727,6 +1727,74 @@ function makeRow(disp,diocese,overlapDongs){
   return card;
 }
 
+const AMBIGUOUS_GU_STANDALONE=['중구','동구','서구','남구','북구'];
+const DIOCESE_DISTRICT_SEARCH=[
+  {display:'마산교구',d:'마산교구',aliases:['마산','마산교구']},
+  {display:'경남 창원시',d:'마산교구',aliases:['창원','창원시','경남창원','경남 창원','경남창원시','경남 창원시','경상남도창원','경상남도 창원','경상남도창원시','경상남도 창원시']},
+  {display:'경남 창원시 마산합포구',d:'마산교구',aliases:['마산합포구','창원마산합포구','창원 마산합포구','경남마산합포구','경남 마산합포구']},
+  {display:'경남 창원시 마산회원구',d:'마산교구',aliases:['마산회원구','창원마산회원구','창원 마산회원구','경남마산회원구','경남 마산회원구']},
+  {display:'경남 창원시 진해구',d:'마산교구',aliases:['진해','진해구','창원진해','창원 진해','창원진해구','창원 진해구','경남진해','경남 진해','경남진해구','경남 진해구']},
+
+  {display:'서울 중구',d:'서울대교구',aliases:['서울중구','서울 중구','서울특별시중구','서울특별시 중구']},
+
+  {display:'인천 중구',d:'인천교구',aliases:['인천중구','인천 중구','인천광역시중구','인천광역시 중구']},
+  {display:'인천 동구',d:'인천교구',aliases:['인천동구','인천 동구','인천광역시동구','인천광역시 동구']},
+  {display:'인천 서구',d:'인천교구',aliases:['인천서구','인천 서구','인천광역시서구','인천광역시 서구']},
+  {display:'인천 미추홀구',d:'인천교구',aliases:['미추홀','미추홀구','인천미추홀','인천 미추홀','인천미추홀구','인천 미추홀구','인천광역시미추홀구','인천광역시 미추홀구']},
+  {display:'인천 남동구',d:'인천교구',aliases:['남동','남동구','인천남동','인천 남동','인천남동구','인천 남동구','인천광역시남동구','인천광역시 남동구']},
+  {display:'인천 연수구',d:'인천교구',aliases:['연수','연수구','인천연수','인천 연수','인천연수구','인천 연수구','인천광역시연수구','인천광역시 연수구']},
+  {display:'인천 부평구',d:'인천교구',aliases:['부평','부평구','인천부평','인천 부평','인천부평구','인천 부평구','인천광역시부평구','인천광역시 부평구']},
+  {display:'인천 계양구',d:'인천교구',aliases:['계양','계양구','인천계양','인천 계양','인천계양구','인천 계양구','인천광역시계양구','인천광역시 계양구']},
+
+  {display:'대구 중구',d:'대구대교구',aliases:['대구중구','대구 중구','대구광역시중구','대구광역시 중구']},
+  {display:'대구 동구',d:'대구대교구',aliases:['대구동구','대구 동구','대구광역시동구','대구광역시 동구']},
+  {display:'대구 서구',d:'대구대교구',aliases:['대구서구','대구 서구','대구광역시서구','대구광역시 서구']},
+  {display:'대구 남구',d:'대구대교구',aliases:['대구남구','대구 남구','대구광역시남구','대구광역시 남구']},
+  {display:'대구 북구',d:'대구대교구',aliases:['대구북구','대구 북구','대구광역시북구','대구광역시 북구']},
+  {display:'대구 달서구',d:'대구대교구',aliases:['달서','달서구','대구달서','대구 달서','대구달서구','대구 달서구','대구광역시달서','대구광역시 달서','대구광역시달서구','대구광역시 달서구']},
+  {display:'대구 수성구',d:'대구대교구',aliases:['수성','수성구','대구수성','대구 수성','대구수성구','대구 수성구','대구광역시수성구','대구광역시 수성구']},
+
+  {display:'부산 중구',d:'부산교구',aliases:['부산중구','부산 중구','부산광역시중구','부산광역시 중구']},
+  {display:'부산 동구',d:'부산교구',aliases:['부산동구','부산 동구','부산광역시동구','부산광역시 동구']},
+  {display:'부산 서구',d:'부산교구',aliases:['부산서구','부산 서구','부산광역시서구','부산광역시 서구']},
+  {display:'부산 남구',d:'부산교구',aliases:['부산남구','부산 남구','부산광역시남구','부산광역시 남구']},
+  {display:'부산 북구',d:'부산교구',aliases:['부산북구','부산 북구','부산광역시북구','부산광역시 북구']},
+
+  {display:'광주 동구',d:'광주대교구',aliases:['광주동구','광주 동구','광주광역시동구','광주광역시 동구']},
+  {display:'광주 서구',d:'광주대교구',aliases:['광주서구','광주 서구','광주광역시서구','광주광역시 서구']},
+  {display:'광주 남구',d:'광주대교구',aliases:['광주남구','광주 남구','광주광역시남구','광주광역시 남구']},
+  {display:'광주 북구',d:'광주대교구',aliases:['광주북구','광주 북구','광주광역시북구','광주광역시 북구']},
+
+  {display:'대전 중구',d:'대전교구',aliases:['대전중구','대전 중구','대전광역시중구','대전광역시 중구']},
+  {display:'대전 동구',d:'대전교구',aliases:['대전동구','대전 동구','대전광역시동구','대전광역시 동구']},
+  {display:'대전 서구',d:'대전교구',aliases:['대전서구','대전 서구','대전광역시서구','대전광역시 서구']},
+  {display:'대전 유성구',d:'대전교구',aliases:['유성','유성구','대전유성','대전 유성','대전유성구','대전 유성구','대전광역시유성구','대전광역시 유성구']},
+  {display:'대전 대덕구',d:'대전교구',aliases:['대덕','대덕구','대전대덕','대전 대덕','대전대덕구','대전 대덕구','대전광역시대덕구','대전광역시 대덕구']},
+
+  {display:'울산 중구',d:'부산교구',aliases:['울산중구','울산 중구','울산광역시중구','울산광역시 중구']},
+  {display:'울산 동구',d:'부산교구',aliases:['울산동구','울산 동구','울산광역시동구','울산광역시 동구']},
+  {display:'울산 남구',d:'부산교구',aliases:['울산남구','울산 남구','울산광역시남구','울산광역시 남구']},
+  {display:'울산 북구',d:'부산교구',aliases:['울산북구','울산 북구','울산광역시북구','울산광역시 북구']},
+  {display:'울산 울주군',d:'부산교구',aliases:['울주','울주군','울산울주','울산 울주','울산울주군','울산 울주군','울산광역시울주군','울산광역시 울주군']}
+];
+function findDioceseDistrictMatches(q){
+  const rows=[];
+  const seen=new Set();
+  DIOCESE_DISTRICT_SEARCH.forEach(function(item){
+    const aliases=item.aliases||[];
+    if(!aliases.some(function(a){return String(a).replace(/\s+/g,'')===q;})) return;
+    const key=(item.display||'')+'|'+item.d;
+    if(seen.has(key)) return;
+    seen.add(key);
+    rows.push(item);
+  });
+  return rows;
+}
+function renderSearchRows(res, rows){
+  res.innerHTML='';
+  rows.forEach(function(i){ if(DIOCESE_META[i.d]) res.appendChild(makeRow(i.display||i.k, i.d)); });
+}
+
 function doSearch(){
   try{ document.activeElement && document.activeElement.blur && document.activeElement.blur(); }catch(e){}
   const raw=document.getElementById('si').value.trim();
@@ -1734,6 +1802,13 @@ function doSearch(){
   if(!raw){res.innerHTML='<div class="se">검색어를 입력하세요</div>';return;}
 
   const q=raw.replace(/\s+/g,'');
+
+  if(AMBIGUOUS_GU_STANDALONE.includes(q)){
+    res.innerHTML='<div class="se">도시명과 함께 입력하세요<br>예: 대구중구, 서울중구, 부산남구</div>';
+    return;
+  }
+  const districtMatches=findDioceseDistrictMatches(q);
+  if(districtMatches.length){renderSearchRows(res,districtMatches);return;}
 
   for(const [city,aliases] of Object.entries(REGION_OVERLAP_PLAIN)){
     if(aliases.map(a=>a.replace(/\s+/g,'')).includes(q)){
@@ -1989,7 +2064,7 @@ window.addEventListener('pageshow',function(){
   window.resetDioceseFirstPage = function(){
     try{ sessionStorage.removeItem('listScroll'); }catch(e){}
     var si=document.getElementById('si'); if(si) si.value='';
-    var sres=document.getElementById('sres'); if(sres) sres.innerHTML='<div class="se">교구명, 지역명, 주소로 검색하세요</div>';
+    var sres=document.getElementById('sres'); if(sres) sres.innerHTML='<div class="se">도·시·군·구 이름으로 검색</div>';
     var lv=document.getElementById('list-view'); if(lv) lv.scrollTop=0;
     var sv=document.getElementById('search-view'); if(sv) sv.scrollTop=0;
     var btn=document.querySelector('.tab[data-tab="gwangu"]'); if(btn) btn.click();

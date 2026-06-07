@@ -2081,7 +2081,7 @@ function _ensureParishDataLoaded(){
 }
 _initParishDataFromGlobal();
 
-const _PRAYER_ASSET_VERSION='V3-76';
+const _PRAYER_ASSET_VERSION='V3-78';
 let _prayerModuleLoadPromise=null;
 function _isPrayerModuleReady(){
   return typeof window.initPrayerView === 'function' &&
@@ -2374,7 +2374,7 @@ const _TY={'A':'성지','B':'순례지','C':'순교 사적지'};
 
 let _shrineRawLoaded = false;
 let _shrineDataLoadPromise = null;
-const _SHRINE_ASSET_VERSION='V3-76';
+const _SHRINE_ASSET_VERSION='V3-78';
 let SHRINES = [];
 let JUKRIMGUL_IDX = -1;
 function _decodeShrineHomePage(hp){
@@ -3756,9 +3756,9 @@ function _prepareRouteChoiceSetUI(){
   const end=$('route-choice-end');
   const cancel=$('route-choice-cancel');
   if(desc) desc.textContent='이 장소를 길찾기에 어떻게 사용할까요?';
-  if(start){ start.textContent='출발지로 설정'; start.style.display=''; }
-  if(end){ end.textContent='도착지로 설정'; end.style.display=''; }
-  if(cancel){ cancel.textContent='취소'; cancel.style.display=''; }
+  if(start){ start.className='route-choice-btn start'; start.textContent='출발지로 설정'; start.style.display=''; }
+  if(end){ end.className='route-choice-btn end'; end.textContent='도착지로 설정'; end.style.display=''; }
+  if(cancel){ cancel.className='route-choice-btn cancel'; cancel.textContent='취소'; cancel.style.display=''; }
 }
 function _prepareRouteCancelUI(role){
   const dlg=$('route-choice-modal');
@@ -3772,8 +3772,8 @@ function _prepareRouteCancelUI(role){
   const cancel=$('route-choice-cancel');
   if(title) title.textContent=role==='start'?'출발지를 취소하시겠습니까?':'도착지를 취소하시겠습니까?';
   if(desc) desc.textContent='선택을 유지하거나 해당 지점만 취소할 수 있습니다.';
-  if(start){ start.textContent='유지'; start.style.display=''; }
-  if(end){ end.textContent=role==='start'?'출발지 취소':'도착지 취소'; end.style.display=''; }
+  if(start){ start.className='route-choice-btn keep'; start.textContent='유지'; start.style.display=''; }
+  if(end){ end.className='route-choice-btn danger'; end.textContent=role==='start'?'출발지 취소':'도착지 취소'; end.style.display=''; }
   if(cancel) cancel.style.display='none';
 }
 function _openRoutePointCancelChoice(role){
@@ -5333,19 +5333,27 @@ function _exitRouteMode(){
 
 function setMyLocAsStart(){
   _routeRegionStart=null;
+  function applyCurrentStart(lat,lng){
+    _setMyLoc(lat,lng);
+    _clearRouteTmpMarkers();
+    if(_mode==='shrine'&&_rS&&_rS.idx>=0&&_markers[_rS.idx]) _markers[_rS.idx].marker.setImage(_mkrImg(_typeColor(_markers[_rS.idx].shrine.type),false));
+    _routeStartMarkerExplicitCurrent=true;
+    _rS={idx:-1,name:'현재 위치',lat:lat,lng:lng,isImplicitCurrentLocation:false,showStartMarker:true};
+    _setRouteLabel('start','현위치');
+    _refreshRouteTmpMarkers();
+    if(_rE) _updateSearchBtn();
+    else {
+      _showRouteGuideText(`도착 ${_getRouteGuideTarget()}를 탭하세요`);
+    }
+  }
+  // 이미 앱이 현재 위치를 알고 있으면 GPS 재조회 대기 없이 즉시 출발지로 반영한다.
+  if(_myLat&&_myLng){
+    applyCurrentStart(_myLat,_myLng);
+    return;
+  }
   if(!_GEO) return alert('위치 정보를 지원하지 않습니다.');
   _GEO.getCurrentPosition(p=>{
-  _setMyLoc(p.coords.latitude,p.coords.longitude);
-  _clearRouteTmpMarkers();
-  if(_mode==='shrine'&&_rS&&_rS.idx>=0&&_markers[_rS.idx]) _markers[_rS.idx].marker.setImage(_mkrImg(_typeColor(_markers[_rS.idx].shrine.type),false));
-  _routeStartMarkerExplicitCurrent=true;
-  _rS={idx:-1,name:'현재 위치',lat:p.coords.latitude,lng:p.coords.longitude,isImplicitCurrentLocation:false,showStartMarker:true};
-  _setRouteLabel('start','현위치');
-  _refreshRouteTmpMarkers();
-  if(_rE) _updateSearchBtn();
-  else {
-   _showRouteGuideText(`도착 ${_getRouteGuideTarget()}를 탭하세요`);
-  }
+    applyCurrentStart(p.coords.latitude,p.coords.longitude);
   },()=>alert('위치를 가져올 수 없습니다.'),_GO1);
 }
 
