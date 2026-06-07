@@ -2081,7 +2081,7 @@ function _ensureParishDataLoaded(){
 }
 _initParishDataFromGlobal();
 
-const _PRAYER_ASSET_VERSION='V3-74';
+const _PRAYER_ASSET_VERSION='V3-75';
 let _prayerModuleLoadPromise=null;
 function _isPrayerModuleReady(){
   return typeof window.initPrayerView === 'function' &&
@@ -2374,7 +2374,7 @@ const _TY={'A':'성지','B':'순례지','C':'순교 사적지'};
 
 let _shrineRawLoaded = false;
 let _shrineDataLoadPromise = null;
-const _SHRINE_ASSET_VERSION='V3-74';
+const _SHRINE_ASSET_VERSION='V3-75';
 let SHRINES = [];
 let JUKRIMGUL_IDX = -1;
 function _decodeShrineHomePage(hp){
@@ -4981,8 +4981,9 @@ function _focusRegionSearchCenter(lat,lng){
     else _map.setCenter(new _LL(lat,lng));
   }catch(e){ console.warn('[가톨릭길동무]', e); }
 }
-function _showRegionResultsOnMap(items, lat, lng, name){
+function _showRegionResultsOnMap(items, lat, lng, name, opts){
   if(!_map) return;
+  opts = opts || {};
   items=Array.isArray(items)?items:[];
   _rememberRegionStart(lat,lng,name);
   _showRegionPlaceMarker(lat,lng,name);
@@ -5007,7 +5008,10 @@ function _showRegionResultsOnMap(items, lat, lng, name){
       });
     }
   }catch(e){ console.warn('[가톨릭길동무]', e); }
-  _focusRegionSearchCenter(lat,lng);
+  // 지역검색 결과 지도 표시는 기본적으로 검색 위치를 중심으로 맞춘다.
+  // 단, 길찾기 모드에 들어간 뒤에는 비동기 지역검색 결과가 늦게 도착해도
+  // 다시선택/경로 화면의 중심을 보라색 검색 마커로 되돌리지 않는다.
+  if(opts.focus !== false && (!_routeMode || opts.forceFocus === true)) _focusRegionSearchCenter(lat,lng);
 }
 function _openRegionMapFromCard(){
   if(!_regionLat || !_regionLng) return;
@@ -5313,6 +5317,8 @@ function resetRoute(opts){
   // 도착지 위치·인덱스와 지역검색 출발지 기억 (리셋 전에 저장)
   const destItem = (!fresh && _rE) ? {lat:_rE.lat, lng:_rE.lng, idx:_rE.idx} : null;
   const regionStart = (!fresh && _routeRegionStart && _routeRegionStart.lat) ? Object.assign({}, _routeRegionStart) : null;
+  const keepRouteCenter = (fromButton && regionStart && _map && typeof _map.getCenter === 'function') ? _map.getCenter() : null;
+  const keepRouteLevel = (fromButton && regionStart && _map && typeof _map.getLevel === 'function') ? _map.getLevel() : null;
 
   if(_mode==='shrine'){
     if(_rS&&_rS.idx>=0&&_markers[_rS.idx]) _markers[_rS.idx].marker.setImage(_mkrImg(_typeColor(_markers[_rS.idx].shrine.type),false));
@@ -5338,7 +5344,7 @@ function resetRoute(opts){
     if(_activeTab!=='route') openTab('route');
     const rs=$('sheet-route');
     if(rs){ rs.style.display=''; rs.classList.add('open'); }
-    closeInfoCard();
+    closeInfoCard({keepMap:true});
     if(regionStart){
       _routeRegionStart=Object.assign({}, regionStart);
       _regionLat=regionStart.lat;
@@ -5347,7 +5353,14 @@ function resetRoute(opts){
       _regionName=regionStart.placeName || regionStart.name || _regionName;
     }
     _ensureCurrentLocationStart();
-    if(destItem && destItem.lat && _map){
+    if(regionStart && keepRouteCenter && _map){
+      try{
+        // 지역검색 출발지는 유지하되, 다시선택 시 지도 중심을 보라색 검색 마커로
+        // 되돌리지 않는다. 사용자가 보고 있던 경로/도착지 부근의 중심을 유지한다.
+        if(keepRouteLevel !== null && typeof _map.setLevel === 'function') _map.setLevel(keepRouteLevel);
+        _map.setCenter(keepRouteCenter);
+      }catch(e){ console.warn("[가톨릭길동무]", e); }
+    }else if(destItem && destItem.lat && _map){
       try{
         // 다시선택은 새 출발/도착을 고르는 상태로 돌아가는 동작이므로
         // 이전 도착지의 노란 선택 마커는 다시 표시하지 않는다.
@@ -5362,6 +5375,13 @@ function resetRoute(opts){
           if(typeof _map.panTo==='function') _map.panTo(pos);
           else _map.setCenter(pos);
         }
+      }catch(e){ console.warn("[가톨릭길동무]", e); }
+    }
+    if(regionStart){
+      try{
+        // 노란 선택 마커는 다시 표시하지 않는다.
+        if(_mode==='shrine') _clearShrineMarkerSel();
+        else if(_paSelMkr){ try{ _paSelMkr.setMap(null); }catch(e){ console.warn("[가톨릭길동무]", e); } _paSelMkr=null; }
       }catch(e){ console.warn("[가톨릭길동무]", e); }
     }
     return;
