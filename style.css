@@ -4739,12 +4739,12 @@ html.pr-external-guide-active.oai-stability-veil::after {
 .route-choice-actions{
   display:flex;
   flex-direction:column;
-  gap:8px;
+  gap:9px;
 }
 .route-choice-btn{
   width:100%;
-  min-height:52px;
-  padding:0 14px;
+  min-height:58px;
+  padding:0 16px;
   border-radius:14px;
   border:1.5px solid transparent;
   font-size:15px;
