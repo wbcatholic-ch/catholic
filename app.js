@@ -2081,7 +2081,7 @@ function _ensureParishDataLoaded(){
 }
 _initParishDataFromGlobal();
 
-const _PRAYER_ASSET_VERSION='V3-75';
+const _PRAYER_ASSET_VERSION='V3-76';
 let _prayerModuleLoadPromise=null;
 function _isPrayerModuleReady(){
   return typeof window.initPrayerView === 'function' &&
@@ -2374,7 +2374,7 @@ const _TY={'A':'성지','B':'순례지','C':'순교 사적지'};
 
 let _shrineRawLoaded = false;
 let _shrineDataLoadPromise = null;
-const _SHRINE_ASSET_VERSION='V3-75';
+const _SHRINE_ASSET_VERSION='V3-76';
 let SHRINES = [];
 let JUKRIMGUL_IDX = -1;
 function _decodeShrineHomePage(hp){
@@ -3664,6 +3664,20 @@ function _restoreRouteMarkerVisual(role, routeItem){
     }
   }catch(e){ console.warn('[가톨릭길동무]', e); }
 }
+function _refreshExistingRoutePointMarkerImages(){
+  try{
+    if(_mode!=='shrine') return;
+    if(_rS && !_rS.isRegionStart && _shouldShowRouteStartMarker() && _rS.idx>=0 && _markers[_rS.idx]){
+      _markers[_rS.idx].marker.setImage(_mkrImgRoute('#ff0000','출'));
+      _setRouteMarkerZ(_rS.idx,'start');
+    }
+    if(_rE && _rE.idx>=0 && _markers[_rE.idx]){
+      const s=_markers[_rE.idx].shrine;
+      _markers[_rE.idx].marker.setImage(_mkrImgRoute(_typeColor(s.type),'도'));
+      _setRouteMarkerZ(_rE.idx,'end');
+    }
+  }catch(e){ console.warn('[가톨릭길동무]', e); }
+}
 function _restoreMarkersForRouteDestinationSelection(){
   try{
     if(!_map || !_routeMode || !_rS || _rE || _polyline) return;
@@ -3702,12 +3716,11 @@ function _setRoutePointFromItem(role,item,idx){
     _routeRegionStart=null;
     _routeStartMarkerExplicitCurrent=false;
     _rS={idx:idx,name:item.name,lat:item.lat,lng:item.lng};
-    _rE=null;
     _setRouteLabel('start',item.name);
-    _setRouteLabel('end','');
     if(_mode==='shrine'&&_shouldShowRouteStartMarker()&&idx>=0&&_markers[idx]){ _markers[idx].marker.setImage(_mkrImgRoute('#ff0000','출')); _setRouteMarkerZ(idx,'start'); }
     _refreshRouteTmpMarkers();
-    _showRouteGuideText(`도착 ${_getRouteGuideTarget()}를 탭하세요`);
+    if(_rE){ _hideRouteGuide(); _updateSearchBtn(); }
+    else { _showRouteGuideText(`도착 ${_getRouteGuideTarget()}를 탭하세요`); }
     _restoreMarkersForRouteDestinationSelection();
   }else{
     _restoreRouteMarkerVisual('end',_rE);
@@ -3715,8 +3728,8 @@ function _setRoutePointFromItem(role,item,idx){
     if(_mode==='shrine'&&idx>=0&&_markers[idx]){ _markers[idx].marker.setImage(_mkrImgRoute(_typeColor(item.type),'도')); _setRouteMarkerZ(idx,'end'); }
     _setRouteLabel('end',item.name);
     _refreshRouteTmpMarkers();
-    _hideRouteGuide();
-    _updateSearchBtn();
+    if(_rS){ _hideRouteGuide(); _updateSearchBtn(); }
+    else { _showRouteGuideText(`출발 ${_getRouteGuideTarget()}를 탭하세요`); }
   }
 }
 function _infoRouteHasFixedStart(){
@@ -3730,6 +3743,54 @@ function _infoRouteHasFixedStart(){
   }catch(e){ console.warn('[가톨릭길동무]', e); }
   return false;
 }
+let _routeChoiceMode = 'set';
+let _routeCancelRole = null;
+
+function _prepareRouteChoiceSetUI(){
+  const dlg=$('route-choice-modal');
+  if(!dlg) return;
+  _routeChoiceMode='set';
+  _routeCancelRole=null;
+  const desc=dlg.querySelector('.route-choice-desc');
+  const start=$('route-choice-start');
+  const end=$('route-choice-end');
+  const cancel=$('route-choice-cancel');
+  if(desc) desc.textContent='이 장소를 길찾기에 어떻게 사용할까요?';
+  if(start){ start.textContent='출발지로 설정'; start.style.display=''; }
+  if(end){ end.textContent='도착지로 설정'; end.style.display=''; }
+  if(cancel){ cancel.textContent='취소'; cancel.style.display=''; }
+}
+function _prepareRouteCancelUI(role){
+  const dlg=$('route-choice-modal');
+  if(!dlg) return;
+  _routeChoiceMode='cancel';
+  _routeCancelRole=role;
+  const title=$('route-choice-name');
+  const desc=dlg.querySelector('.route-choice-desc');
+  const start=$('route-choice-start');
+  const end=$('route-choice-end');
+  const cancel=$('route-choice-cancel');
+  if(title) title.textContent=role==='start'?'출발지를 취소하시겠습니까?':'도착지를 취소하시겠습니까?';
+  if(desc) desc.textContent='선택을 유지하거나 해당 지점만 취소할 수 있습니다.';
+  if(start){ start.textContent='유지'; start.style.display=''; }
+  if(end){ end.textContent=role==='start'?'출발지 취소':'도착지 취소'; end.style.display=''; }
+  if(cancel) cancel.style.display='none';
+}
+function _openRoutePointCancelChoice(role){
+  const dlg=$('route-choice-modal');
+  if(!dlg){ clearRoute(role); return; }
+  _prepareRouteCancelUI(role);
+  dlg.classList.add('open');
+  try{ document.activeElement&&document.activeElement.blur(); }catch(e){ console.warn('[가톨릭길동무]', e); }
+}
+function _handleRouteChoiceStart(){
+  if(_routeChoiceMode==='cancel'){ _closeInfoRouteChoice(); return; }
+  _setInfoRouteStart();
+}
+function _handleRouteChoiceEnd(){
+  if(_routeChoiceMode==='cancel'){ const role=_routeCancelRole; _closeInfoRouteChoice(); if(role) clearRoute(role); return; }
+  _setInfoRouteEnd();
+}
 function _openInfoRouteChoice(){
   if(!_curInfoItem) return;
   if(_infoRouteHasFixedStart()){
@@ -3738,6 +3799,7 @@ function _openInfoRouteChoice(){
   }
   const dlg=$('route-choice-modal');
   if(!dlg){ openInAppRoute(); return; }
+  _prepareRouteChoiceSetUI();
   const name=$('route-choice-name');
   if(name) name.textContent=_curInfoItem.item.name||'';
   dlg.classList.add('open');
@@ -3746,7 +3808,11 @@ function _openInfoRouteChoice(){
 function _closeInfoRouteChoice(){
   const dlg=$('route-choice-modal');
   if(dlg) dlg.classList.remove('open');
+  _routeChoiceMode='set';
+  _routeCancelRole=null;
+  _prepareRouteChoiceSetUI();
 }
+try{ window._closeInfoRouteChoice=_closeInfoRouteChoice; window._openRoutePointCancelChoice=_openRoutePointCancelChoice; }catch(e){ console.warn('[가톨릭길동무]', e); }
 function _setInfoRouteStart(){
   if(!_curInfoItem) return;
   const item=_curInfoItem.item, idx=_curInfoItem.idx;
@@ -3892,6 +3958,7 @@ function _shouldShowRouteStartMarker(){
 function _refreshRouteTmpMarkers(){
   if(!_map) return;
   _clearRouteTmpMarkers();
+  _refreshExistingRoutePointMarkerImages();
   const routeResultShowing = !!_polyline;
   // 실제 경로가 그려진 뒤에는 출발 방식과 관계없이 출발 마커를 보여 주고,
   // 경로 선택 단계에서는 사용자가 직접 지정한 출발지만 출발 마커로 보여 준다.
@@ -3903,6 +3970,7 @@ function _refreshRouteTmpMarkers(){
       image:_mkrImgRoute('#ff0000','출'),
       zIndex:340
     });
+    kakao.maps.event.addListener(_startTmpMkr,'click',function(){ _openRoutePointCancelChoice('start'); });
     _startTmpMkr.setMap(_map);
   }
   if(needEnd){
@@ -3911,6 +3979,7 @@ function _refreshRouteTmpMarkers(){
       image:_mkrImgRoute(_routeEndMarkerColor(),'도'),
       zIndex:320
     });
+    kakao.maps.event.addListener(_endTmpMkr,'click',function(){ _openRoutePointCancelChoice('end'); });
     _endTmpMkr.setMap(_map);
   }
 }
@@ -4992,6 +5061,11 @@ function _showRegionPlaceMarker(lat,lng,name){
       title:name||'검색 위치',
       zIndex:360
     });
+    kakao.maps.event.addListener(_regionMarker,'click',function(){
+      try{
+        if(_routeMode && _rS && _rS.isRegionStart) _openRoutePointCancelChoice('start');
+      }catch(e){ console.warn('[가톨릭길동무]', e); }
+    });
     _regionMarker.setMap(_map);
   }catch(e){ console.warn('[가톨릭길동무]', e); }
 }
@@ -5315,15 +5389,37 @@ function swapRoute(){
   if(_rS&&_rE) _updateSearchBtn();
 }
 
+function _clearRouteResultOnly(){
+  try{
+    _hide($('rs-result'));
+    const hint=$('rs-hint'); if(hint) hint.style.display='block';
+    const sBtn=$('rs-search-btn'); if(sBtn) sBtn.style.display='none';
+    if(_polyline){ _polyline.setMap(null); _polyline=null; }
+    _showJukrimgulParkingMkr(false);
+    _restoreRouteSelectionMarkersAfterReset();
+  }catch(e){ console.warn('[가톨릭길동무]', e); }
+}
 function clearRoute(role){
+  if(role==='start'&&_rS){
+    if(_mode==='shrine'&&_rS.idx>=0&&_markers[_rS.idx]) _markers[_rS.idx].marker.setImage(_mkrImg(_typeColor(_markers[_rS.idx].shrine.type),false));
+    _rS=null;
+    _routeStartMarkerExplicitCurrent=false;
+    _routeRegionStart=null;
+    _setRouteLabel('start','');
+    _clearRouteResultOnly();
+    _refreshRouteTmpMarkers();
+    if(_rE) _showRouteGuideText(`출발 ${_getRouteGuideTarget()}를 탭하세요`);
+    else _showRouteGuideText(`출발지를 탭하거나 지도에서 ${_getRouteGuideTarget()}를 선택하세요`);
+    return;
+  }
   if(role==='end'&&_rE){
-  if(_mode==='shrine'&&_rE.idx>=0&&_markers[_rE.idx]) _markers[_rE.idx].marker.setImage(_mkrImg(_typeColor(_markers[_rE.idx].shrine.type),false));
-  _rE=null;
-  _setRouteLabel('end','');
-  _hide($('rs-result'));
-  if(_polyline){_polyline.setMap(null);_polyline=null;}
-  _refreshRouteTmpMarkers();
-  _restoreMapMarkers();
+    if(_mode==='shrine'&&_rE.idx>=0&&_markers[_rE.idx]) _markers[_rE.idx].marker.setImage(_mkrImg(_typeColor(_markers[_rE.idx].shrine.type),false));
+    _rE=null;
+    _setRouteLabel('end','');
+    _clearRouteResultOnly();
+    _refreshRouteTmpMarkers();
+    if(_rS) _showRouteGuideText(`도착 ${_getRouteGuideTarget()}를 탭하세요`);
+    else _showRouteGuideText(`출발지를 탭하거나 지도에서 ${_getRouteGuideTarget()}를 선택하세요`);
   }
 }
 
@@ -5393,14 +5489,32 @@ function resetRoute(opts){
   }
 }
 
+function _routePointMatchesItem(point, idx, item){
+  if(!point) return false;
+  if(typeof point.idx==='number' && point.idx>=0 && point.idx===idx) return true;
+  if(item && point.lat && point.lng){
+    return Number(point.lat)===Number(item.lat) && Number(point.lng)===Number(item.lng);
+  }
+  return false;
+}
 function _selectRouteItem(idx){
   const items=_getCurrentItems();
   const s=items[idx];
   if(!s||!s.lat||!s.lng) return;
+  if(_routePointMatchesItem(_rS,idx,s)){
+    _openRoutePointCancelChoice('start');
+    return;
+  }
+  if(_routePointMatchesItem(_rE,idx,s)){
+    _openRoutePointCancelChoice('end');
+    return;
+  }
   const hasStart=_routeHasVisibleStart();
+  const hasEnd=!!(_rE&&_rE.lat&&_rE.lng);
   if(!hasStart){
     _setRoutePointFromItem('start',s,idx);
     if(!_activeTab||_activeTab!=='route') openTab('route');
+    if(hasEnd) _updateSearchBtn();
     return;
   }
   _setRoutePointFromItem('end',s,idx);
@@ -6228,8 +6342,8 @@ document.addEventListener('DOMContentLoaded', function bindEvents() {
   // ── 검색 모달 ──
   on('sm-close-btn', 'click', function() { closeSearchModal(); });
   on('sm-map-select-btn', 'click', function() { selectMapFromSearchModal(); });
-  on('route-choice-start', 'click', function() { _setInfoRouteStart(); });
-  on('route-choice-end', 'click', function() { _setInfoRouteEnd(); });
+  on('route-choice-start', 'click', function() { _handleRouteChoiceStart(); });
+  on('route-choice-end', 'click', function() { _handleRouteChoiceEnd(); });
   on('route-choice-cancel', 'click', function() { _closeInfoRouteChoice(); });
   on('route-choice-backdrop', 'click', function() { _closeInfoRouteChoice(); });
   on('sm-inp', 'input', function() { onSmInp(this.value); });

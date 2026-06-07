@@ -203,6 +203,13 @@
     el = $b('exit-dlg');
     if(el && el.classList.contains('open')){ el.classList.remove('open'); return true; }
 
+    el = $b('route-choice-modal');
+    if(el && el.classList.contains('open')){
+      if(typeof window._closeInfoRouteChoice==='function') window._closeInfoRouteChoice();
+      else el.classList.remove('open');
+      return true;
+    }
+
     el = $b('srch-modal');
     if(el && el.classList.contains('open')){
       if(typeof window.closeSearchModal==='function') window.closeSearchModal();
