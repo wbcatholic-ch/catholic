@@ -5518,7 +5518,7 @@ html.app-active #cover-diocese-box { display: none !important; }
 }
 
 
-/* V3-101: 교구 미설정 시 커버 안내 배너(WebView 기준) */
+/* V3-102: 교구 미설정 시 커버 안내 배너(WebView 기준) */
 #cover .my-diocese-setup-banner {
   display: none !important;
   position: absolute !important;
@@ -5615,7 +5615,7 @@ html.app-active #cover-diocese-box { display: none !important; }
 }
 
 
-/* V3-101: 나의 교구 우선 표시 */
+/* V3-102: 나의 교구 우선 표시 */
 .filter-btn.my-diocese-filter,
 .sm-fb.my-diocese-filter {
   border-color: #B7791F !important;
@@ -5688,4 +5688,35 @@ html.app-active #cover-diocese-box { display: none !important; }
   line-height: 1.1;
   letter-spacing: -.04em;
   vertical-align: 1px;
+}
+
+
+/* V3-102: 성당 목록 상단 빈 영역 정리 + 관구교구 검색 카드 잘림 보정 */
+html.parish-mode #list-body{
+  padding-top:0 !important;
+}
+html.parish-mode #list-body .dio-hd:first-child{
+  margin-top:0 !important;
+}
+#search-view .si-r-top,
+#list-view .lv-top{
+  align-items:flex-start !important;
+}
+#search-view .si-r-op,
+#list-view .lv-op{
+  white-space:normal !important;
+  overflow:visible !important;
+  text-overflow:clip !important;
+  line-height:1.35 !important;
+  word-break:keep-all !important;
+  text-align:right !important;
+  max-width:48% !important;
+}
+#search-view .srow,
+#list-view .lv-body{
+  align-items:flex-start !important;
+}
+#search-view .si-r-foot,
+#list-view .lv-foot{
+  min-height:42px !important;
 }
