@@ -5764,7 +5764,7 @@ html.parish-mode #list-body .dio-hd:first-child{
 @media(max-width:420px){#route-choice-modal .route-choice-panel{width:calc(100vw - 36px)!important;padding:18px 14px 16px!important;}#route-choice-modal .route-choice-btn{min-height:56px!important;font-size:14.5px!important;}}
 
 
-/* V3-108: 커버 카테고리 이모지와 카테고리 헤더는 글자크기 조절에서 제외 */
+/* V3-111: 커버 카테고리 이모지와 카테고리 헤더는 글자크기 조절에서 제외 */
 html.oai-font-global #cover .cover-grid .cover-card .cover-emoji{
   font-size:var(--cover-emoji-size,40px)!important;
   background:transparent!important;
@@ -5819,4 +5819,66 @@ html.oai-font-global #prayer-bar-ico{
   width:42px!important;
   height:42px!important;
   min-width:42px!important;
+}
+
+
+/* V3-111: 성당·성지·피정의집 상부 탭/카테고리 헤더 고정 */
+html.oai-font-global #app #tabbar .tab-btn{
+  font-size:13px!important;
+  line-height:1.1!important;
+}
+html.oai-font-global #app #tabbar .tab-icon{
+  font-size:20px!important;
+  line-height:1!important;
+}
+html.oai-font-global #app #tabbar .tab-btn.active .tab-icon{
+  font-size:22px!important;
+}
+html.oai-font-global #app #tabbar .tab-btn span:not(.tab-icon){
+  font-size:13px!important;
+  line-height:1.1!important;
+}
+
+/* CSS로 그리는 십자가 헤더는 실제 텍스트 십자가를 다시 숨겨 중복 표시를 막는다 */
+html.oai-font-global #web-view .module-bar-ico,
+html.oai-font-global #trail-view .module-bar-ico,
+html.oai-font-global #qna-view .module-bar-ico,
+html.oai-font-global #diocese-view .module-bar-ico{
+  font-size:0!important;
+  line-height:0!important;
+  color:transparent!important;
+  overflow:hidden!important;
+}
+html.oai-font-global #web-view .module-bar-ico::before,
+html.oai-font-global #trail-view .module-bar-ico::before,
+html.oai-font-global #qna-view .module-bar-ico::before,
+html.oai-font-global #diocese-view .module-bar-ico::before{
+  width:3px!important;
+  height:24px!important;
+}
+html.oai-font-global #web-view .module-bar-ico::after,
+html.oai-font-global #trail-view .module-bar-ico::after,
+html.oai-font-global #qna-view .module-bar-ico::after,
+html.oai-font-global #diocese-view .module-bar-ico::after{
+  width:14px!important;
+  height:3px!important;
+}
+
+/* 카테고리 내부 헤더 제목/아이콘은 글자 크기 조절과 분리 */
+html.oai-font-global #app .sheet-hd .sheet-title,
+html.oai-font-global #srch-modal .sm-hd .sm-title,
+html.oai-font-global #missa-bar-title,
+html.oai-font-global #diocese-bar-title,
+html.oai-font-global #prayer-bar-ttl,
+html.oai-font-global #prayer-bar .module-bar-title,
+html.oai-font-global #web-view .module-bar-title,
+html.oai-font-global #trail-view .module-bar-title,
+html.oai-font-global #qna-view .module-bar-title,
+html.oai-font-global #diocese-view .module-bar-title{
+  font-size:20px!important;
+  line-height:1.24!important;
+}
+html.oai-font-global #app .sheet-hd .sheet-title,
+html.oai-font-global #srch-modal .sm-hd .sm-title{
+  font-size:18px!important;
 }

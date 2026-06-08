@@ -254,7 +254,7 @@ html.oai-dio-external-return *{transition:none!important;animation:none!importan
 /* V3: 부모 앱에서 복귀 상태를 복원하므로 iframe 자체 전체 덮개는 만들지 않는다. */
 
 
-/* V3-108: 관구교구 지역검색 중복 안내/결과 카드 잘림 방지 */
+/* V3-111: 관구교구 지역검색 중복 안내/결과 카드 잘림 방지 */
 #search-view,
 #list-view{
   overflow-x:hidden!important;
@@ -337,7 +337,7 @@ html.oai-dio-external-return *{transition:none!important;animation:none!importan
 }
 
 
-/* V3-108: 관구교구 지역검색 안내/결과 박스 안쪽 여백 확보 */
+/* V3-111: 관구교구 지역검색 안내/결과 박스 안쪽 여백 확보 */
 #search-view #sres{
   width:100%!important;
   max-width:100%!important;
@@ -390,7 +390,7 @@ html.oai-dio-external-return *{transition:none!important;animation:none!importan
 }
 
 
-/* V3-108: 관구교구 사제찾기 버튼 */
+/* V3-111: 관구교구 사제찾기 버튼 */
 #c-act{display:flex;flex-direction:column;gap:8px;}
 .c-btn.c-home-btn,.c-btn.c-priest-btn{min-height:42px;border-radius:10px;font-weight:800;}
 .c-btn.c-home-btn{box-shadow:0 6px 12px rgba(31,42,68,.10);}
@@ -400,6 +400,103 @@ html.oai-dio-external-return *{transition:none!important;animation:none!importan
 .lv-priest-btn{flex:0 0 auto;min-height:34px;padding:0 13px;border:0;border-radius:10px;background:#0F766E;color:#fff;font-size:12px;font-weight:900;font-family:inherit;letter-spacing:-.04em;white-space:nowrap;box-shadow:0 3px 8px rgba(15,118,110,.16);cursor:pointer;}
 .lv-priest-btn:active{transform:scale(.985);}
 @media(max-width:560px){.lv-priest-btn{min-height:32px;padding:0 10px;font-size:11.5px;}#c-act{gap:7px;}}
+
+
+/* V3-111: 관구교구 중복지역 안내 박스 실제 잘림 수정 */
+#search-view{
+  overflow-x:hidden!important;
+}
+#search-view #sres{
+  width:100%!important;
+  max-width:100%!important;
+  box-sizing:border-box!important;
+  overflow:visible!important;
+}
+#search-view .duplicate-warning-box{
+  display:block!important;
+  width:calc(100% - 20px)!important;
+  max-width:calc(100% - 20px)!important;
+  margin:10px 10px 12px 10px!important;
+  padding:12px 14px!important;
+  box-sizing:border-box!important;
+  border:1.5px solid #F4A261!important;
+  border-radius:13px!important;
+  background:#FFF8E7!important;
+  overflow:hidden!important;
+  box-shadow:none!important;
+}
+#search-view .duplicate-warning-text{
+  display:block!important;
+  width:100%!important;
+  box-sizing:border-box!important;
+  margin:0!important;
+  padding:0!important;
+  line-height:1.42!important;
+  color:#B35A00!important;
+  font-weight:800!important;
+  word-break:keep-all!important;
+  overflow-wrap:break-word!important;
+}
+#search-view .si-r{
+  width:calc(100% - 20px)!important;
+  max-width:calc(100% - 20px)!important;
+  margin-left:10px!important;
+  margin-right:10px!important;
+  box-sizing:border-box!important;
+  border-radius:13px!important;
+  overflow:hidden!important;
+}
+@media(max-width:560px){
+  #search-view .duplicate-warning-box{
+    width:calc(100% - 18px)!important;
+    max-width:calc(100% - 18px)!important;
+    margin-left:9px!important;
+    margin-right:9px!important;
+  }
+  #search-view .si-r{
+    width:calc(100% - 18px)!important;
+    max-width:calc(100% - 18px)!important;
+    margin-left:9px!important;
+    margin-right:9px!important;
+  }
+}
+
+
+/* V3-111: 관구교구 지역검색 안내문과 중복지역 박스 겹침 수정 */
+#search-view .ss{
+  position:relative!important;
+  top:auto!important;
+  z-index:1!important;
+  margin:-16px -16px 0!important;
+  padding:16px 16px 14px!important;
+  box-sizing:border-box!important;
+}
+#search-view #sres{
+  position:relative!important;
+  z-index:0!important;
+  clear:both!important;
+  display:block!important;
+  margin-top:12px!important;
+  padding-top:0!important;
+}
+#search-view .duplicate-warning-box,
+#search-view .sob{
+  position:relative!important;
+  z-index:0!important;
+}
+#search-view .duplicate-warning-box{
+  margin-top:0!important;
+  margin-bottom:14px!important;
+}
+@media(max-width:560px){
+  #search-view .ss{
+    margin:-16px -16px 0!important;
+    padding:16px 16px 14px!important;
+  }
+  #search-view #sres{
+    margin-top:12px!important;
+  }
+}
 
 </style>
 <style id="oai-diocese-tab-standard-20260504">
@@ -2146,8 +2243,8 @@ function doSearch(){
     if(aliases.map(a=>a.replace(/\s+/g,'')).includes(q)){
       const sm=OVERLAP_SUMMARY[city]||{};
       res.innerHTML='';
-      const warn=document.createElement('div');warn.className='sob';
-      warn.innerHTML=`<div class="sot">⚠️ <strong>"${city}"</strong> 중복지역입니다</div>`;
+      const warn=document.createElement('div');warn.className='sob duplicate-warning-box';
+      warn.innerHTML=`<div class="sot duplicate-warning-text">⚠️ <strong>"${city}"</strong> 중복지역입니다</div>`;
       res.appendChild(warn);
       Object.keys(sm).forEach(function(d){
         if(DIOCESE_META[d]) res.appendChild(makeRow(city,d,sm[d]));
