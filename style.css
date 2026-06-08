@@ -1693,7 +1693,7 @@ html.retreat-mode .ric-hd { background: linear-gradient(135deg, #3F6F5A, #4F846C
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
   padding: 14px 14px calc(86px + env(safe-area-inset-bottom, 0));
-  background: var(--bg-unified);
+  background: #F5F1E8;
   max-width: 100vw;
   overflow-x: hidden;
   overscroll-behavior-x: none;
@@ -1767,7 +1767,7 @@ html.retreat-mode .ric-hd { background: linear-gradient(135deg, #3F6F5A, #4F846C
 .web-prov-badge { display: inline-flex; align-items: center; padding: 4px 14px; border-radius: 999px; background: #2e5a3a; color: #fff; font-size: 13px; font-weight: 800; letter-spacing: .02em; }
 
 /* ── 순례길 */
-.trail-body { background: #f8fafc; }
+.trail-body { background: #F5F1E8; }
 .trail-tabs { background: rgba(255,255,255,.88); border-bottom: 1px solid #e8ecf3; min-height: 64px !important; padding-top: 10px !important; padding-bottom: 10px !important; align-items: center !important; }
 .trail-panel { position: relative; flex: 1; min-height: 0; display: none; overflow: hidden; }
 .trail-panel.on { display: flex; flex-direction: column; flex: 1 1 0; min-height: 0; }
@@ -1926,12 +1926,12 @@ html.retreat-mode .ric-hd { background: linear-gradient(135deg, #3F6F5A, #4F846C
   align-items: center;
   justify-content: flex-start;
   padding: 60px 20px 0;
-  background: #f8f6f2;
+  background: #F5F1E8;
   z-index: 1;
   pointer-events: none;
   box-sizing: border-box;
 }
-#diocese-frame { flex: 1 1 auto; min-height: 0; width: 100%; border: 0; background: #f8f6f2; }
+#diocese-frame { flex: 1 1 auto; min-height: 0; width: 100%; border: 0; background: #F5F1E8; }
 
 /* ── 주요기도문 */
 #prayer-view {
@@ -1940,7 +1940,7 @@ html.retreat-mode .ric-hd { background: linear-gradient(135deg, #3F6F5A, #4F846C
   inset: 0;
   z-index: 20000;
   flex-direction: column;
-  background: #ede8e0;
+  background: #F5F1E8;
   font-family: 'Noto Sans KR', sans-serif;
   max-width: 100vw;
   overflow-x: hidden;
@@ -1969,7 +1969,7 @@ html.retreat-mode .ric-hd { background: linear-gradient(135deg, #3F6F5A, #4F846C
   overflow-x: auto;
   scrollbar-width: none;
   padding: 9px 12px;
-  background: #ede8e0;
+  background: #F5F1E8;
   border-bottom: 1px solid #d8d0c8;
   flex-shrink: 0;
   overscroll-behavior-x: contain;
@@ -2006,7 +2006,7 @@ html.retreat-mode .ric-hd { background: linear-gradient(135deg, #3F6F5A, #4F846C
   padding: 8px 12px 6px;
   box-sizing: border-box;
   flex-shrink: 0;
-  background: #ede8e0;
+  background: #F5F1E8;
   overflow: hidden;
 }
 #prayer-search-bar #prayer-search-wrap { flex: 1 1 auto; min-width: 0; margin-top: 0; }
@@ -2040,7 +2040,7 @@ html.retreat-mode .ric-hd { background: linear-gradient(135deg, #3F6F5A, #4F846C
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   padding: 10px 12px calc(24px + env(safe-area-inset-bottom, 0));
-  background: #ede8e0;
+  background: #F5F1E8;
   position: relative;
   transform: none;
   will-change: auto;
@@ -2081,7 +2081,7 @@ html.retreat-mode .ric-hd { background: linear-gradient(135deg, #3F6F5A, #4F846C
   inset: 0;
   top: 0;
   z-index: 10;
-  background: #ede8e0;
+  background: #F5F1E8;
   transform: translateX(100%);
   transition: transform .27s cubic-bezier(.25,.46,.45,.94);
   overflow-y: auto;
@@ -3536,7 +3536,7 @@ html.parish-mode .li-badge,html.parish-mode .nearby-type{background:#ECEFF3!impo
 html.parish-mode #tabbar,html.retreat-mode #tabbar,html:not(.parish-mode):not(.retreat-mode) #tabbar{background:rgba(255,255,255,.97)!important;border-bottom:1px solid rgba(203,213,225,.95)!important}
 html:not(.parish-mode):not(.retreat-mode) .tab-btn{border-color:rgba(26,36,86,.28)!important}
 html:not(.parish-mode):not(.retreat-mode) .tab-btn.active{background:linear-gradient(135deg,#243a83,#1f2f6b)!important;border-color:transparent!important;color:#ffffff!important;box-shadow:0 4px 12px rgba(31,47,107,.18)!important}
-.web-body,.trail-body{background:var(--bg-unified)!important}
+.web-body,.trail-body{background:#F5F1E8!important}
 html.parish-mode .sheet-body,html.parish-mode #list-body,html.parish-mode #nearby-body,html.parish-mode #region-body{background:var(--bg-unified)!important}
 html.retreat-mode .sheet-body,html.retreat-mode #list-body,html.retreat-mode #nearby-body,html.retreat-mode #region-body{background:var(--bg-unified)!important}
 html.parish-mode .srch-bar,html.parish-mode .filter-bar,html.parish-mode .sheet-hd,html.parish-mode .region-wrap{background:linear-gradient(135deg,#374151,#4B5563)!important}
