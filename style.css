@@ -4649,7 +4649,7 @@ html.oai-external-return-freeze::after {
    - 짧은 카테고리 진입/복귀에서는 어지럽지 않게 숨김
    - 로딩이 길어질 때만 십자가가 나타나 회전
    - 첫 진입 화면/앱 아이콘/기존 로직은 변경하지 않음 */
-@keyframes oaiLoadingCrossDelayedRevealV3-1210 {
+@keyframes oaiLoadingCrossDelayedRevealV3-1220 {
   from { opacity: 0; }
   to { opacity: 1; }
 }
@@ -4659,7 +4659,7 @@ html.oai-external-return-freeze::after {
 html.oai-stability-veil::after,
 html.oai-external-return-freeze::after {
   opacity: 0 !important;
-  animation-name: oaiLoadingCrossSpinV3-127, oaiLoadingCrossDelayedRevealV3-1210 !important;
+  animation-name: oaiLoadingCrossSpinV3-127, oaiLoadingCrossDelayedRevealV3-1220 !important;
   animation-duration: 2s, .12s !important;
   animation-timing-function: linear, ease-out !important;
   animation-iteration-count: infinite, 1 !important;
@@ -5929,7 +5929,7 @@ html.oai-font-global #srch-modal .sm-hd .sm-title{
   font-size:18px!important;
 }
 
-/* V3-121: 나의 신앙생활 설정 완료 후 홈 화면 정리 */
+/* V3-122: 나의 신앙생활 설정 완료 후 홈 화면 정리 */
 .my-faith-change-settings-wrap {
   width: 100% !important;
   margin: 2px 0 4px !important;
@@ -5956,4 +5956,14 @@ html.oai-font-global #srch-modal .sm-hd .sm-title{
 }
 .my-faith-change-tools .my-faith-small-btn {
   width: 100% !important;
+}
+
+
+/* V3-122: 나의 신앙생활 본당 정보 행 정리 */
+.my-faith-body.my-faith-home-list-body .my-faith-quick-section .my-faith-parish-info-row {
+  background: #E6E8ED !important;
+  border-bottom-color: #D7DAE0 !important;
+}
+.my-faith-body.my-faith-home-list-body .my-faith-quick-section .my-faith-parish-info-row:last-child {
+  border-bottom: 0 !important;
 }
