@@ -5171,8 +5171,8 @@ html.app-active #cover-diocese-box { display: none !important; }
 .my-diocese-modal.keyboard-open .my-faith-body { padding-bottom:14px !important; }
 .my-faith-section { border-radius:18px !important; padding:0 !important; background:#fff !important; border:1.5px solid rgba(183,121,31,.42) !important; box-shadow:0 10px 22px rgba(183,121,31,.13), 0 2px 9px rgba(31,42,68,.06) !important; box-sizing:border-box !important; overflow:hidden !important; }
 .my-faith-section h3 { margin:0 !important; padding:15px 15px 13px !important; border-bottom:1px solid rgba(183,121,31,.28) !important; background:#1F2937 !important; color:#FFFFFF !important; font-size:calc(17px * var(--app-font-scale,1)) !important; line-height:1.35 !important; font-weight:900 !important; letter-spacing:-.035em !important; }
-.my-faith-settings-section h3 { background:#F5F1E8 !important; color:#111827 !important; border-bottom-color:rgba(17,24,39,.18) !important; }
-.my-faith-quick-section h3 { background:#F5F1E8 !important; color:#111827 !important; border-bottom-color:rgba(17,24,39,.18) !important; }
+.my-faith-settings-section h3 { background:#E6D4B6 !important; color:#111827 !important; border-bottom-color:rgba(17,24,39,.22) !important; }
+.my-faith-quick-section h3 { background:#E6D4B6 !important; color:#111827 !important; border-bottom-color:rgba(17,24,39,.22) !important; }
 .my-faith-intro-card, .my-faith-next-step-note { border-radius:17px !important; background:#FFFFFF !important; border:1.5px solid rgba(183,121,31,.42) !important; padding:15px !important; color:#1f2a44 !important; box-shadow:0 8px 18px rgba(183,121,31,.12), 0 2px 8px rgba(31,42,68,.05) !important; word-break:keep-all !important; }
 .my-faith-intro-card strong { display:block !important; font-size:calc(16px * var(--app-font-scale,1)) !important; font-weight:900 !important; margin-bottom:4px !important; color:#8F1D1D !important; }
 .my-faith-intro-card span, .my-faith-next-step-note { font-size:calc(13.2px * var(--app-font-scale,1)) !important; line-height:1.45 !important; font-weight:700 !important; color:#5f5549 !important; }
