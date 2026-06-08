@@ -2869,7 +2869,7 @@ html.app-active #pwa-install-btn { display: none; }
 .guide-mini-list dt { color: #7a5a2b; font-weight: 900; }
 .guide-mini-list dd { margin: 0; color: #5f6675; font-weight: 600; word-break: keep-all; }
 .guide-ok { flex: 0 0 auto; width: 100%; margin-top: 12px; min-height: 40px; }
-/* V3-116: 주요 기능 안내 헤더를 WebView 기준의 네이비 라운드 헤더로 정리 */
+/* V3-117: 주요 기능 안내 헤더 제목이 작은 화면에서 두 줄로 꺾이지 않도록 크기 축소 */
 .guide-manual-panel .guide-manual-hero {
   flex: 0 0 auto;
   margin: 0 0 22px;
@@ -2897,8 +2897,8 @@ html.app-active #pwa-install-btn { display: none; }
   margin: 0;
   min-height: 0;
   color: #fffaf1;
-  font-size: calc(29px * var(--app-font-scale));
-  line-height: 1.22;
+  font-size: calc(24px * var(--app-font-scale));
+  line-height: 1.18;
   font-weight: 950;
   letter-spacing: -.055em;
 }
@@ -2907,7 +2907,7 @@ html.app-active #pwa-install-btn { display: none; }
 }
 @media (max-width: 380px) {
   .guide-manual-panel .guide-manual-hero { padding: 24px 22px 25px; border-radius: 22px; margin-bottom: 20px; }
-  .guide-manual-panel .guide-manual-hero h2 { font-size: calc(26px * var(--app-font-scale)); }
+  .guide-manual-panel .guide-manual-hero h2 { font-size: calc(22px * var(--app-font-scale)); }
 }
 
 
@@ -5107,7 +5107,7 @@ html.app-active #cover-diocese-box { display: none !important; }
 .my-diocese-backdrop {
   position: absolute !important;
   inset: 0 !important;
-  background: #FFF9EF !important;
+  background: #F5F1E8 !important;
 }
 .my-diocese-panel {
   position: relative !important;
@@ -5119,7 +5119,7 @@ html.app-active #cover-diocese-box { display: none !important; }
   border-radius: 0 !important;
   box-shadow: none !important;
   padding: 0 !important;
-  background: #FFF9EF !important;
+  background: #F5F1E8 !important;
   display: flex !important;
   flex-direction: column !important;
   overflow: hidden !important;
@@ -5167,7 +5167,7 @@ html.app-active #cover-diocese-box { display: none !important; }
 .my-diocese-option:active { transform:translateY(2px) scale(.985) !important; }
 .my-diocese-option.selected { background:#f6ead5 !important; border-color:rgba(183,121,31,.48) !important; box-shadow:inset 0 0 0 1px rgba(183,121,31,.18), 0 6px 12px rgba(31,42,68,.07) !important; }
 .my-diocese-option.my-diocese-none { color:#6b7280 !important; background:#f8fafc !important; border-style:dashed !important; }
-.my-faith-body { display:flex !important; flex-direction:column !important; gap:14px !important; flex:1 1 auto !important; min-height:0 !important; overflow-y:auto !important; -webkit-overflow-scrolling:touch !important; padding:16px 15px calc(env(safe-area-inset-bottom,0px) + 18px) !important; background:#FFF7EA !important; box-sizing:border-box !important; }
+.my-faith-body { display:flex !important; flex-direction:column !important; gap:14px !important; flex:1 1 auto !important; min-height:0 !important; overflow-y:auto !important; -webkit-overflow-scrolling:touch !important; padding:16px 15px calc(env(safe-area-inset-bottom,0px) + 18px) !important; background:#F5F1E8 !important; box-sizing:border-box !important; }
 .my-diocese-modal.keyboard-open .my-faith-body { padding-bottom:14px !important; }
 .my-faith-section { border-radius:18px !important; padding:0 !important; background:#fff !important; border:1.5px solid rgba(183,121,31,.42) !important; box-shadow:0 10px 22px rgba(183,121,31,.13), 0 2px 9px rgba(31,42,68,.06) !important; box-sizing:border-box !important; overflow:hidden !important; }
 .my-faith-section h3 { margin:0 !important; padding:15px 15px 13px !important; border-bottom:1px solid rgba(183,121,31,.28) !important; background:#1F2937 !important; color:#FFFFFF !important; font-size:calc(17px * var(--app-font-scale,1)) !important; line-height:1.35 !important; font-weight:900 !important; letter-spacing:-.035em !important; }
@@ -5185,12 +5185,12 @@ html.app-active #cover-diocese-box { display: none !important; }
 .my-faith-row-status { flex:0 0 auto !important; border-radius:999px !important; padding:3px 7px !important; font-size:10.5px !important; font-weight:900 !important; }
 .my-faith-row-status.done { background:#E8F0E7 !important; color:#166534 !important; }
 .my-faith-row-status.needed { background:#FEF3C7 !important; color:#92400E !important; }
-.my-faith-row-btn { flex:0 0 auto !important; min-width:62px !important; min-height:38px !important; border:1.7px solid #B7791F !important; border-radius:999px !important; background:#FFF7EA !important; color:#6B3F0D !important; font-family:inherit !important; font-size:calc(12.5px * var(--app-font-scale,1)) !important; font-weight:900 !important; padding:0 12px !important; cursor:pointer !important; box-shadow:0 5px 12px rgba(183,121,31,.12), inset 0 1px 0 rgba(255,255,255,.85) !important; }
+.my-faith-row-btn { flex:0 0 auto !important; min-width:62px !important; min-height:38px !important; border:1.7px solid #B7791F !important; border-radius:999px !important; background:#F5F1E8 !important; color:#6B3F0D !important; font-family:inherit !important; font-size:calc(12.5px * var(--app-font-scale,1)) !important; font-weight:900 !important; padding:0 12px !important; cursor:pointer !important; box-shadow:0 5px 12px rgba(183,121,31,.12), inset 0 1px 0 rgba(255,255,255,.85) !important; }
 .my-faith-row-btn-open { background:#1F2937 !important; border-color:#111827 !important; color:#FFFFFF !important; box-shadow:0 6px 14px rgba(31,41,55,.18), inset 0 1px 0 rgba(255,255,255,.14) !important; }
-.my-faith-row-btn-set { background:#FFF7EA !important; border-color:#B7791F !important; color:#6B3F0D !important; }
+.my-faith-row-btn-set { background:#F5F1E8 !important; border-color:#B7791F !important; color:#6B3F0D !important; }
 .my-faith-row-btn:disabled { opacity:.45 !important; cursor:default !important; }
 .my-faith-tools { display:flex !important; flex-wrap:wrap !important; gap:8px !important; padding:0 14px 13px !important; }
-.my-faith-small-btn { min-height:38px !important; padding:0 14px !important; border-radius:999px !important; border:1.5px solid #B7791F !important; background:#FFF7EA !important; color:#6B3F0D !important; font-family:inherit !important; font-size:calc(12.8px * var(--app-font-scale,1)) !important; font-weight:850 !important; cursor:pointer !important; }
+.my-faith-small-btn { min-height:38px !important; padding:0 14px !important; border-radius:999px !important; border:1.5px solid #B7791F !important; background:#F5F1E8 !important; color:#6B3F0D !important; font-family:inherit !important; font-size:calc(12.8px * var(--app-font-scale,1)) !important; font-weight:850 !important; cursor:pointer !important; }
 .my-faith-search-input { width:calc(100% - 28px) !important; height:58px !important; min-height:58px !important; margin:12px 14px 0 !important; border-radius:16px !important; border:2px solid rgba(126,104,74,.42) !important; background:#FFFCF6 !important; color:#111827 !important; font-family:inherit !important; font-size:calc(16px * var(--app-font-scale,1)) !important; font-weight:850 !important; padding:0 16px !important; box-sizing:border-box !important; outline:none !important; }
 .my-faith-body.my-faith-search-body { overflow:hidden !important; padding-bottom:calc(env(safe-area-inset-bottom,0px) + 14px) !important; }
 .my-faith-body.my-faith-search-body .my-faith-search-section { flex:1 1 auto !important; min-height:0 !important; display:flex !important; flex-direction:column !important; }
@@ -5235,7 +5235,7 @@ html.app-active #cover-diocese-box { display: none !important; }
 .my-faith-body.my-faith-home-list-body {
   gap: 10px !important;
   padding: 12px 15px calc(env(safe-area-inset-bottom, 0px) + 22px) !important;
-  background: #FFF7EA !important;
+  background: #F5F1E8 !important;
 }
 .my-faith-body.my-faith-home-list-body .my-faith-section.my-faith-list-section {
   display: block !important;
@@ -5339,7 +5339,7 @@ html.app-active #cover-diocese-box { display: none !important; }
   --oai-modal-standard-head: #1F2937;
   --oai-modal-standard-head-text: #FFFDF7;
   --oai-modal-standard-sub: rgba(255,255,255,.82);
-  --oai-modal-standard-panel: #FFF7EA;
+  --oai-modal-standard-panel: #F5F1E8;
   --oai-modal-standard-box: #FFFDF7;
   --oai-modal-standard-box-press: #FAF1E3;
   --oai-modal-standard-line: rgba(148,163,184,.90);
