@@ -5735,7 +5735,88 @@ html.parish-mode #list-body .dio-hd:first-child{
 }
 
 
-/* V3-105: 관구교구 iframe/검색 카드 잘림 보조 보정 */
+/* V3-107: 관구교구 iframe/검색 카드 잘림 보조 보정 */
 #diocese-frame{
   overflow:hidden!important;
+}
+
+
+/* V3-107: 관구교구 iframe 오른쪽 테두리 잘림 보조 */
+#diocese-frame{
+  width:100%!important;
+  max-width:100%!important;
+  box-sizing:border-box!important;
+}
+
+
+/* V3-107: 경로검색 위치 선택창 2열+1열 및 색상 정리 */
+#route-choice-modal .route-choice-panel{width:min(360px,calc(100vw - 44px))!important;border-radius:20px!important;background:#fffdf7!important;border:1.5px solid rgba(183,121,31,.22)!important;}
+#route-choice-modal .route-choice-title{text-align:left!important;font-size:20px!important;}
+#route-choice-modal .route-choice-desc{text-align:left!important;font-size:13px!important;color:#5f513f!important;}
+#route-choice-modal .route-choice-actions{display:grid!important;grid-template-columns:1fr 1fr!important;gap:10px!important;}
+#route-choice-modal .route-choice-btn{min-height:58px!important;border-radius:14px!important;font-size:15px!important;box-shadow:none!important;}
+#route-choice-modal .route-choice-btn.cancel{grid-column:1 / -1!important;}
+#route-choice-modal .route-choice-btn.start{background:#FDE8E5!important;border:2px solid #D24B43!important;color:#9F1D18!important;}
+#route-choice-modal .route-choice-btn.end{background:#E8F2FF!important;border:2px solid #2D7DD2!important;color:#135BA1!important;}
+#route-choice-modal .route-choice-btn.cancel{background:#EAF7F0!important;border:2px solid #35A86B!important;color:#167448!important;}
+#route-choice-modal .route-choice-btn.keep{background:#EAF7F0!important;border:2px solid #35A86B!important;color:#167448!important;}
+#route-choice-modal .route-choice-btn.danger{background:#FDE8E5!important;border:2px solid #D24B43!important;color:#9F1D18!important;}
+@media(max-width:420px){#route-choice-modal .route-choice-panel{width:calc(100vw - 36px)!important;padding:18px 14px 16px!important;}#route-choice-modal .route-choice-btn{min-height:56px!important;font-size:14.5px!important;}}
+
+
+/* V3-108: 커버 카테고리 이모지와 카테고리 헤더는 글자크기 조절에서 제외 */
+html.oai-font-global #cover .cover-grid .cover-card .cover-emoji{
+  font-size:var(--cover-emoji-size,40px)!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+html.ios-device.oai-font-global #cover .cover-grid .cover-card .cover-emoji{
+  font-size:34px!important;
+}
+@media (max-height:650px){
+  html.oai-font-global #cover .cover-grid .cover-card .cover-emoji,
+  html.ios-device.oai-font-global #cover .cover-grid .cover-card .cover-emoji{
+    font-size:22px!important;
+  }
+}
+html.oai-font-global #app .sheet-hd .sheet-title,
+html.oai-font-global #sheet-nearby .sheet-title,
+html.oai-font-global #sheet-list .sheet-title,
+html.oai-font-global #sheet-region .sheet-title,
+html.oai-font-global #sheet-route .sheet-title,
+html.oai-font-global #srch-modal .sm-hd .sm-title{
+  font-size:18px!important;
+  line-height:1.22!important;
+}
+html.oai-font-global #missa-bar-title,
+html.oai-font-global #diocese-bar-title{
+  font-size:16px!important;
+  line-height:1.2!important;
+}
+html.oai-font-global #prayer-bar-ttl,
+html.oai-font-global #prayer-bar .module-bar-title,
+html.oai-font-global #web-view .module-bar-title,
+html.oai-font-global #trail-view .module-bar-title,
+html.oai-font-global #qna-view .module-bar-title,
+html.oai-font-global #diocese-view .module-bar-title,
+html.oai-font-global .module-bar-title{
+  font-size:20px!important;
+  line-height:1.24!important;
+}
+html.oai-font-global #prayer-bar-sub,
+html.oai-font-global #prayer-bar .module-bar-sub,
+html.oai-font-global #web-view .module-bar-sub,
+html.oai-font-global #trail-view .module-bar-sub,
+html.oai-font-global #qna-view .module-bar-sub,
+html.oai-font-global #diocese-view .module-bar-sub,
+html.oai-font-global .module-bar-sub{
+  font-size:11px!important;
+  line-height:1.25!important;
+}
+html.oai-font-global .module-bar-ico,
+html.oai-font-global #prayer-bar-ico{
+  font-size:22px!important;
+  width:42px!important;
+  height:42px!important;
+  min-width:42px!important;
 }

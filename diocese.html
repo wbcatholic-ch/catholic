@@ -254,7 +254,7 @@ html.oai-dio-external-return *{transition:none!important;animation:none!importan
 /* V3: 부모 앱에서 복귀 상태를 복원하므로 iframe 자체 전체 덮개는 만들지 않는다. */
 
 
-/* V3-105: 관구교구 지역검색 중복 안내/결과 카드 잘림 방지 */
+/* V3-108: 관구교구 지역검색 중복 안내/결과 카드 잘림 방지 */
 #search-view,
 #list-view{
   overflow-x:hidden!important;
@@ -335,6 +335,71 @@ html.oai-dio-external-return *{transition:none!important;animation:none!importan
   #search-view .si-r-top,#list-view .lv-top{gap:6px!important;}
   #search-view .si-r-op,#list-view .lv-op{font-size:11px!important;max-width:50%!important;}
 }
+
+
+/* V3-108: 관구교구 지역검색 안내/결과 박스 안쪽 여백 확보 */
+#search-view #sres{
+  width:100%!important;
+  max-width:100%!important;
+  box-sizing:border-box!important;
+  padding-left:2px!important;
+  padding-right:2px!important;
+  overflow:visible!important;
+}
+#search-view .sob,
+#search-view .si-r{
+  width:auto!important;
+  max-width:none!important;
+  margin-left:4px!important;
+  margin-right:4px!important;
+  box-sizing:border-box!important;
+  border-radius:13px!important;
+}
+#search-view .sob{
+  padding:12px 14px!important;
+  overflow:hidden!important;
+}
+#search-view .si-r{
+  overflow:hidden!important;
+}
+#search-view .sot{
+  display:block!important;
+  width:100%!important;
+  box-sizing:border-box!important;
+  margin:0!important;
+  padding:0!important;
+  line-height:1.45!important;
+  word-break:keep-all!important;
+  overflow-wrap:anywhere!important;
+}
+#search-view .si-r-top,
+#search-view .srow,
+#search-view .si-r-foot{
+  box-sizing:border-box!important;
+}
+@media(max-width:560px){
+  #search-view #sres{
+    padding-left:1px!important;
+    padding-right:1px!important;
+  }
+  #search-view .sob,
+  #search-view .si-r{
+    margin-left:3px!important;
+    margin-right:3px!important;
+  }
+}
+
+
+/* V3-108: 관구교구 사제찾기 버튼 */
+#c-act{display:flex;flex-direction:column;gap:8px;}
+.c-btn.c-home-btn,.c-btn.c-priest-btn{min-height:42px;border-radius:10px;font-weight:800;}
+.c-btn.c-home-btn{box-shadow:0 6px 12px rgba(31,42,68,.10);}
+.c-btn.c-priest-btn{background:#0F766E!important;color:#fff!important;border:1px solid rgba(15,118,110,.18);box-shadow:0 6px 12px rgba(15,118,110,.14);}
+.lv-foot.has-priest{gap:8px;}
+.lv-foot .lv-url{min-width:0;}
+.lv-priest-btn{flex:0 0 auto;min-height:34px;padding:0 13px;border:0;border-radius:10px;background:#0F766E;color:#fff;font-size:12px;font-weight:900;font-family:inherit;letter-spacing:-.04em;white-space:nowrap;box-shadow:0 3px 8px rgba(15,118,110,.16);cursor:pointer;}
+.lv-priest-btn:active{transform:scale(.985);}
+@media(max-width:560px){.lv-priest-btn{min-height:32px;padding:0 10px;font-size:11.5px;}#c-act{gap:7px;}}
 
 </style>
 <style id="oai-diocese-tab-standard-20260504">
@@ -1356,6 +1421,26 @@ function sortDiocesesWithMyFirst(arr){
     return ar!==br?ar-br:arr.indexOf(a)-arr.indexOf(b);
   });
 }
+
+const DIOCESE_PRIEST_URL={
+  '서울대교구':'https://aos.catholic.or.kr/pro10315',
+  '의정부교구':'http://ucatholic.or.kr/bbs/board.php?bo_table=priest',
+  '인천교구':'http://www.caincheon.or.kr/father/father_list.do',
+  '수원교구':'https://www.casuwon.or.kr/priest/priest',
+  '춘천교구':'https://www.cccatholic.or.kr/diocese/priest/priest',
+  '원주교구':'http://www.wjcatholic.or.kr/company/sajedan',
+  '대전교구':'https://www.djcatholic.or.kr/home/pages/priest_list.php',
+  '대구대교구':'https://www.daegu-archdiocese.or.kr/page/priest.html?srl=priest',
+  '청주교구':'https://www.cdcj.or.kr/diocese/priest/priest',
+  '안동교구':'https://www.acatholic.or.kr/sub2/sub1.asp',
+  '마산교구':'https://cathms.kr/saje',
+  '부산교구':'https://www.catholicbusan.or.kr/clergy/priest',
+  '광주대교구':'https://www.gjcatholic.or.kr/priest/priests',
+  '전주교구':'https://www.jcatholic.or.kr/theme/main/pages/priest.php?st=diocese',
+  '제주교구':'https://www.diocesejeju.or.kr/diocese_father',
+  '군종교구':'https://www.gunjong.or.kr/organization/index.asp?SearchArmyCd='
+};
+function getDiocesePriestUrl(name){return DIOCESE_PRIEST_URL[String(name||'').trim()]||'';}
 function buildListView(){
   const gws=[
     {key:'서울관구',col:'#1a6bb5',dioceses:['서울대교구','인천교구','수원교구','의정부교구','원주교구','춘천교구','대전교구']},
@@ -1406,8 +1491,21 @@ function buildListView(){
     const foot=document.createElement('div'); foot.className='lv-foot';
     const url=document.createElement('span'); url.className='lv-url';
     url.textContent=m.url?m.url.replace(/^https?:\/\//,'').replace(/\/$/,''):'홈페이지 없음';
-    const arr=document.createElement('span'); arr.className='lv-arr'; arr.textContent='›';
-    foot.appendChild(url); foot.appendChild(arr);
+    const priestUrl=getDiocesePriestUrl(dName);
+    if(priestUrl){
+      foot.classList.add('has-priest');
+      const priestBtn=document.createElement('button');
+      priestBtn.type='button';
+      priestBtn.className='lv-priest-btn';
+      priestBtn.textContent='✝ 사제찾기';
+      priestBtn.dataset.dioUrl=priestUrl;
+      priestBtn.dataset.dioSource='priest-list';
+      priestBtn.dataset.dioKey=dName;
+      foot.appendChild(url); foot.appendChild(priestBtn);
+    }else{
+      const arr=document.createElement('span'); arr.className='lv-arr'; arr.textContent='›';
+      foot.appendChild(url); foot.appendChild(arr);
+    }
 
     card.appendChild(top); card.appendChild(body); card.appendChild(foot);
     if(m.url){
@@ -1744,9 +1842,12 @@ function showCard(el){
   dl.classList.remove('on');detOpen=false;
   document.getElementById('c-dtbtn').textContent='▶ 상세 지역 보기';
   const url=el.dataset.url;
-  document.getElementById('c-act').innerHTML=url
-    ?`<button type="button" class="c-btn" data-dio-url="${url}" data-dio-source="map" style="background:${c}">↗ 홈페이지 방문</button>`
-    :'<div class="c-nurl">홈페이지 없음</div>';
+  const priestUrl=getDiocesePriestUrl(el.dataset.d||'');
+  let actHtml='';
+  if(url) actHtml+=`<button type="button" class="c-btn c-home-btn" data-dio-url="${url}" data-dio-source="map" style="background:${c}">↗ 홈페이지 방문</button>`;
+  else actHtml+='<div class="c-nurl">홈페이지 없음</div>';
+  if(priestUrl) actHtml+=`<button type="button" class="c-btn c-priest-btn" data-dio-url="${priestUrl}" data-dio-source="priest-map" data-dio-key="${el.dataset.d||''}">✝ 사제찾기</button>`;
+  document.getElementById('c-act').innerHTML=actHtml;
   const card=document.getElementById('card');
   const diocese=el.dataset.d||'';
   const topDioceses=['서울대교구','인천교구','수원교구','의정부교구','원주교구','춘천교구','대전교구','청주교구','안동교구'];
@@ -1845,8 +1946,21 @@ function makeRow(disp,diocese,overlapDongs){
   const foot=document.createElement('div');foot.className='lv-foot';
   const urlEl=document.createElement('span');urlEl.className='lv-url';
   urlEl.textContent=url?url.replace(/^https?:\/\//,'').replace(/\/$/,''):'홈페이지 없음';
-  const arr=document.createElement('span');arr.className='lv-arr';arr.textContent='›';
-  foot.appendChild(urlEl);foot.appendChild(arr);
+  const priestUrl=getDiocesePriestUrl(diocese);
+  if(priestUrl){
+    foot.classList.add('has-priest');
+    const priestBtn=document.createElement('button');
+    priestBtn.type='button';
+    priestBtn.className='lv-priest-btn';
+    priestBtn.textContent='✝ 사제찾기';
+    priestBtn.dataset.dioUrl=priestUrl;
+    priestBtn.dataset.dioSource='priest-search';
+    priestBtn.dataset.dioKey=diocese;
+    foot.appendChild(urlEl);foot.appendChild(priestBtn);
+  }else{
+    const arr=document.createElement('span');arr.className='lv-arr';arr.textContent='›';
+    foot.appendChild(urlEl);foot.appendChild(arr);
+  }
   card.appendChild(top);card.appendChild(body);card.appendChild(foot);
   if(url){
     card.dataset.dioUrl = url;
@@ -2033,7 +2147,7 @@ function doSearch(){
       const sm=OVERLAP_SUMMARY[city]||{};
       res.innerHTML='';
       const warn=document.createElement('div');warn.className='sob';
-      warn.innerHTML=`<div class="sot">⚠️ <strong>"${city}"</strong> 중복지역입니다 — 해당 교구를 확인하세요</div>`;
+      warn.innerHTML=`<div class="sot">⚠️ <strong>"${city}"</strong> 중복지역입니다</div>`;
       res.appendChild(warn);
       Object.keys(sm).forEach(function(d){
         if(DIOCESE_META[d]) res.appendChild(makeRow(city,d,sm[d]));
