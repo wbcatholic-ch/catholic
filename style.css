@@ -5518,7 +5518,7 @@ html.app-active #cover-diocese-box { display: none !important; }
 }
 
 
-/* V3-99: 교구 미설정 시 커버 안내 배너(WebView 기준) */
+/* V3-101: 교구 미설정 시 커버 안내 배너(WebView 기준) */
 #cover .my-diocese-setup-banner {
   display: none !important;
   position: absolute !important;
@@ -5612,4 +5612,80 @@ html.app-active #cover-diocese-box { display: none !important; }
   }
   #cover .my-diocese-setup-banner strong { font-size: calc(20px * var(--app-font-scale, 1)) !important; }
   #cover .my-diocese-setup-banner span { font-size: calc(15.2px * var(--app-font-scale, 1)) !important; }
+}
+
+
+/* V3-101: 나의 교구 우선 표시 */
+.filter-btn.my-diocese-filter,
+.sm-fb.my-diocese-filter {
+  border-color: #B7791F !important;
+  color: #5C3B0C !important;
+  background: #FFF7E4 !important;
+}
+.filter-btn.my-diocese-filter.active,
+.sm-fb.my-diocese-filter.on {
+  background: #B7791F !important;
+  border-color: #9B641A !important;
+  color: #fff !important;
+}
+.filter-my-dio-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 5px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.82);
+  color: #7A4F10;
+  font-size: 10px;
+  font-weight: 900;
+  line-height: 1.1;
+  letter-spacing: -.04em;
+}
+.filter-btn.my-diocese-filter.active .filter-my-dio-badge,
+.sm-fb.my-diocese-filter.on .filter-my-dio-badge {
+  background: rgba(255,255,255,.95);
+  color: #7A4F10;
+}
+.dio-hd.my-diocese-hd {
+  color: #7A4F10 !important;
+  background: #FFF7E4 !important;
+  border-top-color: rgba(183,121,31,.35) !important;
+  border-bottom-color: rgba(183,121,31,.35) !important;
+}
+.list-my-dio-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 8px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: #B7791F;
+  color: #fff;
+  font-size: 10.5px;
+  font-weight: 900;
+  line-height: 1.1;
+  letter-spacing: -.04em;
+  vertical-align: 1px;
+}
+
+.sm-grp.my-diocese-sm-grp {
+  background: #FFF7E4 !important;
+  border-color: rgba(183,121,31,.32) !important;
+  color: #7A4F10 !important;
+}
+.sm-my-dio-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 7px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: #B7791F;
+  color: #fff;
+  font-size: 10.5px;
+  font-weight: 900;
+  line-height: 1.1;
+  letter-spacing: -.04em;
+  vertical-align: 1px;
 }
