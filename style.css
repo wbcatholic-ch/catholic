@@ -2869,6 +2869,47 @@ html.app-active #pwa-install-btn { display: none; }
 .guide-mini-list dt { color: #7a5a2b; font-weight: 900; }
 .guide-mini-list dd { margin: 0; color: #5f6675; font-weight: 600; word-break: keep-all; }
 .guide-ok { flex: 0 0 auto; width: 100%; margin-top: 12px; min-height: 40px; }
+/* V3-116: 주요 기능 안내 헤더를 WebView 기준의 네이비 라운드 헤더로 정리 */
+.guide-manual-panel .guide-manual-hero {
+  flex: 0 0 auto;
+  margin: 0 0 22px;
+  padding: 27px 26px 28px;
+  border-radius: 24px;
+  background: #0f1738;
+  color: #fffaf1;
+  box-shadow: none;
+}
+.guide-manual-panel .guide-manual-hero .guide-badge {
+  display: block;
+  min-height: 0;
+  padding: 0;
+  margin: 0 0 14px;
+  border-radius: 0;
+  background: transparent;
+  color: #d4aa6a;
+  font-size: calc(15px * var(--app-font-scale));
+  line-height: 1.35;
+  font-weight: 900;
+  letter-spacing: -.04em;
+  text-align: left;
+}
+.guide-manual-panel .guide-manual-hero h2 {
+  margin: 0;
+  min-height: 0;
+  color: #fffaf1;
+  font-size: calc(29px * var(--app-font-scale));
+  line-height: 1.22;
+  font-weight: 950;
+  letter-spacing: -.055em;
+}
+.guide-manual-panel .guide-lead {
+  display: none;
+}
+@media (max-width: 380px) {
+  .guide-manual-panel .guide-manual-hero { padding: 24px 22px 25px; border-radius: 22px; margin-bottom: 20px; }
+  .guide-manual-panel .guide-manual-hero h2 { font-size: calc(26px * var(--app-font-scale)); }
+}
+
 
 
 /* iOS Safari 설치 안내 */
