@@ -253,6 +253,89 @@ html.oai-dio-external-stabilize *,
 html.oai-dio-external-return *{transition:none!important;animation:none!important;scroll-behavior:auto!important;}
 /* V3: 부모 앱에서 복귀 상태를 복원하므로 iframe 자체 전체 덮개는 만들지 않는다. */
 
+
+/* V3-105: 관구교구 지역검색 중복 안내/결과 카드 잘림 방지 */
+#search-view,
+#list-view{
+  overflow-x:hidden!important;
+}
+#search-view .sob,
+#search-view .si-r,
+#list-view .lv-card{
+  width:100%!important;
+  max-width:100%!important;
+  box-sizing:border-box!important;
+}
+#search-view .sob{
+  margin-left:0!important;
+  margin-right:0!important;
+  overflow:visible!important;
+}
+#search-view .sot{
+  margin:0!important;
+  line-height:1.48!important;
+  word-break:keep-all!important;
+  overflow-wrap:anywhere!important;
+}
+#search-view .si-r{
+  overflow:hidden!important;
+}
+#search-view .si-r-top,
+#list-view .lv-top{
+  align-items:flex-start!important;
+  min-width:0!important;
+}
+#search-view .si-r-op,
+#list-view .lv-op{
+  white-space:normal!important;
+  overflow:visible!important;
+  text-overflow:clip!important;
+  line-height:1.38!important;
+  word-break:keep-all!important;
+  overflow-wrap:anywhere!important;
+  text-align:right!important;
+  max-width:52%!important;
+}
+#search-view .srow,
+#list-view .lv-body{
+  align-items:flex-start!important;
+  min-width:0!important;
+}
+#search-view .srow-info,
+#list-view .lv-info{
+  min-width:0!important;
+}
+#search-view .sd,
+#list-view .lv-name{
+  word-break:keep-all!important;
+  overflow-wrap:anywhere!important;
+}
+#search-view .sg,
+#list-view .lv-rg,
+#list-view .lv-det{
+  word-break:keep-all!important;
+  overflow-wrap:anywhere!important;
+}
+#search-view .si-r-foot,
+#list-view .lv-foot{
+  min-height:44px!important;
+  box-sizing:border-box!important;
+}
+#search-view .si-r-url,
+#list-view .lv-url{
+  min-width:0!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+@media(max-width:560px){
+  #search-view{padding-left:14px!important;padding-right:14px!important;}
+  #search-view .ss{margin-left:-14px!important;margin-right:-14px!important;padding-left:14px!important;padding-right:14px!important;}
+  #search-view .sob{padding:12px 13px!important;}
+  #search-view .si-r-top,#list-view .lv-top{gap:6px!important;}
+  #search-view .si-r-op,#list-view .lv-op{font-size:11px!important;max-width:50%!important;}
+}
+
 </style>
 <style id="oai-diocese-tab-standard-20260504">
 /* 관구교구 헤더 아래 탭 버튼 표준화 + 글자 크기 조절(지도 제외) */
@@ -1282,78 +1365,82 @@ function buildListView(){
   ];
   const wrap=document.getElementById('list-content');
   wrap.innerHTML='';
-  const myListDiocese=getMyDioceseName();
-  const orderedGws=gws.slice().sort(function(a,b){
-    const ah=!!(myListDiocese && a.dioceses.indexOf(myListDiocese)>=0);
-    const bh=!!(myListDiocese && b.dioceses.indexOf(myListDiocese)>=0);
-    if(ah!==bh) return ah ? -1 : 1;
-    return gws.indexOf(a)-gws.indexOf(b);
-  });
-  orderedGws.forEach(function(g){
-    // ── 관구 섹션 헤더 ──
-    const sec=document.createElement('div');sec.className='lv-sec';
-    const secBdg=document.createElement('span');secBdg.className='lv-sec-bdg';
-    secBdg.style.background=g.col;secBdg.textContent=g.key;
+
+  function findGroup(dName){
+    return gws.find(function(g){ return g.dioceses.indexOf(dName)!==-1; }) || null;
+  }
+
+  function buildDioceseCard(dName,g){
+    const m=DIOCESE_META[dName]; if(!m || !g) return null;
+    const card=document.createElement('div');
+    card.className='lv-card'+(isMyDioceseName(dName)?' my-diocese-card':'');
+
+    const top=document.createElement('div'); top.className='lv-top';
+    const bdg=document.createElement('span'); bdg.className='lv-bdg';
+    bdg.style.background=g.col; bdg.textContent=g.key;
+    const op=document.createElement('span'); op.className='lv-op';
+    op.textContent='천주교 '+dName;
+    if(isMyDioceseName(dName)) appendMyDioceseBadge(op);
+    top.appendChild(bdg); top.appendChild(op);
+
+    const body=document.createElement('div'); body.className='lv-body';
+    const ico=document.createElement('div'); ico.className='lv-ico';
+    ico.textContent='⛪';
+    const info=document.createElement('div'); info.className='lv-info';
+    const nm=document.createElement('div'); nm.className='lv-name';
+    if(dName==='춘천교구' || dName==='부산교구'){
+      nm.textContent=dName+' · '+(m.parishes||0)+'개 본당(해외본당 제외)';
+    }else{
+      nm.textContent=(dName==='군종교구')?dName:(dName+' · '+(m.parishes||0)+'개 본당');
+    }
+    const rg=document.createElement('div'); rg.className='lv-rg';
+    rg.innerHTML='📍 '+m.region;
+    info.appendChild(nm); info.appendChild(rg);
+    const dets2=(m.detail||[]).filter(function(x){return x.trim()!==m.region.trim();});
+    if(dets2.length){
+      const dt=document.createElement('div'); dt.className='lv-det';
+      dt.textContent=dets2.join(' / '); info.appendChild(dt);
+    }
+    body.appendChild(ico); body.appendChild(info);
+
+    const foot=document.createElement('div'); foot.className='lv-foot';
+    const url=document.createElement('span'); url.className='lv-url';
+    url.textContent=m.url?m.url.replace(/^https?:\/\//,'').replace(/\/$/,''):'홈페이지 없음';
+    const arr=document.createElement('span'); arr.className='lv-arr'; arr.textContent='›';
+    foot.appendChild(url); foot.appendChild(arr);
+
+    card.appendChild(top); card.appendChild(body); card.appendChild(foot);
+    if(m.url){
+      card.dataset.dioUrl = m.url;
+      card.dataset.dioSource = 'list';
+      card.dataset.dioKey = dName;
+    }
+    return card;
+  }
+
+  const myDiocese=getMyDioceseName();
+  const myGroup=findGroup(myDiocese);
+  if(myDiocese && myGroup && DIOCESE_META[myDiocese]){
+    const mySec=document.createElement('div'); mySec.className='lv-sec';
+    const myBdg=document.createElement('span'); myBdg.className='lv-sec-bdg';
+    myBdg.style.background='#B7791F'; myBdg.textContent='나의 교구';
+    mySec.appendChild(myBdg);
+    wrap.appendChild(mySec);
+    const myCard=buildDioceseCard(myDiocese,myGroup);
+    if(myCard) wrap.appendChild(myCard);
+  }
+
+  gws.forEach(function(g){
+    const sec=document.createElement('div'); sec.className='lv-sec';
+    const secBdg=document.createElement('span'); secBdg.className='lv-sec-bdg';
+    secBdg.style.background=g.col; secBdg.textContent=g.key;
     sec.appendChild(secBdg);
     wrap.appendChild(sec);
-    // ── 교구 카드 ──
+
     sortDiocesesWithMyFirst(g.dioceses).forEach(function(dName){
-      const m=DIOCESE_META[dName];if(!m)return;
-      const isArchdiocese=dName.includes('대교구');
-      const dets=(m.detail||[]).filter(function(x){return x.trim()!==m.region.trim();});
-      const regionFull=m.region+(dets.length?'·'+dets.join('·'):'');
-
-      const card=document.createElement('div');card.className='lv-card'+(isMyDioceseName(dName)?' my-diocese-card':'');
-
-      // top: 뱃지(대교구/교구) + 오른쪽 "천주교 XX교구"
-      const top=document.createElement('div');top.className='lv-top';
-      const bdg=document.createElement('span');bdg.className='lv-bdg';
-      bdg.style.background=g.col;
-      bdg.textContent=g.key;
-      const op=document.createElement('span');op.className='lv-op';
-      op.textContent='천주교 '+dName;
-      if(isMyDioceseName(dName)) appendMyDioceseBadge(op);
-      top.appendChild(bdg);top.appendChild(op);
-
-      // body: 아이콘 + (교구명 + 지역)
-      const body=document.createElement('div');body.className='lv-body';
-      const ico=document.createElement('div');ico.className='lv-ico';
-      ico.textContent='⛪';
-      const info=document.createElement('div');info.className='lv-info';
-      const nm=document.createElement('div');nm.className='lv-name';
-      if(dName==='춘천교구' || dName==='부산교구'){
-        nm.textContent=dName+' · '+(m.parishes||0)+'개 본당(해외본당 제외)';
-      }else{
-        nm.textContent=(dName==='군종교구')?dName:(dName+' · '+(m.parishes||0)+'개 본당');
-      }
-      const rg=document.createElement('div');rg.className='lv-rg';
-      rg.innerHTML='📍 '+m.region;
-      info.appendChild(nm);info.appendChild(rg);
-      const pc=document.createElement('div');pc.className='lv-parish-count';
-      pc.innerHTML='<span>본당</span><b>'+(m.parishes||0)+'개</b>';
-      const dets2=(m.detail||[]).filter(function(x){return x.trim()!==m.region.trim();});
-      if(dets2.length){
-        const dt=document.createElement('div');dt.className='lv-det';
-        dt.textContent=dets2.join(' / ');info.appendChild(dt);
-      }
-      body.appendChild(ico);body.appendChild(info);
-
-      // foot: URL
-      const foot=document.createElement('div');foot.className='lv-foot';
-      const url=document.createElement('span');url.className='lv-url';
-      url.textContent=m.url?m.url.replace(/^https?:\/\//,'').replace(/\/$/,''):'홈페이지 없음';
-      const arr=document.createElement('span');arr.className='lv-arr';arr.textContent='›';
-      foot.appendChild(url);foot.appendChild(arr);
-
-      card.appendChild(top);card.appendChild(body);card.appendChild(foot);
-      if(m.url){
-        card.dataset.dioUrl = m.url;
-        card.dataset.dioSource = 'list';
-        card.dataset.dioKey = dName;
-        /* 관구교구 목록 홈페이지 이동은 아래 전역 [data-dio-url] 캡처 핸들러 한 곳에서만 처리한다.
-           개별 카드 click 핸들러까지 함께 두면 외부 이동 직전/복귀 직후 중복 실행되어 화면이 흔들릴 수 있다. */
-      }
-      wrap.appendChild(card);
+      if(myDiocese && dName===myDiocese) return;
+      const card=buildDioceseCard(dName,g);
+      if(card) wrap.appendChild(card);
     });
   });
 }
