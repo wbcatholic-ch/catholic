@@ -462,8 +462,8 @@ html.retreat-mode #tabbar .tab-btn.active {
   z-index: 650;
   width: 40px;
   height: 40px;
-  border-radius: 0;
-  border: none;
+  border-radius: 999px;
+  border: 1.5px solid currentColor;
   background: transparent;
   color: #111827;
   font-size: 28px;
@@ -1177,8 +1177,8 @@ html.retreat-mode #srch-modal #sm-tab-bar .sm-tab.active {
 .ic-name { font-size: 16px; font-weight: 700; color: var(--ink); flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .ic-close-btn {
   background: transparent;
-  border: none;
-  border-radius: 0;
+  border: 1.5px solid currentColor;
+  border-radius: 999px;
   width: 30px;
   height: 30px;
   font-size: 20px;
@@ -1487,9 +1487,9 @@ html.retreat-mode .ric-hd { background: linear-gradient(135deg, #3F6F5A, #4F846C
   height: var(--oai-std-close-sz);
   min-width: var(--oai-std-close-sz);
   flex: 0 0 var(--oai-std-close-sz);
-  border-radius: 0;
+  border-radius: 999px;
   background: transparent;
-  border: none;
+  border: 1.5px solid currentColor;
   color: rgba(212,170,106,.9);
   font-size: 28px;
   font-weight: 900;
@@ -1723,7 +1723,7 @@ html.retreat-mode .ric-hd { background: linear-gradient(135deg, #3F6F5A, #4F846C
   border-radius: 13px !important;
   box-shadow: 0 1px 8px rgba(0,0,0,.06) !important;
   cursor: pointer;
-  margin-bottom: 4px;
+  margin-bottom: 12px;
   transition: transform .12s, box-shadow .12s;
 }
 .web-card.app-pressing { transform: translateY(6px) scale(.982); box-shadow: none; filter: brightness(.96); }
@@ -1808,7 +1808,7 @@ html.retreat-mode .ric-hd { background: linear-gradient(135deg, #3F6F5A, #4F846C
 .trail-sheet { position: absolute; left: 0; right: 0; bottom: 0; z-index: 6; background: linear-gradient(180deg, #fffdf9, #f6efe4); border-radius: 26px 26px 0 0; border-top: 1px solid #eadfce; box-shadow: 0 -16px 32px rgba(0,0,0,.18); padding: 0 0 calc(28px + env(safe-area-inset-bottom, 0)); transform: translateY(110%); transition: transform .25s cubic-bezier(.4,0,.2,1); pointer-events: none; overflow: visible; height: auto; }
 .trail-sheet.open { transform: none; pointer-events: all; }
 .trail-sh-handle { width: 36px; height: 4px; border-radius: 2px; background: #e8ecf3; margin: 10px auto 0; }
-.trail-sh-close { position: absolute; top: 12px; right: 14px; width: 30px; height: 30px; border-radius: 0; background: transparent; border: none; box-shadow: none; cursor: pointer; font-size: 20px; font-weight: 900; line-height: 1; color: #64748b; display: flex; align-items: center; justify-content: center; }
+.trail-sh-close { position: absolute; top: 12px; right: 14px; width: 30px; height: 30px; border-radius: 999px; background: transparent; border: 1.5px solid currentColor; box-shadow: none; cursor: pointer; font-size: 20px; font-weight: 900; line-height: 1; color: #64748b; display: flex; align-items: center; justify-content: center; }
 .trail-sh-top { display: flex; align-items: center; justify-content: space-between; padding: 18px 54px 0 18px; gap: 8px; }
 .trail-sh-bdg { font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 999px; color: #fff; white-space: nowrap; flex-shrink: 0; }
 .trail-sh-bdg.d { background: #1d4ed8; }
@@ -1907,8 +1907,8 @@ html.retreat-mode .ric-hd { background: linear-gradient(135deg, #3F6F5A, #4F846C
   top: calc(env(safe-area-inset-top, 0px) + 10px);
   right: 14px;
   background: transparent;
-  border: none;
-  border-radius: 0;
+  border: 1.5px solid currentColor;
+  border-radius: 999px;
   color: rgba(212,170,106,.9);
   font-size: 28px;
   font-weight: 900;
@@ -3252,7 +3252,7 @@ html.ios-device #app .region-info-card { margin: 5px 10px 6px; border-radius: 9p
 html.ios-device #app .ric-hd { padding: 12px 14px; gap: 9px; }
 html.ios-device #app .ric-icon { width: 33px; height: 33px; font-size: 17px; }
 html.ios-device #app .ric-body { padding: 6px 12px 8px; }
-html.ios-device .web-card { border-radius: 12px; margin-bottom: 9px; }
+html.ios-device .web-card { border-radius: 12px; margin-bottom: 12px; }
 html.ios-device .web-card-top { padding: 9px 11px 0; }
 html.ios-device .web-card-body { padding: 8px 12px 9px; gap: 9px; }
 html.ios-device .web-card-foot { padding: 7px 11px; }
