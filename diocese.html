@@ -1282,7 +1282,14 @@ function buildListView(){
   ];
   const wrap=document.getElementById('list-content');
   wrap.innerHTML='';
-  gws.forEach(function(g){
+  const myListDiocese=getMyDioceseName();
+  const orderedGws=gws.slice().sort(function(a,b){
+    const ah=!!(myListDiocese && a.dioceses.indexOf(myListDiocese)>=0);
+    const bh=!!(myListDiocese && b.dioceses.indexOf(myListDiocese)>=0);
+    if(ah!==bh) return ah ? -1 : 1;
+    return gws.indexOf(a)-gws.indexOf(b);
+  });
+  orderedGws.forEach(function(g){
     // ── 관구 섹션 헤더 ──
     const sec=document.createElement('div');sec.className='lv-sec';
     const secBdg=document.createElement('span');secBdg.className='lv-sec-bdg';

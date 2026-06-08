@@ -5720,3 +5720,20 @@ html.parish-mode #list-body .dio-hd:first-child{
 #list-view .lv-foot{
   min-height:42px !important;
 }
+
+
+/* V3-104: 성지·성당·피정의집 목록 상단 빈 공간 통일 */
+#list-body{
+  padding-top:0 !important;
+}
+#list-body .dio-hd:first-child{
+  margin-top:0 !important;
+}
+html.retreat-mode #list-body,
+html:not(.parish-mode):not(.retreat-mode) #list-body{
+  padding-top:0 !important;
+}
+html.retreat-mode #list-body .dio-hd:first-child,
+html:not(.parish-mode):not(.retreat-mode) #list-body .dio-hd:first-child{
+  margin-top:0 !important;
+}
