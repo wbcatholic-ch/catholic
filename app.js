@@ -1929,7 +1929,7 @@ const _PARISH_DIOCESE_ASSETS={
 };
 const _PARISH_DIOCESE_LOAD_STATE={};
 const _PARISH_DIOCESE_LOAD_PROMISES={};
-const _PARISH_ASSET_VERSION='V3-98';
+const _PARISH_ASSET_VERSION='V3-99';
 function _getParishDioceseAsset(code){
   return _PARISH_DIOCESE_ASSETS[code] || null;
 }
@@ -2092,7 +2092,7 @@ function _ensureParishDataLoaded(){
 }
 _initParishDataFromGlobal();
 
-const _PRAYER_ASSET_VERSION='V3-98';
+const _PRAYER_ASSET_VERSION='V3-99';
 let _prayerModuleLoadPromise=null;
 function _isPrayerModuleReady(){
   return typeof window.initPrayerView === 'function' &&
@@ -2385,7 +2385,7 @@ const _TY={'A':'성지','B':'순례지','C':'순교 사적지'};
 
 let _shrineRawLoaded = false;
 let _shrineDataLoadPromise = null;
-const _SHRINE_ASSET_VERSION='V3-98';
+const _SHRINE_ASSET_VERSION='V3-99';
 let SHRINES = [];
 let JUKRIMGUL_IDX = -1;
 function _decodeShrineHomePage(hp){
@@ -6408,6 +6408,7 @@ document.addEventListener('DOMContentLoaded', function bindEvents() {
     };
     var btn = document.getElementById('cover-diocese-btn');
     var menuBtn = document.getElementById('cover-menu-myfaith-btn');
+    var setupBanner = document.getElementById('my-diocese-setup-banner');
     var modal = document.getElementById('my-diocese-modal');
     var body = document.getElementById('my-diocese-list');
     var title = document.getElementById('my-diocese-title');
@@ -6432,9 +6433,21 @@ document.addEventListener('DOMContentLoaded', function bindEvents() {
     function safeText(x){ return String(x || '').replace(/[&<>"']/g, function(c){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c] || c); }); }
     function setHeader(main, sub){ if(title){ title.textContent = main || '나의 신앙생활'; try{ title.setAttribute('data-myfaith-title', title.textContent); }catch(_e){} } if(subtitle) subtitle.textContent = sub || ''; }
     function setBodyMode(name){ body.className = name || 'my-faith-body'; body.innerHTML = ''; }
+    function updateSetupBanner(){
+      try{
+        var needsSetup = !selectedName();
+        var coverEl = document.getElementById('cover');
+        if(coverEl) coverEl.classList.toggle('my-diocese-setup-active', needsSetup);
+        if(!setupBanner) return;
+        setupBanner.hidden = !needsSetup;
+        setupBanner.classList.toggle('show', needsSetup);
+        setupBanner.setAttribute('aria-hidden', needsSetup ? 'false' : 'true');
+      }catch(e){ console.warn('[가톨릭길동무]', e); }
+    }
     function updateButton(){
       btn.innerHTML = '<span class="cover-faith-cross" aria-hidden="true">✞</span><span class="diocese-btn-label">나의 신앙생활</span>';
       btn.setAttribute('aria-label','나의 신앙생활 열기');
+      updateSetupBanner();
     }
     function refreshDependentViews(){
       try{ if(typeof _renderDioFilterBars === 'function') _renderDioFilterBars(_mode); }catch(_e){}
@@ -6580,6 +6593,7 @@ document.addEventListener('DOMContentLoaded', function bindEvents() {
       openModal();
     }
     on(btn, 'click', openFromButton);
+    if(setupBanner) on(setupBanner, 'click', openFromButton);
     if(menuBtn) on(menuBtn, 'click', openFromButton);
     on('my-diocese-close','click', function(e){ if(e&&e.preventDefault)e.preventDefault(); closeModal(); });
     modal.addEventListener('click', function(e){ if(e && e.target && e.target.getAttribute && e.target.getAttribute('data-my-diocese-close') === 'true') closeModal(); });
