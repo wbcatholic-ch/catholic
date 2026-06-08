@@ -1726,9 +1726,15 @@ html.retreat-mode .ric-hd { background: linear-gradient(135deg, #3F6F5A, #4F846C
 .web-card.app-pressing { transform: translateY(6px) scale(.982); box-shadow: none; filter: brightness(.96); }
 .web-card-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 12px 14px 0 !important; }
 .web-card-badge { display: inline-flex; align-items: center; justify-content: center; min-height: 24px; padding: 0 10px; border-radius: 6px !important; color: #fff; font-size: 12px; font-weight: 800; white-space: nowrap; flex-shrink: 0; }
-.web-card-op { display: block; min-width: 0; flex: 1; text-align: right; color: #9999bb; font-size: 11.5px; font-weight: 500; line-height: 1.4; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.web-card-op { display: flex; min-width: 0; flex: 1; justify-content: flex-end; align-items: center; color: #9999bb; font-size: 11.5px; font-weight: 500; line-height: 1.4; overflow: hidden; white-space: nowrap; }
 .web-card-body { display: flex; align-items: center; gap: 12px; padding: 9px 14px 10px !important; align-items: center !important; }
 .web-card-ico { width: 52px !important; height: 52px !important; flex-shrink: 0; border-radius: 12px !important; display: flex; align-items: center; justify-content: center; font-size: 28px; line-height: 1; background: #F5F0E8 !important; box-shadow: none !important; }
+ .web-card.web-priest-card .web-card-ico{background:#F5F0E8!important;color:#0F766E!important;font-size:31px!important;font-weight:900!important;font-family:Georgia,"Times New Roman",serif!important;}
+.web-card.web-priest-card .web-card-badge{box-shadow:0 2px 6px rgba(31,42,68,.13);}
+.web-my-diocese-badge { display: inline-flex; align-items: center; justify-content: center; margin-left: 7px; padding: 4px 11px; border-radius: 999px; background: #FFF3D8; border: 1.5px solid rgba(183,121,31,.52); color: #7A4F10; font-size: 12.8px; font-weight: 950; line-height: 1.15; letter-spacing: -.035em; vertical-align: 2px; white-space: nowrap; }
+.web-province-inline { display: none; }
+.web-card-name-tail { margin-left: 4px; }
+.web-card.web-my-diocese-card { border-color: #B7791F !important; border-width: 2px !important; box-shadow: 0 8px 18px rgba(183,121,31,.12), 0 2px 8px rgba(31,42,68,.07) !important; }
 .web-card-info { flex: 1; min-width: 0; display: block; }
 .web-card-name { display: block; color: #1a1a2e; font-size: 17px; font-weight: 800; line-height: 1.38; letter-spacing: -.02em; margin: 0 0 4px; word-break: keep-all; }
 .web-card-desc { display: block; color: #555577; font-size: 13px; font-weight: 500; line-height: 1.55; letter-spacing: -.01em; word-break: keep-all; white-space: normal; }
@@ -2043,26 +2049,28 @@ html.retreat-mode .ric-hd { background: linear-gradient(135deg, #3F6F5A, #4F846C
   overflow-x: hidden;
   overscroll-behavior-x: none;
 }
-.pr-list { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+.pr-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
 .pr-item {
   background: #fffbf2;
   border: 1px solid #ddd5c8;
   border-left-width: 4px;
   border-radius: 11px;
-  padding: 12px 13px;
+  padding: 16px 14px;
+  min-height: 68px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 9px;
+  gap: 10px;
   cursor: pointer;
+  box-sizing: border-box;
   box-shadow: 0 1px 4px rgba(80,60,30,.07);
 }
 .pr-item.app-pressing { transform: translateY(8px) scale(.974); filter: brightness(.94); transition: transform .16s, filter .16s; }
 .pr-item-left { display: flex; align-items: center; gap: 11px; flex: 1; min-width: 0; }
-.pr-icon-dot { flex: 0 0 var(--pr-icon-sz, 36px); width: var(--pr-icon-sz, 36px); height: var(--pr-icon-sz, 36px); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: var(--pr-icon-fs, 17px); }
+.pr-icon-dot { flex: 0 0 var(--pr-icon-sz, 40px); width: var(--pr-icon-sz, 40px); height: var(--pr-icon-sz, 40px); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: var(--pr-icon-fs, 18px); }
 .pr-title { font-size: var(--pr-item-fs, 15px); font-weight: 600; color: #1a1a2e; line-height: 1.4; word-break: keep-all; flex: 1; min-width: 0; }
 .pr-item-right { display: flex; align-items: center; gap: 7px; flex: 0 0 auto; }
-.pr-star { background: none; border: none; padding: 3px; cursor: pointer; color: #ccccdd; font-size: 16px; line-height: 1; transition: color .14s; }
+.pr-star { background: none; border: none; padding: 6px; min-width: 34px; min-height: 34px; cursor: pointer; color: #ccccdd; font-size: 16px; line-height: 1; transition: color .14s; }
 .pr-star.on { color: #f59e0b; }
 .pr-chevron { color: #b0a89e; font-size: 12px; }
 .pr-empty { text-align: center; padding: 44px 20px; color: #b0a89e; font-size: 14px; background: #fffbf2; border: 1px dashed #ddd5c8; border-radius: 11px; line-height: 1.9; }
@@ -2569,6 +2577,160 @@ html.app-active #cover-action-row { display: none; }
 }
 #cover #cover-guide-btn:active { transform: scale(.985); }
 html.app-active #cover-guide-btn { display: none; }
+
+
+/* 커버 메뉴 버튼 */
+#cover #cover-menu-btn.cover-menu-btn {
+  position: absolute;
+  left: 12px;
+  top: calc(env(safe-area-inset-top, 0px) + 12px);
+  z-index: 82;
+  height: 36px;
+  min-height: 36px;
+  max-width: min(142px, calc(50vw - 18px));
+  padding: 0 13px;
+  border: 1.5px solid rgba(31,42,68,.16);
+  border-radius: 999px;
+  background: #fffbf2;
+  color: #1f2a44;
+  font-family: inherit;
+  font-size: calc(12px * var(--app-font-scale));
+  font-weight: 900;
+  line-height: 1;
+  box-shadow: 0 6px 14px rgba(31,42,68,.10);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  touch-action: manipulation;
+}
+#cover #cover-menu-btn.cover-menu-btn:active { transform: scale(.985); }
+html.app-active #cover-menu-btn { display: none !important; }
+#cover #cover-menu-btn .cover-menu-label {
+  display: inline-block;
+  white-space: nowrap;
+  letter-spacing: -.03em;
+}
+#cover #cover-menu-btn .cover-menu-hamburger {
+  width: 15px;
+  height: 12px;
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex: 0 0 auto;
+}
+#cover #cover-menu-btn .cover-menu-hamburger span {
+  display: block;
+  height: 2px;
+  border-radius: 999px;
+  background: currentColor;
+}
+
+/* 커버 메뉴 팝업 */
+.cover-menu-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 10070;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 22px;
+  box-sizing: border-box;
+}
+.cover-menu-modal.show { display: flex; }
+.cover-menu-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(14,21,53,.42);
+  backdrop-filter: blur(2px);
+}
+.cover-menu-panel {
+  position: relative;
+  width: min(370px, calc(100vw - 32px));
+  min-height: 330px;
+  padding: 22px 18px 20px;
+  border-radius: 22px;
+  background: #fffaf2;
+  border: 1px solid rgba(212,170,106,.42);
+  box-shadow: 0 22px 52px rgba(14,21,53,.28);
+  color: #1f2a44;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+.cover-menu-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.cover-menu-title {
+  font-size: calc(20px * var(--app-font-scale));
+  font-weight: 950;
+  line-height: 1.2;
+  letter-spacing: -.04em;
+}
+.cover-menu-subtitle {
+  margin-top: 4px;
+  font-size: calc(12px * var(--app-font-scale));
+  font-weight: 800;
+  color: #7a5d2b;
+  line-height: 1.35;
+}
+.cover-menu-close {
+  width: 38px;
+  height: 38px;
+  border: 0;
+  border-radius: 999px;
+  background: #1f2a44;
+  color: #fff;
+  font-size: 24px;
+  font-weight: 900;
+  line-height: 1;
+  font-family: inherit;
+  cursor: pointer;
+  flex: 0 0 auto;
+}
+.cover-menu-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.cover-menu-item {
+  width: 100%;
+  min-height: 62px;
+  padding: 0 16px;
+  border: 1px solid rgba(31,42,68,.10);
+  border-radius: 16px;
+  background: #fff;
+  color: #1f2a44;
+  box-shadow: 0 8px 20px rgba(31,42,68,.08);
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  text-decoration: none;
+  font-family: inherit;
+  font-size: calc(16px * var(--app-font-scale));
+  font-weight: 900;
+  line-height: 1.15;
+  cursor: pointer;
+  box-sizing: border-box;
+  touch-action: manipulation;
+}
+.cover-menu-item:active { transform: translateY(1px); }
+.cover-menu-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  background: #f5ead4;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 19px;
+  flex: 0 0 auto;
+}
+.cover-menu-text { flex: 1 1 auto; text-align: left; }
 
 /* 커버 종료 토스트 */
 #oai-cover-exit-toast {
@@ -3258,6 +3420,7 @@ html.oai-font-global #region-body .dio-hd { font-size: calc(17px * var(--app-inn
   #cover #cover-update-btn { min-height: 32px; height: 32px; font-size: calc(10.2px * var(--app-font-scale)); padding: 0 10px; }
   #cover #cover-update-hint { font-size: 8.5px; }
   #cover #cover-guide-btn { height: 34px; min-height: 34px; font-size: calc(10.5px * var(--app-font-scale)); padding: 0 10px; }
+  #cover #cover-menu-btn.cover-menu-btn { height: 34px; min-height: 34px; font-size: calc(10.5px * var(--app-font-scale)); padding: 0 11px; }
   .guide-panel { max-height: 90dvh; padding: 16px 14px 14px; }
   html.ios-kakao-inapp #cover .ios-safari-banner { top: 49%; transform: translateY(-36%); padding: 20px 16px 16px; gap: 10px; border-radius: 24px; }
 }
@@ -4759,3 +4922,597 @@ html.pr-external-guide-active.oai-stability-veil::after {
 .route-choice-btn.cancel{background:#374151;color:#fff;border-color:#1f2937;box-shadow:0 6px 14px rgba(31,41,55,.12);}
 .route-choice-btn.keep{background:#374151;color:#fff;border-color:#1f2937;box-shadow:0 6px 14px rgba(31,41,55,.12);}
 .route-choice-btn.danger{background:#991b1b;color:#fff;border-color:#7f1d1d;box-shadow:0 6px 14px rgba(127,29,29,.16);}
+
+
+/* ============================================================
+   V3-88: 커버 작업줄 간격/비율 정리
+   - 카테고리 박스 사이 간격과 작업줄 위쪽 간격을 같은 기준으로 통일
+   - 나의 신앙생활/새로고침을 카테고리 박스처럼 2등분 가로 비율로 정리
+   ============================================================ */
+#cover #cover-main-block {
+  gap: clamp(5px, calc(var(--cover-vh, 1vh) * 0.82), 8px) !important;
+}
+#cover #cover-action-row.cover-action-single {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  align-items: stretch !important;
+  justify-content: stretch !important;
+  gap: clamp(5px, 1.4vw, 9px) !important;
+  width: 100% !important;
+  height: 46px !important;
+  min-height: 46px !important;
+  max-height: 46px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  flex: 0 0 46px !important;
+  box-sizing: border-box !important;
+}
+#cover #cover-action-row.cover-action-single #cover-diocese-box,
+#cover #cover-action-row.cover-action-single #cover-update-box {
+  display: flex !important;
+  align-items: stretch !important;
+  justify-content: stretch !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  height: 46px !important;
+  min-height: 46px !important;
+  max-height: 46px !important;
+  margin: 0 !important;
+  flex: 1 1 auto !important;
+  box-sizing: border-box !important;
+}
+#cover #cover-action-row.cover-action-single #cover-update-box { grid-column: 2 !important; }
+#cover #cover-action-row.cover-action-single #cover-diocese-box { grid-column: 1 !important; }
+#cover .cover-diocese-btn,
+#cover .cover-refresh-main-btn,
+#cover #cover-update-btn.cover-refresh-main-btn {
+  width: 100% !important;
+  height: 46px !important;
+  min-height: 46px !important;
+  max-height: 46px !important;
+  border-radius: 16px !important;
+  font-family: inherit !important;
+  font-size: calc(14px * var(--app-font-scale, 1)) !important;
+  font-weight: 900 !important;
+  line-height: 1.12 !important;
+  letter-spacing: -.03em !important;
+  text-align: center !important;
+  cursor: pointer !important;
+  touch-action: manipulation !important;
+  -webkit-tap-highlight-color: transparent !important;
+  box-sizing: border-box !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+#cover .cover-diocese-btn {
+  border: 1px solid rgba(126,104,74,.28) !important;
+  background: linear-gradient(180deg, #fffdf8 0%, #f1e5d3 100%) !important;
+  color: #1f2a44 !important;
+  padding: 0 10px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 5px !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.92), inset 0 -5px 10px rgba(136,112,78,.10) !important;
+}
+#cover .cover-refresh-main-btn,
+#cover #cover-update-btn.cover-refresh-main-btn {
+  border: 1.5px solid rgba(31,42,68,.16) !important;
+  background: linear-gradient(180deg, #ece7de 0%, #ddd6c9 100%) !important;
+  color: #1f2a44 !important;
+  padding: 0 12px !important;
+  box-shadow: 0 6px 12px rgba(31,42,68,.08) !important;
+}
+#cover .cover-diocese-btn:active,
+#cover .cover-refresh-main-btn:active { transform: translateY(2px) scale(.985) !important; }
+#cover .cover-diocese-btn .cover-faith-cross {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex: 0 0 auto !important;
+  color: #C62828 !important;
+  font-size: calc(16px * var(--app-font-scale, 1)) !important;
+  font-weight: 900 !important;
+  line-height: 1 !important;
+  transform: translateY(-1px) !important;
+}
+#cover .cover-diocese-btn .diocese-btn-label {
+  display: block !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+html.app-active #cover-diocese-box { display: none !important; }
+.my-faith-body.my-faith-home-list-body,
+.my-faith-body.my-faith-home-list-body.my-faith-no-scroll,
+.my-faith-no-scroll {
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+@media (max-width:370px){
+  #cover #cover-main-block{gap:clamp(2px, calc(var(--cover-vh, 1vh) * 0.5), 4px) !important;}
+  #cover #cover-action-row.cover-action-single{height:44px !important;min-height:44px !important;max-height:44px !important;flex-basis:44px !important;gap:clamp(5px,1.4vw,9px) !important;grid-template-columns:repeat(2,minmax(0,1fr)) !important;}
+  #cover #cover-action-row.cover-action-single #cover-diocese-box,
+  #cover #cover-action-row.cover-action-single #cover-update-box,
+  #cover .cover-diocese-btn,
+  #cover .cover-refresh-main-btn,
+  #cover #cover-update-btn.cover-refresh-main-btn{height:44px !important;min-height:44px !important;max-height:44px !important;font-size:calc(12.8px * var(--app-font-scale,1)) !important;}
+  #cover .cover-diocese-btn .cover-faith-cross{font-size:calc(14.5px * var(--app-font-scale,1)) !important;}
+  .my-diocese-list{grid-template-columns:1fr !important;}
+}
+
+.my-diocese-modal {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 10025 !important;
+  display: none !important;
+  align-items: stretch !important;
+  justify-content: stretch !important;
+  padding: 0 !important;
+  box-sizing: border-box !important;
+  height: var(--my-faith-vh, 100dvh) !important;
+  min-height: var(--my-faith-vh, 100dvh) !important;
+  overflow: hidden !important;
+}
+.my-diocese-modal.show { display: flex !important; }
+.my-diocese-backdrop {
+  position: absolute !important;
+  inset: 0 !important;
+  background: #FFF9EF !important;
+}
+.my-diocese-panel {
+  position: relative !important;
+  width: 100% !important;
+  height: var(--my-faith-vh, 100dvh) !important;
+  max-height: var(--my-faith-vh, 100dvh) !important;
+  min-height: var(--my-faith-vh, 100dvh) !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  background: #FFF9EF !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+.my-diocese-modal.return-settling .my-diocese-panel,
+.my-diocese-modal.return-settling #my-diocese-list,
+.my-diocese-modal.return-settling .my-faith-body {
+  transition: none !important;
+  animation: none !important;
+  scroll-behavior: auto !important;
+}
+.my-diocese-head {
+  flex: 0 0 auto !important;
+  height: calc(var(--oai-website-header-h, 70px) + env(safe-area-inset-top, 0px)) !important;
+  min-height: calc(var(--oai-website-header-h, 70px) + env(safe-area-inset-top, 0px)) !important;
+  max-height: calc(var(--oai-website-header-h, 70px) + env(safe-area-inset-top, 0px)) !important;
+  margin: 0 !important;
+  padding: calc(10px + env(safe-area-inset-top, 0px)) 16px 10px !important;
+  background: #1f2937 !important;
+  color: #fff !important;
+  border-bottom: 2px solid #B7791F !important;
+  box-shadow: 0 4px 14px rgba(31,42,68,.20) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+  box-sizing: border-box !important;
+}
+.my-diocese-head-main { display: flex !important; align-items: center !important; gap: 14px !important; flex: 1 1 auto !important; min-width: 0 !important; }
+.my-diocese-head-ico {
+  width: 44px !important; height: 44px !important; min-width: 44px !important; flex: 0 0 44px !important;
+  border-radius: 12px !important; background: rgba(255,255,255,.12) !important; border: 1px solid rgba(255,255,255,.2) !important;
+  display: flex !important; align-items: center !important; justify-content: center !important; color: transparent !important; font-size: 0 !important; position: relative !important;
+}
+.my-diocese-head-ico::before { content:""; position:absolute; left:50%; top:50%; width:3px; height:24px; border-radius:2px; background:#fff; transform:translate(-50%,-50%); }
+.my-diocese-head-ico::after { content:""; position:absolute; left:50%; top:42%; width:14px; height:3px; border-radius:2px; background:#fff; transform:translate(-50%,-50%); }
+.my-diocese-head-text { display:flex !important; flex-direction:column !important; align-items:flex-start !important; justify-content:center !important; gap:2px !important; min-width:0 !important; }
+.my-diocese-title { font-size: var(--oai-website-title-fs, 20px) !important; line-height:1.2 !important; color:#fff !important; font-weight:900 !important; letter-spacing:-.03em !important; white-space:nowrap !important; overflow:hidden !important; text-overflow:ellipsis !important; }
+.my-diocese-subtitle { max-width:86vw !important; font-size: var(--oai-website-sub-fs, 13px) !important; line-height:1.2 !important; color:rgba(255,255,255,.82) !important; font-weight:700 !important; letter-spacing:-.03em !important; white-space:nowrap !important; overflow:hidden !important; text-overflow:ellipsis !important; }
+.my-diocese-close { width:38px !important; height:38px !important; flex:0 0 38px !important; border-radius:50% !important; background:transparent !important; color:#fff !important; border:1px solid currentColor !important; font-size:24px !important; font-weight:800 !important; line-height:1 !important; cursor:pointer !important; }
+#my-diocese-list { flex:1 1 auto !important; min-height:0 !important; }
+.my-diocese-list { display:grid !important; grid-template-columns:1fr 1fr !important; gap:8px !important; overflow-y:auto !important; -webkit-overflow-scrolling:touch !important; padding:16px 16px calc(env(safe-area-inset-bottom,0px) + 16px) !important; box-sizing:border-box !important; }
+.my-diocese-option { min-height:44px !important; border:1px solid rgba(183,121,31,.24) !important; border-radius:14px !important; background:#fffaf2 !important; color:#1f2a44 !important; font-family:inherit !important; font-size:calc(13.2px * var(--app-font-scale,1)) !important; font-weight:850 !important; letter-spacing:-.035em !important; line-height:1.1 !important; box-shadow:0 5px 11px rgba(31,42,68,.08), inset 0 1px 0 rgba(255,255,255,.82) !important; cursor:pointer !important; box-sizing:border-box !important; }
+.my-diocese-option:active { transform:translateY(2px) scale(.985) !important; }
+.my-diocese-option.selected { background:#f6ead5 !important; border-color:rgba(183,121,31,.48) !important; box-shadow:inset 0 0 0 1px rgba(183,121,31,.18), 0 6px 12px rgba(31,42,68,.07) !important; }
+.my-diocese-option.my-diocese-none { color:#6b7280 !important; background:#f8fafc !important; border-style:dashed !important; }
+.my-faith-body { display:flex !important; flex-direction:column !important; gap:14px !important; flex:1 1 auto !important; min-height:0 !important; overflow-y:auto !important; -webkit-overflow-scrolling:touch !important; padding:16px 15px calc(env(safe-area-inset-bottom,0px) + 18px) !important; background:#FFF7EA !important; box-sizing:border-box !important; }
+.my-diocese-modal.keyboard-open .my-faith-body { padding-bottom:14px !important; }
+.my-faith-section { border-radius:18px !important; padding:0 !important; background:#fff !important; border:1.5px solid rgba(183,121,31,.42) !important; box-shadow:0 10px 22px rgba(183,121,31,.13), 0 2px 9px rgba(31,42,68,.06) !important; box-sizing:border-box !important; overflow:hidden !important; }
+.my-faith-section h3 { margin:0 !important; padding:15px 15px 13px !important; border-bottom:1px solid rgba(183,121,31,.28) !important; background:#1F2937 !important; color:#FFFFFF !important; font-size:calc(17px * var(--app-font-scale,1)) !important; line-height:1.35 !important; font-weight:900 !important; letter-spacing:-.035em !important; }
+.my-faith-settings-section h3 { background:#8F1D1D !important; color:#FFFFFF !important; border-bottom-color:rgba(183,121,31,.42) !important; }
+.my-faith-quick-section h3 { background:#1F2937 !important; color:#FFFFFF !important; border-bottom-color:rgba(183,121,31,.38) !important; }
+.my-faith-intro-card, .my-faith-next-step-note { border-radius:17px !important; background:#FFFFFF !important; border:1.5px solid rgba(183,121,31,.42) !important; padding:15px !important; color:#1f2a44 !important; box-shadow:0 8px 18px rgba(183,121,31,.12), 0 2px 8px rgba(31,42,68,.05) !important; word-break:keep-all !important; }
+.my-faith-intro-card strong { display:block !important; font-size:calc(16px * var(--app-font-scale,1)) !important; font-weight:900 !important; margin-bottom:4px !important; color:#8F1D1D !important; }
+.my-faith-intro-card span, .my-faith-next-step-note { font-size:calc(13.2px * var(--app-font-scale,1)) !important; line-height:1.45 !important; font-weight:700 !important; color:#5f5549 !important; }
+.my-faith-list-row { display:flex !important; align-items:center !important; gap:10px !important; padding:12px 14px !important; border-bottom:1px solid rgba(183,121,31,.18) !important; background:#fff !important; }
+.my-faith-list-row:last-child { border-bottom:0 !important; }
+.my-faith-row-main { flex:1 1 auto !important; min-width:0 !important; display:flex !important; flex-direction:column !important; gap:4px !important; }
+.my-faith-row-top { display:flex !important; align-items:center !important; gap:6px !important; min-width:0 !important; }
+.my-faith-row-top strong { min-width:0 !important; overflow:hidden !important; text-overflow:ellipsis !important; white-space:nowrap !important; font-size:calc(15px * var(--app-font-scale,1)) !important; font-weight:900 !important; color:#1f2a44 !important; }
+.my-faith-row-sub { min-width:0 !important; overflow:hidden !important; text-overflow:ellipsis !important; white-space:nowrap !important; color:#6b7280 !important; font-size:calc(12.5px * var(--app-font-scale,1)) !important; font-weight:750 !important; }
+.my-faith-row-status { flex:0 0 auto !important; border-radius:999px !important; padding:3px 7px !important; font-size:10.5px !important; font-weight:900 !important; }
+.my-faith-row-status.done { background:#E8F0E7 !important; color:#166534 !important; }
+.my-faith-row-status.needed { background:#FEF3C7 !important; color:#92400E !important; }
+.my-faith-row-btn { flex:0 0 auto !important; min-width:62px !important; min-height:38px !important; border:1.7px solid #B7791F !important; border-radius:999px !important; background:#FFF7EA !important; color:#6B3F0D !important; font-family:inherit !important; font-size:calc(12.5px * var(--app-font-scale,1)) !important; font-weight:900 !important; padding:0 12px !important; cursor:pointer !important; box-shadow:0 5px 12px rgba(183,121,31,.12), inset 0 1px 0 rgba(255,255,255,.85) !important; }
+.my-faith-row-btn-open { background:#1F2937 !important; border-color:#111827 !important; color:#FFFFFF !important; box-shadow:0 6px 14px rgba(31,41,55,.18), inset 0 1px 0 rgba(255,255,255,.14) !important; }
+.my-faith-row-btn-set { background:#FFF7EA !important; border-color:#B7791F !important; color:#6B3F0D !important; }
+.my-faith-row-btn:disabled { opacity:.45 !important; cursor:default !important; }
+.my-faith-tools { display:flex !important; flex-wrap:wrap !important; gap:8px !important; padding:0 14px 13px !important; }
+.my-faith-small-btn { min-height:38px !important; padding:0 14px !important; border-radius:999px !important; border:1.5px solid #B7791F !important; background:#FFF7EA !important; color:#6B3F0D !important; font-family:inherit !important; font-size:calc(12.8px * var(--app-font-scale,1)) !important; font-weight:850 !important; cursor:pointer !important; }
+.my-faith-search-input { width:calc(100% - 28px) !important; height:58px !important; min-height:58px !important; margin:12px 14px 0 !important; border-radius:16px !important; border:2px solid rgba(126,104,74,.42) !important; background:#FFFCF6 !important; color:#111827 !important; font-family:inherit !important; font-size:calc(16px * var(--app-font-scale,1)) !important; font-weight:850 !important; padding:0 16px !important; box-sizing:border-box !important; outline:none !important; }
+.my-faith-body.my-faith-search-body { overflow:hidden !important; padding-bottom:calc(env(safe-area-inset-bottom,0px) + 14px) !important; }
+.my-faith-body.my-faith-search-body .my-faith-search-section { flex:1 1 auto !important; min-height:0 !important; display:flex !important; flex-direction:column !important; }
+.my-faith-search-results { display:flex !important; flex-direction:column !important; gap:8px !important; margin:11px 0 0 !important; overflow-y:auto !important; -webkit-overflow-scrolling:touch !important; padding:0 14px calc(env(safe-area-inset-bottom,0px) + 22px) !important; flex:1 1 auto !important; min-height:0 !important; }
+.my-faith-parish-result { width:100% !important; text-align:left !important; border-radius:14px !important; border:1.4px solid rgba(183,121,31,.34) !important; background:#fff !important; padding:13px 14px !important; font-family:inherit !important; color:#1f2a44 !important; box-sizing:border-box !important; box-shadow:0 8px 16px rgba(183,121,31,.10), inset 0 1px 0 rgba(255,255,255,.90) !important; cursor:pointer !important; }
+.my-faith-parish-result strong { display:block !important; font-size:calc(15px * var(--app-font-scale,1)) !important; line-height:1.25 !important; font-weight:900 !important; }
+.my-faith-parish-result span { display:block !important; margin-top:4px !important; font-size:calc(11.5px * var(--app-font-scale,1)) !important; line-height:1.35 !important; color:#5f5549 !important; font-weight:700 !important; }
+.my-faith-empty { padding:18px 10px !important; text-align:center !important; color:#6b7280 !important; font-size:calc(13px * var(--app-font-scale,1)) !important; font-weight:750 !important; }
+.my-faith-inline-confirm { width:100% !important; margin:10px 0 6px !important; display:flex !important; align-items:center !important; justify-content:center !important; }
+.my-faith-confirm-btn { width:100% !important; min-height:50px !important; border:1px solid #111827 !important; border-radius:15px !important; background:#1F2937 !important; color:#fff !important; font-family:inherit !important; font-size:calc(16px * var(--app-font-scale,1)) !important; font-weight:900 !important; }
+.my-faith-inline-privacy-note { margin:2px 4px 0 !important; padding:12px 14px calc(env(safe-area-inset-bottom,0px) + 8px) !important; color:rgba(95,85,73,.62) !important; text-align:center !important; font-size:calc(10.8px * var(--app-font-scale,1)) !important; line-height:1.45 !important; font-weight:650 !important; word-break:keep-all !important; }
+.my-diocese-panel > .my-faith-privacy-note { display:none !important; }
+.my-diocese-modal.keyboard-open .my-faith-inline-privacy-note,
+.my-diocese-modal.keyboard-open .my-faith-inline-confirm { display:none !important; }
+.my-faith-no-scroll { overflow-y:auto !important; -webkit-overflow-scrolling:touch !important; }
+@media (max-width:370px){
+  #cover .cover-diocese-btn{height:34px;min-height:34px;font-size:calc(10.4px * var(--app-font-scale,1));padding:0 8px;gap:4px;}
+  #cover .cover-diocese-btn .cover-faith-cross{font-size:calc(13px * var(--app-font-scale,1));}
+  .my-diocese-list{grid-template-columns:1fr !important;}
+}
+
+/* ============================================================
+   V3-87: 나의 신앙생활 홈 화면 잘림 보정
+   - 내 교구·본당 정보의 월배성당 홈페이지/상세정보 행이 잘리지 않도록
+   - 모달 전체 높이는 실제 보이는 화면 높이에 맞추고, 내용은 세로 스크롤로 확인
+   ============================================================ */
+.my-diocese-modal.show,
+.my-diocese-modal.show .my-diocese-panel {
+  height: var(--my-faith-visible-vh, var(--my-faith-vh, 100dvh)) !important;
+  max-height: var(--my-faith-visible-vh, var(--my-faith-vh, 100dvh)) !important;
+  min-height: 0 !important;
+}
+.my-diocese-modal.show #my-diocese-list.my-faith-body {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  height: auto !important;
+  max-height: none !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  overscroll-behavior-y: contain !important;
+}
+.my-faith-body.my-faith-home-list-body {
+  gap: 10px !important;
+  padding: 12px 15px calc(env(safe-area-inset-bottom, 0px) + 22px) !important;
+  background: #FFF7EA !important;
+}
+.my-faith-body.my-faith-home-list-body .my-faith-section.my-faith-list-section {
+  display: block !important;
+  flex: 0 0 auto !important;
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  overflow: hidden !important;
+}
+.my-faith-body.my-faith-home-list-body .my-faith-list-row {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  align-items: center !important;
+  min-height: 58px !important;
+  padding: 9px 12px 9px 14px !important;
+  gap: 9px !important;
+  box-sizing: border-box !important;
+}
+.my-faith-body.my-faith-home-list-body .my-faith-row-main {
+  min-width: 0 !important;
+}
+.my-faith-body.my-faith-home-list-body .my-faith-row-top strong {
+  display: block !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+.my-faith-body.my-faith-home-list-body .my-faith-quick-section .my-faith-list-row:nth-of-type(3),
+.my-faith-body.my-faith-home-list-body .my-faith-quick-section .my-faith-list-row:nth-of-type(4) {
+  background: #F3F4F6 !important;
+  border-bottom-color: #E5E7EB !important;
+}
+.my-faith-body.my-faith-home-list-body .my-faith-quick-section .my-faith-list-row:nth-of-type(4) {
+  border-bottom: 0 !important;
+}
+.my-faith-body.my-faith-home-list-body .my-faith-row-btn-open {
+  border-color: #111827 !important;
+  background: #1F2937 !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 5px 12px rgba(31,41,55,.18), inset 0 1px 0 rgba(255,255,255,.14) !important;
+}
+.my-faith-body.my-faith-home-list-body .my-faith-inline-confirm {
+  margin: 8px 0 4px !important;
+  flex: 0 0 auto !important;
+}
+.my-faith-body.my-faith-home-list-body .my-faith-confirm-btn {
+  min-height: 46px !important;
+  border-radius: 14px !important;
+}
+.my-faith-body.my-faith-home-list-body .my-faith-inline-privacy-note {
+  margin: 0 4px !important;
+  padding: 8px 12px max(10px, env(safe-area-inset-bottom, 0px)) !important;
+  flex: 0 0 auto !important;
+}
+@media (max-width: 370px) and (max-height: 820px) {
+  .my-faith-body.my-faith-home-list-body {
+    gap: 8px !important;
+    padding: 9px 11px calc(env(safe-area-inset-bottom, 0px) + 18px) !important;
+  }
+  .my-faith-body.my-faith-home-list-body .my-faith-intro-card {
+    padding: 11px 12px !important;
+  }
+  .my-faith-body.my-faith-home-list-body .my-faith-section.my-faith-list-section h3 {
+    padding: 10px 12px 9px !important;
+    font-size: 13.8px !important;
+    line-height: 1.22 !important;
+  }
+  .my-faith-body.my-faith-home-list-body .my-faith-list-row {
+    min-height: 54px !important;
+    padding: 8px 10px 8px 12px !important;
+    gap: 7px !important;
+  }
+  .my-faith-body.my-faith-home-list-body .my-faith-row-top strong {
+    font-size: 13px !important;
+  }
+  .my-faith-body.my-faith-home-list-body .my-faith-row-sub {
+    font-size: 10.8px !important;
+    line-height: 1.26 !important;
+  }
+  .my-faith-body.my-faith-home-list-body .my-faith-row-btn {
+    min-width: 52px !important;
+    height: 32px !important;
+    min-height: 32px !important;
+    padding: 0 9px !important;
+    font-size: 11.2px !important;
+  }
+  .my-faith-body.my-faith-home-list-body .my-faith-confirm-btn {
+    min-height: 40px !important;
+    font-size: 13.8px !important;
+  }
+}
+
+/* ============================================================
+   V3-95: 커버 메뉴 / 미사 빠른 메뉴 디자인 표준화
+   - 나의 신앙생활 화면의 네이비·아이보리·골드 기준색을 공유
+   - 메뉴 헤더 배너와 미사 빠른 사용 헤더 배너를 같은 구조로 통일
+   - 메뉴 항목과 매일미사·주요기도문·가톨릭성가 버튼 높이를 통일
+   ============================================================ */
+:root {
+  --oai-modal-standard-head: #1F2937;
+  --oai-modal-standard-head-text: #FFFDF7;
+  --oai-modal-standard-sub: rgba(255,255,255,.82);
+  --oai-modal-standard-panel: #FFF7EA;
+  --oai-modal-standard-box: #FFFDF7;
+  --oai-modal-standard-box-press: #FAF1E3;
+  --oai-modal-standard-line: rgba(148,163,184,.90);
+  --oai-modal-standard-gold: #B7791F;
+  --oai-modal-standard-ink: #2B211B;
+}
+.cover-menu-panel,
+#cover #mass-quick-modal .mass-quick-panel {
+  width: min(370px, calc(100vw - 32px)) !important;
+  padding: 22px 18px 20px !important;
+  border-radius: 24px !important;
+  background: var(--oai-modal-standard-panel) !important;
+  border: 1.4px solid rgba(214,190,133,.92) !important;
+  box-shadow: 0 22px 48px rgba(58,47,34,.16), inset 0 1px 0 rgba(255,255,255,.78) !important;
+  color: var(--oai-modal-standard-ink) !important;
+  box-sizing: border-box !important;
+}
+.cover-menu-panel { min-height: 350px !important; }
+#cover #mass-quick-modal .mass-quick-panel {
+  max-height: min(90dvh, 800px) !important;
+  text-align: left !important;
+}
+.cover-menu-head,
+#cover #mass-quick-modal .mass-quick-head {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 14px !important;
+  width: 100% !important;
+  min-height: 86px !important;
+  margin: 0 0 18px !important;
+  padding: 15px 16px !important;
+  box-sizing: border-box !important;
+  border: 1.4px solid rgba(226,232,240,.62) !important;
+  border-radius: 22px !important;
+  background: var(--oai-modal-standard-head) !important;
+  box-shadow: 0 10px 22px rgba(31,41,55,.22), inset 0 1px 0 rgba(255,255,255,.18), inset 0 -1px 0 rgba(15,23,42,.16) !important;
+  text-align: left !important;
+}
+.cover-menu-head > div,
+#cover #mass-quick-modal .mass-quick-head-text {
+  min-width: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+.cover-menu-title,
+#cover #mass-quick-modal .mass-quick-title {
+  color: var(--oai-modal-standard-head-text) !important;
+  font-size: calc(20px * var(--app-font-scale, 1)) !important;
+  line-height: 1.18 !important;
+  font-weight: 900 !important;
+  letter-spacing: -.045em !important;
+  word-break: keep-all !important;
+}
+.cover-menu-subtitle,
+#cover #mass-quick-modal .mass-quick-subtitle {
+  margin-top: 6px !important;
+  color: var(--oai-modal-standard-sub) !important;
+  font-size: calc(13px * var(--app-font-scale, 1)) !important;
+  line-height: 1.25 !important;
+  font-weight: 800 !important;
+  letter-spacing: -.035em !important;
+  word-break: keep-all !important;
+}
+.cover-menu-close,
+#cover #mass-quick-modal .mass-quick-head .guide-x,
+#cover #mass-quick-modal .mass-quick-close {
+  position: static !important;
+  flex: 0 0 auto !important;
+  width: 42px !important;
+  height: 42px !important;
+  min-width: 42px !important;
+  min-height: 42px !important;
+  border-radius: 50% !important;
+  border: 1.4px solid rgba(255,255,255,.56) !important;
+  background: rgba(255,255,255,.13) !important;
+  color: #F8FAFC !important;
+  box-shadow: 0 5px 12px rgba(15,23,42,.18), inset 0 1px 0 rgba(255,255,255,.24) !important;
+  transform: none !important;
+  font-size: 27px !important;
+  font-weight: 900 !important;
+  line-height: 1 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+#cover #mass-quick-modal .guide-badge { display: none !important; }
+.cover-menu-list,
+#cover #mass-quick-modal .mass-quick-actions {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+  width: 100% !important;
+  margin-top: 0 !important;
+}
+.cover-menu-item,
+#cover #mass-quick-modal .mass-quick-btn,
+#cover #mass-quick-modal .mass-quick-primary {
+  width: 100% !important;
+  min-height: 92px !important;
+  height: 92px !important;
+  padding: 15px 18px !important;
+  border-radius: 20px !important;
+  background: var(--oai-modal-standard-box) !important;
+  border: 1.4px solid var(--oai-modal-standard-line) !important;
+  color: var(--oai-modal-standard-ink) !important;
+  box-shadow: 0 6px 14px rgba(74,47,34,.09), inset 0 1px 0 rgba(255,255,255,.92) !important;
+  box-sizing: border-box !important;
+  text-align: left !important;
+}
+#cover #mass-quick-modal .mass-quick-btn,
+#cover #mass-quick-modal .mass-quick-primary {
+  display: grid !important;
+  grid-template-columns: 58px 1fr !important;
+  align-items: center !important;
+}
+.cover-menu-item {
+  display: flex !important;
+  align-items: center !important;
+  gap: 13px !important;
+  font-size: calc(16px * var(--app-font-scale, 1)) !important;
+  font-weight: 900 !important;
+  line-height: 1.15 !important;
+  text-decoration: none !important;
+}
+.cover-menu-item:active,
+#cover #mass-quick-modal .mass-quick-btn:active,
+#cover #mass-quick-modal .mass-quick-primary:active {
+  background: var(--oai-modal-standard-box-press) !important;
+  transform: translateY(1px) !important;
+}
+.cover-menu-icon,
+#cover #mass-quick-modal .mass-quick-btn span {
+  width: 48px !important;
+  height: 48px !important;
+  min-width: 48px !important;
+  flex: 0 0 48px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  color: #7A4E16 !important;
+  font-size: calc(29px * var(--app-font-scale, 1)) !important;
+  line-height: 1 !important;
+}
+#cover #mass-quick-modal .mass-quick-btn span { border-radius: 16px !important; }
+.cover-menu-text,
+#cover #mass-quick-modal .mass-quick-btn strong {
+  min-width: 0 !important;
+  color: var(--oai-modal-standard-ink) !important;
+  font-size: calc(15.5px * var(--app-font-scale, 1)) !important;
+  line-height: 1.18 !important;
+  font-weight: 900 !important;
+  letter-spacing: -.03em !important;
+  text-align: left !important;
+}
+@media (max-width: 370px) and (max-height: 820px) {
+  html:not(.ios-device) .cover-menu-panel,
+  html:not(.ios-device) #cover #mass-quick-modal .mass-quick-panel {
+    width: min(360px, calc(100vw - 28px)) !important;
+    padding: 16px 13px 15px !important;
+  }
+  html:not(.ios-device) .cover-menu-panel { min-height: 326px !important; }
+  html:not(.ios-device) .cover-menu-head,
+  html:not(.ios-device) #cover #mass-quick-modal .mass-quick-head {
+    min-height: 74px !important;
+    border-radius: 18px !important;
+    margin-bottom: 12px !important;
+    padding: 12px !important;
+    gap: 10px !important;
+  }
+  html:not(.ios-device) .cover-menu-title,
+  html:not(.ios-device) #cover #mass-quick-modal .mass-quick-title {
+    font-size: 17px !important;
+    line-height: 1.16 !important;
+  }
+  html:not(.ios-device) .cover-menu-subtitle,
+  html:not(.ios-device) #cover #mass-quick-modal .mass-quick-subtitle {
+    margin-top: 4px !important;
+    font-size: 11.5px !important;
+    line-height: 1.2 !important;
+  }
+  html:not(.ios-device) .cover-menu-close,
+  html:not(.ios-device) #cover #mass-quick-modal .mass-quick-head .guide-x,
+  html:not(.ios-device) #cover #mass-quick-modal .mass-quick-close {
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+    min-height: 36px !important;
+    font-size: 24px !important;
+  }
+  html:not(.ios-device) .cover-menu-list,
+  html:not(.ios-device) #cover #mass-quick-modal .mass-quick-actions { gap: 8px !important; }
+  html:not(.ios-device) .cover-menu-item,
+  html:not(.ios-device) #cover #mass-quick-modal .mass-quick-btn,
+  html:not(.ios-device) #cover #mass-quick-modal .mass-quick-primary {
+    min-height: 78px !important;
+    height: 78px !important;
+    padding: 12px 14px !important;
+    border-radius: 17px !important;
+  }
+  html:not(.ios-device) .cover-menu-icon,
+  html:not(.ios-device) #cover #mass-quick-modal .mass-quick-btn span {
+    width: 40px !important;
+    height: 40px !important;
+    min-width: 40px !important;
+    flex-basis: 40px !important;
+    font-size: 24px !important;
+  }
+  html:not(.ios-device) #cover #mass-quick-modal .mass-quick-btn { grid-template-columns: 50px 1fr !important; }
+  html:not(.ios-device) .cover-menu-text,
+  html:not(.ios-device) #cover #mass-quick-modal .mass-quick-btn strong {
+    font-size: 13.8px !important;
+    line-height: 1.14 !important;
+  }
+}

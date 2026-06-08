@@ -526,30 +526,30 @@ window.APP_CONFIG = {
 <meta name="application-name" content="가톨릭길동무">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#f5f0e8">
-<link rel="manifest" href="manifest.json?v=V3-83">
-<link rel="apple-touch-icon" sizes="180x180" href="icon-512x512.png?v=V3-83">
-<link rel="apple-touch-icon-precomposed" sizes="180x180" href="icon-512x512.png?v=V3-83">
+<link rel="manifest" href="manifest.json?v=V3-98">
+<link rel="apple-touch-icon" sizes="180x180" href="icon-512x512.png?v=V3-98">
+<link rel="apple-touch-icon-precomposed" sizes="180x180" href="icon-512x512.png?v=V3-98">
 <meta name="format-detection" content="telephone=no">
 <meta name="description" content="가톨릭길동무 - 가톨릭 신앙생활 종합 앱">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="가톨릭길동무">
 <meta property="og:title" content="가톨릭길동무">
 <meta property="og:description" content="성지 · 성당 · 기도문 · 순례길 · 가톨릭 웹사이트 안내">
-<meta property="og:image" content="icon-512x512.png?v=V3-83">
+<meta property="og:image" content="icon-512x512.png?v=V3-98">
 <meta property="og:image:width" content="512">
 <meta property="og:image:height" content="512">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="가톨릭길동무">
 <meta name="twitter:description" content="성지 · 성당 · 기도문 · 순례길 · 가톨릭 웹사이트 안내">
-<meta name="twitter:image" content="icon-512x512.png?v=V3-83">
+<meta name="twitter:image" content="icon-512x512.png?v=V3-98">
 <title>가톨릭길동무</title>
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192x192.png?v=V3-83">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192x192.png?v=V3-98">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <style id="oai-initial-bg">html,body{margin:0;width:100%;height:100%;min-height:100%;background:#f5f0e8;overflow:hidden;color-scheme:light;}#cover{background:#f5f0e8;min-height:100%;}#app{background:#f8f6f2;display:none;}</style>
-<link rel="stylesheet" href="style.css?v=V3-83">
+<link rel="stylesheet" href="style.css?v=V3-98">
 </head>
 <body>
 <div id="missa-view" role="dialog" aria-modal="true" aria-label="매일미사">
@@ -634,12 +634,17 @@ window.APP_CONFIG = {
       <div class="pr-font-divider"></div>
       <button type="button" id="cover-lg-btn" class="pr-font-btn pr-lg">가</button>
     </div>
-    <button id="cover-guide-btn" type="button" aria-label="가톨릭길동무 주요 기능 보기">주요기능</button>
+    <button id="cover-menu-btn" class="cover-menu-btn" type="button" aria-label="메뉴 열기"><span class="cover-menu-hamburger" aria-hidden="true"><span></span><span></span><span></span></span><span class="cover-menu-label">메 뉴</span></button>
     <div id="mass-quick-modal" class="guide-modal mass-quick-modal" role="dialog" aria-modal="true" aria-label="미사 중 빠른 사용" aria-hidden="true">
       <div class="guide-backdrop" data-mass-quick-close="1"></div>
       <div class="guide-panel mass-quick-panel">
-        <button class="guide-x" type="button" data-mass-quick-close="1" aria-label="미사 빠른 메뉴 닫기">×</button>
-        <div class="guide-badge">미사 중 빠른 사용</div>
+        <div class="mass-quick-head">
+          <div class="mass-quick-head-text">
+            <div class="mass-quick-title">미사 중 빠른 사용</div>
+            <div class="mass-quick-subtitle">필요한 항목을 선택하세요</div>
+          </div>
+          <button class="guide-x mass-quick-close" type="button" data-mass-quick-close="1" aria-label="미사 빠른 메뉴 닫기">×</button>
+        </div>
         <div class="mass-quick-actions" aria-label="미사·기도·성가 빠른 메뉴">
           <button id="mass-quick-missa" type="button" class="mass-quick-btn mass-quick-primary"><span>✝️</span><strong>매일미사</strong></button>
           <button id="mass-quick-prayer" type="button" class="mass-quick-btn"><span>📖</span><strong>주요기도문</strong></button>
@@ -690,17 +695,17 @@ window.APP_CONFIG = {
         </div>
         <button id="ios-kakao-safari-help" type="button">설치 방법 보기</button>
       </div>
-      <!-- 커버 하단 작업줄: 새로고침 + 문의·건의 -->
-      <div id="cover-action-row" aria-label="커버 보조 기능">
-        <div id="cover-update-box">
-          <button id="cover-update-btn" type="button" data-target-version="V2" aria-label="짧게 누르면 새로고침, 더 길게 누르면 앱 캐시 초기화">
-            V2 새로고침
+      <!-- 커버 하단 작업줄: 나의 신앙생활 + 새로고침 -->
+      <div id="cover-action-row" class="cover-action-single" aria-label="커버 보조 기능">
+        <div id="cover-diocese-box">
+          <button id="cover-diocese-btn" class="cover-diocese-btn" type="button" aria-label="나의 신앙생활 열기">
+            <span class="cover-faith-cross" aria-hidden="true">✞</span><span class="diocese-btn-label">나의 신앙생활</span>
           </button>
+        </div>
+        <div id="cover-update-box">
+          <button id="cover-update-btn" class="cover-refresh-main-btn" type="button" data-target-version="V2" aria-label="짧게 누르면 새로고침, 더 길게 누르면 앱 캐시 초기화">새로고침</button>
           <div id="cover-update-hint" aria-live="polite">아래 버전과 다릅니다. 눌러서 최신 파일을 다시 받아 주세요.</div>
         </div>
-        <button id="qna-cover-btn" type="button" aria-label="문의·건의">
-          💬 문의·건의
-        </button>
       </div>
     </div>
 
@@ -708,6 +713,25 @@ window.APP_CONFIG = {
 <div id="cover-bottom-note" aria-label="앱 안내문구">
   본 앱은 가톨릭 신자들의 신앙생활을 돕기 위해 만든 비공식 개인 앱입니다.<br>
   정보는 CBCK, 굿뉴스 및 각 교구 홈페이지를 참고했습니다.<br>
+</div>
+
+<!-- 나의 신앙생활 설정 화면 -->
+<div id="my-diocese-modal" class="my-diocese-modal" aria-hidden="true">
+  <div class="my-diocese-backdrop" data-my-diocese-close="true"></div>
+  <div class="my-diocese-panel" role="dialog" aria-modal="true" aria-labelledby="my-diocese-title">
+    <div class="my-diocese-head">
+      <div class="my-diocese-head-main">
+        <div class="my-diocese-head-ico" aria-hidden="true">✝</div>
+        <div class="my-diocese-head-text">
+          <div id="my-diocese-title" class="my-diocese-title">나의 신앙생활</div>
+          <div class="my-diocese-subtitle">교구와 본당을 선택해 자주 쓰는 정보를 빠르게 열 수 있습니다.</div>
+        </div>
+      </div>
+      <button id="my-diocese-close" class="my-diocese-close module-close" type="button" aria-label="나의 신앙생활 닫기">×</button>
+    </div>
+    <div id="my-diocese-list" class="my-diocese-list" aria-label="나의 신앙생활 내용"></div>
+    <div class="my-faith-privacy-note">선택한 교구와 본당 정보는 이 기기 안에만 저장되며, 외부로 수집되거나 전송되지 않습니다.</div>
+  </div>
 </div>
 
 <!-- iPhone 카카오톡 Safari 설치 안내 팝업 -->
@@ -723,30 +747,30 @@ window.APP_CONFIG = {
         <div class="ios-safari-step">
           <b>1</b>
           <span>카카오톡 하단 버튼 4개 중 <strong>오른쪽 끝 버튼</strong>을 누르세요.</span>
-          <img data-src="ios-install-step1-kakao-bottom-buttons.png?v=V3-83" alt="카카오톡 오른쪽 아래 버튼 모양" width="945" height="248" loading="lazy" decoding="async">
+          <img data-src="ios-install-step1-kakao-bottom-buttons.png?v=V3-98" alt="카카오톡 오른쪽 아래 버튼 모양" width="945" height="248" loading="lazy" decoding="async">
         </div>
         <div class="ios-safari-step">
           <b>2</b>
           <span>공유 화면에서 <strong>Safari로 열기</strong>를 누르세요.</span>
-          <img data-src="ios-install-step2-safari-open.png?v=V3-83" alt="Safari로 열기 버튼" width="880" height="755" loading="lazy" decoding="async" fetchpriority="low">
+          <img data-src="ios-install-step2-safari-open.png?v=V3-98" alt="Safari로 열기 버튼" width="880" height="755" loading="lazy" decoding="async" fetchpriority="low">
         </div>
         <div class="ios-safari-step">
           <b>3</b>
           <span>Safari로 열린 뒤, 화면 <strong>오른쪽 아래 ··· 버튼</strong>을 누르세요.</span>
           <div class="ios-safari-shot ios-safari-shot-more">
-            <img data-src="KakaoTalk_20260514_134255658_04.jpg?v=V3-83" alt="Safari 오른쪽 아래 더보기 버튼" width="960" height="307" loading="lazy" decoding="async">
+            <img data-src="KakaoTalk_20260514_134255658_04.jpg?v=V3-98" alt="Safari 오른쪽 아래 더보기 버튼" width="960" height="307" loading="lazy" decoding="async">
             <i class="ios-gold-highlight" aria-hidden="true"></i>
           </div>
         </div>
         <div class="ios-safari-step">
           <b>4</b>
           <span>열린 메뉴에서 <strong>공유</strong>를 누르세요.</span>
-          <img data-src="ios-install-step3-share-menu.png?v=V3-83" alt="Safari 공유 버튼" width="750" height="580" loading="lazy" decoding="async" fetchpriority="low">
+          <img data-src="ios-install-step3-share-menu.png?v=V3-98" alt="Safari 공유 버튼" width="750" height="580" loading="lazy" decoding="async" fetchpriority="low">
         </div>
         <div class="ios-safari-step">
           <b>5</b>
           <span>목록을 아래로 내려 <strong>홈 화면에 추가</strong>를 누르세요.</span>
-          <img data-src="ios-install-step4-home-screen.png?v=V3-83" alt="홈 화면에 추가 버튼" width="865" height="750" loading="lazy" decoding="async" fetchpriority="low">
+          <img data-src="ios-install-step4-home-screen.png?v=V3-98" alt="홈 화면에 추가 버튼" width="865" height="750" loading="lazy" decoding="async" fetchpriority="low">
         </div>
       </div>
     </div>
@@ -811,7 +835,36 @@ window.APP_CONFIG = {
   📲 홈 화면에 앱 설치하기
 </button>
 </div>
-<script src="app.js?v=V3-83"></script>
+
+<!-- 커버 메뉴 팝업 -->
+<div id="cover-menu-modal" class="cover-menu-modal" aria-hidden="true">
+  <div class="cover-menu-backdrop" data-cover-menu-close="true"></div>
+  <div class="cover-menu-panel" role="dialog" aria-modal="true" aria-labelledby="cover-menu-title">
+    <div class="cover-menu-head">
+      <div>
+        <div id="cover-menu-title" class="cover-menu-title">가톨릭길동무 메뉴</div>
+        <div class="cover-menu-subtitle">필요한 기능을 선택하세요</div>
+      </div>
+      <button id="cover-menu-close" class="cover-menu-close" type="button" aria-label="메뉴 닫기">×</button>
+    </div>
+    <div class="cover-menu-list">
+      <button id="cover-menu-guide-btn" class="cover-menu-item" type="button">
+        <span class="cover-menu-icon">📘</span>
+        <span class="cover-menu-text">주요기능</span>
+      </button>
+      <a id="cover-menu-privacy-link" class="cover-menu-item" href="privacy.html?v=V3-98">
+        <span class="cover-menu-icon">🛡</span>
+        <span class="cover-menu-text">개인정보처리방침</span>
+      </a>
+      <button id="cover-menu-qna-btn" class="cover-menu-item" type="button">
+        <span class="cover-menu-icon">💬</span>
+        <span class="cover-menu-text">문의·건의</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script src="app.js?v=V3-98"></script>
 <div id="oai-category-entry-veil" aria-hidden="true"></div>
 <div id="app"><div id="tabbar"><button id="tab-btn-nearby" class="tab-btn" data-tab="nearby"><span class="tab-icon">📍</span><span id="tab-nearby-lbl">내주변</span></button><button id="tab-btn-list" class="tab-btn" data-tab="list"><span class="tab-icon">📋</span><span id="tab-list-lbl">목록</span></button><button id="tab-btn-region" class="tab-btn" data-tab="region"><span class="tab-icon">🔍</span>지역검색
     </button><button id="tab-btn-route" class="tab-btn" data-tab="route"><span class="tab-icon">🧭</span>길찾기
@@ -887,13 +940,13 @@ window.APP_CONFIG = {
     </div>
   </div>
 </div>
-<script src="web.js?v=V3-83"></script>
+<script src="web.js?v=V3-98"></script>
 
 <div id="qna-view" role="dialog" aria-modal="true" aria-label="문의·건의" class="module-view"><div class="module-bar qna"><div class="module-bar-main"><div class="module-bar-ico">✝</div><div class="module-bar-txt"><div class="module-bar-title">문의·건의</div><div class="module-bar-sub">질문, 오류, 수정요청을 남겨주세요</div></div></div><button id="qna-close-btn" class="module-close" aria-label="문의·건의 닫기">×</button></div><div class="qna-body"><div class="qna-tabs"><button id="qna-tab-write" class="qna-tab on" type="button">작성</button></div><div class="qna-list" id="qna-list"></div></div></div>
 
-<script src="patches.js?v=V3-83"></script>
+<script src="patches.js?v=V3-98"></script>
 
-<script src="sw-update.js?v=V3-83"></script>
+<script src="sw-update.js?v=V3-98"></script>
 
 
 

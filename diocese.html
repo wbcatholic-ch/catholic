@@ -1727,7 +1727,7 @@ function makeRow(disp,diocese,overlapDongs){
   return card;
 }
 
-const AMBIGUOUS_GU_STANDALONE=['중구','동구','서구','남구','북구'];
+const AMBIGUOUS_GU_STANDALONE=['중구','동구','서구','남구','북구','강서','강서구'];
 const DIOCESE_DISTRICT_SEARCH=[
   {display:'마산교구',d:'마산교구',aliases:['마산','마산교구']},
   {display:'경남 창원시',d:'마산교구',aliases:['창원','창원시','경남창원','경남 창원','경남창원시','경남 창원시','경상남도창원','경상남도 창원','경상남도창원시','경상남도 창원시']},
@@ -1777,6 +1777,94 @@ const DIOCESE_DISTRICT_SEARCH=[
   {display:'울산 북구',d:'부산교구',aliases:['울산북구','울산 북구','울산광역시북구','울산광역시 북구']},
   {display:'울산 울주군',d:'부산교구',aliases:['울주','울주군','울산울주','울산 울주','울산울주군','울산 울주군','울산광역시울주군','울산광역시 울주군']}
 ];
+
+/* V3-91: WebView V2-174 관구·교구 구 단위 지역검색 보강
+   - 기존 PWA diocese.html 구조는 유지하고, 빠진 구/군 검색어만 추가한다.
+   - 중복 가능성이 큰 중구/동구/서구/남구/북구/강서구는 도시명 포함 검색만 허용한다. */
+function _dioDistrictAliases(city,district,opts){
+  opts=opts||{};
+  var base=String(district).replace(/구$|군$/,'');
+  var forms=[];
+  if(!opts.cityOnly){ forms.push(base,district); }
+  var cityForms=[city];
+  if(opts.cityFull) cityForms.push(opts.cityFull);
+  cityForms.forEach(function(c){
+    forms.push(c+base,c+' '+base,c+district,c+' '+district);
+  });
+  return Array.from(new Set(forms.filter(Boolean)));
+}
+function _dioDistrictEntry(city,cityFull,district,diocese,display,cityOnly){
+  return {display:display||(city+' '+district),d:diocese,aliases:_dioDistrictAliases(city,district,{cityFull:cityFull,cityOnly:!!cityOnly})};
+}
+function _dioMergeDistrictAliases(display,diocese,aliases){
+  var item=DIOCESE_DISTRICT_SEARCH.find(function(x){return x.display===display&&x.d===diocese;});
+  if(!item){return;}
+  item.aliases=Array.from(new Set((item.aliases||[]).concat(aliases||[])));
+}
+(function(){
+  _dioMergeDistrictAliases('마산교구','마산교구',['경남마산','경남 마산','창원마산','창원 마산','경남창원마산','경남 창원 마산']);
+  _dioMergeDistrictAliases('경남 창원시 마산합포구','마산교구',['마산합포','창원마산합포','창원 마산합포','경남마산합포','경남 마산합포']);
+  _dioMergeDistrictAliases('경남 창원시 마산회원구','마산교구',['마산회원','창원마산회원','창원 마산회원','경남마산회원','경남 마산회원']);
+  _dioMergeDistrictAliases('경남 창원시 진해구','마산교구',['경남진해','경남 진해','경남진해구','경남 진해구']);
+  var extras=[
+    /* 서울특별시 — 서울대교구 */
+    _dioDistrictEntry('서울','서울특별시','강남구','서울대교구'),
+    _dioDistrictEntry('서울','서울특별시','강동구','서울대교구'),
+    _dioDistrictEntry('서울','서울특별시','강북구','서울대교구'),
+    _dioDistrictEntry('서울','서울특별시','강서구','서울대교구',null,true),
+    _dioDistrictEntry('서울','서울특별시','관악구','서울대교구'),
+    _dioDistrictEntry('서울','서울특별시','광진구','서울대교구'),
+    _dioDistrictEntry('서울','서울특별시','구로구','서울대교구'),
+    _dioDistrictEntry('서울','서울특별시','금천구','서울대교구'),
+    _dioDistrictEntry('서울','서울특별시','노원구','서울대교구'),
+    _dioDistrictEntry('서울','서울특별시','도봉구','서울대교구'),
+    _dioDistrictEntry('서울','서울특별시','동대문구','서울대교구'),
+    _dioDistrictEntry('서울','서울특별시','동작구','서울대교구'),
+    _dioDistrictEntry('서울','서울특별시','마포구','서울대교구'),
+    _dioDistrictEntry('서울','서울특별시','서대문구','서울대교구'),
+    _dioDistrictEntry('서울','서울특별시','서초구','서울대교구'),
+    _dioDistrictEntry('서울','서울특별시','성동구','서울대교구'),
+    _dioDistrictEntry('서울','서울특별시','성북구','서울대교구'),
+    _dioDistrictEntry('서울','서울특별시','송파구','서울대교구'),
+    _dioDistrictEntry('서울','서울특별시','양천구','서울대교구'),
+    _dioDistrictEntry('서울','서울특별시','영등포구','서울대교구'),
+    _dioDistrictEntry('서울','서울특별시','용산구','서울대교구'),
+    _dioDistrictEntry('서울','서울특별시','은평구','서울대교구'),
+    _dioDistrictEntry('서울','서울특별시','종로구','서울대교구'),
+    _dioDistrictEntry('서울','서울특별시','중랑구','서울대교구'),
+    _dioDistrictEntry('서울','서울특별시','중구','서울대교구',null,true),
+
+    /* 인천광역시 — 인천교구 */
+    _dioDistrictEntry('인천','인천광역시','강화군','인천교구'),
+    _dioDistrictEntry('인천','인천광역시','옹진군','인천교구'),
+
+    /* 대구광역시 — 대구대교구 */
+    _dioDistrictEntry('대구','대구광역시','달성군','대구대교구'),
+
+    /* 부산광역시 — 부산교구 */
+    _dioDistrictEntry('부산','부산광역시','해운대구','부산교구'),
+    _dioDistrictEntry('부산','부산광역시','수영구','부산교구'),
+    _dioDistrictEntry('부산','부산광역시','부산진구','부산교구'),
+    _dioDistrictEntry('부산','부산광역시','동래구','부산교구'),
+    _dioDistrictEntry('부산','부산광역시','연제구','부산교구'),
+    _dioDistrictEntry('부산','부산광역시','금정구','부산교구'),
+    _dioDistrictEntry('부산','부산광역시','사상구','부산교구'),
+    _dioDistrictEntry('부산','부산광역시','사하구','부산교구'),
+    _dioDistrictEntry('부산','부산광역시','영도구','부산교구'),
+    _dioDistrictEntry('부산','부산광역시','기장군','부산교구'),
+    _dioDistrictEntry('부산','부산광역시','강서구','부산교구',null,true),
+
+    /* 광주광역시 — 광주대교구 */
+    _dioDistrictEntry('광주','광주광역시','광산구','광주대교구')
+  ];
+  var existing=new Set(DIOCESE_DISTRICT_SEARCH.map(function(x){return (x.display||'')+'|'+x.d;}));
+  extras.forEach(function(item){
+    var key=(item.display||'')+'|'+item.d;
+    if(existing.has(key)) return;
+    existing.add(key);
+    DIOCESE_DISTRICT_SEARCH.push(item);
+  });
+})();
 function findDioceseDistrictMatches(q){
   const rows=[];
   const seen=new Set();
@@ -1799,12 +1887,12 @@ function doSearch(){
   try{ document.activeElement && document.activeElement.blur && document.activeElement.blur(); }catch(e){}
   const raw=document.getElementById('si').value.trim();
   const res=document.getElementById('sres');
-  if(!raw){res.innerHTML='<div class="se">검색어를 입력하세요</div>';return;}
+  if(!raw){res.innerHTML='<div class="se">도·시·군·구 이름을 입력하세요</div>';return;}
 
   const q=raw.replace(/\s+/g,'');
 
   if(AMBIGUOUS_GU_STANDALONE.includes(q)){
-    res.innerHTML='<div class="se">도시명과 함께 입력하세요<br>예: 대구중구, 서울중구, 부산남구</div>';
+    res.innerHTML='<div class="se">중구·동구·서구·남구·북구·강서구처럼 여러 도시에 있는 구는<br>도시명을 함께 입력하세요.<br><span style="font-size:11px;color:#6B7280">예: 대구 중구, 서울 중구, 부산 남구, 서울 강서구</span></div>';
     return;
   }
   const districtMatches=findDioceseDistrictMatches(q);

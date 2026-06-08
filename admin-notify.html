@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>관리자 알림 설정 | 가톨릭길동무</title>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js"></script>
+<style>
+  * { box-sizing: border-box; }
+  body { margin:0; padding:24px 16px; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR",sans-serif; background:#F8F5ED; color:#1F2937; line-height:1.65; }
+  .wrap { max-width:720px; margin:0 auto; }
+  .card { background:#FFFDF8; border:1px solid #E1D6C2; border-radius:18px; padding:20px 18px; box-shadow:0 4px 18px rgba(31,41,55,.08); }
+  h1 { margin:0 0 10px; font-size:24px; color:#111827; }
+  p { margin:8px 0; }
+  .warn { background:#FFF7E7; border:1px solid #E7D5B3; border-radius:14px; padding:12px 13px; color:#5B4630; font-weight:600; }
+  button { width:100%; min-height:50px; margin-top:14px; border:0; border-radius:15px; background:#1F2A44; color:#FFFDF8; font-size:16px; font-weight:800; }
+  textarea { width:100%; min-height:130px; margin-top:14px; padding:12px; border-radius:14px; border:1px solid #D8CBB4; background:#FFFFFF; color:#111827; font-size:13px; line-height:1.55; }
+  code { background:#F1F5F9; border-radius:6px; padding:2px 5px; }
+  .small { color:#64748B; font-size:13px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <h1>관리자 알림 설정</h1>
+    <p class="warn">이 페이지는 일반 사용자용 화면이 아닙니다. 관리자 기기의 FCM 토큰을 확인한 뒤 Firebase Functions 설정에 등록할 때만 사용합니다.</p>
+    <p>아래 <code>VAPID_PUBLIC_KEY</code> 값을 Firebase Console에서 발급한 웹 푸시 인증서 키로 바꾼 뒤 사용하세요.</p>
+    <button type="button" id="token-btn">이 기기 알림 토큰 만들기</button>
+    <textarea id="token-output" readonly placeholder="알림 권한을 허용하면 여기에 관리자 FCM 토큰이 표시됩니다."></textarea>
+    <p class="small">토큰은 공개 저장소나 채팅에 올리지 마세요. Cloud Functions 환경변수 또는 Firebase Console의 관리자 전용 설정에만 보관하세요.</p>
+  </div>
+</div>
+<script>
+const FIREBASE_CONFIG = {
+  apiKey:            "AIzaSyCGUwhWXTgc09ghEtOcvinpQKrr577zAhM",
+  authDomain:        "catholic-6c7d8.firebaseapp.com",
+  projectId:         "catholic-6c7d8",
+  storageBucket:     "catholic-6c7d8.firebasestorage.app",
+  messagingSenderId: "952327785327",
+  appId:             "1:952327785327:web:1576bc6d678ba42f8a369a"
+};
+const VAPID_PUBLIC_KEY = "PASTE_FIREBASE_WEB_PUSH_CERTIFICATE_KEY_HERE";
+
+firebase.initializeApp(FIREBASE_CONFIG);
+const messaging = firebase.messaging();
+
+async function createAdminToken(){
+  const out = document.getElementById('token-output');
+  try{
+    if(!('serviceWorker' in navigator)) throw new Error('이 브라우저는 서비스워커를 지원하지 않습니다.');
+    if(VAPID_PUBLIC_KEY.indexOf('PASTE_') === 0) throw new Error('admin-notify.html 안의 VAPID_PUBLIC_KEY를 먼저 입력해야 합니다.');
+    const perm = await Notification.requestPermission();
+    if(perm !== 'granted') throw new Error('알림 권한이 허용되지 않았습니다.');
+    const reg = await navigator.serviceWorker.register('./firebase-messaging-sw.js');
+    const token = await messaging.getToken({ vapidKey: VAPID_PUBLIC_KEY, serviceWorkerRegistration: reg });
+    if(!token) throw new Error('토큰을 만들지 못했습니다.');
+    out.value = token;
+  }catch(e){
+    out.value = '오류: ' + (e && e.message ? e.message : e);
+  }
+}
+
+document.getElementById('token-btn').addEventListener('click', createAdminToken);
+</script>
+</body>
+</html>
