@@ -4557,7 +4557,7 @@ html.ios-device #qna-view.open {
 .map-loading-icon {
   color: var(--gold, #d4aa6a) !important;
   font-size: 36px !important;
-  animation: oaiLoadingCrossSpinV3-127 2s linear infinite !important;
+  animation: oaiLoadingCrossSpinV3-128 2s linear infinite !important;
   transform-origin: 50% 50% !important;
 }
 
@@ -4583,7 +4583,7 @@ html.oai-external-return-freeze::after {
   font-weight: 800 !important;
   line-height: 1 !important;
   transform-origin: 50% 50% !important;
-  animation: oaiLoadingCrossSpinV3-127 2s linear infinite !important;
+  animation: oaiLoadingCrossSpinV3-128 2s linear infinite !important;
   pointer-events: none !important;
   z-index: 2147483647 !important;
 }
@@ -4611,7 +4611,7 @@ html.oai-external-return-freeze::after {
   justify-content: center !important;
   margin: 0 0 14px !important;
   color: var(--gold, #d4aa6a) !important;
-  animation: oaiLoadingCrossSpinV3-127 2s linear infinite !important;
+  animation: oaiLoadingCrossSpinV3-128 2s linear infinite !important;
   transform-origin: 50% 50% !important;
 }
 #diocese-loading .missa-spinner::before {
@@ -4628,7 +4628,7 @@ html.oai-external-return-freeze::after {
 /* V3-12: 로딩 십자가 회전 고정
    - transform:none !important가 keyframe transform을 막지 않도록 별도 키프레임 사용
    - 성당/성지/피정의집/관구교구/외부복귀/새로고침 안정막 모두 같은 회전 속도 */
-@keyframes oaiLoadingCrossSpinV3-127 {
+@keyframes oaiLoadingCrossSpinV3-128 {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
@@ -4637,7 +4637,7 @@ html.oai-external-return-freeze::after {
 #oai-category-entry-veil::after,
 html.oai-stability-veil::after,
 html.oai-external-return-freeze::after {
-  animation-name: oaiLoadingCrossSpinV3-127 !important;
+  animation-name: oaiLoadingCrossSpinV3-128 !important;
   animation-duration: 2s !important;
   animation-timing-function: linear !important;
   animation-iteration-count: infinite !important;
@@ -4659,7 +4659,7 @@ html.oai-external-return-freeze::after {
 html.oai-stability-veil::after,
 html.oai-external-return-freeze::after {
   opacity: 0 !important;
-  animation-name: oaiLoadingCrossSpinV3-127, oaiLoadingCrossDelayedRevealV3-1220 !important;
+  animation-name: oaiLoadingCrossSpinV3-128, oaiLoadingCrossDelayedRevealV3-1220 !important;
   animation-duration: 2s, .12s !important;
   animation-timing-function: linear, ease-out !important;
   animation-iteration-count: infinite, 1 !important;
@@ -4678,7 +4678,7 @@ html.oai-stability-veil[data-oai-stability-reason*="external"]::after,
 html.oai-stability-veil.oai-external-leaving::after,
 html.oai-external-return-freeze::after {
   opacity: 1 !important;
-  animation-name: oaiLoadingCrossSpinV3-127 !important;
+  animation-name: oaiLoadingCrossSpinV3-128 !important;
   animation-duration: 2s !important;
   animation-timing-function: linear !important;
   animation-iteration-count: infinite !important;
