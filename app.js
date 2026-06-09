@@ -1538,7 +1538,7 @@ function openDioceseView(opts){
       if(!restore) try{ frame.contentWindow && frame.contentWindow.resetDioceseFirstPage && frame.contentWindow.resetDioceseFirstPage(); }catch(e){ console.warn("[가톨릭길동무]", e); }
       if(typeof dioceseLoaded==='function') dioceseLoaded();
     };
-    frame.src='diocese.html?v=V3-124';
+    frame.src='diocese.html?v=V3-125';
   }else if(!restore){
     try{ frame.contentWindow && frame.contentWindow.resetDioceseFirstPage && frame.contentWindow.resetDioceseFirstPage(); }catch(e){ console.warn("[가톨릭길동무]", e); }
   }
@@ -1929,7 +1929,7 @@ const _PARISH_DIOCESE_ASSETS={
 };
 const _PARISH_DIOCESE_LOAD_STATE={};
 const _PARISH_DIOCESE_LOAD_PROMISES={};
-const _PARISH_ASSET_VERSION='V3-124';
+const _PARISH_ASSET_VERSION='V3-125';
 function _getParishDioceseAsset(code){
   return _PARISH_DIOCESE_ASSETS[code] || null;
 }
@@ -2092,7 +2092,7 @@ function _ensureParishDataLoaded(){
 }
 _initParishDataFromGlobal();
 
-const _PRAYER_ASSET_VERSION='V3-124';
+const _PRAYER_ASSET_VERSION='V3-125';
 let _prayerModuleLoadPromise=null;
 function _isPrayerModuleReady(){
   return typeof window.initPrayerView === 'function' &&
@@ -2435,7 +2435,7 @@ const _TY={'A':'성지','B':'순례지','C':'순교 사적지'};
 
 let _shrineRawLoaded = false;
 let _shrineDataLoadPromise = null;
-const _SHRINE_ASSET_VERSION='V3-124';
+const _SHRINE_ASSET_VERSION='V3-125';
 let SHRINES = [];
 let JUKRIMGUL_IDX = -1;
 function _decodeShrineHomePage(hp){
@@ -6471,6 +6471,10 @@ document.addEventListener('DOMContentLoaded', function bindEvents() {
     var myFaithResumeBusy = false;
     var myFaithResumeTimer = null;
     var myFaithStableHeight = 0;
+    var myFaithPendingActive = false;
+    var myFaithPendingName = '';
+    var myFaithPendingParish = null;
+    var myFaithRenderSettingsEdit = null;
 
     function selectedName(){ try{ return (localStorage.getItem(DIO_KEY) || '').trim(); }catch(e){ return ''; } }
     function setSelectedName(name){ try{ localStorage.setItem(DIO_KEY, String(name || '').trim()); }catch(e){ console.warn('[가톨릭길동무]', e); } }
@@ -6483,6 +6487,43 @@ document.addEventListener('DOMContentLoaded', function bindEvents() {
         if(!item || !item.name){ localStorage.removeItem(PARISH_KEY); return; }
         localStorage.setItem(PARISH_KEY, JSON.stringify({name:String(item.name||''),diocese:String(item.diocese||''),addr:String(item.addr||''),hp:String(item.hp||''),url:String(item.url||'')}));
       }catch(e){ console.warn('[가톨릭길동무]', e); }
+    }
+    function cloneMyFaithParish(item){
+      if(!item || !item.name) return null;
+      return {name:String(item.name||''),diocese:String(item.diocese||''),addr:String(item.addr||''),hp:String(item.hp||''),url:String(item.url||'')};
+    }
+    function beginMyFaithPendingEdit(){
+      myFaithPendingActive = true;
+      myFaithPendingName = selectedName();
+      myFaithPendingParish = cloneMyFaithParish(selectedParish());
+    }
+    function cancelMyFaithPendingEdit(){
+      myFaithPendingActive = false;
+      myFaithPendingName = '';
+      myFaithPendingParish = null;
+    }
+    function getMyFaithEditName(){ if(!myFaithPendingActive) beginMyFaithPendingEdit(); return String(myFaithPendingName || '').trim(); }
+    function getMyFaithEditParish(){ if(!myFaithPendingActive) beginMyFaithPendingEdit(); return myFaithPendingParish; }
+    function setMyFaithEditName(name){
+      if(!myFaithPendingActive) beginMyFaithPendingEdit();
+      name = String(name || '').trim();
+      if(String(myFaithPendingName || '').trim() !== name) myFaithPendingParish = null;
+      myFaithPendingName = name;
+    }
+    function setMyFaithEditParish(item){ if(!myFaithPendingActive) beginMyFaithPendingEdit(); myFaithPendingParish = cloneMyFaithParish(item); }
+    function commitMyFaithPendingEdit(){
+      if(!myFaithPendingActive) return;
+      var name = String(myFaithPendingName || '').trim();
+      if(name) setSelectedName(name);
+      else { try{ localStorage.removeItem(DIO_KEY); }catch(_e){ setSelectedName(''); } }
+      setSelectedParish(myFaithPendingParish);
+      cancelMyFaithPendingEdit();
+      updateButton();
+      refreshDependentViews();
+    }
+    function returnToMyFaithSettingsEdit(){
+      if(typeof myFaithRenderSettingsEdit === 'function') myFaithRenderSettingsEdit();
+      else renderHome();
     }
     function safeText(x){ return String(x || '').replace(/[&<>"']/g, function(c){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c] || c); }); }
     function setHeader(main, sub){ if(title){ title.textContent = main || '나의 신앙생활'; try{ title.setAttribute('data-myfaith-title', title.textContent); }catch(_e){} } if(subtitle) subtitle.textContent = sub || ''; }
@@ -6569,6 +6610,7 @@ document.addEventListener('DOMContentLoaded', function bindEvents() {
       }catch(e){ console.warn('[가톨릭길동무]', e); }
     }
     function closeModal(){
+      cancelMyFaithPendingEdit();
       modal.classList.remove('show','keyboard-open','return-settling');
       modal.setAttribute('aria-hidden','true');
       try{ document.body.classList.remove('modal-open'); }catch(_e){}
@@ -6598,7 +6640,7 @@ document.addEventListener('DOMContentLoaded', function bindEvents() {
     }
     function smallButton(label, fn){ var b=document.createElement('button'); b.type='button'; b.className='my-faith-small-btn'; b.textContent=label; b.addEventListener('click', function(e){ if(e&&e.preventDefault)e.preventDefault(); fn&&fn(); }); return b; }
     function appendMyFaithPrivacyNote(){ var note=document.createElement('div'); note.className='my-faith-inline-privacy-note'; note.textContent='선택한 교구와 본당 정보는 이 기기 안에만 저장되며, 외부로 수집되거나 전송되지 않습니다.'; body.appendChild(note); }
-    function appendMyFaithConfirmButton(){ var wrap=document.createElement('div'); wrap.className='my-faith-inline-confirm'; var ok=document.createElement('button'); ok.type='button'; ok.className='my-faith-confirm-btn'; ok.textContent='확인'; ok.addEventListener('click', function(e){ if(e&&e.preventDefault)e.preventDefault(); closeModal(); }); wrap.appendChild(ok); body.appendChild(wrap); }
+    function appendMyFaithConfirmButton(onConfirm){ var wrap=document.createElement('div'); wrap.className='my-faith-inline-confirm'; var ok=document.createElement('button'); ok.type='button'; ok.className='my-faith-confirm-btn'; ok.textContent='확인'; ok.addEventListener('click', function(e){ if(e&&e.preventDefault)e.preventDefault(); if(typeof onConfirm === 'function') onConfirm(); closeModal(); }); wrap.appendChild(ok); body.appendChild(wrap); }
     function settleMyFaithHomeScroll(){ try{ if(!body || !body.classList.contains('my-faith-home-list-body')) return; body.scrollTop=0; body.classList.remove('my-faith-no-scroll'); setTimeout(function(){ try{ body.classList.remove('my-faith-no-scroll'); }catch(_e){} },120); }catch(e){ console.warn('[가톨릭길동무]', e); } }
 
     function renderHome(){
@@ -6609,22 +6651,26 @@ document.addEventListener('DOMContentLoaded', function bindEvents() {
       function listSection(t,c){ var sec=document.createElement('section'); sec.className='my-faith-section my-faith-list-section '+(c||''); var h=document.createElement('h3'); h.textContent=t; sec.appendChild(h); return sec; }
       function appendRow(sec,label,value,status,buttonLabel,fn,disabled,cls){ var row=document.createElement('div'); row.className='my-faith-list-row'+(disabled?' is-disabled':'')+(status?(' has-status-'+status):''); var main=document.createElement('div'); main.className='my-faith-row-main'; var top=document.createElement('div'); top.className='my-faith-row-top'; var strong=document.createElement('strong'); strong.textContent=label; top.appendChild(strong); if(status){ var badge=document.createElement('span'); badge.className='my-faith-row-status '+status; badge.textContent=status==='done'?'설정됨':'설정 필요'; top.appendChild(badge); } main.appendChild(top); if(value){ var sub=document.createElement('span'); sub.className='my-faith-row-sub'; sub.textContent=value; main.appendChild(sub); } row.appendChild(main); row.appendChild(rowButton(buttonLabel, fn, disabled, cls)); sec.appendChild(row); return row; }
       function renderSettingsEdit(){
-        setHeader('교구·본당 변경', '변경할 항목을 선택하세요');
+        if(!myFaithPendingActive) beginMyFaithPendingEdit();
+        setHeader('교구·본당 변경', '확인을 눌러야 저장됩니다');
         setBodyMode('my-faith-body my-faith-home-list-body');
         var settings=listSection('나의 설정','my-faith-settings-section');
-        appendRow(settings,'내 교구',selectedName() || '아직 설정되지 않았습니다.',selectedName()?'done':'needed',selectedName()?'변경':'설정',renderDioceseList,false,'my-faith-row-btn-set');
-        var curName = selectedName();
-        var curParish = selectedParish();
+        var curName = getMyFaithEditName();
+        var curParish = getMyFaithEditParish();
+        appendRow(settings,'내 교구',curName || '아직 설정되지 않았습니다.',curName?'done':'needed',curName?'변경':'설정',renderDioceseList,false,'my-faith-row-btn-set');
         appendRow(settings,'내 본당',curParish ? curParish.name : (curName ? '본당을 선택해 주세요.' : '교구를 먼저 설정해 주세요.'),curParish?'done':'needed',curParish?'변경':(curName?'설정':'교구설정'),curName ? function(){ renderParishSearch(''); } : renderDioceseList,false,'my-faith-row-btn-set');
         body.appendChild(settings);
         var tools=document.createElement('div');
         tools.className='my-faith-tools my-faith-change-tools';
-        tools.appendChild(smallButton('뒤로', renderHome));
+        var backBtn=smallButton('뒤로', function(){ cancelMyFaithPendingEdit(); renderHome(); });
+        backBtn.classList.add('my-faith-back-small-btn');
+        tools.appendChild(backBtn);
         body.appendChild(tools);
-        appendMyFaithConfirmButton();
+        appendMyFaithConfirmButton(commitMyFaithPendingEdit);
         appendMyFaithPrivacyNote();
         settleMyFaithHomeScroll();
       }
+      myFaithRenderSettingsEdit = renderSettingsEdit;
       if(name && parish){
         var quick=listSection('내 교구·본당 정보','my-faith-quick-section');
         appendRow(quick, name+' 홈페이지','', '', '열기', function(){ if(info&&info.home) goExternal(info.home); }, !(info&&info.home), 'my-faith-row-btn-open');
@@ -6658,26 +6704,27 @@ document.addEventListener('DOMContentLoaded', function bindEvents() {
       appendMyFaithConfirmButton(); appendMyFaithPrivacyNote(); settleMyFaithHomeScroll();
     }
     function renderDioceseList(){
-      var current=selectedName(); setHeader('나의 교구 선택','선택한 교구를 먼저 보여줍니다.'); setBodyMode('my-diocese-list');
-      dioceses.forEach(function(name){ var item=document.createElement('button'); item.type='button'; item.className='my-diocese-option'+(current===name?' selected':''); item.textContent=name; item.setAttribute('aria-pressed', current===name?'true':'false'); item.addEventListener('click', function(e){ if(e&&e.preventDefault)e.preventDefault(); if(current!==name) setSelectedParish(null); setSelectedName(name); updateButton(); refreshDependentViews(); renderHome(); }); body.appendChild(item); });
-      var noneItem=document.createElement('button'); noneItem.type='button'; noneItem.className='my-diocese-option my-diocese-none'+(!current?' selected':''); noneItem.textContent='선택 안함'; noneItem.setAttribute('aria-pressed', !current?'true':'false'); noneItem.addEventListener('click', function(e){ if(e&&e.preventDefault)e.preventDefault(); try{ localStorage.removeItem(DIO_KEY); }catch(_e){ setSelectedName(''); } setSelectedParish(null); updateButton(); refreshDependentViews(); renderHome(); }); body.appendChild(noneItem);
+      var current=getMyFaithEditName(); setHeader('나의 교구 선택','확인을 눌러야 저장됩니다'); setBodyMode('my-diocese-list');
+      dioceses.forEach(function(name){ var item=document.createElement('button'); item.type='button'; item.className='my-diocese-option'+(current===name?' selected':''); item.textContent=name; item.setAttribute('aria-pressed', current===name?'true':'false'); item.addEventListener('click', function(e){ if(e&&e.preventDefault)e.preventDefault(); setMyFaithEditName(name); returnToMyFaithSettingsEdit(); }); body.appendChild(item); });
+      var noneItem=document.createElement('button'); noneItem.type='button'; noneItem.className='my-diocese-option my-diocese-none'+(!current?' selected':''); noneItem.textContent='선택 안함'; noneItem.setAttribute('aria-pressed', !current?'true':'false'); noneItem.addEventListener('click', function(e){ if(e&&e.preventDefault)e.preventDefault(); setMyFaithEditName(''); setMyFaithEditParish(null); returnToMyFaithSettingsEdit(); }); body.appendChild(noneItem);
     }
-    function getSelectedDioceseCode(){ var myDio=selectedName(); if(!myDio) return null; try{ if(typeof _PARISH_DIO_CODE_MAP !== 'undefined' && _PARISH_DIO_CODE_MAP && _PARISH_DIO_CODE_MAP[myDio]) return _PARISH_DIO_CODE_MAP[myDio]; }catch(_e){} try{ for(var code in _DIO){ if(Object.prototype.hasOwnProperty.call(_DIO,code) && _DIO[code]===myDio) return code; } }catch(_e){} return null; }
+    function getSelectedDioceseCode(){ var myDio=myFaithPendingActive ? getMyFaithEditName() : selectedName(); if(!myDio) return null; try{ if(typeof _PARISH_DIO_CODE_MAP !== 'undefined' && _PARISH_DIO_CODE_MAP && _PARISH_DIO_CODE_MAP[myDio]) return _PARISH_DIO_CODE_MAP[myDio]; }catch(_e){} try{ for(var code in _DIO){ if(Object.prototype.hasOwnProperty.call(_DIO,code) && _DIO[code]===myDio) return code; } }catch(_e){} return null; }
     function getParishItems(){ try{ if(Array.isArray(PARISHES) && PARISHES.length) return PARISHES; }catch(_e){} return []; }
     function sortParishItems(items){ return items.slice().sort(function(a,b){ return String(a&&a.name||'').localeCompare(String(b&&b.name||''),'ko'); }); }
     function renderParishSearch(query){
-      query=String(query||''); setHeader('나의 본당 찾기','성당명 또는 주소로 검색'); setBodyMode('my-faith-body my-faith-search-body');
+      if(!myFaithPendingActive) beginMyFaithPendingEdit();
+      query=String(query||''); setHeader('나의 본당 찾기','확인을 눌러야 저장됩니다'); setBodyMode('my-faith-body my-faith-search-body');
       var wrap=document.createElement('section'); wrap.className='my-faith-section my-faith-search-section'; wrap.innerHTML='<h3>성당 검색</h3>';
       var input=document.createElement('input'); input.type='search'; input.className='my-faith-search-input'; input.placeholder='성당명 또는 주소 검색'; input.value=query;
       var results=document.createElement('div'); results.className='my-faith-search-results'; wrap.appendChild(input); wrap.appendChild(results);
-      var tools=document.createElement('div'); tools.className='my-faith-tools'; tools.appendChild(smallButton('뒤로', renderHome)); if(selectedParish()) tools.appendChild(smallButton('선택 안함', function(){ setSelectedParish(null); renderHome(); })); wrap.appendChild(tools); body.appendChild(wrap);
+      var tools=document.createElement('div'); tools.className='my-faith-tools'; tools.appendChild(smallButton('뒤로', returnToMyFaithSettingsEdit)); if(getMyFaithEditParish()) tools.appendChild(smallButton('선택 안함', function(){ setMyFaithEditParish(null); returnToMyFaithSettingsEdit(); })); wrap.appendChild(tools); body.appendChild(wrap);
       function draw(){
-        var q=String(input.value||'').trim().toLowerCase(); var items=getParishItems(); var myDio=selectedName();
+        var q=String(input.value||'').trim().toLowerCase(); var items=getParishItems(); var myDio=getMyFaithEditName();
         if(myDio) items=items.filter(function(p){ return p && p.diocese===myDio; });
         if(q) items=items.filter(function(p){ return String((p.name||'')+' '+(p.addr||'')+' '+(p.diocese||'')).toLowerCase().indexOf(q)>=0; });
         items=sortParishItems(items); results.innerHTML='';
         if(!items.length){ results.innerHTML='<div class="my-faith-empty">검색 결과가 없습니다.</div>'; return; }
-        items.forEach(function(p){ var card=document.createElement('button'); card.type='button'; card.className='my-faith-parish-result'; card.innerHTML='<strong>'+safeText(p.name)+'</strong><span>'+safeText(p.diocese||'')+(p.addr?' · '+safeText(p.addr):'')+'</span>'; card.addEventListener('click', function(e){ if(e&&e.preventDefault)e.preventDefault(); setSelectedParish(p); renderHome(); }); results.appendChild(card); });
+        items.forEach(function(p){ var card=document.createElement('button'); card.type='button'; card.className='my-faith-parish-result'; card.innerHTML='<strong>'+safeText(p.name)+'</strong><span>'+safeText(p.diocese||'')+(p.addr?' · '+safeText(p.addr):'')+'</span>'; card.addEventListener('click', function(e){ if(e&&e.preventDefault)e.preventDefault(); setMyFaithEditParish(p); returnToMyFaithSettingsEdit(); }); results.appendChild(card); });
       }
       input.addEventListener('input', draw); input.addEventListener('focus', function(){ try{ modal.classList.add('keyboard-open'); updateMyFaithViewport(); }catch(_e){} }); input.addEventListener('blur', function(){ setTimeout(function(){ try{ updateMyFaithViewport(); }catch(_e){} },180); });
       var selectedDioCode=getSelectedDioceseCode();

@@ -5954,10 +5954,19 @@ html.oai-font-global #srch-modal .sm-hd .sm-title{
   cursor: pointer !important;
 }
 .my-faith-change-tools {
-  padding: 0 !important;
+  padding: 0 4px 0 !important;
+  justify-content: flex-end !important;
 }
-.my-faith-change-tools .my-faith-small-btn {
-  width: 100% !important;
+.my-faith-change-tools .my-faith-small-btn,
+.my-faith-change-tools .my-faith-back-small-btn {
+  width: auto !important;
+  min-width: 0 !important;
+  min-height: 30px !important;
+  padding: 5px 12px !important;
+  border-radius: 999px !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  font-size: calc(11.8px * var(--app-font-scale,1)) !important;
 }
 
 
