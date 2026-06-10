@@ -273,13 +273,49 @@
     window.isMyFaithLifeModalOpen = function(){ try{ return !!(modal && modal.classList.contains('show')); }catch(_e){ return false; } };
     window.closeMyFaithLifeModal = function(){ closeModal(); };
     function goExternal(url){
-      url = String(url || '').trim(); if(!url) return;
-      try{ if(typeof prepareExternalUrl === 'function') url = prepareExternalUrl(url); else if(typeof normalizeCatholicExternalUrl === 'function') url = normalizeCatholicExternalUrl(url); }catch(_e){}
+      url = String(url || '').trim();
+      if(!url) return;
+      try{
+        if(typeof prepareExternalUrl === 'function') url = prepareExternalUrl(url);
+        else if(typeof normalizeCatholicExternalUrl === 'function') url = normalizeCatholicExternalUrl(url);
+      }catch(_e){}
+      url = String(url || '').trim();
       if(!url) return;
       try{ document.activeElement && document.activeElement.blur && document.activeElement.blur(); }catch(_e){}
-      try{ markMyFaithExternalCoverTrap(true); }catch(_e){}
-      try{ sessionStorage.setItem('oai_my_faith_external_open','1'); sessionStorage.setItem('oai_my_faith_external_ts', String(Date.now ? Date.now() : new Date().getTime())); sessionStorage.setItem('oai_my_faith_scroll_top', String(body && typeof body.scrollTop === 'number' ? body.scrollTop : 0)); modal.classList.add('return-settling'); if(typeof CORE_RETURN_KEY !== 'undefined') sessionStorage.removeItem(CORE_RETURN_KEY); }catch(_e){}
-      try{ if(typeof oaiSmoothNavigate === 'function') oaiSmoothNavigate(url, 'my-faith-life'); else location.assign(url); }catch(e){ console.warn('[가톨릭길동무]', e); }
+
+      /*
+       * 나의 신앙생활의 교구/본당 홈페이지는 앱 내부 상태를 바꾸는 화면이 아니다.
+       * 이전 방식처럼 현재 PWA 탭을 location.assign()으로 외부 사이트로 바꾸면,
+       * 외부 사이트에서 돌아온 뒤 history trap이 실제 기기에서 소실되어
+       * 커버 첫 뒤로가기가 종료 안내 없이 앱 종료로 빠질 수 있었다.
+       * 그래서 나의 신앙생활 외부 홈페이지만큼은 앱 history를 건드리지 않고
+       * 별도 브라우저/탭으로 연다. 앱은 나의 신앙생활 화면을 그대로 유지하므로
+       * 돌아온 뒤 닫기 → 커버 → 종료 안내 흐름이 기존 커버 trap을 그대로 따른다.
+       */
+      try{
+        markMyFaithExternalCoverTrap(false);
+        sessionStorage.removeItem('oai_my_faith_external_open');
+        sessionStorage.removeItem('oai_my_faith_external_ts');
+        sessionStorage.removeItem('oai_my_faith_scroll_top');
+      }catch(_e){}
+      try{
+        var opened = window.open(url, '_blank', 'noopener,noreferrer');
+        if(opened && typeof opened.focus === 'function'){
+          try{ opened.focus(); }catch(_e){}
+        }
+        if(opened) return;
+      }catch(_e){}
+
+      // 새 창이 차단된 환경에서만 최후 수단으로 같은 탭 이동을 사용한다.
+      try{
+        markMyFaithExternalCoverTrap(true);
+        sessionStorage.setItem('oai_my_faith_external_open','1');
+        sessionStorage.setItem('oai_my_faith_external_ts', String(Date.now ? Date.now() : new Date().getTime()));
+        sessionStorage.setItem('oai_my_faith_scroll_top', String(body && typeof body.scrollTop === 'number' ? body.scrollTop : 0));
+        modal.classList.add('return-settling');
+        if(typeof CORE_RETURN_KEY !== 'undefined') sessionStorage.removeItem(CORE_RETURN_KEY);
+      }catch(_e){}
+      try{ location.assign(url); }catch(e){ console.warn('[가톨릭길동무]', e); }
     }
     function bindMyFaithClick(el, fn){
       if(!el || typeof fn !== 'function') return;
