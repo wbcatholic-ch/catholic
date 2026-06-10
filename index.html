@@ -25,7 +25,7 @@ html.oai-internal-no-return-effect #cover > * {
   opacity:1 !important;
   visibility:visible !important;
 }
-/* V3-22: 첫 진입 십자가 사진/금색 십자가 연출을 모두 제거하고, 커버만 안정적으로 표시한다. */
+/* 첫 진입 십자가 사진/금색 십자가 연출 없이 커버만 안정적으로 표시한다. */
 html.oai-first-entry-intro::before,
 html.oai-first-entry-intro::after,
 html.oai-cover-first-reveal #cover > * {
@@ -57,7 +57,7 @@ html.oai-cover-first-reveal #cover > * {
 })();
 </script>
 <script>
-/* V3-22: patches.js가 로드되기 전 첫 커버 Back도 먼저 잡는 최소 조기 가드.
+/* back-controller.js가 로드되기 전 첫 커버 Back도 먼저 잡는 최소 조기 가드.
    실패했던 hash/query URL trap은 사용하지 않고, 같은 URL의 root/trap 한 쌍만 만든다. */
 (function(){
   'use strict';
@@ -216,7 +216,7 @@ html.oai-cover-first-reveal #cover > * {
 })();
 </script>
 <script>
-/* 커버 글자 크기 변수 조기 적용: 새로고침 직후 patches.js가 로드되기 전까지
+/* 커버 글자 크기 변수 조기 적용: 새로고침 직후 cover-common.js가 로드되기 전까지
    --app-font-scale 기본값(1)으로 먼저 그려졌다가 저장값으로 바뀌며
    커버 이모티콘/텍스트만 좌우로 흔들리는 현상을 줄인다. */
 (function(){
@@ -273,11 +273,12 @@ html.oai-cover-first-reveal #cover > * {
     }
     add(docH); add(innerH); add(vvH);
     if(!values.length) return 0;
-    // V3-22: iOS/Android에서 저장된 작은 viewport 또는 visualViewport 값 때문에
-    // 커버 하단이 위로 뜨는 현상을 줄인다. 키보드가 열린 것으로 보이는 경우만
-    // visualViewport 축소값을 제외하고, 일반 커버 화면은 가장 넓은 높이 기준을 쓴다.
+    // 커버가 간헐적으로 아래로 밀리지 않도록 저장/inner 높이보다
+    // 실제 보이는 visualViewport를 우선한다. 키보드로 보일 만큼 크게 줄어든 경우만 제외한다.
     var keyboardLikely = !!(vvH && innerH && vvH / innerH < 0.78);
-    var h = keyboardLikely ? Math.max(docH || 0, innerH || 0) : Math.max.apply(Math, values);
+    var h = 0;
+    if(vvH && !keyboardLikely){ h = vvH; }
+    else { h = Math.max(docH || 0, innerH || 0); }
     if(!(h > 300 && h < 2000)) h = Math.max.apply(Math, values);
     return h ? (h * 0.01) : 0;
   }
@@ -305,9 +306,10 @@ html.oai-cover-first-reveal #cover > * {
   }catch(e){}
   var widthMatches = !!(stored.width && currentWidth && Math.abs(stored.width - currentWidth) < 24);
   var storedDiffersFromNow = !!(measured && stored.vh && Math.abs(measured - stored.vh) > 0.55);
-  // 새로고침뿐 아니라 같은 화면 폭의 일반 재진입에서도 직전 커버 높이를 먼저 쓰되,
-  // 저장된 값이 현재 실제 높이와 크게 다르면 그 값 때문에 하단이 위로 뜰 수 있으므로 즉시 갱신한다.
-  var useStored = !!(stored.vh && (softRefreshRecent || widthMatches) && !storedDiffersFromNow);
+  // 새로고침 직후에는 저장된 커버 높이를 먼저 쓰지 않는다.
+  // 일부 모바일 PWA에서 reload 직후 저장 높이가 실제 보이는 높이보다 크게 남아
+  // 하단 안내문구가 화면 밖으로 밀리는 원인이 되었기 때문이다.
+  var useStored = !!(stored.vh && !softRefreshRecent && widthMatches && !storedDiffersFromNow);
   var firstVh = useStored ? stored.vh : (measured || stored.vh || 8);
   apply(firstVh, !useStored, currentWidth);
   var baseCoverWidth = currentWidth;
@@ -333,14 +335,23 @@ html.oai-cover-first-reveal #cover > * {
     var width = measureWidth();
     var widthChanged = !!(baseCoverWidth && width && Math.abs(width - baseCoverWidth) >= 24);
     var orientationChanged = r.indexOf('orientation') >= 0;
-    // 주소창/브라우저 UI가 접히며 생기는 세로 viewport resize는 커버를 흔들리게 하므로 무시한다.
-    if(!widthChanged && !orientationChanged) return;
+    var forceCoverSettle = /cover-return|pageshow|focus|visible|force|visualViewport/.test(r);
+    // 일반 resize는 흔들림 방지를 위해 폭/회전 변화만 반영하되,
+    // 커버 복귀·pageshow 계열은 실제 화면 높이와 스크롤 위치를 다시 고정한다.
+    if(!widthChanged && !orientationChanged && !forceCoverSettle) return;
     var next = measure();
     if(!next) return;
     var cur = parseFloat(getComputedStyle(root).getPropertyValue('--cover-vh')) || 0;
-    if(cur && Math.abs(next - cur) < 0.35) return;
+    if(!forceCoverSettle && cur && Math.abs(next - cur) < 0.35) return;
     apply(next, true, width);
     if(width) baseCoverWidth = width;
+    try{
+      var c = document.getElementById('cover');
+      if(c) c.scrollTop = 0;
+      if(window.scrollTo) window.scrollTo(0,0);
+      if(document.scrollingElement) document.scrollingElement.scrollTop = 0;
+      if(document.body) document.body.scrollTop = 0;
+    }catch(_e){}
     try{
       root.classList.add('oai-cover-resizing');
       clearTimeout(settleTimer);
@@ -357,7 +368,10 @@ html.oai-cover-first-reveal #cover > * {
   if(window.visualViewport){
     window.visualViewport.addEventListener('resize', function(){ scheduleSettle('visualViewport'); }, {passive:true});
   }
-  // V3-22: 첫 진입 십자가 사진/효과 없이 커버 높이 안정화만 유지한다.
+  window.addEventListener('pageshow', function(){ scheduleSettle('pageshow'); }, {passive:true});
+  window.addEventListener('focus', function(){ scheduleSettle('focus'); }, {passive:true});
+  document.addEventListener('visibilitychange', function(){ if(!document.hidden) scheduleSettle('visible'); }, {passive:true});
+  // 첫 진입 십자가 사진/효과 없이 커버 높이 안정화만 유지한다.
   if(!isInternalNoEffectReturn){
     if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function(){ afterStableFirstPaint(releaseBooting); }, {once:true});
     else afterStableFirstPaint(releaseBooting);
@@ -367,7 +381,7 @@ html.oai-cover-first-reveal #cover > * {
 })();
 </script>
 <script>
-/* V3-22: iPhone/PWA 전체 화면 높이 안정화.
+/* iPhone/PWA 전체 화면 높이 안정화.
    iOS에서 visualViewport가 일시적으로 작아진 값을 오래 붙잡아
    기도문·목록·관구교구 지도 하단에 큰 빈 공간이 생기는 현상을 줄인다.
    상태바 색상과 Android 레이아웃은 건드리지 않는다. */
@@ -427,7 +441,19 @@ html.oai-cover-first-reveal #cover > * {
     lastApplied = h;
     lastWidth = w || width();
     root.style.setProperty('--oai-app-h', h + 'px');
-    root.style.setProperty('--cover-vh', (h * 0.01) + 'px');
+    // iOS 앱 높이 보정값이 커버 전용 높이를 과도하게 키우지 않도록,
+    // 커버가 보이는 동안에는 실제 visualViewport/innerHeight 기준을 우선한다.
+    try{
+      var coverVisible = !root.classList.contains('app-active') && document.getElementById('cover');
+      var coverH = h;
+      if(coverVisible){
+        var vv = Math.round(parseFloat(window.visualViewport && window.visualViewport.height || 0)) || 0;
+        var ih = Math.round(parseFloat(window.innerHeight || 0)) || 0;
+        if(vv > 320 && (!ih || vv / ih >= 0.78)) coverH = vv;
+        else if(ih > 320) coverH = ih;
+      }
+      root.style.setProperty('--cover-vh', (coverH * 0.01) + 'px');
+    }catch(_e){ root.style.setProperty('--cover-vh', (h * 0.01) + 'px'); }
     save(h, lastWidth);
   }
   function settle(reason){
@@ -526,30 +552,38 @@ window.APP_CONFIG = {
 <meta name="application-name" content="가톨릭길동무">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#f5f0e8">
-<link rel="manifest" href="manifest.json?v=V3-129">
-<link rel="apple-touch-icon" sizes="180x180" href="icon-512x512.png?v=V3-129">
-<link rel="apple-touch-icon-precomposed" sizes="180x180" href="icon-512x512.png?v=V3-129">
+<link rel="manifest" href="manifest.json?v=V4-102">
+<link rel="apple-touch-icon" sizes="180x180" href="icon-512x512.png?v=V4-102">
+<link rel="apple-touch-icon-precomposed" sizes="180x180" href="icon-512x512.png?v=V4-102">
 <meta name="format-detection" content="telephone=no">
 <meta name="description" content="가톨릭길동무 - 가톨릭 신앙생활 종합 앱">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="가톨릭길동무">
 <meta property="og:title" content="가톨릭길동무">
 <meta property="og:description" content="성지 · 성당 · 기도문 · 순례길 · 가톨릭 웹사이트 안내">
-<meta property="og:image" content="icon-512x512.png?v=V3-129">
+<meta property="og:image" content="icon-512x512.png?v=V4-102">
 <meta property="og:image:width" content="512">
 <meta property="og:image:height" content="512">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="가톨릭길동무">
 <meta name="twitter:description" content="성지 · 성당 · 기도문 · 순례길 · 가톨릭 웹사이트 안내">
-<meta name="twitter:image" content="icon-512x512.png?v=V3-129">
+<meta name="twitter:image" content="icon-512x512.png?v=V4-102">
 <title>가톨릭길동무</title>
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192x192.png?v=V3-129">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192x192.png?v=V4-102">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <style id="oai-initial-bg">html,body{margin:0;width:100%;height:100%;min-height:100%;background:#f5f0e8;overflow:hidden;color-scheme:light;}#cover{background:#f5f0e8;min-height:100%;}#app{background:#f8f6f2;display:none;}</style>
-<link rel="stylesheet" href="style.css?v=V3-129">
+<link rel="stylesheet" href="style.css?v=V4-102">
+<link rel="stylesheet" href="css/module-common.css?v=V4-102">
+<link rel="stylesheet" href="css/prayer.css?v=V4-102">
+<link rel="stylesheet" href="css/web.css?v=V4-102">
+<link rel="stylesheet" href="css/pilgrimage.css?v=V4-102">
+<link rel="stylesheet" href="css/overlays.css?v=V4-102">
+<link rel="stylesheet" href="css/cover-modals.css?v=V4-102">
+<link rel="stylesheet" href="css/myfaith.css?v=V4-102">
+<link rel="stylesheet" href="css/my-diocese.css?v=V4-102">
 </head>
 <body>
 <div id="missa-view" role="dialog" aria-modal="true" aria-label="매일미사">
@@ -645,10 +679,11 @@ window.APP_CONFIG = {
           </div>
           <button class="guide-x mass-quick-close" type="button" data-mass-quick-close="1" aria-label="미사 빠른 메뉴 닫기">×</button>
         </div>
-        <div class="mass-quick-actions" aria-label="미사·기도·성가 빠른 메뉴">
+        <div class="mass-quick-actions" aria-label="미사·기도·성가·성경 빠른 메뉴">
           <button id="mass-quick-missa" type="button" class="mass-quick-btn mass-quick-primary"><span>✝️</span><strong>매일미사</strong></button>
           <button id="mass-quick-prayer" type="button" class="mass-quick-btn"><span>📖</span><strong>주요기도문</strong></button>
           <button id="mass-quick-hymn" type="button" class="mass-quick-btn"><span>🎼</span><strong>가톨릭성가</strong></button>
+          <button id="mass-quick-bible" type="button" class="mass-quick-btn"><span>📖</span><strong>성경</strong></button>
         </div>
       </div>
     </div>
@@ -660,7 +695,7 @@ window.APP_CONFIG = {
       <div class="cover-grid">
           <button id="cc-1" class="cover-card cover-card-wide">
               <div class="cover-icon-wrap"><span class="cover-emoji" aria-hidden="true">✝</span></div>
-              <span class="cover-name">매일미사·주요기도문·가톨릭성가</span>
+              <span class="cover-name">매일미사·주요기도문·가톨릭성가·성경</span>
           </button>
           <button id="cc-2" class="cover-card">
               <div class="cover-icon-wrap"><span class="cover-emoji" aria-hidden="true">⛪</span></div>
@@ -751,30 +786,30 @@ window.APP_CONFIG = {
         <div class="ios-safari-step">
           <b>1</b>
           <span>카카오톡 하단 버튼 4개 중 <strong>오른쪽 끝 버튼</strong>을 누르세요.</span>
-          <img data-src="ios-install-step1-kakao-bottom-buttons.png?v=V3-129" alt="카카오톡 오른쪽 아래 버튼 모양" width="945" height="248" loading="lazy" decoding="async">
+          <img data-src="ios-install-step1-kakao-bottom-buttons.png?v=V4-102" alt="카카오톡 오른쪽 아래 버튼 모양" width="945" height="248" loading="lazy" decoding="async">
         </div>
         <div class="ios-safari-step">
           <b>2</b>
           <span>공유 화면에서 <strong>Safari로 열기</strong>를 누르세요.</span>
-          <img data-src="ios-install-step2-safari-open.png?v=V3-129" alt="Safari로 열기 버튼" width="880" height="755" loading="lazy" decoding="async" fetchpriority="low">
+          <img data-src="ios-install-step2-safari-open.png?v=V4-102" alt="Safari로 열기 버튼" width="880" height="755" loading="lazy" decoding="async" fetchpriority="low">
         </div>
         <div class="ios-safari-step">
           <b>3</b>
           <span>Safari로 열린 뒤, 화면 <strong>오른쪽 아래 ··· 버튼</strong>을 누르세요.</span>
           <div class="ios-safari-shot ios-safari-shot-more">
-            <img data-src="KakaoTalk_20260514_134255658_04.jpg?v=V3-129" alt="Safari 오른쪽 아래 더보기 버튼" width="960" height="307" loading="lazy" decoding="async">
+            <img data-src="KakaoTalk_20260514_134255658_04.jpg?v=V4-102" alt="Safari 오른쪽 아래 더보기 버튼" width="960" height="307" loading="lazy" decoding="async">
             <i class="ios-gold-highlight" aria-hidden="true"></i>
           </div>
         </div>
         <div class="ios-safari-step">
           <b>4</b>
           <span>열린 메뉴에서 <strong>공유</strong>를 누르세요.</span>
-          <img data-src="ios-install-step3-share-menu.png?v=V3-129" alt="Safari 공유 버튼" width="750" height="580" loading="lazy" decoding="async" fetchpriority="low">
+          <img data-src="ios-install-step3-share-menu.png?v=V4-102" alt="Safari 공유 버튼" width="750" height="580" loading="lazy" decoding="async" fetchpriority="low">
         </div>
         <div class="ios-safari-step">
           <b>5</b>
           <span>목록을 아래로 내려 <strong>홈 화면에 추가</strong>를 누르세요.</span>
-          <img data-src="ios-install-step4-home-screen.png?v=V3-129" alt="홈 화면에 추가 버튼" width="865" height="750" loading="lazy" decoding="async" fetchpriority="low">
+          <img data-src="ios-install-step4-home-screen.png?v=V4-102" alt="홈 화면에 추가 버튼" width="865" height="750" loading="lazy" decoding="async" fetchpriority="low">
         </div>
       </div>
     </div>
@@ -858,7 +893,7 @@ window.APP_CONFIG = {
         <span class="cover-menu-icon">📘</span>
         <span class="cover-menu-text">주요기능</span>
       </button>
-      <a id="cover-menu-privacy-link" class="cover-menu-item" href="privacy.html?v=V3-129">
+      <a id="cover-menu-privacy-link" class="cover-menu-item" href="privacy.html?v=V4-102">
         <span class="cover-menu-icon">🛡</span>
         <span class="cover-menu-text">개인정보처리방침</span>
       </a>
@@ -870,7 +905,9 @@ window.APP_CONFIG = {
   </div>
 </div>
 
-<script src="app.js?v=V3-129"></script>
+<script src="js/myfaith.js?v=V4-102"></script>
+<script src="app.js?v=V4-102"></script>
+<script src="js/cover-common.js?v=V4-102"></script>
 <div id="oai-category-entry-veil" aria-hidden="true"></div>
 <div id="app"><div id="tabbar"><button id="tab-btn-nearby" class="tab-btn" data-tab="nearby"><span class="tab-icon">📍</span><span id="tab-nearby-lbl">내주변</span></button><button id="tab-btn-list" class="tab-btn" data-tab="list"><span class="tab-icon">📋</span><span id="tab-list-lbl">목록</span></button><button id="tab-btn-region" class="tab-btn" data-tab="region"><span class="tab-icon">🔍</span>지역검색
     </button><button id="tab-btn-route" class="tab-btn" data-tab="route"><span class="tab-icon">🧭</span>길찾기
@@ -879,7 +916,7 @@ window.APP_CONFIG = {
             placeholder="지역명 또는 장소명 입력"
             style="flex:1;background:none;border:none;outline:none;font-size:13px;color:#fff;font-family:inherit"
             autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" inputmode="search" enterkeyhint="done"></div><button id="region-search-btn" class="region-search-btn">검색</button></div></div><div class="sheet-body" id="region-body"><div class="empty-msg">
-        🏞 여행지나 숙박 지역을 검색하면<br>근처 성지/성당 목록이 나타납니다
+        📍 여행지나 숙박 지역을 검색하면<br>근처 성지/성당 목록이 나타납니다
       </div></div></div><div class="sheet" id="sheet-route"><button class="route-sheet-x" id="route-close-btn" type="button" aria-label="길찾기 닫기">×</button><div id="rs-top" style="padding:12px 48px 0 14px;flex-shrink:0;"><div style="display:flex;align-items:stretch;gap:0;"><div style="flex:1;display:flex;flex-direction:column;gap:6px;"><div id="rs-start-box" class="rs-start-box"><div class="rs-dot" style="background:#1565c0;"></div><span class="rs-lbl empty" id="rs-start-lbl">출발지를 선택하세요</span><button id="rs-myloc-btn" class="rs-myloc"
               style="flex-shrink:0;">📍 현위치</button></div><div id="rs-end-box" class="rs-end-box"><div class="rs-dot" style="background:#e53935;"></div><span class="rs-lbl empty" id="rs-end-lbl">도착지를 선택하세요</span><button class="rs-x" id="rs-end-x"
               style="display:none" aria-label="도착지 지우기">×</button></div></div><div style="display:flex;align-items:center;padding-left:10px;"><button id="rs-swap-btn" class="rs-swap-btn" aria-label="출발지·도착지 바꾸기">⇅</button></div></div><button id="rs-search-btn">
@@ -946,13 +983,21 @@ window.APP_CONFIG = {
     </div>
   </div>
 </div>
-<script src="web.js?v=V3-129"></script>
+<script src="web.js?v=V4-102"></script>
 
 <div id="qna-view" role="dialog" aria-modal="true" aria-label="문의·건의" class="module-view"><div class="module-bar qna"><div class="module-bar-main"><div class="module-bar-ico">✝</div><div class="module-bar-txt"><div class="module-bar-title">문의·건의</div><div class="module-bar-sub">질문, 오류, 수정요청을 남겨주세요</div></div></div><button id="qna-close-btn" class="module-close" aria-label="문의·건의 닫기">×</button></div><div class="qna-body"><div class="qna-tabs"><button id="qna-tab-write" class="qna-tab on" type="button">작성</button></div><div class="qna-list" id="qna-list"></div></div></div>
 
-<script src="patches.js?v=V3-129"></script>
+<script src="js/touch-ux.js?v=V4-102"></script>
+<script src="js/prayer-ui.js?v=V4-102"></script>
+<script src="js/cover-refresh.js?v=V4-102"></script>
+<script src="js/app-state-guards.js?v=V4-102"></script>
 
-<script src="sw-update.js?v=V3-129"></script>
+<script src="js/route-web-guards.js?v=V4-102"></script>
+<script src="js/prayer-back.js?v=V4-102"></script>
+
+<script src="js/back-controller.js?v=V4-102"></script>
+
+<script src="sw-update.js?v=V4-102"></script>
 
 
 
