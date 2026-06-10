@@ -1585,7 +1585,7 @@ function openDioceseView(opts){
       if(!restore) try{ frame.contentWindow && frame.contentWindow.resetDioceseFirstPage && frame.contentWindow.resetDioceseFirstPage(); }catch(e){ console.warn("[가톨릭길동무]", e); }
       if(typeof dioceseLoaded==='function') dioceseLoaded();
     };
-    frame.src='diocese.html?v=V4-103';
+    frame.src='diocese.html?v=V4-105';
     setTimeout(armDioceseOverlayBack, 0);
   }else{
     if(!restore){
@@ -2035,7 +2035,7 @@ const _PARISH_DIOCESE_ASSETS={
 };
 const _PARISH_DIOCESE_LOAD_STATE={};
 const _PARISH_DIOCESE_LOAD_PROMISES={};
-const _PARISH_ASSET_VERSION='V4-103';
+const _PARISH_ASSET_VERSION='V4-105';
 function _getParishDioceseAsset(code){
   return _PARISH_DIOCESE_ASSETS[code] || null;
 }
@@ -2198,7 +2198,7 @@ function _ensureParishDataLoaded(){
 }
 _initParishDataFromGlobal();
 
-const _PRAYER_ASSET_VERSION='V4-103';
+const _PRAYER_ASSET_VERSION='V4-105';
 let _prayerModuleLoadPromise=null;
 function _isPrayerDataReady(){
   return !!(window.PRAYER_DATA && typeof window.PRAYER_DATA === 'object');
@@ -2260,7 +2260,7 @@ try{ window.ensurePrayerModuleLoaded=ensurePrayerModuleLoaded; }catch(e){ consol
 let _RT_RAW = [];
 let _retreatRawLoaded = false;
 let _retreatDataLoadPromise = null;
-const _RETREAT_ASSET_VERSION='V4-103';
+const _RETREAT_ASSET_VERSION='V4-105';
 
 let RETREATS = [];
 function _buildRetreatList(raw){
@@ -2523,6 +2523,7 @@ const _navCache = new Map();
 const _NAV_CONCURRENCY = 5;
 const OAI_NEARBY_ROUTE_CANDIDATE_LIMIT = 20;
 const OAI_NEARBY_ROUTE_TIMEOUT_MS = 3000;
+const OAI_MY_LOCATION_MARKER_ZINDEX = 1200;
 let _navActive = 0;
 const _navQueue = [];
 let _suppressNextRouteGuide = false;
@@ -2567,7 +2568,7 @@ const _TY={'A':'성지','B':'순례지','C':'순교 사적지'};
 
 let _shrineRawLoaded = false;
 let _shrineDataLoadPromise = null;
-const _SHRINE_ASSET_VERSION='V4-103';
+const _SHRINE_ASSET_VERSION='V4-105';
 let SHRINES = [];
 let JUKRIMGUL_IDX = -1;
 function _decodeShrineHomePage(hp){
@@ -4369,6 +4370,7 @@ function _showParishNearbyMarkersOnMap(items, lat, lng, phase){
       if(AppState) AppState.nearbyParishDioCode = code;
       _fitParishNearbyBounds(items, lat, lng);
     }
+    _raiseMyLocationMarker();
   }catch(e){ console.warn('[가톨릭길동무]',e); }
 }
 
@@ -4387,6 +4389,7 @@ function _showItemsOnMap(items){
   }else{
     try{_map.setBounds(bounds,60,60,60,60);}catch(e){ console.warn("[가톨릭길동무]", e); }
   }
+  _raiseMyLocationMarker();
 }
 
 function _showAllShrinesOnMapWithNearbyBounds(items, lat, lng){
@@ -4419,6 +4422,7 @@ function _showAllShrinesOnMapWithNearbyBounds(items, lat, lng){
       if(typeof _setBoundsByInfoCardStandard==='function') _setBoundsByInfoCardStandard(bounds,60,60,142,60);
       else _map.setBounds(bounds,60,60,142,60);
     }
+    _raiseMyLocationMarker();
   }catch(e){ console.warn('[가톨릭길동무]', e); }
 }
 function _selectParishMarker(p){
@@ -4438,6 +4442,7 @@ function _selectParishMarker(p){
   }
   _paSelMkr=new _MM({position:new _LL(p.lat,p.lng),image:_mkrImg('#FFE500',true),zIndex:200});
   _paSelMkr.setMap(_map);
+  _raiseMyLocationMarker();
   return dioCode;
 }
 
@@ -4825,6 +4830,7 @@ function _buildRetreatMarkers(){
     });
   }
   _retreatMarkers.forEach(o=>o.marker.setMap(_map));
+  _raiseMyLocationMarker();
 }
 function _clearRetreatMarkers(){
   _retreatMarkers.forEach(o=>o.marker.setMap(null));
@@ -4842,6 +4848,7 @@ function _selectRetreatMarker(p){
   if(!_map||!p.lat||!p.lng) return;
   _paSelMkr=new _MM({position:new _LL(p.lat,p.lng),image:_mkrImgRetreat('#FFE500',true),zIndex:180});
   _paSelMkr.setMap(_map);
+  _raiseMyLocationMarker();
 }
 // ──────────────────────────────────────────────────────────────────
 
@@ -4914,6 +4921,11 @@ function _showCurrentParishDioIfIdle(){
     if(clickedEl){clickedEl.style.display='none';}
   }catch(e){ console.warn("[가톨릭길동무]", e); }
 }
+function _raiseMyLocationMarker(){
+  try{
+    if(_myMkr && typeof _myMkr.setZIndex==='function') _myMkr.setZIndex(OAI_MY_LOCATION_MARKER_ZINDEX);
+  }catch(e){ console.warn('[가톨릭길동무]', e); }
+}
 function _setMyLoc(lat,lng){
   _myLat=lat;_myLng=lng;
   if(typeof kakao==='undefined'||!_map) return;  // 지도 미로드 시 무시
@@ -4922,9 +4934,11 @@ function _setMyLoc(lat,lng){
   _myMkr=new _MM({
   position:new _LL(lat,lng),
   image:new _MI(_svgUrl(svg),
-   new _SZ(28,28),{offset:new _PT(14,14)})
+   new _SZ(28,28),{offset:new _PT(14,14)}),
+  zIndex:OAI_MY_LOCATION_MARKER_ZINDEX
   });
   _myMkr.setMap(_map);
+  _raiseMyLocationMarker();
   setTimeout(_showCurrentParishDioIfIdle, 80);
 }
 
