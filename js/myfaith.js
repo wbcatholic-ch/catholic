@@ -110,8 +110,10 @@
       return true;
     }
     function cancelMyFaithSettingsAndReturn(){
+      var hadSavedSetting = !!selectedName();
       cancelMyFaithPendingEdit();
-      renderHome();
+      if(hadSavedSetting) renderHome();
+      else closeModal();
     }
     function returnToMyFaithSettingsEdit(){
       if(typeof myFaithRenderSettingsEdit === 'function') myFaithRenderSettingsEdit();
@@ -419,7 +421,7 @@
         appendRow(quick, name+' 홈페이지','', '', '열기', function(){ if(info&&info.home) goExternal(info.home); }, !(info&&info.home), 'my-faith-row-btn-open');
         appendRow(quick, name+' 사제 찾기','', '', '열기', function(){ if(info&&info.priest) goExternal(info.priest); }, !(info&&info.priest), 'my-faith-row-btn-open');
         if(!parish || isNoParishItem(parish)){
-          appendRow(quick, '내 본당', NO_PARISH_NAME, '', '변경', function(){ beginMyFaithPendingEdit(); renderParishSearch(''); }, false, 'my-faith-row-btn-set');
+          appendRow(quick, '내 본당', NO_PARISH_NAME, '', '변경', function(){ beginMyFaithPendingEdit(); myFaithExpandedSection = 'parish'; renderSettingsEdit(); }, false, 'my-faith-row-btn-set');
         }
         if(parish && !isNoParishItem(parish) && parish.hp){
           var parishHomeRow = appendRow(quick, parish.name+' 홈페이지','', '', '열기', function(){ goExternal(parish.hp); }, false, 'my-faith-row-btn-open');
@@ -436,7 +438,7 @@
         changeBtn.type='button';
         changeBtn.className='my-faith-change-settings-btn';
         changeBtn.textContent='교구·본당 변경';
-        bindMyFaithClick(changeBtn, function(){ beginMyFaithPendingEdit(); myFaithExpandedSection = 'diocese'; renderSettingsEdit(); });
+        bindMyFaithClick(changeBtn, function(){ beginMyFaithBlankEdit(); renderSettingsEdit(); });
         changeWrap.appendChild(changeBtn);
         body.appendChild(changeWrap);
       }else{

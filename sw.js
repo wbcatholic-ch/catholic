@@ -1,8 +1,8 @@
 /* 가톨릭길동무 Service Worker
    캐시를 매번 삭제하지 않고, 버전 변경 시 오래된 캐시만 정리합니다.
    localStorage/사용자 설정은 건드리지 않습니다. */
-const CACHE_VERSION = 'catholic-way-V4-102';
-const ASSET_VERSION = 'V4-102';
+const CACHE_VERSION = 'catholic-way-V4-103';
+const ASSET_VERSION = 'V4-103';
 function withVersion(path) {
   return path + '?v=' + ASSET_VERSION;
 }

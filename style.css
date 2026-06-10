@@ -430,6 +430,12 @@ html.retreat-mode #tabbar .tab-btn.active {
   border-color: transparent;
   box-shadow: 0 4px 12px rgba(107,143,113,.16);
 }
+
+/* 피정의집 모드: 상단 탭의 피정의집 찾기 글자만 한 단계 작게 표시 */
+html.retreat-mode #tab-list-lbl {
+  font-size: 14px;
+  letter-spacing: -0.065em;
+}
 .tab-icon {
   font-size: var(--map-tab-icon-fs);
   line-height: 1;
