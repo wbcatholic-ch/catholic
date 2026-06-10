@@ -1,16 +1,10 @@
-/* sw-update.js — 서비스워커 캐시 버전 관리
-   앱 버전 변경 감지 → 강제 새로고침 처리
-   원본 index.html Block F 에서 분리 */
 
 (function(){
   'use strict';
   if(window.__APP_CACHE_LIFECYCLE_GUARD__) return;
   window.__APP_CACHE_LIFECYCLE_GUARD__ = true;
-  // APP_VERSION:      화면 표시용 단축 버전 (build marker, data-target-version)
-  // SW_BUILD_VERSION:  SW 등록·캐시 키용 전체 버전 (sw.js BUILD_VERSION과 일치해야 함)
-  // ★ 버전 업그레이드 시 두 값 모두 수정, sw.js BUILD_VERSION과 SW_BUILD_VERSION을 동일하게 맞출 것
   var APP_VERSION = 'V2';
-  var SW_BUILD_VERSION = 'V5-2';
+  var SW_BUILD_VERSION = 'V5-4';
   window.APP_VERSION = APP_VERSION;
 
   function now(){ return Date.now ? Date.now() : new Date().getTime(); }
@@ -73,10 +67,6 @@
     return true;
   }
 
-  /* 백그라운드 복귀 정책
-     - 15분 이상: 조용한 새로고침
-     - 30분 이상: 임시 상태를 커버로 정리한 뒤 조용한 새로고침
-     - 입력/길찾기/팝업 등 사용 중 화면에서는 보류 */
   var hiddenAt = 0;
   var BACKGROUND_SOFT_RELOAD_AFTER = 15 * 60 * 1000;
   var BACKGROUND_COVER_RESET_AFTER = 30 * 60 * 1000;
@@ -99,7 +89,6 @@
     }
   }, true);
 
-  /* 서비스워커는 캐시를 매번 지우지 않고, 버전이 바뀔 때만 오래된 캐시를 정리합니다. */
   function registerServiceWorker(){
     if(!('serviceWorker' in navigator)) return;
     try{

@@ -1,10 +1,7 @@
-/* touch-ux.js — 터치 UX / 스와이프 오버레이 보조 모듈
-   시각 피드백·키보드 입력 보조 로직만 담당합니다. */
 
 (function(){
   'use strict';
   window.oaiSwipeAction = function(el, dir){
-    /* overlay div 방식: position:fixed로 화면 정중앙 고정, 항상 선명하게 */
     var ov=document.getElementById('oai-swipe-overlay');
     if(!ov){
       ov=document.createElement('div');
@@ -31,7 +28,6 @@
   var PRESS_DELAY_MS = 85;
   var MOVE_CANCEL_PX = 7;
 
-  /* 스크롤/당겨서 새로고침 중 눌림 방지 적용 대상: 목록형 요소만 */
   var delayedSelectors = [
     '#cover .cover-card','#cover .cv-hotspot','#cover .cv-btn',
     '#prayer-list-view .pr-item','#prayer-list-view .prayer-item','#prayer-list-view .prayer-card','#prayer-list-view .prayer-list-item','#prayer-list-view .pr-list-item',

@@ -1,6 +1,5 @@
-/* prayer.css — 주요기도문 전용 CSS */
 
-/* 기도문 헤더 특수 구조: X 왼쪽, 이모지 없음 */
+
 #prayer-bar { justify-content: flex-start; }
 #prayer-bar .module-bar-ico { display: none; }
 #prayer-bar .module-bar-main { flex: 1 1 auto; min-width: 0; gap: 0; order: 1; }
@@ -16,7 +15,6 @@
   margin-right: 0;
 }
 
-/* 기도문 탭 카테고리별 색상 */
 #prayer-tabs .pr-tab.on[data-cat="favorites"] { background: var(--v4-header-navy); }
 #prayer-tabs .pr-tab.on[data-cat="aim"]       { background: #1565c0; }
 #prayer-tabs .pr-tab.on[data-cat="basic"]     { background: #1e40af; }
@@ -33,7 +31,6 @@
 #prayer-tabs .pr-tab.on[data-cat="funeral"]   { background: #546e7a; }
 #prayer-tabs .pr-tab.on[data-cat="novena"]    { background: #1565c0; }
 
-/* ── 주요기도문 */
 #prayer-view {
   display: none;
   position: fixed;
@@ -182,7 +179,6 @@
 .pr-chevron { color: #b0a89e; font-size: 12px; }
 .pr-empty { text-align: center; padding: 44px 20px; color: #b0a89e; font-size: 14px; background: #fffbf2; border: 1px dashed #ddd5c8; border-radius: 11px; line-height: 1.9; }
 
-/* 기도문 상세 */
 #prayer-detail {
   position: absolute;
   inset: 0;
@@ -237,7 +233,6 @@
 .pr-content-card p:last-child { margin-bottom: 0; }
 .pr-symbol { color: #1565c0; font-weight: 700; }
 
-/* 굿뉴스기도문 버튼 */
 #goodnews-prayer-btn {
   display: inline-flex;
   align-items: center;
@@ -262,6 +257,5 @@
 }
 #goodnews-prayer-btn:active { opacity: .82; transform: scale(.97); }
 
-/* Q&A */
 .qna-body { background: #f8fafc; display: flex; flex-direction: column; }
 

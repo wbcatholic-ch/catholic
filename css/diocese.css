@@ -1,5 +1,4 @@
-/* 가톨릭길동무 관구·교구 전용 CSS
-   부모 PWA 헤더와 iframe 내부 화면 기준을 분리해 관리합니다. */
+
 
 :root{
   --diocese-font-scale:1;
@@ -16,14 +15,14 @@
   --sub:#555577;
   --dim:#9999BB;
   --r:12px;
-  /* ── 치수 변수 ── */
+  
   --header-h:   70px;
   --tab-h:      55px;
   --tab-btn-h:  40px;
   --icon-size:  35px;
   --icon-r:     12px;
   --icon-fs:    15px;
-  /* ── 글자 크기 변수 ── */
+  
   --fs-header:  22px;
   --fs-tab:     15px;
   --fs-sub:     10px;
@@ -36,7 +35,6 @@
 html,body{height:100%;overflow:hidden;}
 body{font-family:'Apple SD Gothic Neo','Noto Sans KR',sans-serif;background:var(--bg);display:flex;flex-direction:column;}
 
-/* ── 헤더 ── */
 header{flex-shrink:0;background:var(--d);border-bottom:none;z-index:30;
   padding:0 16px;height:var(--header-h);display:flex;align-items:center;}
 .hd{display:flex;align-items:center;justify-content:space-between;width:100%;}
@@ -50,7 +48,6 @@ header{flex-shrink:0;background:var(--d);border-bottom:none;z-index:30;
 .hd h1{font-size:var(--fs-header);font-weight:700;color:#fff;letter-spacing:-.03em;line-height:1.2;}
 .hd-sub{font-size:var(--fs-sub);color:rgba(255,255,255,.75);font-weight:500;letter-spacing:.02em;}
 
-/* ── 탭 영역 ── */
 .tab-bar{flex-shrink:0;display:flex;align-items:center;gap:8px;padding:8px 10px;
   height:var(--tab-h);background:var(--card);
   border-top:0;border-bottom:1px solid var(--bdr);
@@ -67,7 +64,6 @@ header{flex-shrink:0;background:var(--d);border-bottom:none;z-index:30;
 .tab:active{transform:scale(.992);}
 .tab.on,.tab.on:active{transform:none!important;}
 
-/* ── 뷰 컨테이너 ── */
 #main{flex:1;overflow:hidden;min-height:0;position:relative;background:var(--bg);}
 #map-view{position:absolute;inset:0;display:none;align-items:center;justify-content:center;background:var(--bg);}
 #map-view.on{display:flex;}
@@ -76,7 +72,6 @@ header{flex-shrink:0;background:var(--d);border-bottom:none;z-index:30;
 .dp{cursor:pointer;transition:filter .08s ease,opacity .08s ease;}
 .dp.oai-dio-pressed{filter:brightness(.82);opacity:.88;}
 
-/* ── 인포카드 ── */
 #card{position:absolute;top:10px;right:10px;width:206px;background:white;border-radius:13px;
   overflow:hidden;box-shadow:0 6px 24px rgba(0,0,0,0.15);display:none;z-index:100;}
 #card.on{display:block;}
@@ -102,7 +97,6 @@ header{flex-shrink:0;background:var(--d);border-bottom:none;z-index:30;
   font-weight:500;color:white;border-radius:7px;padding:7px;border:none;width:100%;text-decoration:none;cursor:pointer;}
 .c-nurl{font-size:11px;color:#ccc;text-align:center;padding:3px 0;}
 
-/* ── 관구 버튼 ── */
 #gw-bar{position:absolute;top:10px;left:10px;display:flex;flex-direction:column;gap:5px;z-index:50;}
 .gb{padding:6px 14px;border-radius:20px;border:2px solid;font-size:calc(12px * var(--diocese-effective-font-scale,1));font-weight:700;
   cursor:pointer;background:white;box-shadow:0 2px 8px rgba(0,0,0,0.12);white-space:nowrap;}
@@ -115,7 +109,6 @@ header{flex-shrink:0;background:var(--d);border-bottom:none;z-index:30;
   box-shadow:0 2px 4px rgba(0,0,0,0.08);}
 .cb:hover{background:#f0f0f0;}
 
-/* ── 검색 뷰 ── */
 #search-view{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;padding:16px;display:none;background:var(--bg);}
 #search-view.on{display:block;}
 .ss{position:sticky;top:0;background:var(--bg);padding:16px 16px 14px;margin:-16px -16px 0;z-index:10;box-sizing:border-box;}
@@ -130,7 +123,7 @@ header{flex-shrink:0;background:var(--d);border-bottom:none;z-index:30;
 .sh{font-size:11px;color:#111827;margin-top:6px;line-height:1.6;font-weight:600;}
 #sres{display:block;clear:both;position:relative;z-index:0;width:100%;max-width:100%;box-sizing:border-box;margin-top:12px;padding:0 2px;overflow:visible;}
 .se{text-align:center;padding:36px 0;color:var(--dim);font-size:13px;}
-/* 검색 결과 카드 — 기도문 .card 구조 적용 */
+
 .si-r{width:calc(100% - 20px);max-width:calc(100% - 20px);box-sizing:border-box;background:var(--card);border-radius:13px;border:1px solid var(--bdr);
   box-shadow:0 1px 8px rgba(0,0,0,.06);margin:0 10px 12px;overflow:hidden;cursor:pointer;
   transition:transform .12s,box-shadow .12s;}
@@ -168,15 +161,14 @@ header{flex-shrink:0;background:var(--d);border-bottom:none;z-index:30;
   .duplicate-warning-box{width:calc(100% - 18px);max-width:calc(100% - 18px);margin-left:9px;margin-right:9px;}
 }
 
-/* ── 목록 뷰 ── */
 #list-view{position:absolute;inset:0;overflow-y:auto;padding:14px 14px 60px;display:none;background:var(--bg);}
 #list-view.on{display:block;}
-/* 관구 섹션 헤더 */
+
 .lv-sec{display:flex;align-items:center;gap:10px;margin:18px 0 10px;}
 .lv-sec:first-child{margin-top:4px;}
 .lv-sec-bdg{font-size:15px;font-weight:800;padding:7px 20px;border-radius:20px;color:#fff;flex-shrink:0;min-width:100px;text-align:center;}
 .lv-sec-cnt{font-size:14px;color:var(--sub);font-weight:500;}
-/* 카드 */
+
 .lv-card{background:var(--card);border-radius:var(--r);border:1.25px solid #C8B79F;
   box-shadow:0 1px 8px rgba(0,0,0,.06);margin-bottom:12px;overflow:hidden;cursor:pointer;
   transition:transform .12s,box-shadow .12s;}
@@ -184,11 +176,10 @@ header{flex-shrink:0;background:var(--d);border-bottom:none;z-index:30;
 .lv-card.my-diocese-card{border-color:#B7791F!important;border-width:2px!important;box-shadow:0 8px 18px rgba(183,121,31,.12),0 2px 8px rgba(31,42,68,.07)!important;}
 .lv-my-diocese-badge{display:inline-flex;align-items:center;justify-content:center;margin-left:7px;padding:4px 10px;border-radius:999px;background:#FFF3D8;border:1.5px solid rgba(183,121,31,.52);color:#7A4F10;font-size:12px;font-weight:900;line-height:1.1;letter-spacing:-.035em;vertical-align:1px;white-space:nowrap;}
 
-/* top: 뱃지 + 교구전체명 */
 .lv-top{display:flex;align-items:center;justify-content:space-between;padding:12px 14px 0;gap:8px;}
 .lv-bdg{font-size:12px;font-weight:800;padding:4px 10px;border-radius:6px;color:#fff;white-space:nowrap;flex-shrink:0;}
 .lv-op{font-size:11.5px;color:var(--dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-/* body: 아이콘 + 정보 */
+
 .lv-body{display:flex;align-items:center;gap:12px;padding:9px 14px 10px;}
 .lv-ico{width:52px;height:52px;flex-shrink:0;border-radius:var(--icon-r);display:flex;align-items:center;justify-content:center;font-size:28px;background:var(--card-sub);}
 .lv-info{flex:1;min-width:0;}
@@ -198,11 +189,10 @@ header{flex-shrink:0;background:var(--d);border-bottom:none;z-index:30;
 .lv-parish-count{flex:0 0 auto;display:flex;flex-direction:column;align-items:flex-end;justify-content:center;margin-left:auto;min-width:42px;padding:3px 5px;border-radius:8px;background:rgba(31,42,68,.06);border:1px solid rgba(31,42,68,.12);font-size:8px;font-weight:500;color:var(--d);line-height:1.1;text-align:right;white-space:nowrap;}
 .lv-parish-count b{display:block;font-size:12px;font-weight:500;letter-spacing:-.03em;line-height:1;margin:0;}
 .lv-parish-count span{font-size:7px;font-weight:500;opacity:.72;}
-/* foot: URL */
+
 .lv-foot{border-top:1px solid #EDE8E2;padding:9px 14px;display:flex;align-items:center;justify-content:space-between;background:#FAF8F4;}
 .lv-url{font-size:12px;color:var(--d);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0;}
 .lv-arr{font-size:15px;color:var(--dim);flex-shrink:0;margin-left:6px;}
-
 
 @media(display-mode:standalone){
   header{padding-top:env(safe-area-inset-top);height:calc(var(--header-h) + env(safe-area-inset-top));}
@@ -212,7 +202,6 @@ header{flex-shrink:0;background:var(--d);border-bottom:none;z-index:30;
   #gw-bar{flex-direction:row;flex-wrap:wrap;}
 }
 
-/* OAI 20260504-5: 관구·교구 단독 화면 헤더 최종 표준화 */
 :root{
   --diocese-font-scale:1;--d:#1f2a44!important;--header-h:70px!important;--fs-header:20px!important;--fs-sub:11px!important;}
 html,body{width:100%!important;max-width:none!important;margin:0!important;overflow-x:hidden!important;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
@@ -228,24 +217,15 @@ header{width:100%!important;max-width:none!important;min-height:70px!important;h
 @media(display-mode:standalone){header{height:70px!important;min-height:70px!important;padding-top:0!important;}}
 @media(min-width:600px){header{border-radius:0!important;width:100%!important;max-width:none!important;}}
 
-
-/* 부모 앱 헤더를 사용하므로 iframe 내부 헤더는 한 곳에서 숨긴다. */
 body > header{display:none!important;visibility:hidden!important;height:0!important;min-height:0!important;padding:0!important;overflow:hidden!important;}
 #main{top:0!important;}
 #card .c-x{display:flex!important;align-items:center!important;justify-content:center!important;opacity:1!important;visibility:visible!important;pointer-events:auto!important;}
 
-
-/* 헤더 아이콘 중앙 정렬 */
 .hd-icon{line-height:1!important;display:flex!important;align-items:center!important;justify-content:center!important;overflow:hidden!important;font-family:"Apple SD Gothic Neo","Noto Sans KR",Arial,sans-serif!important;}
 
 html.oai-dio-external-stabilize *,
 html.oai-dio-external-return *{transition:none!important;animation:none!important;scroll-behavior:auto!important;}
-/* 부모 앱에서 복귀 상태를 복원하므로 iframe 자체 전체 덮개는 만들지 않는다. */
 
-
-/* 지역검색 결과/중복지역 안내 박스 기준은 상단 기본 규칙에서 관리한다. */
-
-/* 관구교구 사제찾기 버튼 */
 #c-act{display:flex;flex-direction:column;gap:8px;}
 .c-btn.c-home-btn,.c-btn.c-priest-btn{min-height:42px;border-radius:10px;font-weight:800;}
 .c-btn.c-home-btn{box-shadow:0 6px 12px rgba(31,42,68,.10);}
@@ -256,9 +236,6 @@ html.oai-dio-external-return *{transition:none!important;animation:none!importan
 .lv-priest-btn:active{transform:scale(.985);}
 @media(max-width:560px){.lv-priest-btn{min-height:32px;padding:0 10px;font-size:11.5px;}#c-act{gap:7px;}}
 
-
-/* ---- original diocese.html <style id="oai-diocese-tab-standard-20260504"> block 2 ---- */
-/* 탭바 크기/색상 기준은 상단 기본 .tab-bar/.tab 규칙에서 관리한다. */
 #search-view .sh{font-size:calc(11px * var(--dio-effective-font-scale,1))!important;}
 #search-view .se{font-size:calc(13px * var(--dio-effective-font-scale,1))!important;}
 #search-view .sl{font-size:calc(12px * var(--dio-effective-font-scale,1))!important;}
@@ -282,8 +259,6 @@ html.oai-dio-external-return *{transition:none!important;animation:none!importan
 #list-view .lv-url{font-size:calc(12px * var(--dio-effective-font-scale,1))!important;}
 #list-view .lv-arr{font-size:calc(15px * var(--dio-effective-font-scale,1))!important;}
 
-/* ---- original diocese.html <style id="oai-touch-ux-standard-20260506"> block 3 ---- */
-/* OAI 20260506: 공통 터치 UX 표준화 */
 .oai-touch-pressed{
   transform:scale(.992)!important;
   filter:brightness(.995)!important;
@@ -294,14 +269,10 @@ html.oai-dio-external-return *{transition:none!important;animation:none!importan
   will-change:transform;
 }
 
-/* ---- original diocese.html <style id="oai-diocese-smooth-entry-20260506"> block 4 ---- */
-/* 관구·교구 첫 표시/탭 전환 부드럽게 */
 #map-view.on,#list-view.on,#search-view.on{animation:oaiDioFadeIn .22s ease both;}
 @keyframes oaiDioFadeIn{from{opacity:.01}to{opacity:1}}
 html.oai-dio-returning #map-view.on,html.oai-dio-returning #list-view.on,html.oai-dio-returning #search-view.on{animation:none!important;}
 
-/* ---- original diocese.html <style id="oai-ios-ui-density-v22"> block 5 ---- */
-/* iPhone 관구·교구 iframe 내부 UI 밀도 기준 */
 html.ios-device{--ios-dio-ui-scale:.96;}
 html.ios-device #gw-bar{gap:6px!important;padding:7px 9px!important;}
 html.ios-device .gb{min-height:34px!important;padding:0 10px!important;border-radius:11px!important;}
@@ -319,11 +290,8 @@ html.ios-device .si-r,
 html.ios-device .lv-card{border-radius:12px!important;padding:10px 12px!important;}
 html.ios-device .cb{width:34px!important;height:34px!important;border-radius:10px!important;}
 
-/* ---- original diocese.html <style id="oai-diocese-latin-cross"> block 6 ---- */
-/* 관구·교구 단독 화면 헤더 십자가를 라틴 십자가 비율로 통일 */
 .hd-icon{position:relative!important;font-size:0!important;overflow:hidden!important;}
 .hd-icon::before,.hd-icon::after{content:"";position:absolute;left:50%;background:#fff;border-radius:2px;display:block;}
 .hd-icon::before{top:50%;width:3px;height:24px;transform:translate(-50%,-50%);}
 .hd-icon::after{top:42%;width:14px;height:3px;transform:translate(-50%,-50%);}
-
 

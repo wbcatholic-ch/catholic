@@ -1,5 +1,4 @@
-/* myfaith.css — 나의 신앙생활 전용 CSS
-   나의 교구 설정, 신앙생활 홈 카드, 관련 안내 화면만 담당합니다. */
+
 
 .my-faith-body.my-faith-home-list-body,
 .my-faith-body.my-faith-home-list-body.my-faith-no-scroll,
@@ -7,7 +6,6 @@
   overflow-y: auto !important;
   -webkit-overflow-scrolling: touch !important;
 }
-
 
 .my-faith-body { display:flex !important; flex-direction:column !important; gap:14px !important; flex:1 1 auto !important; min-height:0 !important; overflow-y:auto !important; -webkit-overflow-scrolling:touch !important; padding:16px 15px calc(env(safe-area-inset-bottom,0px) + 18px) !important; background:var(--v4-bg-ivory) !important; box-sizing:border-box !important; }
 .my-diocese-modal.keyboard-open .my-faith-body { padding-bottom:14px !important; }
@@ -51,11 +49,6 @@
   .my-diocese-list{grid-template-columns:1fr !important;}
 }
 
-/* ============================================================
-   나의 신앙생활 홈 화면 높이 기준
-   - 내 교구·본당 정보 행이 잘리지 않도록 실제 보이는 화면 높이에 맞춤
-   - 내용이 길면 세로 스크롤로 확인
-   ============================================================ */
 .my-diocese-modal.show,
 .my-diocese-modal.show .my-diocese-panel {
   height: var(--my-faith-visible-vh, var(--my-faith-vh, 100dvh)) !important;
@@ -159,8 +152,6 @@
   }
 }
 
-
-/* 나의 신앙생활 설정 완료 후 홈 화면 정리 */
 .my-faith-change-settings-wrap {
   width: 100% !important;
   margin: 10px 0 2px !important;
@@ -200,8 +191,6 @@
   font-size: calc(11.8px * var(--app-font-scale,1)) !important;
 }
 
-
-/* 나의 신앙생활 교구·본당 정보 행 기준 */
 .my-faith-body.my-faith-home-list-body .my-faith-quick-section .my-faith-list-row {
   min-height: 68px !important;
   padding-top: 12px !important;
@@ -215,7 +204,6 @@
   border-bottom: 0 !important;
 }
 
-/* 나의 설정 첫 진입: 교구 펼침 / 선택 후 본당 펼침 기준 */
 .my-faith-edit-accordion-body .my-faith-setup-editor {
   overflow: visible !important;
 }
@@ -310,8 +298,6 @@
   .my-faith-inline-diocese-grid { grid-template-columns: 1fr !important; }
 }
 
-
-/* 나의 설정 편집 중에는 선택 전 변경/설정 버튼이 끼어들지 않게 한다. */
 .my-faith-edit-status-row.is-static {
   grid-template-columns: minmax(0, 1fr) !important;
 }

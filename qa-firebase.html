@@ -7,7 +7,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-<!-- ★ Firebase SDK (compat) -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 
@@ -319,7 +318,6 @@
   .spinner::before { content: '✝'; font-size: 30px; }
   @keyframes spin { to { transform: rotate(360deg); } }
 
-
   /* ── 반응형 / safe-area ── */
   html { min-height: 100%; }
   body { overflow-x: hidden; }
@@ -342,7 +340,6 @@
     textarea { min-height: 96px; }
   }
 
-
   /* v1: 문의 헤더 십자가는 iOS/Android 모두 흰색 단색 CSS 십자가로 표시 */
   #qna-cross-icon{ position:relative; font-size:0!important; line-height:1!important; display:flex; align-items:center; justify-content:center; }
   #qna-cross-icon::before,
@@ -357,13 +354,10 @@
     animation: none !important;
   }
 
-
-
   /* V13: 문의/글쓰기 상단은 헤더의 상태바 여백만 사용하고 본문은 기본 여백으로 복귀 */
   #write-view{
     padding-top:16px!important;
   }
-
 
   /* V13: 문의·건의 UI 미세 조정 */
   #write-btn {
@@ -414,7 +408,6 @@
 
 </style>
 
-
 <style id="oai-touch-ux-standard-20260506">
 /* OAI 20260506: 공통 터치 UX 표준화 */
 .oai-touch-pressed{
@@ -430,7 +423,6 @@
 </head>
 <body>
 
-<!-- 헤더 -->
 <div id="header">
   <div id="qna-cross-icon" aria-hidden="true"></div><div id="header-texts">
     <div class="title" id="header-title">문의 · 건의</div>
@@ -440,19 +432,16 @@
   <button id="close-btn" onclick="handleQaBack()" aria-label="닫기">×</button>
 </div>
 
-<!-- 목록 뷰 -->
 <div id="list-view" class="view">
   <div id="filter-bar"></div>
   <div id="list-limit-note" class="list-limit-note">최근 30개를 먼저 표시하고, 더보기로 이전 글을 30개씩 추가합니다.</div>
   <div id="post-list"><div class="loading-box"><div class="spinner"></div>불러오는 중…</div></div>
 </div>
 
-<!-- 상세 뷰 -->
 <div id="detail-view-wrap" class="view">
   <div id="detail-view"></div>
 </div>
 
-<!-- 글쓰기 뷰 -->
 <div id="write-view" class="view active">
   <div class="qa-private-guide">문의·건의는 앱 관리자 확인용으로만 저장되며, 다른 사용자에게 공개되지 않습니다.<br>이름, 전화번호, 주소 등 개인정보는 입력하지 말아 주세요.</div>
   <div class="field-group">
@@ -474,15 +463,12 @@
   <div class="notice-txt">✓ 관리자 확인용 비공개 접수 &nbsp;·&nbsp; ✓ 개인정보 입력 금지</div>
 </div>
 
-<!-- 접수 완료 -->
 <div id="success-view">
   <div class="icon">🙏</div>
   <div class="ttl">접수되었습니다</div>
   <div class="sub">소중한 의견 감사합니다.<br>다른 사용자에게 공개되지 않으며, 관리자가 확인합니다.</div>
   <button class="btn-primary" onclick="handleQaBack()">확인</button>
 </div>
-
-
 
 <script>
 /* ══════════════════════════════════════════════
@@ -842,7 +828,6 @@ if(titleInput){
   });
 }
 
-
 function qaTodayKey(){
   const d = new Date();
   return 'qaSubmit:' + d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
@@ -981,7 +966,6 @@ window.addEventListener('pagehide', function(){
   oaiPrepareNoReturnEffectToApp();
 }, true);
 
-
 /* ═══════════════════ 초기화 ═══════════════════ */
 buildFilterBar();
 buildCatRow();
@@ -996,16 +980,15 @@ if (QA_PRIVATE_MODE) {
 }
 </script>
 
-<script id="oai-cache-lifecycle-V3-111">
+<script id="oai-cache-lifecycle-V5-4">
 (function(){
   'use strict';
-  var APP_VERSION = 'V3-111';
+  var APP_VERSION = 'V5-4';
   if('serviceWorker' in navigator){
     try{ navigator.serviceWorker.register('./sw.js?v=' + encodeURIComponent(APP_VERSION)).then(function(reg){try{reg.update();}catch(e){}}).catch(function(){}); }catch(e){}
   }
 })();
 </script>
-
 
 <script id="oai-touch-ux-keyboard-20260506">
 (function(){

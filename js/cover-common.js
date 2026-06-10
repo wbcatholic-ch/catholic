@@ -1,15 +1,9 @@
-/* 가톨릭길동무 PWA - cover-common.js
-   커버 글자 크기, 문의·건의, PWA 설치 버튼 보조 로직을 담당합니다.
-   기능 변경 없이 기존 window 공개 이름을 유지합니다.
-*/
 'use strict';
 
 (function(){
   if(window.__APP_FONT_SCALE_GUARD__) return;
   window.__APP_FONT_SCALE_GUARD__=true;
-  // 커버 글자 크기 조절은 prayer.js에 의존하지 않는 공통 함수가 담당한다.
-  // prayer.js는 기도문 화면이 열렸을 때 같은 localStorage 값을 읽어 자체 UI를 맞춘다.
-  var QA_URL="qa-firebase.html?v=V5-2";
+  var QA_URL="qa-firebase.html?v=V5-4";
   var FONT_KEY='prayer_font_size';
   var BASE=16;
   var FONT_SIZES=[13,14,15,16,17,18,19,20,21,22,24,26,28,30];
@@ -79,7 +73,6 @@
   }
   function setEmojiIcons(){var icons={'cc-1':'✝️','cc-2':'⛪','cc-3':'🙏','cc-4':'🌿','cc-5':'🥾','cc-6':'🌐','cc-7':'🧭'};Object.keys(icons).forEach(function(id){var btn=el(id);if(!btn)return;var wrap=btn.querySelector('.cover-icon-wrap');if(wrap)wrap.innerHTML='<span class="cover-emoji" aria-hidden="true">'+icons[id]+'</span>';});}
   function configureQna(){
-    // 문의·건의 버튼은 중간 안내 카드를 만들지 않고 실제 문의 페이지로 바로 이동한다.
     window.QNA_FORM_URL=QA_URL;
     var q=el('qna-list');
     if(q) q.innerHTML='';
@@ -101,14 +94,7 @@
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();window.addEventListener('load',function(){boot();setTimeout(boot,250);setTimeout(boot,900);},{once:true});window.addEventListener('pageshow',boot);
 })();
 
-// user-cache mode: keep app cache stable; refresh changed files through versioned URLs.
-
-// ── PWA 설치 버튼 로직 ──
 (function(){
-  /* PWA 설치 버튼 통합 컨트롤러
-     ① standalone(설치된 앱) 상태이면 버튼 즉시 숨기고 종료
-     ② 아닌 경우: beforeinstallprompt 감지 → 버튼 표시
-        app-active 클래스·matchMedia 변화 → 즉시 재평가 */
   if(window.__APP_PWA_INSTALL_GUARD__) return;
   window.__APP_PWA_INSTALL_GUARD__ = true;
 

@@ -1,15 +1,7 @@
-/* style.css — 가톨릭길동무
-   ▸ !important 대폭 제거 (중복/충돌 선언 통합)
-   ▸ retreat-mode / parish-mode → :root 변수 재정의 1곳으로 통합
-   ▸ ios-device / oai-font-global → 변수 기반 계산식 통합
-   ▸ 구조: 1.변수 2.리셋 3.레이아웃 4.컴포넌트 5.모드오버라이드 6.유틸
-*/
 
-/* ============================================================
-   1. CSS 변수 — :root 기준값
-   ============================================================ */
+
 :root {
-  /* ── 기본 팔레트 */
+  
   --navy:    #0e1535;
   --navy2:   #1f2a44;
   --navy3:   #243070;
@@ -19,7 +11,7 @@
   --ink:     #1f2937;
   --border:  #dde3f2;
 
-  /* ── 레이아웃 */
+  
   --tab-h:          80px;
   --mod-header-h:   70px;
   --sb:             0px;
@@ -39,7 +31,7 @@
   --oai-search-placeholder-color: #8a7d6d;
   --oai-search-icon-color: #6f675d;
 
-  /* ── OAI 표준 컴포넌트 */
+  
   --oai-std-header-h:  70px;
   --oai-std-tab-h:     40px;
   --oai-std-tabbar-h:  55px;
@@ -55,7 +47,7 @@
   --oai-popup-enter-ms: 500ms;
   --oai-std-hdr-pad:   calc(10px + env(safe-area-inset-top, 0px));
 
-  /* ── 타이포그래피 */
+  
   --fs-header:   22px;
   --fs-tab:      15px;
   --cover-emoji-size: 40px;
@@ -71,7 +63,7 @@
   --app-fs-sub:   calc(12px * var(--app-inner-font-scale));
   --app-fs-body:  calc(16px * var(--app-inner-font-scale));
 
-  /* ── 컴포넌트 색상 */
+  
   --oai-shrine-header:  #1f2a44;
   --oai-parish-header:  #3F4752;
   --oai-retreat-header: #3F6F5A;
@@ -84,7 +76,7 @@
   --oai-ivory-border:   #d6c6a8;
   --oai-pilgrimage-header-solid: #1f2a44;
 
-  /* ── 모드 토큰 (shrine 기본값; 모드 전환 시 아래서 재정의) */
+  
   --mode-header-bg:    linear-gradient(135deg, #1f2a44, #2d3a5f);
   --mode-header-solid: #1f2a44;
   --mode-active-bg:    linear-gradient(135deg, #243a83, #1f2f6b);
@@ -108,13 +100,13 @@
   --mode-sm-tab-inactive-border: rgba(31,47,107,.22);
   --mode-srch-modal-bg: #1f2a44;
 
-  /* ── 성지 모드 */
+  
   --shrine-main:    #1f2a44;
   --shrine-main-2:  #2d3a5f;
   --shrine-soft:    #f4ead6;
   --shrine-soft-2:  #e8dcc8;
 
-  /* ── 성당 모드 */
+  
   --parish-bg:      #4B5563;
   --parish-active:  #4B5563;
   --parish-accent:  #F1F3F5;
@@ -123,7 +115,7 @@
   --church-soft:    #ECEFF3;
   --church-soft-2:  #F8FAFC;
 
-  /* ── 피정의집 모드 */
+  
   --retreat-bg:      #3F6F5A;
   --retreat-main:    #3F6F5A;
   --retreat-main-2:  #345C4B;
@@ -133,11 +125,11 @@
   --retreat-soft-2:  #F6FBF8;
   --dist-retreat:    #3F6F5A;
 
-  /* ── 거리 표시 */
+  
   --addr-color:   #6b7280;
   --dist-parish:  #4B5563;
 
-  /* ── 커버 카드 아이콘 배경 */
+  
   --color-1: #8b2020;
   --color-2: #1f2a44;
   --color-3: #b8965a;
@@ -147,9 +139,9 @@
   --color-7: #1a3560;
   --color-8: #374151;
 
-  /* ── 커버 테마 */
+  
   --bg-color:   #f7f0e5;
-  /* 커버 화면 비율 기준 보호 영역 */
+  
   --cover-top-safe: calc(env(safe-area-inset-top, 0px) + clamp(60px, calc(var(--cover-vh, 1vh) * 9.2), 82px));
   --cover-bottom-safe: calc(env(safe-area-inset-bottom, 0px) + clamp(7px, calc(var(--cover-vh, 1vh) * 1.1), 10px));
   --cover-h:    calc(var(--cover-vh, 1vh) * 100);
@@ -167,7 +159,7 @@
   --text-sub:   #7a7065;
   --card-bg:    #ffffff;
 
-  /* ── 공통 표면 팔레트 */
+  
   --bg-unified:  #f5f0e8;
   --stone:       #f3eee5;
   --stone-2:     #ebe3d7;
@@ -175,11 +167,11 @@
   --panel:       #fffaf2;
   --line-soft:   #e7ddcf;
 
-  /* ── 그림자 */
+  
   --shadow-soft: 0 12px 30px rgba(14,21,53,.10);
   --shadow-card: 0 16px 34px rgba(17,24,39,.11);
 
-  /* ── 의미 토큰: 기존 색상값을 이름으로 묶어 시각 변화 없이 관리 */
+  
   --v4-bg-ivory: #F5F1E8;
   --v4-bg-cream: #f5f0e8;
   --v4-surface-white: #fff;
@@ -194,7 +186,7 @@
   --v4-text-muted: #6B7280;
   --v4-line-soft: #e5e7eb;
 
-  /* ── 공통 컴포넌트 토큰: 기존 수치/색상을 이름으로 묶어 관리 */
+  
   --v4-close-size: 40px;
   --v4-close-size-sm: 30px;
   --v4-close-border: 1.5px solid currentColor;
@@ -209,7 +201,7 @@
   --v4-card-border-warm: #c8b79f;
   --v4-card-shadow-soft: 0 1px 8px rgba(0,0,0,.06);
 
-  /* ── UI 색상 */
+  
   --ui-ink:         #141b2d;
   --ui-ink-soft:    #4d5a75;
   --ui-line:        #e6dfd3;
@@ -229,7 +221,6 @@
   --martyr:        #1b7a3e;
 }
 
-/* ── 성당 모드 변수 재정의 */
 html.parish-mode {
   --mode-header-bg:    linear-gradient(135deg, #374151, var(--v4-parish-gray));
   --mode-header-solid: var(--v4-parish-gray);
@@ -249,7 +240,6 @@ html.parish-mode {
   --mode-srch-modal-bg: var(--v4-parish-gray);
 }
 
-/* ── 피정의집 모드 변수 재정의 */
 html.retreat-mode {
   --mode-header-bg:    linear-gradient(135deg, var(--v4-retreat-green), #4F846C);
   --mode-header-solid: #4F846C;
@@ -273,7 +263,6 @@ html.retreat-mode {
   --mode-srch-modal-bg: #4F846C;
 }
 
-/* ── iOS */
 html.ios-device {
   --ios-inner-font-scale: .91;
   --tab-h:           80px;
@@ -286,9 +275,6 @@ html.ios-device {
   --oai-ios-std-tab-btn-h: 40px;
 }
 
-/* ============================================================
-   2. 리셋 & 기본
-   ============================================================ */
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
@@ -311,9 +297,6 @@ html, body {
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-thumb { background: rgba(26,36,86,.15); border-radius: 2px; }
 
-/* ============================================================
-   3. 앱 기본 레이아웃
-   ============================================================ */
 #cover {
   position: fixed;
   top: 0;
@@ -337,10 +320,6 @@ html, body {
   max-height: var(--cover-h);
 }
 
-/* 커버 높이는 위의 --cover-h 한 기준만 사용한다.
-   일부 모바일 PWA에서 reload 직후 100dvh가 실제 보이는 화면보다 크게 잡혀
-   하단 안내문구가 화면 밖으로 밀렸으므로 dynamic viewport override는 사용하지 않는다. */
-
 html.app-active #cover { display: none; }
 
 #app {
@@ -351,7 +330,6 @@ html.app-active #cover { display: none; }
 }
 html.app-active #app { display: block; }
 
-/* 탭바 */
 #tabbar {
   position: fixed;
   top: 0;
@@ -405,7 +383,6 @@ html.app-active #app { display: block; }
   box-shadow: none;
 }
 
-/* 상부탭 모드별 활성 색상 */
 html:not(.parish-mode):not(.retreat-mode) #tabbar .tab-btn.active {
   background: linear-gradient(135deg, #243a83, #1f2f6b);
   color: var(--v4-surface-white);
@@ -431,7 +408,6 @@ html.retreat-mode #tabbar .tab-btn.active {
   box-shadow: 0 4px 12px rgba(107,143,113,.16);
 }
 
-/* 피정의집 모드: 상단 탭의 피정의집 찾기 글자만 한 단계 작게 표시 */
 html.retreat-mode #tab-list-lbl {
   font-size: 14px;
   letter-spacing: -0.065em;
@@ -453,7 +429,6 @@ html.retreat-mode #tab-list-lbl {
   word-break: keep-all;
 }
 
-/* 지도 */
 #map-wrap {
   position: fixed;
   top: calc(var(--tab-h) + env(safe-area-inset-top, 0px));
@@ -539,11 +514,6 @@ html.retreat-mode #tab-list-lbl {
 }
 .map-category-close:active { transform: scale(.96); }
 
-/* ============================================================
-   4. 컴포넌트
-   ============================================================ */
-
-/* ── 시트 (슬라이드업 패널) */
 .sheet {
   position: fixed;
   top: calc(var(--tab-h) + env(safe-area-inset-top, 0));
@@ -616,7 +586,6 @@ html.retreat-mode #tab-list-lbl {
   flex-shrink: 0;
 }
 
-/* 길찾기 바텀시트 */
 #sheet-route {
   top: auto;
   max-height: 52vh;
@@ -650,7 +619,6 @@ html.retreat-mode #tab-list-lbl {
 }
 .route-sheet-x:active { transform: scale(.96); }
 
-/* ── 검색바 / 필터바 */
 .srch-bar {
   padding: 8px 12px 6px;
   background: var(--mode-header-solid);
@@ -738,7 +706,6 @@ html.retreat-mode #tab-list-lbl {
   font-weight: 800;
 }
 
-/* ── 지역검색 */
 .region-wrap {
   padding: 7px 10px 6px;
   background: var(--mode-header-solid);
@@ -806,7 +773,6 @@ html.retreat-mode .region-search-btn {
   text-align: center;
 }
 
-/* ── 교구 헤더 / 리스트 */
 .dio-hd {
   padding: 8px 16px 6px;
   font-size: 11px;
@@ -821,7 +787,6 @@ html.retreat-mode .region-search-btn {
   color: #b65a59;
 }
 
-/* ── 리스트 아이템 */
 #list-body, #nearby-body, #region-body {
   padding: 8px 0 calc(24px + env(safe-area-inset-bottom, 0));
   background: var(--ui-bg);
@@ -888,7 +853,6 @@ html.retreat-mode .region-search-btn {
   color: var(--mode-badge-color);
 }
 
-/* 내주변 아이템 추가 요소 */
 .nearby-num {
   width: 34px;
   height: 34px;
@@ -905,7 +869,6 @@ html.retreat-mode .region-search-btn {
 .nearby-meta { text-align: right; flex-shrink: 0; line-height: 1.6; min-width: 68px; }
 .nearby-dist { font-size: 16px; color: var(--mode-dist-color, #b07a3d); font-weight: 900; margin-top: 4px; line-height: 1.2; }
 
-/* 피정의집 목록 오른쪽 메타 — 성지/성당 내주변 목록 구조와 통일 */
 html.retreat-mode #nearby-body .nearby-meta {
   width: auto;
   min-width: 68px;
@@ -955,7 +918,6 @@ html.retreat-mode #nearby-body .list-item {
 }
 html.retreat-mode #nearby-body { overflow-x: hidden; }
 
-/* 지역검색 목록 */
 #region-body .nearby-num,
 #region-body .region-item .nearby-num { background: #2563eb; color: var(--v4-surface-white); }
 #region-body .nearby-type,
@@ -972,7 +934,6 @@ html.retreat-mode #nearby-body { overflow-x: hidden; }
   letter-spacing: .02em;
 }
 
-/* ── 검색 모달 */
 #srch-modal {
   display: none;
   position: fixed;
@@ -1152,7 +1113,6 @@ html.retreat-mode #nearby-body { overflow-x: hidden; }
 }
 .sm-place-loading { padding: 20px; text-align: center; color: #aaa; font-size: 13px; }
 
-/* sm 탭바 */
 #sm-tab-bar {
   display: flex;
   gap: 8px;
@@ -1199,7 +1159,6 @@ html.retreat-mode #nearby-body { overflow-x: hidden; }
   font-weight: 900;
 }
 
-/* srch-modal 내부 sm-tab-bar — 모드별 배경 */
 #srch-modal #sm-tab-bar {
   height: 50px;
   min-height: 50px;
@@ -1217,7 +1176,7 @@ html.parish-mode #srch-modal #sm-tab-bar {
 html.retreat-mode #srch-modal #sm-tab-bar {
   background: linear-gradient(135deg, #4F846C, #7FA487);
 }
-/* 비활성 탭: 밝은 버튼 + 어두운 글자 + 조금 더 진한 테두리 */
+
 html #srch-modal #sm-tab-bar .sm-tab,
 html.parish-mode #srch-modal #sm-tab-bar .sm-tab,
 html.retreat-mode #srch-modal #sm-tab-bar .sm-tab {
@@ -1236,7 +1195,7 @@ html.retreat-mode #srch-modal #sm-tab-bar .sm-tab {
   border: 1.5px solid #9ca3af;
   box-shadow: none;
 }
-/* 활성 탭: 현재 카테고리 색상 */
+
 html:not(.parish-mode):not(.retreat-mode) #srch-modal #sm-tab-bar .sm-tab.active {
   background: linear-gradient(135deg, var(--shrine-main), var(--shrine-main-2));
   color: var(--v4-surface-white);
@@ -1259,7 +1218,6 @@ html.retreat-mode #srch-modal #sm-tab-bar .sm-tab.active {
   font-weight: 900;
 }
 
-/* ── 인포카드 */
 #info-card {
   display: none;
   position: fixed;
@@ -1395,7 +1353,6 @@ html.retreat-mode #srch-modal #sm-tab-bar .sm-tab.active {
 }
 .btn-kakao-nav:active { opacity: .85; }
 
-/* 길찾기 입력 */
 .rs-start-box, .rs-end-box {
   display: flex;
   align-items: center;
@@ -1429,7 +1386,6 @@ html.retreat-mode #srch-modal #sm-tab-bar .sm-tab.active {
 .btn-route-reset { flex: 1; padding: 12px 6px; border-radius: 10px; border: 1.5px solid var(--border); background: var(--v4-surface-white); font-size: 14px; color: var(--ink); cursor: pointer; font-family: inherit; font-weight: 600; }
 #rs-search-btn { display: none; width: 100%; margin-top: 10px; padding: 13px; background: #1565c0; color: var(--v4-surface-white); border: none; border-radius: 12px; font-size: 16px; font-weight: 800; cursor: pointer; font-family: inherit; align-items: center; justify-content: center; gap: 8px; }
 
-/* 지역 인포카드 */
 .region-info-card { margin: 7px 12px 8px; background: var(--v4-surface-white); border-radius: 10px; overflow: hidden; box-shadow: 0 1px 7px rgba(14,21,53,.08); border: 1px solid rgba(21,101,192,.15); }
 .ric-hd { background: linear-gradient(135deg, #0e1535, #1a2456); padding: 14px 16px; display: flex; align-items: center; gap: 12px; }
 html.parish-mode .ric-hd { background: linear-gradient(135deg, #374151, var(--v4-parish-gray)); }
@@ -1444,7 +1400,6 @@ html.retreat-mode .ric-hd { background: linear-gradient(135deg, var(--v4-retreat
 .ric-row { display: flex; align-items: flex-start; gap: 7px; font-size: 13px; color: #555; line-height: 1.45; }
 .ric-lbl { color: var(--pilgrim); font-weight: 700; flex-shrink: 0; }
 
-/* ── 종료 다이얼로그 */
 #exit-dlg { display: none; position: fixed; inset: 0; z-index: 99999; background: rgba(14,21,53,.82); backdrop-filter: blur(4px); align-items: center; justify-content: center; }
 #exit-dlg.open { display: flex; }
 .exit-box { background: var(--v4-surface-white); border-radius: 16px; padding: 28px 24px 20px; width: min(320px,88vw); text-align: center; box-shadow: 0 12px 40px rgba(0,0,0,.3); }
@@ -1454,13 +1409,11 @@ html.retreat-mode .ric-hd { background: linear-gradient(135deg, var(--v4-retreat
 .exit-cancel { flex: 1; padding: 12px; border-radius: 10px; border: 1.5px solid var(--border); background: var(--v4-surface-white); font-size: 15px; font-weight: 600; color: var(--ink); cursor: pointer; font-family: inherit; }
 .exit-ok { flex: 1; padding: 12px; border-radius: 10px; border: none; background: var(--ink); color: var(--v4-surface-white); font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; }
 
-/* ── 지도 로딩 */
 .map-loading { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; background: var(--navy); height: 100%; }
 .map-loading-icon { font-size: 36px; margin-bottom: 14px; animation: spin 2s linear infinite; }
 .map-loading-txt { font-size: 13px; color: rgba(212,170,106,.8); font-weight: 600; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* ── 빈 메시지 */
 .empty-msg { padding: 40px 20px; text-align: center; color: #aaa; font-size: 13px; line-height: 1.8; }
 #nearby-body .nearby-distance-loading {
   color: var(--v4-text-strong);
@@ -1504,42 +1457,8 @@ html.retreat-mode .ric-hd { background: linear-gradient(135deg, var(--v4-retreat
   word-break: keep-all;
 }
 
-/* ============================================================
-   5. 모듈 뷰 공통 CSS는 css/module-common.css로 분리됨.
-   - 개별 화면 예외는 css/prayer.css, css/web.css, css/pilgrimage.css 등에 유지
-   ============================================================ */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* ── 순례길 */
 .trail-tabs { background: rgba(255,255,255,.88); border-bottom: 1px solid #e8ecf3; min-height: 64px !important; padding-top: 10px !important; padding-bottom: 10px !important; align-items: center !important; }
 
-/* ── 매일미사 */
 #missa-view {
   display: none;
   position: fixed;
@@ -1585,7 +1504,6 @@ html.retreat-mode .ric-hd { background: linear-gradient(135deg, var(--v4-retreat
 .missa-external-desc { font-size: 14px; font-weight: 500; color: var(--v4-text-muted); line-height: 1.7; margin-bottom: 20px; word-break: keep-all; }
 .missa-open-link { display: flex; align-items: center; justify-content: center; width: 100%; height: 48px; border-radius: 12px; background: #0e1535; color: var(--v4-gold); text-decoration: none; font-size: 16px; font-weight: 800; }
 
-/* ── 관구교구 */
 #diocese-view {
   display: none;
   position: fixed;
@@ -1650,8 +1568,6 @@ html.retreat-mode .ric-hd { background: linear-gradient(135deg, var(--v4-retreat
 }
 #diocese-frame { flex: 1 1 auto; min-height: 0; width: 100%; border: 0; background: var(--v4-bg-ivory); }
 
-/* 주요기도문 전용 화면 CSS는 css/prayer.css에서 관리한다. */
-
 .qna-tabs { display: flex; gap: 8px; padding: 12px 14px; background: var(--v4-surface-white); border-bottom: 1px solid var(--v4-line-soft); }
 .qna-tab { flex: 1; height: 42px; border-radius: 12px; border: 1.5px solid #dde3ee; background: var(--v4-surface-white); color: #475569; font-family: inherit; font-size: calc(15px * var(--app-inner-font-scale)); font-weight: 800; }
 .qna-tab.on { background: var(--v4-header-navy); color: var(--v4-surface-white); border-color: var(--v4-header-navy); }
@@ -1664,7 +1580,6 @@ html.retreat-mode .ric-hd { background: linear-gradient(135deg, var(--v4-retreat
 .qna-actions button { flex: 1; height: 44px; border-radius: 12px; border: 1.5px solid #dde3ee; background: var(--v4-surface-white); color: var(--v4-text-main); font-family: inherit; font-size: calc(14px * var(--app-inner-font-scale)); font-weight: 800; }
 .qna-actions button.primary { background: var(--v4-header-navy); color: var(--v4-surface-white); border-color: var(--v4-header-navy); }
 
-/* Q&A 플로팅 버튼 */
 #qna-cover-btn {
   position: fixed;
   right: 12px;
@@ -1686,9 +1601,6 @@ html.retreat-mode .ric-hd { background: linear-gradient(135deg, var(--v4-retreat
 }
 html.app-active #qna-cover-btn { display: none; }
 
-/* ============================================================
-   6. 커버 화면
-   ============================================================ */
 #cover { overscroll-behavior-y: contain; }
 html.oai-cover-booting body { background: var(--cream, var(--v4-bg-cream)) !important; }
 html.oai-cover-booting #cover {
@@ -1787,7 +1699,7 @@ html.oai-cover-booting #cover > * {
   box-sizing: border-box;
   isolation: isolate;
 }
-/* 커버 제목 박스 제거 / 카테고리 박스 비율 조정 */
+
 .cover-grid::after {
   content: none;
   display: none;
@@ -1912,7 +1824,6 @@ html.oai-cover-booting #cover > * {
 }
 #cc-5 .cover-name { font-size: 13px; letter-spacing: -.04em; }
 
-/* 커버 액션 줄 */
 #cover-action-row {
   width: 100%;
   margin: 0;
@@ -2028,7 +1939,6 @@ html.app-active #cover-diocese-box { display: none; }
   }
 }
 
-/* 커버 새로고침 버튼 버전 세부번호 축소 표시 */
 #cover-update-btn .oai-cover-version-sub {
   font-size: 0.68em;
   vertical-align: baseline;
@@ -2054,7 +1964,6 @@ html.app-active #cover-diocese-box { display: none; }
   font-size: calc(11.5px * var(--app-font-scale));
 }
 
-/* 커버 하단 안내문구: 카드/새로고침 묶음과 분리해 화면 최하단에 고정한다. */
 #cover-bottom-note {
   position: absolute;
   left: 0;
@@ -2083,7 +1992,6 @@ html.app-active #cover-diocese-box { display: none; }
   z-index: 120;
 }
 
-/* 커버 글자크기 버튼 */
 #cover-font-controls {
   position: absolute;
   right: 12px;
@@ -2119,7 +2027,6 @@ html.app-active #cover-diocese-box { display: none; }
 #cover-font-controls #cover-lg-btn { font-size: 22px; }
 #cover-font-controls .pr-font-divider { width: 1px; height: 20px; background: #ddd5c8; flex: 0 0 1px; margin: 0 2px; }
 
-/* 커버 안내 버튼 */
 #cover #cover-guide-btn {
   position: absolute;
   left: 12px;
@@ -2146,8 +2053,6 @@ html.app-active #cover-diocese-box { display: none; }
 #cover #cover-guide-btn:active { transform: scale(.985); }
 html.app-active #cover-guide-btn { display: none; }
 
-
-/* 커버 메뉴 버튼 */
 #cover #cover-menu-btn.cover-menu-btn {
   position: absolute;
   left: 12px;
@@ -2195,7 +2100,6 @@ html.app-active #cover-menu-btn { display: none !important; }
   background: currentColor;
 }
 
-/* 커버 메뉴 팝업 */
 .cover-menu-modal {
   position: fixed;
   inset: 0;
@@ -2214,10 +2118,7 @@ html.app-active #cover-menu-btn { display: none !important; }
   background: rgba(14,21,53,.42);
   backdrop-filter: blur(2px);
 }
-/* 커버 메뉴 팝업 본체 스타일은 css/cover-modals.css에서 관리합니다.
-   style.css에는 모달 표시/배경 레이어만 남깁니다. */
 
-/* 커버 종료 토스트 */
 #oai-cover-exit-toast {
   position: fixed;
   top: 50%;
@@ -2244,7 +2145,6 @@ html.app-active #cover-menu-btn { display: none !important; }
 }
 #oai-cover-exit-toast.show { opacity: 1; transform: translate(-50%, -50%) scale(1); }
 
-/* PWA 설치 버튼 */
 #pwa-install-btn {
   display: none;
   width: calc(100vw - 32px);
@@ -2277,7 +2177,7 @@ html.app-active #cover-menu-btn { display: none !important; }
 }
 @media (display-mode: standalone) { #pwa-install-btn { display: none; } }
 html.app-active #pwa-install-btn { display: none; }
-/* 빠른 메뉴 */
+
 .mass-quick-panel {
   width: min(640px, calc(100vw - 14px));
   padding: 44px 26px 32px;
@@ -2322,9 +2222,6 @@ html.app-active #pwa-install-btn { display: none; }
 .mass-quick-panel .guide-badge { min-height: 44px; padding: 9px 20px; margin-bottom: 20px; border-radius: 17px; font-size: calc(18px * var(--app-font-scale)); line-height: 1.25; font-weight: 900; letter-spacing: -.04em; background: #efe4d2; color: #6f4f23; }
 .mass-quick-modal .guide-backdrop { -webkit-backdrop-filter: none; backdrop-filter: none; background: rgba(31,42,68,.30); }
 
-/* ============================================================
-   7. 안내 가이드 모달 (커버·iOS 설치)
-   ============================================================ */
 .guide-modal { position: fixed; inset: 0; z-index: 10050; display: none; align-items: center; justify-content: center; padding: calc(env(safe-area-inset-top, 0px) + 14px) 18px calc(env(safe-area-inset-bottom, 0px) + 18px); box-sizing: border-box; font-family: 'Apple SD Gothic Neo','Noto Sans KR',sans-serif; }
 .guide-modal.show { display: flex; }
 .guide-backdrop { position: absolute; inset: 0; background: rgba(31,42,68,.34); backdrop-filter: blur(2px); }
@@ -2349,7 +2246,7 @@ html.app-active #pwa-install-btn { display: none; }
 .guide-mini-list dt { color: #7a5a2b; font-weight: 900; }
 .guide-mini-list dd { margin: 0; color: #5f6675; font-weight: 600; word-break: keep-all; }
 .guide-ok { flex: 0 0 auto; width: 100%; margin-top: 12px; min-height: 40px; }
-/* 주요 기능 안내 헤더 제목이 작은 화면에서 두 줄로 꺾이지 않도록 크기 축소 */
+
 .guide-manual-panel .guide-manual-hero {
   flex: 0 0 auto;
   margin: 0 0 22px;
@@ -2390,9 +2287,6 @@ html.app-active #pwa-install-btn { display: none; }
   .guide-manual-panel .guide-manual-hero h2 { font-size: calc(22px * var(--app-font-scale)); }
 }
 
-
-
-/* iOS Safari 설치 안내 */
 #cover .ios-safari-banner { display: none; }
 html.ios-kakao-inapp #cover .ios-safari-banner {
   position: fixed;
@@ -2507,9 +2401,6 @@ html:not(.ios-device) #ios-safari-guide-modal { display: none; }
 .ios-safari-step b { width: 26px; height: 26px; font-size: 13px; }
 .ios-safari-step { grid-template-columns: 26px 1fr; }
 
-/* ============================================================
-   8. 카테고리 진입 베일 / 성능 최적화
-   ============================================================ */
 .sheet, .trail-sheet, #prayer-detail, #info-card { will-change: transform; }
 .module-view:not(.open), #missa-view:not(.open), #diocese-view:not(.open), #prayer-view:not(.open) { contain: strict; }
 
@@ -2557,7 +2448,6 @@ html.oai-category-entering .sheet.open { z-index: 810; }
 html.oai-category-entering #tabbar { z-index: 950; }
 html.oai-returning #oai-category-entry-veil { display: none; opacity: 0; }
 
-/* 숨겨진 맵레이어 */
 html.oai-hide-main-map-layer #map-wrap,
 html.oai-hide-main-map-layer #loc-btn,
 html.oai-hide-main-map-layer #legend,
@@ -2567,7 +2457,6 @@ html.oai-hide-main-map-layer #info-card,
 html.oai-hide-main-map-layer #srch-modal { visibility: hidden; pointer-events: none; }
 html.oai-hide-main-map-layer #app { background: #ede8e0; }
 
-/* 안정막 */
 html.oai-stability-veil { background: var(--v4-bg-cream) !important; }
 html.oai-stability-veil *, html.oai-external-return-freeze * { transition: none; animation: none; scroll-behavior: auto; }
 html.oai-stability-veil::before { content: ""; position: fixed; inset: 0; z-index: 2147483000; background: var(--v4-bg-cream); pointer-events: none; opacity: 1; animation: oaiStabilityVeilIn .12s ease-out both; }
@@ -2580,7 +2469,6 @@ html.oai-stability-veil::after { content: ""; position: fixed; left: 50%; top: 5
 html.oai-returning * { transition: none; animation: none; scroll-behavior: auto; }
 html.oai-cover-resizing #cover, html.oai-cover-resizing #cover * { transition: none; animation: none; }
 
-/* 진입 효과: 카테고리/문의는 0.7초 overlay dissolve, 팝업은 0.5초 fade. 지도형 3개는 제외한다. */
 #app.oai-enter-ready,
 #prayer-view.oai-enter-ready,
 #diocese-view.oai-enter-ready,
@@ -2624,12 +2512,10 @@ html.oai-returning .oai-popup-ready {
   .oai-popup-ready.oai-popup-show { opacity: 1 !important; transition: none !important; }
 }
 
-/* 내주변 preopen */
 .sheet.oai-preopen-nearby { transform: none; transition: none; animation: none; will-change: auto; }
 html.oai-category-entering #sheet-nearby.oai-preopen-nearby { z-index: 820; }
 #sheet-nearby.oai-preopen-nearby .sheet-body { background: var(--ui-bg); }
 
-/* swipe 오버레이 */
 #oai-swipe-overlay {
   position: fixed; top: 50%; z-index: 9500;
   transform: translateY(-50%); pointer-events: none;
@@ -2643,7 +2529,6 @@ html.oai-category-entering #sheet-nearby.oai-preopen-nearby { z-index: 820; }
 @keyframes oaiSwipeShow { 0%{opacity:0;transform:translateY(-50%) scale(.75);}35%{opacity:1;transform:translateY(-50%) scale(1.08);}100%{opacity:0;transform:translateY(-50%) scale(1);} }
 #oai-swipe-overlay.active { animation: oaiSwipeShow .38s ease forwards; }
 
-/* 당겨서 새로고침 */
 #cv-pull-modern {
   position: fixed;
   top: calc(50px + env(safe-area-inset-top, 0px));
@@ -2669,13 +2554,9 @@ html.oai-category-entering #sheet-nearby.oai-preopen-nearby { z-index: 820; }
 html.app-active #cv-pull-modern { opacity: 0; display: none; }
 @keyframes cv-pull-spin { from{transform:rotate(0)}to{transform:rotate(360deg)} }
 
-/* touch 피드백 */
 .app-pressing { transition: transform .16s, filter .16s; will-change: transform; }
 .cover-card.app-pressing, .cv-btn.app-pressing, .cv-extra-btn.app-pressing { transform: translateY(8px) scale(.974); filter: brightness(.94); transition: transform .16s, filter .16s; }
 
-/* ============================================================
-   9. iOS 밀도 보정
-   ============================================================ */
 html.ios-device #app .module-bar,
 html.ios-device #prayer-view .module-bar,
 html.ios-device #web-view .module-bar,
@@ -2699,7 +2580,7 @@ html.ios-device #diocese-view .module-bar-ico,
 html.ios-device #qna-view .module-bar-ico { width: 34px; height: 34px; }
 html.ios-device .module-close,
 html.ios-device #prayer-close { width: 40px; height: 40px; min-width: 40px; font-size: 28px; }
-/* iOS에서도 상부탭은 기본 --tab-h/--map-tab-* 기준을 그대로 사용한다. */
+
 html.ios-device #prayer-tabs,
 html.ios-device #web-view .web-cats,
 html.ios-device #trail-view .trail-tabs,
@@ -2762,11 +2643,6 @@ html.ios-device #app .ric-hd { padding: 12px 14px; gap: 9px; }
 html.ios-device #app .ric-icon { width: 33px; height: 33px; font-size: 17px; }
 html.ios-device #app .ric-body { padding: 6px 12px 8px; }
 
-
-
-
-
-
 html.ios-device .trail-card { border-radius: 18px; }
 html.ios-device .qna-tab { height: 36px; border-radius: 10px; }
 html.ios-device #app #nearby-sheet-title,
@@ -2795,9 +2671,6 @@ html.ios-device #trail-view .module-bar-sub,
 html.ios-device #qna-view .module-bar-sub,
 html.ios-device #diocese-view .module-bar-sub { font-size: calc(10.2px * var(--app-font-scale)); line-height: 1.18; }
 
-/* ============================================================
-   10. oai-font-global (글자크기 조절)
-   ============================================================ */
 html.oai-font-global .pr-title,
 html.oai-font-global .web-card-name,
 html.oai-font-global .trail-nm,
@@ -2854,13 +2727,11 @@ html.oai-font-global .lv-rg, html.oai-font-global .lv-det, html.oai-font-global 
 html.oai-font-global .c-gw, html.oai-font-global .c-rg, html.oai-font-global .c-lbl,
 html.oai-font-global .dd, html.oai-font-global .sg { font-size: calc(12px * var(--app-inner-font-scale)); line-height: 1.45; }
 
-/* 커버는 font-global 연동에서 제외 (별도 --app-font-scale만 사용) */
 html.oai-font-global #cover .cover-subtitle { font-size: 16px; }
 html.oai-font-global #cover .cover-name { font-size: calc(16px * var(--app-font-scale)); }
 html.oai-font-global #cover .cover-emoji { font-size: calc(40px * var(--app-font-scale)); background: transparent; box-shadow: none; }
 html.oai-font-global #prayer-bar-ttl, html.oai-font-global .module-bar-title { font-size: 20px; line-height: 1.24; }
 
-/* 지역검색 목록 폰트 연동 */
 html.oai-font-global #region-body .nearby-item,
 html.oai-font-global #region-body .region-place-cand { font-size: calc(17px * var(--app-inner-font-scale)); }
 html.oai-font-global #region-body .region-item .nearby-name,
@@ -2875,9 +2746,6 @@ html.oai-font-global #region-body .nearby-dist { font-size: calc(12px * var(--ap
 html.oai-font-global #region-body .region-list-hd,
 html.oai-font-global #region-body .dio-hd { font-size: calc(17px * var(--app-inner-font-scale)); line-height: 1.35; font-weight: 900; }
 
-/* ============================================================
-   11. 반응형
-   ============================================================ */
 @media (max-width: 380px) {
   #cover-main-block { max-width: calc(100vw - 20px); }
 }
@@ -2933,14 +2801,10 @@ html.oai-font-global #region-body .dio-hd { font-size: calc(17px * var(--app-inn
   #sm-tab-bar { height: 60px; }
 }
 
-/* ============================================================
-   12. 유틸리티
-   ============================================================ */
 .sr-only { position: absolute; width: 1px !important; height: 1px !important; padding: 0 !important; margin: -1px !important; overflow: hidden !important; clip: rect(0,0,0,0) !important; white-space: nowrap; border: 0 !important; }
 .lv-parish-count, .oai-parish-count { font-size: calc(8px * var(--app-inner-font-scale)); font-weight: 400; letter-spacing: 0; white-space: nowrap; gap: 0; }
 .oai-parish-count-line { font-weight: 500; letter-spacing: 0; }
 
-/* scroll-margin for tab snap */
 #prayer-tabs .pr-tab,
 #web-view .web-cats .web-cat-btn,
 .trail-tabs .trail-tab,
@@ -2948,12 +2812,8 @@ html.oai-font-global #region-body .dio-hd { font-size: calc(17px * var(--app-inn
 #srch-modal #sm-tab-bar .sm-tab,
 #tabbar .tab-btn { scroll-margin-inline: 18px; }
 
-/* 터치 피드백 없애기 */
 html:not(.app-active), html:not(.app-active) body { scroll-behavior: auto; }
 
-/* ============================================================
-   13. 커버 컴포넌트 (cv-*) & 기타 기준
-   ============================================================ */
 .cv-title em{color:#e1ba7a;text-shadow:0 8px 24px rgba(212,170,106,.22)}
 .cv-sub{margin:6px 0 0;max-width:420px;font-size:13px;line-height:1.4;color:#667085;letter-spacing:.02em}
 .cv-chip-row{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:14px 0 0}
@@ -2973,7 +2833,6 @@ html:not(.app-active), html:not(.app-active) body { scroll-behavior: auto; }
 .web-cats,.trail-tabs{padding:9px 14px!important;background:rgba(255,255,255,.88);backdrop-filter:none!important;border-bottom:1px solid #e8ecf3;min-height:var(--mod-tabbar-h)!important;align-items:center!important;height:var(--mod-tabbar-h)!important;max-height:var(--mod-tabbar-h)!important;display:flex!important;box-sizing:border-box;flex-shrink:0;-webkit-backdrop-filter:none!important}
 .web-list,#trail-list{padding:14px 14px calc(86px + env(safe-area-inset-bottom,0))}
 
-
 .cv-bg,.cv-stars,.cv-wave,.cv-arches,.cv-chip-row,.cv-section-hd,.cv-hero-note,.cv-orn,.cv-div{display:none}
 .cv-orbit{position:absolute;border-radius:999px;filter:blur(2px);opacity:.55;pointer-events:none}
 .cv-orbit-a{width:280px;height:280px;top:-120px;right:-80px;background:radial-gradient(circle,rgba(53,99,255,.18) 0%,rgba(53,99,255,0) 68%)}
@@ -2990,9 +2849,8 @@ html:not(.app-active), html:not(.app-active) body { scroll-behavior: auto; }
 @media (max-width:420px){.cv-shell{padding-left:14px;padding-right:14px;gap:14px}.cv-title{font-size:25px}.cv-grid{gap:8px}.cv-btn{min-height:98px;padding:12px 9px 11px;border-radius:20px}.cv-btn-icon,.cv-btn-badge{width:40px;height:40px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--v4-surface-white);background:transparent!important;background-color:transparent!important;box-shadow:none!important;border:none!important}.cv-btn-label{font-size:12px}.cv-btn-meta{font-size:10px}}
 .web-cat-btn,.trail-tab{border-radius:14px;border:1px solid #e2e7f1;background:#f7f9fd;color:#657086;box-shadow:inset 0 1px 0 rgba(255,255,255,.7);font-weight:800}
 
-
 #cover::before,#cover::after,.cv-orbit,.cv-orbit-a,.cv-orbit-b{display:none;content:none}
-/* .cv-shell-stage 공통 기준은 한 곳만 유지하고, 미디어쿼리는 폭/간격 차이만 남긴다. */
+
 .cv-shell-stage{position:relative;z-index:2;display:flex;flex-direction:column;justify-content:flex-start;align-items:center;gap:10px;width:min(100%,560px);height:var(--cover-h);min-height:var(--cover-h);padding:calc(env(safe-area-inset-top,0) + 9vh) 0 calc(9vh + env(safe-area-inset-bottom,0));margin:0 auto;box-sizing:border-box}
 .cv-stage{position:relative;align-self:center;width:min(100%,calc((var(--cover-h) - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px) - 124px) * .5625));aspect-ratio:9 / 16;min-height:0}
 .cv-stage-art{display:block;width:100%;height:100%;object-fit:contain;border-radius:22px;box-shadow:0 12px 30px rgba(140,112,71,.16);user-select:none;-webkit-user-drag:none;pointer-events:none}
@@ -3040,8 +2898,6 @@ html.retreat-mode .sheet-body,html.retreat-mode #list-body,html.retreat-mode #ne
 html.parish-mode .srch-bar,html.parish-mode .filter-bar,html.parish-mode .sheet-hd,html.parish-mode .region-wrap{background:linear-gradient(135deg,#374151,var(--v4-parish-gray))!important}
 html.retreat-mode .srch-bar,html.retreat-mode .filter-bar,html.retreat-mode .sheet-hd,html.retreat-mode .region-wrap{background:linear-gradient(135deg,var(--v4-retreat-green),#4F846C)!important}
 
-
-
 .list-item,.nearby-item,.region-item{margin:0 10px 6px;padding:12px 14px!important;border:1px solid #e8edf5!important;border-radius:13px!important;background:var(--v4-surface-white)!important;box-shadow:0 2px 8px rgba(14,21,53,.06)!important;display:flex!important;align-items:center!important;gap:12px!important;transition:transform .12s,box-shadow .12s;min-height:72px!important;box-sizing:border-box}
 .li-info,.nearby-info{flex:1;min-width:0}
 html.parish-mode .nearby-dist{color:var(--v4-parish-gray)!important}
@@ -3054,7 +2910,6 @@ html.retreat-mode .li-badge{background:#DDECE5!important;color:var(--v4-retreat-
 html.retreat-mode .nearby-type{background:#DDECE5!important;color:var(--v4-retreat-green)!important}
 html.retreat-mode .dio-hd{color:var(--v4-retreat-green)!important;background:#F6FBF8!important}
 
-
 html.retreat-mode .nearby-num{background:#4F846C!important;color:var(--v4-surface-paper)!important}
 html.retreat-mode .region-item .nearby-num{background:#4F846C!important}
 html.retreat-mode .filter-btn.active{background:#4F846C!important;color:var(--v4-surface-white)!important;border-color:#4F846C!important}
@@ -3063,14 +2918,12 @@ html.retreat-mode .sm-fb.on{background:var(--gold)!important;color:var(--navy)!i
 html:not(.parish-mode):not(.retreat-mode) .sm-tab.active{background:linear-gradient(135deg,var(--shrine-main),var(--shrine-main-2))!important;color:var(--v4-surface-paper)!important;border-color:transparent!important}
 html.retreat-mode #list-body .li-name{color:var(--v4-text-strong)!important}
 
-
-/* ===== /OAI ===== */
 .nearby-name,.li-name,.sm-name,.sm-place-name{font-size:16px;font-weight:800;line-height:1.35;letter-spacing:-.03em;white-space:normal;overflow:visible;word-break:keep-all}
 .nearby-addr,.li-sub,.sm-sub,.sm-place-addr{font-size:13px;line-height:1.45;letter-spacing:-.02em;white-space:normal;overflow:visible;word-break:keep-all}
 .ic-sub,.ic-type-badge,.ic-addr-lbl{font-size:12px!important}
 .ic-tel-btn,.ic-route-btn,.ic-link-btn,.btn-kakao-nav{font-size:16px!important}
 #sm-tab-bar{display:flex;gap:10px;padding:10px 12px;height:55px;align-items:center;background:#f5efe5;border-bottom:1px solid var(--ui-line);box-sizing:border-box}
-/* 일반 sm-tab-bar (srch-modal 밖) 배경 */
+
 @media (min-width:600px){.sm-tab{font-size:16px!important}#sm-tab-bar{height:60px!important}}
 html:not(.parish-mode):not(.retreat-mode) #tabbar,html.parish-mode #tabbar,html.retreat-mode #tabbar{background:rgba(255,255,255,.96)!important;border-bottom:1px solid #d8dee6!important}
 .tab-btn .tab-icon{color:inherit!important}
@@ -3086,18 +2939,17 @@ html.retreat-mode .filter-btn.active,html.retreat-mode .sm-fb.on{background:#4F8
 html.parish-mode #tabbar .tab-btn.active{background:linear-gradient(135deg,#374151,var(--v4-parish-gray))!important;color:var(--v4-surface-white)!important;border-color:transparent!important}
 html.retreat-mode #tabbar .tab-btn.active{background:linear-gradient(135deg,var(--v4-retreat-green),#4F846C)!important;color:var(--v4-surface-white)!important;border-color:transparent!important}
 
-/* sm-tab-bar 레이아웃은 상단에서 정의됨 */
 html.retreat-mode .region-list-hd,html.retreat-mode .ric-lbl,html.retreat-mode .dio-hd,html.retreat-mode .li-name,html.retreat-mode .nearby-name,html.retreat-mode .nearby-dist{color:var(--v4-retreat-green)!important}
 html.retreat-mode #sheet-nearby #nearby-body .nearby-item .nearby-info>.nearby-name{color:var(--v4-text-strong)!important}
 html.retreat-mode .li-badge,html.retreat-mode .nearby-type,html.retreat-mode .ic-type-badge{background:var(--retreat-soft)!important;color:var(--v4-retreat-green)!important}
-/* 지역검색 리스트 제목 글자 = 내주변 리스트 제목 글자, 전역 글자크기와 연동 */
+
 html.oai-font-global #region-body .nearby-name,
 html.oai-font-global #region-body .li-name,
 html.oai-font-global #region-body .region-item .nearby-name{font-size:calc(16px * var(--app-inner-font-scale,1))!important;font-weight:700!important;line-height:1.3!important}
 html.oai-font-global #region-body .nearby-addr,
 html.oai-font-global #region-body .li-sub,
 html.oai-font-global #region-body .region-item .nearby-addr{font-size:calc(12px * var(--app-inner-font-scale,1))!important}
-/* 관구교구 iframe 내부에 주입될 수 없을 때를 대비한 부모 쪽 기본값 */
+
 #web-view.module-view.open,#trail-view.module-view.open,#qna-view.module-view.open{position:fixed;inset:0;width:100vw!important;height:auto!important;min-height:0!important;max-width:none!important;max-height:none!important;display:flex!important;align-items:stretch!important;justify-content:flex-start;overflow:hidden!important;z-index:1800;flex-direction:column}
 #web-view .module-bar,#trail-view .module-bar,#qna-view .module-bar,#web-view .web-body,#trail-view .trail-body,#qna-view .qna-body{width:100%;max-width:none!important}
 #web-view .web-body,#trail-view .trail-body,#qna-view .qna-body{flex:1 1 auto!important;min-height:0!important;height:auto!important;overflow:hidden!important}
@@ -3117,19 +2969,11 @@ html.oai-font-global .filter-btn,html.oai-font-global .region-search-btn,html.oa
 html.oai-font-global .ic-name{font-size:calc(17px * var(--app-inner-font-scale,1))!important}
 html.oai-font-global .ic-addr-val,html.oai-font-global .ic-link-btn,html.oai-font-global .ic-route-btn,html.oai-font-global .ic-tel-btn,html.oai-font-global .btn-kakao-nav,html.oai-font-global .btn-kakao-route,html.oai-font-global .btn-route-reset{font-size:calc(14px * var(--app-inner-font-scale,1))!important}
 
-
 html.oai-font-global .trail-nm,html.oai-font-global .trail-sh-name{font-size:calc(16px * var(--app-inner-font-scale,1))!important}
 html.oai-font-global .trail-reg,html.oai-font-global .trail-url,html.oai-font-global .trail-sh-sub,html.oai-font-global .trail-sh-url{font-size:calc(12px * var(--app-inner-font-scale,1))!important}
 .lv-parish-count,.oai-parish-count{font-size:calc(8px * var(--app-inner-font-scale,1))!important;font-weight:400!important;letter-spacing:0;white-space:nowrap;gap:0!important}
 .lv-parish-count b,.oai-parish-count b{font-weight:400!important;margin:0!important}
-/* ============================================================
-   OAI 표준화: 주요기도문·웹사이트·순례길·관구교구 공통 규격
-   - 기능/데이터/색상 변경 없음
-   - 높이, 제목/서브 글자, 탭/버튼 높이와 디자인만 통일
-   ============================================================ */
-/* ============================================================
-   14. 기타 누락 블록
-   ============================================================ */
+
 @keyframes pwa-install-bounce {
   0%,100% { transform: translate(-50%,-50%); box-shadow: 0 0 0 100vmax rgba(244,239,228,.34), 0 6px 0 rgba(180,80,0,.35), 0 12px 32px rgba(255,107,53,.55), 0 4px 12px rgba(255,107,53,.30); }
   45%      { transform: translate(-50%,calc(-50% - 5px)); box-shadow: 0 0 0 100vmax rgba(244,239,228,.34), 0 11px 0 rgba(180,80,0,.20), 0 20px 44px rgba(255,107,53,.65), 0 8px 18px rgba(255,107,53,.34); }
@@ -3151,14 +2995,9 @@ html.oai-font-global .trail-reg,html.oai-font-global .trail-url,html.oai-font-gl
 .oai-swipe-left::after,.oai-swipe-right::after,
 .oai-prepaint-view{visibility:hidden!important;opacity:1!important;transform:none!important;transition:none!important}
 html.ios-device #app #sheet-list .sheet-hd { bottom: 0; }
-/* 키보드 오픈 시 sheet 위치 기준 */
+
 html.kb-open .sheet.open { bottom: 0; }
 
-/* ============================================================
-   CSS 정리: 성당·피정의집 색상/목록/검색탭 최종 규칙 통합
-   - 중복 보정 블록을 한 곳으로 합침
-   - 성지 고유색, JS, 뒤로가기, 보호창, 지도 로직 변경 없음
-   ============================================================ */
 :root{
   --cathedral-category-final:#3F4752;
   --cathedral-category-dark:#2F3742;
@@ -3170,7 +3009,6 @@ html.kb-open .sheet.open { bottom: 0; }
   --retreat-list-dot-final:#c0392b;
 }
 
-/* 첫 카테고리 진입 때 보이는 로딩/빈 배경은 아이보리로 유지 */
 #app,
 #map-wrap,
 .map-loading{
@@ -3179,14 +3017,12 @@ html.kb-open .sheet.open { bottom: 0; }
 .map-loading-txt{color:var(--v4-text-muted)!important;}
 .map-loading-icon{color:var(--gold,var(--v4-gold))!important;}
 
-/* 성지 상단 탭 활성색은 성지 카테고리 네이비 기준 */
 html:not(.parish-mode):not(.retreat-mode) #tabbar .tab-btn.active{
   background:linear-gradient(135deg,var(--shrine-main,var(--v4-header-navy)),var(--shrine-main-2,#2d3a5f))!important;
   color:var(--v4-surface-white)!important;
   border-color:transparent!important;
 }
 
-/* 성당 카테고리 최종 색상 */
 html.parish-mode{
   --parish-bg:var(--cathedral-category-final);
   --parish-active:var(--cathedral-category-dark);
@@ -3235,7 +3071,6 @@ html.parish-mode .ic-type-badge{
   color:var(--cathedral-category-final)!important;
 }
 
-/* 피정의집 카테고리 최종 색상 */
 html.retreat-mode{
   --retreat-bg:var(--retreat-category-final);
   --retreat-primary:var(--retreat-category-final);
@@ -3291,7 +3126,6 @@ html.retreat-mode .ic-type-badge{
   color:var(--retreat-category-final)!important;
 }
 
-/* X와 같은 줄 제목은 성지·성당·피정의집 모두 흰색 유지 */
 #app .sheet-hd .sheet-title,
 #app #sheet-nearby .sheet-title,
 #app #sheet-list .sheet-title,
@@ -3301,7 +3135,6 @@ html.retreat-mode .ic-type-badge{
   color:var(--v4-surface-white)!important;
 }
 
-/* 출발/도착 검색 탭바는 흰색 배경, 활성 탭만 카테고리색 */
 html.parish-mode #srch-modal #sm-tab-bar,
 html.retreat-mode #srch-modal #sm-tab-bar{
   background:var(--v4-surface-white)!important;
@@ -3326,7 +3159,6 @@ html.retreat-mode #srch-modal #sm-tab-bar .sm-tab.active{
   border-color:transparent!important;
 }
 
-/* 교구/필터 선택 활성색은 금색 유지 */
 .filter-btn.active,
 .sm-fb.on,
 html.parish-mode .filter-btn.active,
@@ -3338,7 +3170,6 @@ html.retreat-mode .sm-fb.on{
   border-color:var(--gold2,#b8965a)!important;
 }
 
-/* 모든 목록/검색 결과 이름은 검정 유지 */
 #app .li-name,
 #app .nearby-name,
 #app #region-body .li-name,
@@ -3358,7 +3189,6 @@ html.retreat-mode .sm-fb.on{
   color:var(--v4-text-muted)!important;
 }
 
-/* 인포카드 텍스트 크기 최종값 유지 */
 #app #info-card .ic-name{
   font-size:17px!important;
   line-height:1.35!important;
@@ -3385,7 +3215,6 @@ html.retreat-mode .sm-fb.on{
   font-size:17px!important;
 }
 
-/* 하단 버전 배지는 내부 비교용으로만 유지하고 화면에서는 숨김 */
 #cover #oai-build-marker {
   display: none !important;
   visibility: hidden !important;
@@ -3393,10 +3222,6 @@ html.retreat-mode .sm-fb.on{
   pointer-events: none !important;
 }
 
-/* iPhone/PWA 전체 viewport 높이 안정화
-   - 상태바 아이보리 색은 유지
-   - iOS에서 작게 잡힌 viewport 값 때문에 기도문/목록/관구교구 지도 아래에 빈 공간이 생기는 현상을 줄인다.
-   - Android 레이아웃에는 적용하지 않는다. */
 html.ios-device,
 html.ios-device body {
   min-height: var(--oai-app-h, 100dvh);
@@ -3407,7 +3232,7 @@ html.ios-device .module-view.open {
   min-height: var(--oai-app-h, 100dvh) !important;
   max-height: var(--oai-app-h, 100dvh) !important;
 }
-/* iOS 커버 높이는 기본 #cover의 --cover-h 기준을 사용한다. */
+
 html.ios-device #diocese-view.open #diocese-frame {
   flex: 1 1 auto !important;
   min-height: 0 !important;
@@ -3421,10 +3246,6 @@ html.ios-device #qna-view.open {
   overflow: hidden !important;
 }
 
-
-/* 내부 로딩 표시 기준
-   - 지도/카테고리/외부복귀/새로고침 보호막의 로딩 표시를 같은 위치·속도로 맞춘다.
-   - transform translate와 회전 애니메이션이 충돌하지 않도록 margin 중심 정렬을 사용한다. */
 .map-loading-icon {
   color: var(--gold, var(--v4-gold)) !important;
   font-size: 36px !important;
@@ -3465,9 +3286,6 @@ html.oai-external-return-freeze::after {
   background: var(--bg-unified, var(--v4-bg-cream)) !important;
 }
 
-
-/* 관구·교구 / 문의 이동 로딩 표시 기준
-   - diocese-loading의 기존 missa-spinner와 보호막 로딩 표시를 같은 기준으로 맞춘다. */
 #diocese-loading .missa-spinner {
   width: 42px !important;
   height: 42px !important;
@@ -3494,8 +3312,7 @@ html.oai-external-return-freeze::after {
   color: var(--v4-text-muted) !important;
   font-weight: 600 !important;
 }
-/* 로딩 회전 애니메이션 기준
-   - transform:none !important가 keyframe transform을 막지 않도록 별도 키프레임을 사용한다. */
+
 @keyframes oaiLoadingCrossSpin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
@@ -3512,9 +3329,6 @@ html.oai-external-return-freeze::after {
   transform-origin: 50% 50% !important;
 }
 
-
-/* 짧은 화면 전환에서는 로딩 표시를 지연 노출한다.
-   - 짧은 카테고리 진입/복귀에서는 어지럽지 않게 숨기고, 로딩이 길어질 때만 표시한다. */
 @keyframes oaiLoadingCrossDelayedReveal {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -3533,9 +3347,6 @@ html.oai-external-return-freeze::after {
   animation-fill-mode: none, forwards !important;
 }
 
-
-/* 새로고침 / 외부 페이지 복귀 때는 로딩 표시를 즉시 노출한다.
-   - 짧은 카테고리 진입은 지연 표시를 유지한다. */
 html.oai-stability-veil[data-oai-stability-reason*="refresh"]::after,
 html.oai-stability-veil[data-oai-stability-reason*="reload"]::after,
 html.oai-stability-veil[data-oai-stability-reason*="background"]::after,
@@ -3551,8 +3362,6 @@ html.oai-external-return-freeze::after {
   animation-fill-mode: none !important;
 }
 
-
-/* 첫 스플래시/로딩 보호막은 중립 로딩 원으로 표시 */
 html.oai-first-entry-intro::before {
   content: "" !important;
   display: none !important;
@@ -3612,8 +3421,6 @@ html.oai-external-return-freeze::after {
   to { transform: rotate(360deg); }
 }
 
-
-/* 남아 있는 텍스트형 로더가 다시 보이지 않도록 원형 로딩 기준을 마지막에 고정한다. */
 .map-loading-icon,
 #diocese-loading .missa-spinner,
 #oai-category-entry-veil::after,
@@ -3643,8 +3450,6 @@ html.oai-external-return-freeze::after {
   display: none !important;
 }
 
-
-/* 시작·전환 보호막에서 텍스트형 로더가 다시 보이지 않도록 차단한다. */
 html.oai-stability-veil::after,
 html.oai-external-return-freeze::after,
 #oai-category-entry-veil::after,
@@ -3654,8 +3459,6 @@ html.oai-first-entry-intro::before {
   text-shadow: none !important;
 }
 
-
-/* 첫 진입의 별도 십자가 사진/금색 십자가 효과를 차단한다. */
 html.oai-first-entry-intro::before,
 html.oai-first-entry-intro::after,
 html.oai-cover-first-reveal #cover > * {
@@ -3668,11 +3471,6 @@ html.oai-cover-first-reveal #cover > * {
   transition: none !important;
 }
 
-/* 기도문 외부 이동 안내 / 길찾기 선택 오버레이 CSS는 css/overlays.css에서 관리한다. */
-
-
-
-/* 교구 미설정 시 커버 안내 배너 */
 #cover .my-diocese-setup-banner {
   display: none !important;
   position: absolute !important;
@@ -3763,8 +3561,6 @@ html.oai-cover-first-reveal #cover > * {
   #cover .my-diocese-setup-banner span { font-size: calc(15.2px * var(--app-font-scale, 1)) !important; }
 }
 
-
-/* 나의 교구 우선 표시 */
 .filter-btn.my-diocese-filter,
 .sm-fb.my-diocese-filter {
   border-color: var(--v4-brown) !important;
@@ -3839,8 +3635,6 @@ html.oai-cover-first-reveal #cover > * {
   vertical-align: 1px;
 }
 
-
-/* 성당 목록 상단 빈 영역 + 관구·교구 검색 카드 기준 */
 html.parish-mode #list-body{
   padding-top:0 !important;
 }
@@ -3870,8 +3664,6 @@ html.parish-mode #list-body .dio-hd:first-child{
   min-height:42px !important;
 }
 
-
-/* 성지/피정의집/성당 목록 상단 공백 기준 */
 #list-body{
   padding-top:0 !important;
 }
@@ -3883,21 +3675,15 @@ html.parish-mode #list-body .dio-hd:first-child{
   margin-top:0 !important;
 }
 
-
-/* 관구·교구 iframe/검색 카드 잘림 방지 */
 #diocese-frame{
   overflow:hidden!important;
 }
 
-
-/* 관구·교구 iframe 오른쪽 테두리 잘림 방지 */
 #diocese-frame{
   width:100%!important;
   max-width:100%!important;
   box-sizing:border-box!important;
 }
-
-
 
 html.oai-font-global #app .sheet-hd .sheet-title,
 html.oai-font-global #sheet-nearby .sheet-title,
@@ -3941,10 +3727,6 @@ html.oai-font-global #prayer-bar-ico{
   min-width:42px!important;
 }
 
-
-/* 상부탭 크기 기준은 3.레이아웃 #tabbar/.tab-btn 한 곳에서만 관리한다. */
-
-/* CSS로 그리는 십자가 헤더는 실제 텍스트 십자가를 다시 숨겨 중복 표시를 막는다 */
 html.oai-font-global #web-view .module-bar-ico,
 html.oai-font-global #trail-view .module-bar-ico,
 html.oai-font-global #qna-view .module-bar-ico,
@@ -3969,7 +3751,6 @@ html.oai-font-global #diocese-view .module-bar-ico::after{
   height:3px!important;
 }
 
-/* 카테고리 내부 헤더 제목/아이콘은 글자 크기 조절과 분리 */
 html.oai-font-global #app .sheet-hd .sheet-title,
 html.oai-font-global #srch-modal .sm-hd .sm-title,
 html.oai-font-global #missa-bar-title,
@@ -3988,6 +3769,3 @@ html.oai-font-global #srch-modal .sm-hd .sm-title{
   font-size:18px!important;
 }
 
-/* 웹사이트·순례길·주요기도문 탭바 기준은 css/module-common.css와 각 기능 CSS에서 관리한다. */
-
-/* 상부탭 기준값은 :root와 기본 #tabbar/.tab-btn 규칙에서 관리 */

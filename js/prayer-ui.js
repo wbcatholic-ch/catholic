@@ -1,5 +1,3 @@
-/* prayer-ui.js — 기도문 UI 보조 모듈
-   기도문 목록/탭 표시 보조만 담당합니다. */
 
 (function(){
   'use strict';
@@ -9,8 +7,6 @@
   function el(id){ return document.getElementById(id); }
   function blurActive(){ try{ var a=document.activeElement; if(a && /INPUT|TEXTAREA|SELECT/.test(a.tagName)) a.blur(); }catch(_){ console.warn("[가톨릭길동무] silent catch"); } }
 
-  /* 통합 뒤로가기 컨트롤러가 기도문을 처리하므로, 여기서는 목록 초기화만 담당한다.
-     기도문 전용 history.pushState / 별도 popstate / 별도 backbutton은 사용하지 않는다. */
   function showPrayerListOnly(){
     blurActive();
     var d=el('prayer-detail');
@@ -21,9 +17,6 @@
   }
   try{ window.showPrayerListOnly = showPrayerListOnly; }catch(_){ console.warn("[가톨릭길동무] silent catch"); }
 })();
-
-
-
 
 (function(){
   if(window.__APP_PRAYER_SYNC_GUARD__) return;
@@ -54,12 +47,9 @@
   }, true);
   document.addEventListener('DOMContentLoaded', function(){ setTimeout(syncPrayerTabOn, 300); });
   window.addEventListener('load', function(){ setTimeout(syncPrayerTabOn, 300); });
-  // setInterval → MutationObserver: prayer-view의 class 변화(open/close)시에만 실행
-  // 기존 500ms 폴링은 앱 수명 동안 영구 실행되어 불필요한 CPU 낭비였음
   (function(){
     var pv = document.getElementById('prayer-view');
     if(!pv){
-      // DOM 준비 전이면 DOMContentLoaded 후 재시도
       document.addEventListener('DOMContentLoaded', function(){
         var el = document.getElementById('prayer-view');
         if(el) new MutationObserver(function(){

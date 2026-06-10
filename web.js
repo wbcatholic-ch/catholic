@@ -1,11 +1,7 @@
-/* web.js — 가톨릭 웹사이트 목록 모듈
-   카테고리별 사이트 목록, 즐겨찾기, 렌더링
-   원본 index.html Block C 앞부분에서 분리 */
 
 (function(){
   const WEB_SITES = [
 
-  /* 교구별 사제찾기 */
   {cat:"사제찾기", ico:"✝", name:"서울대교구 사제찾기",
    op:"서울대교구", prov:"서울관구", url:"https://aos.catholic.or.kr/pro10315",
    desc:"교구 사제 검색 바로가기"},
@@ -55,7 +51,6 @@
    op:"군종교구", prov:"군종교구", url:"https://www.gunjong.or.kr/organization/index.asp?SearchArmyCd=",
    desc:"교구 사제 검색 바로가기"},
 
-  /* 공식 중앙기구 */
   {cat:"중앙기구", ico:"🏛️", name:"한국천주교주교회의 (CBCK)",
    op:"한국천주교주교회의", url:"https://cbck.or.kr",
    desc:"한국 천주교 공식 문헌·교리·전례·교회법·발표 자료 제공"},
@@ -63,7 +58,6 @@
    op:"한국천주교주교회의", url:"https://cbck.or.kr/koreanmartyrs",
    desc:"한국 순교자·성지·교회사 관련 자료 제공"},
 
-  /* 신앙 포털 */
   {cat:"신앙 포털", ico:"✝️", name:"서울대교구 굿뉴스",
    op:"천주교 서울대교구", url:"https://www.catholic.or.kr",
    desc:"매일미사·성경·성인·기도문·전례력·신앙자료 제공"},
@@ -86,7 +80,6 @@
    op:"서울대교구 굿뉴스", url:"https://maria.catholic.or.kr/mobile/ccm/main.asp",
    desc:"생활성가와 CCM 자료 제공"},
 
-  /* 미디어/방송 */
   {cat:"미디어", ico:"📺", name:"cpbc 가톨릭평화방송",
    op:"가톨릭평화방송", url:"https://www.cpbc.co.kr",
    desc:"매일미사·강론·라디오·영상·신앙 프로그램 제공"},
@@ -100,7 +93,6 @@
    op:"바티칸 공식 미디어", url:"https://www.vaticannews.va/ko.html",
    desc:"교황청 공식 뉴스·교회 전 세계 소식 한국어 서비스"},
 
-  /* 뉴스 */
   {cat:"뉴스", ico:"📰", name:"가톨릭신문",
    op:"가톨릭신문사", url:"https://www.catholictimes.org",
    desc:"교회 뉴스·사목·교구 소식·인터뷰·사회 이슈 기사 제공"},
@@ -108,7 +100,6 @@
    op:"cpbc", url:"https://news.cpbc.co.kr",
    desc:"가톨릭 뉴스·인물 기사·사목 기사 제공"},
 
-  /* 출판/교육 */
   {cat:"출판·교육", ico:"📚", name:"가톨릭출판사",
    op:"가톨릭출판사", url:"https://www.catholicbook.kr",
    desc:"교리·영성·교육용 도서 및 신앙서적 제공"},
@@ -116,7 +107,6 @@
    op:"성바오로딸수도회", url:"https://www.pauline.or.kr",
    desc:"묵상·영성·생활 신앙 콘텐츠 제공"},
 
-  /* 교구 - 서울관구 */
   {cat:"교구", ico:"⛪", prov:"서울관구", name:"서울대교구",
    op:"천주교 서울대교구", url:"https://aos.catholic.or.kr",
    desc:"교구 공지·교육·사목 자료·기관 정보 제공"},
@@ -138,7 +128,6 @@
   {cat:"교구", ico:"⛪", prov:"서울관구", name:"대전교구",
    op:"천주교 대전교구", url:"https://www.djcatholic.or.kr/home/",
    desc:"교구 행사·교육·공지·사목 자료 제공"},
-  /* 교구 - 대구관구 */
   {cat:"교구", ico:"⛪", prov:"대구관구", name:"대구대교구",
    op:"천주교 대구대교구", url:"https://www.daegu-archdiocese.or.kr/",
    desc:"교구 소식·본당·기관 정보·행사 안내 제공"},
@@ -154,7 +143,6 @@
   {cat:"교구", ico:"⛪", prov:"대구관구", name:"마산교구",
    op:"천주교 마산교구", url:"https://cathms.kr/",
    desc:"교구 공지·기관 정보·교육 자료 제공"},
-  /* 교구 - 광주관구 */
   {cat:"교구", ico:"⛪", prov:"광주관구", name:"광주대교구",
    op:"천주교 광주대교구", url:"https://www.gjcatholic.or.kr/",
    desc:"교구 공지·사목 자료·기관 안내 제공"},
@@ -187,7 +175,6 @@
     "출판·교육":"#7A5230",
     "교구":"#4A6A4A"
   };
-  // 관구별 배지 색상
   const WEB_PROV_COLORS = {
     "서울관구":"#2563EB",
     "대구관구":"#B7791F",
@@ -226,7 +213,6 @@
       rebuildWebCats();
       return;
     }
-    // ⭐ 탭 상태 업데이트
     var favBtn = document.getElementById('web-cat_⭐ 즐겨찾기');
     if(favBtn){ favBtn.innerHTML = '⭐ 즐겨찾기'; }
   }
@@ -320,9 +306,6 @@
   function saveReturnState(state){
     try{ sessionStorage.setItem(RETURN_KEY, JSON.stringify(state)); }catch(e){ console.warn("[가톨릭길동무]", e); }
   }
-  // 외부 URL 이동 함수들의 공통 전처리:
-  //   1) normalizeCatholicExternalUrl 호출  2) 빈 URL이면 null 반환
-  // openExternalUrl이 IIFE 안에 있으므로 헬퍼도 IIFE 안에 선언해 전역 누출을 방지한다.
   function prepareExternalUrl(url){
     url = (typeof normalizeCatholicExternalUrl === 'function')
           ? normalizeCatholicExternalUrl(url)
@@ -333,7 +316,6 @@
     url = prepareExternalUrl(url);
     if(!url) return;
 
-    // 웹사이트는 기존처럼 자연 복귀, 순례길은 현재 탭/목록 위치만 저장하고 덮개 없이 이동한다.
     if(state && state.module === 'trail'){
       try{
         state.view = trailState.view || state.view || 'map';
@@ -380,7 +362,6 @@
   window.openWebView = function(opts){
     const restore = !!(opts && opts.restore);
     if(!restore){
-      // 가톨릭 정보는 즐겨찾기가 있으면 즐겨찾기, 없으면 사제찾기 탭에서 시작
       resetWebTransientState();
       webState.curCat = webDefaultCat();
       const list = ig$('web-list');
@@ -392,7 +373,6 @@
       const cats = ig$('web-cats');
       if(cats) cats.scrollLeft = 0;
     }
-    // restore 시: curCat 유지 (restoreIntegratedState에서 setWebCat 호출)
     enterIntegratedView('web-view');
     initWebModule();
     scheduleWebCatSync(webState.curCat || webDefaultCat());
@@ -437,13 +417,10 @@
     if(!state || !state.module) return;
 
     if(state.module === 'web'){
-      // 웹사이트 화면은 브라우저가 돌아온 화면을 그대로 복원하게 둔다.
-      // 여기서 openWebView/renderWebList를 다시 호출하면 복귀 순간 배경 지도와 목록이 겹쳐 보인다.
       return;
     }
 
     if(state.module === 'trail'){
-      // 순례길은 이미 열린 화면을 유지한 채 스크롤/지도 중심만 조용히 복원한다.
       try{
         if(!ig$('trail-view')?.classList.contains('open')) enterIntegratedView('trail-view');
         trailState.view = state.view || trailState.view || 'map';
@@ -468,8 +445,6 @@
   }
 
   window.addEventListener('pageshow', function(ev){
-    // 웹사이트처럼 bfcache로 복귀한 순례길 화면은 그대로 둔다.
-    // 복귀 직후 initTrailModule/trailSetView를 다시 실행하면 목록·지도·시트가 한 번씩 재배치되어 크게 흔들린다.
     try{
       if(ev && ev.persisted && ig$('trail-view') && ig$('trail-view').classList.contains('open')){
         sessionStorage.removeItem(RETURN_KEY);
@@ -480,7 +455,6 @@
   });
 
   function resetWebTransientState(){
-    // 웹사이트 카테고리 버튼을 누를 때 남아 있던 검색/스크롤/복귀 상태를 깨끗하게 초기화
     try{ sessionStorage.removeItem(RETURN_KEY); }catch(e){ console.warn("[가톨릭길동무]", e); }
     try{ document.activeElement && document.activeElement.blur && document.activeElement.blur(); }catch(e){ console.warn("[가톨릭길동무]", e); }
     const list = ig$('web-list');
@@ -554,7 +528,6 @@
       const active = name===webState.curCat;
       btn.classList.toggle('on', active);
       btn.setAttribute('aria-pressed', active ? 'true' : 'false');
-      // 인라인 스타일 완전 제거 - CSS data-cat-color 속성으로 처리
       btn.style.background = '';
       btn.style.color = '';
       btn.style.borderColor = '';
@@ -584,10 +557,8 @@
   }
 
   function setWebCat(cat){
-    // 모든 웹사이트 카테고리 버튼 클릭은 이전 스크롤/검색/복귀 상태를 리셋
     resetWebTransientState();
     const nextCat = cat || webDefaultCat();
-    // 주요기도문(prSwitchCat)처럼 먼저 활성색을 즉시 바꾸고, 같은 타이밍에 탭을 가운데로 이동
     applyWebCatState(nextCat);
     keepWebActiveCatVisible(nextCat, 'smooth');
     renderWebList();
@@ -597,7 +568,6 @@
       list.scrollTop = 0;
       list.style.scrollBehavior = '';
     }
-    // 렌더 후에도 활성 탭만 다시 확인하되, 진행 중인 부드러운 이동을 끊지 않음
     requestAnimationFrame(function(){ applyWebCatState(nextCat); });
   }
   window.setWebCat = setWebCat;
@@ -612,7 +582,6 @@
     const countEl = ig$('web-count');
     if(countEl) countEl.textContent = filtered.length + '개';
     empty.classList.toggle('show', filtered.length===0);
-    // 교구 탭일 때만 관구 헤더 삽입
     const showProvHd = (webState.curCat === '교구');
     let lastProv = null;
     filtered.forEach(s => {
@@ -620,7 +589,6 @@
         ? (WEB_PROV_COLORS[s.prov] || WEB_CAT_COLORS[s.cat] || '#555')
         : (WEB_CAT_COLORS[s.cat] || '#555');
       const bg = WEB_CAT_BG[s.cat] || '#f8f8f8';
-      // 관구 헤더 제거됨(v13: CSS .web-prov-hd{display:none} + JS 생성 중단)
       const isDioceseCard = (s.cat === '교구');
       const isPriestCard = (s.cat === '사제찾기');
       const isMyWebCard = isMyDioceseWebItem(s, getMyDioceseName());
@@ -633,7 +601,6 @@
       if(isPriestCard){
         card.setAttribute('aria-label', s.name + ' 새창 열기');
       }
-      // 교구/사제찾기: 상단에는 관구와 나의 교구 표시, 본문에는 교구명+기능명을 둔다.
       const badgeText = ((s.cat==='교구' || s.cat==='사제찾기') && s.prov) ? esc(s.prov) : esc(s.cat);
       const topRight = (s.cat==='교구' || s.cat==='사제찾기') ? (isMyWebCard ? myDioceseBadgeHtml() : '') : esc(s.op);
       const cardName = webCardNameHtml(s);
@@ -662,11 +629,9 @@
           e.stopPropagation();
           wfToggle(s.url);
           fb.classList.toggle('on', wfHas(s.url));
-          // 즐겨찾기 탭에서 삭제하면 목록 갱신
           if(webState.curCat==='⭐ 즐겨찾기') renderWebList();
           return;
         }
-        // 교구 카드도 저장/복원 없이 즉시 이동한다.
         if(isDioceseCard){
           openExternalUrl(s.url, { module:'web' });
           return;
@@ -757,9 +722,6 @@
         try{
           const lv = trailState.map.getLevel();
           if(Number.isFinite(lv) && lv < 12) trailState.map.setLevel(12);
-          // 사진 기준처럼 본토와 제주가 함께 자연스럽게 보이도록
-          // 백령도·울릉도 같은 극단 외곽 섬은 중심감에서 제외하고, 초기 시야를 우리나라 중심으로 보정한다.
-          // 마커 데이터와 기능은 변경하지 않는다.
           trailState.map.setCenter(new kakao.maps.LatLng(36.10, 127.85));
         }catch(e){ console.warn("[가톨릭길동무]", e); }
       }, 60);
@@ -978,7 +940,6 @@
     navigator.geolocation.getCurrentPosition(show, function(){}, {enableHighAccuracy:true, timeout:12000, maximumAge:0});
   };
 
-  // 초기 선택 상태 반영
   document.addEventListener('DOMContentLoaded', function(){
     setWebCat(webState.curCat);
   });

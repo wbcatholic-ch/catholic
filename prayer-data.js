@@ -1,5 +1,3 @@
-/* prayer-data.js — 기도문 본문 데이터 모듈
-   실행 로직 없이 window.PRAYER_DATA에 데이터만 노출합니다. */
 (function(){
   window.PRAYER_DATA = { 
 

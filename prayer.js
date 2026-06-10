@@ -1,10 +1,5 @@
-/* prayer.js — 기도문 모듈
-   카테고리·즐겨찾기·검색·상세보기·글자크기 */
 
 
-/* ════════════════════════════════════════════════════════
-   기도문 모듈 (Prayer Module)
-════════════════════════════════════════════════════════ */
 (function(){
 
 const PR_ALL_CATS = ['favorites','wyd','aim','basic','special','etc','bong1','bong2','bong3','bong4'];
@@ -22,19 +17,11 @@ const PR_CAT_STYLE = {
   bong4:    { label:'묵주기도', bg:'#EFF6FF', color:'#2563EB', icon:'📿', accent:'#2563EB' },
 };
 
-// 기도문 목록에서 좌우 스와이프 직후 즐겨찾기 별 오작동을 막는 공통 차단 시간
 let prSwipeBlockUntil = 0;
-// 첫 진입 때 활성 탭을 부드럽게 스크롤하면 탭바가 살짝 흔들려 보일 수 있어 첫 1회만 즉시 정렬한다.
 let prTabsFirstAlign = true;
 
-// 기도문 데이터 (항목 추가 시 여기에 추가)
-// 기도문 본문 데이터는 prayer-data.js에서 먼저 로드합니다.
-// prayer.js는 렌더링/상태/이벤트 로직만 담당합니다.
 const PR_DATA = window.PRAYER_DATA || { favorites: [] };
 
-// ─── 기도문 모듈 상태 ────────────────────────────────────────────────────────
-// 기도문 기능 전용 상태를 별도 객체로 분리합니다.
-// 기존 코드 호환을 위해 레거시 변수명을 getter/setter로 연결합니다.
 const PrayerState = {
   curCat:    'wyd',  // 현재 선택된 카테고리 키
   favorites: [],     // 즐겨찾기 기도문 ID 배열
@@ -181,8 +168,6 @@ function prApplyTabColors(){
   try{ if(typeof window.oaiKeepActiveTabsVisible === 'function') window.oaiKeepActiveTabsVisible('prayer'); }catch(e){ console.warn('[가톨릭길동무]', e); }
 }
 
-// 주요기도문 탭 표시 안전장치.
-// 일부 화면 전환/캐시 조합에서 목록은 렌더링되지만 탭 컨테이너가 비어 보이는 경우를 막는다.
 function prEnsureTabsVisible(){
   prEnsureCurrentCat();
   const wrap = prG('prayer-tabs');
@@ -389,7 +374,6 @@ window.prToggleFav = function(id, e){
     setTimeout(restoreScroll, 220);
   }
 }
-/* 본문 화면 즐겨찾기 토글 */
 window.prToggleDetailFav = function(e){
   e.stopPropagation();
   var btn = document.getElementById('pr-detail-star');
@@ -400,11 +384,9 @@ window.prToggleDetailFav = function(e){
   prSaveFavorites();
   var isFav = prFavorites.includes(id);
   btn.classList.toggle('on', isFav);
-  /* 목록 동기화 */
   var listBtn = document.querySelector('.pr-star[data-pid="'+id+'"]');
   if(listBtn) listBtn.classList.toggle('on', isFav);
 };
-
 
 function prSafeText(text){
   return String(text || '').replace(/[&<>"']/g, function(ch){
@@ -511,8 +493,6 @@ function prOpenOfficialPrayer(prayer){
     sessionStorage.setItem('oai_prayer_list_restore', JSON.stringify(window.__oaiPrayerListRestore));
   }catch(e){ console.warn('[가톨릭길동무]', e); }
   prMarkExternalReturnFlag();
-  // 기도문 공식 원문 페이지가 늦게 열리는 경우에도
-  // 보호 안내가 먼저 사라지지 않도록 실제 이동 신호 전까지 유지한다.
   prShowExternalGuide('공식 기도문 페이지로 이동합니다.', 0, { hold:true, maxDuration:6500 });
   window.setTimeout(function(){
     try{ window.location.href = url; }
@@ -554,14 +534,11 @@ function prOpenDetail(prayer){
   content.innerHTML = '<div class="pr-body-title">' + safeTitle + '</div>' + rawContent;
   detail.classList.add('show');
   try{
-    // 본문 진입 시 별도 history state를 만들지 않고, 공통 앱 back trap만 보강한다.
-    // 실제 뒤로가기는 공통 컨트롤러가 DOM 상태를 보고 처리한다.
     if(typeof window._oaiPrayerPushDetailState === 'function') window._oaiPrayerPushDetailState('prayer-detail-open');
     else if(typeof window._oaiArmPrayerBackTrap === 'function') window._oaiArmPrayerBackTrap('prayer-detail-open');
   }catch(e){
     console.warn('[가톨릭길동무]', e);
   }
-  // 현재 기도문 ID 저장 → 본문 즐겨찾기 버튼에 반영
   detail.dataset.pid = prayer.id || '';
   var starBtn = prG('pr-detail-star');
   if(starBtn){
@@ -569,11 +546,9 @@ function prOpenDetail(prayer){
     starBtn.classList.toggle('on', isFav);
     starBtn.dataset.pid = prayer.id || '';
   }
-  // 본문 맨 위로 즉시 이동
   if(body){ body.style.scrollBehavior='auto'; body.scrollTop=0; body.style.scrollBehavior=''; }
   setTimeout(function(){ if(body) body.scrollTop=0; }, 50);
 }
-
 
 function prRestoreListPosition(){
   try{
@@ -609,8 +584,6 @@ window.prCloseDetail = function(opts){
   prRestoreListPosition();
   if(!(opts && opts.skipTrap)){
     try{
-      // 버튼으로 본문을 닫는 경우에도 별도 state를 만들지 않는다.
-      // 공통 앱 back trap만 유지해 목록 단계에서 앱이 바로 종료되지 않게 한다.
       if(typeof window._oaiPrayerReplaceListState === 'function') window._oaiPrayerReplaceListState('prayer-detail-button-to-list');
       else if(typeof window._oaiArmPrayerBackTrap === 'function') window._oaiArmPrayerBackTrap('prayer-detail-button-to-list');
     }catch(e){
@@ -619,14 +592,12 @@ window.prCloseDetail = function(opts){
   }
 };
 
-/* ── IIFE 스코프 외부 노출 ── */
 window.prSwitchCat = prSwitchCat;
 window.prOpenDetail = prOpenDetail;
 window.prOpenOfficialPrayer = prOpenOfficialPrayer;
 window.prRefreshVisibleCats = function(){ prEnsureCurrentCat(); prBuildTabs(); prRenderList(); };
 window.prCloseDetail = window.prCloseDetail;
 
-/* ── 기도문 좌우 스와이프 (순환) — 웹사이트 기준 감도와 동일화 */
 (function(){
   var el = document.getElementById('prayer-list-view');
   if (!el) return;
@@ -679,7 +650,6 @@ window.prCloseDetail = window.prCloseDetail;
     if (dx < 0) goNext(); else goPrev();
   }, { passive: true });
 })();
-/* lyTabColors: 미선언 전역 변수 - 참조하는 코드 없음, 제거 */
 
 window.initPrayerView = function(){
   prLoadPrefs();
@@ -688,7 +658,6 @@ window.initPrayerView = function(){
   prApplyFont();
   prEnsureTabsVisible();
   prRenderList();
-  // 상세뷰 초기화
   const detail = prG('prayer-detail');
   const listView = prG('prayer-list-view');
   if(detail) detail.classList.remove('show');

@@ -1,9 +1,5 @@
-/* module-common.css — 공통 모듈 화면/헤더/탭/본문 표준 CSS
-   기도문·웹사이트·순례길·관구교구·문의 화면의 공통 구조만 담당합니다. */
 
-/* ============================================================
-   5. 모듈 뷰 (기도문·웹사이트·순례길·관구교구·문의)
-   ============================================================ */
+
 .module-view {
   display: none;
   position: fixed;
@@ -34,7 +30,6 @@
 #trail-view.module-view.open,
 #qna-view.module-view.open { display: flex; flex-direction: column; align-items: stretch; }
 
-/* 모듈 헤더 표준 */
 .module-bar,
 #prayer-bar,
 #diocese-bar {
@@ -135,9 +130,6 @@
 }
 .module-count { display: none; }
 
-/* 주요기도문 전용 헤더 예외 CSS는 css/prayer.css에서 관리한다. */
-
-/* 웹·순례길·문의·관구교구 헤더 십자가 아이콘 (CSS 드로잉) */
 #web-view .module-bar-ico,
 #trail-view .module-bar-ico,
 #qna-view .module-bar-ico,
@@ -173,7 +165,6 @@
   transform: translate(-50%, -50%);
 }
 
-/* 탭바 표준 */
 #prayer-tabs,
 #web-view .web-cats,
 #trail-view .trail-tabs,
@@ -203,7 +194,6 @@
 #trail-view .trail-tabs::-webkit-scrollbar,
 #qna-view .qna-tabs::-webkit-scrollbar { display: none; }
 
-/* 탭 버튼 (비활성) */
 #prayer-tabs .pr-tab,
 #web-view .web-cat-btn,
 #trail-view .trail-tab,
@@ -234,7 +224,6 @@
 #trail-view .trail-tab { flex: 1 1 0; }
 #qna-view .qna-tab { flex: 1 1 0; }
 
-/* 탭 버튼 (활성) */
 #prayer-tabs .pr-tab.on,
 #prayer-tabs .pr-tab.active,
 #web-view .web-cat-btn.on,
@@ -247,20 +236,6 @@
   background: #0e1535;
 }
 
-/* 주요기도문 탭 카테고리 색상은 css/prayer.css에서 관리한다. */
-
-
-
-
-
-
-
-
-
-
-
-
-/* 모듈 본문 */
 .web-body, .trail-body {
   display: flex;
   flex-direction: column;

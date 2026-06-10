@@ -1,6 +1,5 @@
-/* web.css — 가톨릭 웹사이트 전용 CSS */
 
-/* 웹사이트 탭 카테고리별 색상 */
+
 #web-view .web-cat-btn.on[data-cat-color="전체"]    { background: #1a2d5a; }
 
 #web-view .web-cat-btn.on[data-cat-color="중앙기구"] { background: #8b1c2a; }
@@ -17,12 +16,10 @@
 
 #web-view .web-cat-btn.on .cnt { background: rgba(255,255,255,.22); color: var(--v4-surface-white); }
 
-/* 웹사이트 즐겨찾기 탭 */
 .web-cat-btn[data-web-cat="⭐ 즐겨찾기"] { order: -1; color: var(--v4-header-navy); border-color: rgba(31,42,68,.35); background: #f4f6fb; }
 
 .web-cat-btn[data-web-cat="⭐ 즐겨찾기"].on { background: var(--v4-header-navy); color: var(--v4-surface-white); border-color: var(--v4-header-navy); box-shadow: 0 4px 14px rgba(31,42,68,.28); }
 
-/* 탭 카운트 배지 */
 .web-cat-btn .cnt {
   display: inline-flex;
   align-items: center;
@@ -39,7 +36,6 @@
 
 #web-view .web-cats { -webkit-overflow-scrolling: touch; touch-action: pan-x; overscroll-behavior-x: contain; }
 
-/* ── 웹사이트 카드 */
 .web-card {
   display: block;
   width: 100%;
@@ -150,5 +146,3 @@ html.oai-font-global .web-card-name{font-size:calc(17px * var(--app-inner-font-s
 
 html.oai-font-global .web-card-desc{font-size:calc(15px * var(--app-inner-font-scale,1))!important}
 
-
-/* 웹사이트 탭바 크기 기준은 css/module-common.css에서 관리한다. */

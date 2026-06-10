@@ -1,4 +1,4 @@
-/* pilgrimage.css — 순례길 전용 CSS */
+
 
 .trail-body { background: var(--v4-bg-ivory); }
 
@@ -124,6 +124,4 @@
 
 #trail-view .trail-body { flex: 1; min-height: 0; display: flex; flex-direction: column; width: 100%; }
 
-
-/* 순례길 탭바 크기 기준은 css/module-common.css에서 관리한다. */
 #trail-view .trail-tab{height:40px!important;min-height:40px!important;padding:0 12px!important;border-radius:10px!important;font-size:15px!important;line-height:1!important;align-items:center!important;box-sizing:border-box!important;}

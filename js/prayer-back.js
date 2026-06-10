@@ -1,22 +1,8 @@
-/* prayer-back.js — 기도문 뒤로가기/history/빠른메뉴 복귀 보조 모듈
-   기도문 화면의 내부 복귀 흐름만 담당합니다. */
 (function(){
   'use strict';
   if(window.__OAI_PRAYER_BACK_SPLIT__) return;
   window.__OAI_PRAYER_BACK_SPLIT__ = true;
   function $b(id){ return document.getElementById(id); }
-/* ─────────────────────────────────────────────
-   기도문 전용 뒤로가기 컨트롤러 — 별도 history 단계 없이 DOM 상태로 복귀 처리
-
-   원칙:
-   1) 다른 정상 카테고리처럼 실제 history는 공통 root/trap 한 쌍만 사용한다.
-   2) 기도문 detail/list/popup은 별도 history state를 만들지 않고 DOM 상태로만 판단한다.
-   3) popstate가 오면 먼저 history.go(1)로 공통 trap을 복원한 뒤 화면만 바꾼다.
-      - 본문   → 목록
-      - 목록   → 빠른메뉴 팝업 또는 커버
-      - 팝업   → 커버
-   4) 매일미사·성가는 외부 사이트, 기도문은 내부 카테고리이므로 복귀 플래그는 분리한다.
-   ───────────────────────────────────────────── */
 function prayerView(){ return $b('prayer-view'); }
 function prayerDetail(){ return $b('prayer-detail'); }
 function prayerPopup(){ return $b('mass-quick-modal'); }
@@ -58,8 +44,6 @@ function isPrayerReturnPopupOpen(){
   return !!yes;
 }
 function armPrayerBackTrap(reason){
-  /* 호환용 함수. 기도문 detail/list용 별도 pushState는 만들지 않고,
-     공통 컨트롤러가 갖고 있는 root/trap을 유지하는 것만 필요하다. */
   try{
     if(isPrayerOpen() && typeof window._ensureAppBackTrap === 'function'){
       window._ensureAppBackTrap(reason || 'prayer-ui-state');
@@ -113,9 +97,6 @@ function ensureCoverTrapAfterPrayer(reason){
   }catch(e){ console.warn('[가톨릭길동무]', e); }
 }
 function settleCoverTrapAfterPrayer(reason){
-  // 기도문 팝업 → 커버 후에는 이미 공통 컨트롤러가 history.go(1)로 trap을 복원한 상태다.
-  // 여기서 replaceState/pushState를 강제로 반복하면 Android/PWA에서 다음 Back이 앱 종료로 오판될 수 있다.
-  // 따라서 현재 trap이 살아 있으면 그대로 두고, 없을 때만 최소한으로 보강한다.
   function run(tag){
     try{
       if(document.documentElement.classList.contains('app-active')) return;
@@ -155,8 +136,6 @@ function resetPrayerToCover(reason){
 function prayerDetailToList(reason){
   try{
     var fromQuick = isPrayerQuickSource();
-    /* Step 9-5: 본문 → 목록 복귀는 prayer.js의 기존 상세 닫기 함수를 우선 사용한다.
-       history는 건드리지 않고, 목록 스크롤 복원과 탭 표시만 원래 담당 함수에 맡긴다. */
     if(typeof window.prCloseDetail === 'function') window.prCloseDetail({skipTrap:true});
     else {
       var d = prayerDetail();
@@ -173,12 +152,6 @@ function prayerListToPopupOrCover(reason){
     var fromQuick = isPrayerQuickSource();
     if(!fromQuick) return resetPrayerToCover(reason || 'prayer-list-cover');
 
-    /* 기도문 목록 → 빠른메뉴 팝업 복귀는 직접 팝업을 띄우지 않는다.
-       사용자의 Back으로 공통 trap이 일단 소비된 직후라, 이 자리에서 openMassQuickMenu()를
-       바로 호출하면 Android/PWA에서 history.go(1) 복원 타이밍과 겹쳐 팝업 Back이 앱 종료로
-       먹힐 수 있다. 기존 안정 함수 _returnToMassQuickMenu('prayer')에게 맡기면,
-       공통 trap 복원이 끝난 뒤
-       '기도문 닫기 → 커버 복원 → 커버 위 빠른메뉴 팝업 표시'를 한 번에 실행한다. */
     try{ keepPrayerQuickSource(true); }catch(_e){}
     try{ if(typeof window._setPrayerPopupReturnSource === 'function') window._setPrayerPopupReturnSource(true); }catch(_e){}
     try{ if(typeof window._resetCoverExitReady === 'function') window._resetCoverExitReady(); }catch(_e){}
@@ -188,7 +161,6 @@ function prayerListToPopupOrCover(reason){
       return true;
     }
 
-    /* fallback: _returnToMassQuickMenu가 없을 때만 예전 방식으로 복구 */
     hidePrayerOnly();
     showCoverOnlyForPrayer();
     var mq = prayerPopup();

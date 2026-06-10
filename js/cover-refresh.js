@@ -1,5 +1,3 @@
-/* cover-refresh.js — 커버 pull-to-refresh / soft refresh 보조 모듈
-   화면 전환과 캐시 초기화 버튼의 보조 동작만 담당합니다. */
 (function(){
   'use strict';
   if(window.__APP_PULL_REFRESH_CLEAN_V20_8__) return;
@@ -80,8 +78,6 @@
         cover.classList.remove('pulling','refreshing');
         cover.scrollTop=0;
       }
-      // 커버는 fixed 레이어이므로 window scroll을 강제로 움직이지 않는다.
-      // 짧은 새로고침 때 화면이 위/아래로 튀는 원인이 될 수 있다.
       hideIndicator(ind);
     }catch(e){ console.warn('[가톨릭길동무]', e); }
   };
@@ -137,9 +133,6 @@
     try{
       var ind=$('cv-pull-modern');
       hideIndicator(ind);
-      // 외부 사이트에서 돌아올 때 강제 window.scrollTo(0,0)를 실행하면
-      // 화면이 아래로 내려갔다가 돌아오는 흔들림이 생긴다.
-      // pull-to-refresh 표시만 정리하고 스크롤 위치는 브라우저 복원에 맡긴다.
     }catch(e){ console.warn('[가톨릭길동무]', e); }
   }, true);
 
