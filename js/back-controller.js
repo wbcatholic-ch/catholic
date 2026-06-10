@@ -38,8 +38,9 @@
       var href = location.href.split('#')[0];
       _href = href;
       var st = history.state;
-      // 이미 커버 trap이 살아 있으면 force 호출이어도 중복으로 쌓지 않는다.
-      if(st && st._p === 1 && st.oai_cover_trap) return;
+      // 일반 호출은 살아 있는 커버 trap을 재사용한다.
+      // 단, 외부 홈페이지에서 복귀한 뒤처럼 실제 history 칸이 불안정할 때는 force로 root/trap을 다시 만든다.
+      if(!opts.force && st && st._p === 1 && st.oai_cover_trap) return;
       history.replaceState({_p:0, oai_cover_root:reason||'cover-root'}, '', href);
       history.pushState({_p:1, oai_cover_trap:reason||'cover-trap'}, '', href);
     }catch(e){
