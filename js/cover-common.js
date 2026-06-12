@@ -3,7 +3,7 @@
 (function(){
   if(window.__APP_FONT_SCALE_GUARD__) return;
   window.__APP_FONT_SCALE_GUARD__=true;
-  var QA_URL="qa-firebase.html?v=V5-5";
+  var QA_URL="qa-firebase.html?v=V6-13";
   var FONT_KEY='prayer_font_size';
   var BASE=16;
   var FONT_SIZES=[13,14,15,16,17,18,19,20,21,22,24,26,28,30];
@@ -94,19 +94,27 @@
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();window.addEventListener('load',function(){boot();setTimeout(boot,250);setTimeout(boot,900);},{once:true});window.addEventListener('pageshow',boot);
 })();
 
+
 (function(){
   if(window.__APP_PWA_INSTALL_GUARD__) return;
   window.__APP_PWA_INSTALL_GUARD__ = true;
 
-  var prompt = null;
+  var promptEvent = null;
+  var installing = false;
 
   function isStandaloneNow(){
-    return window.matchMedia('(display-mode: standalone)').matches ||
-           window.navigator.standalone === true ||
-           document.documentElement.classList.contains('app-active');
+    try{
+      return window.navigator.standalone === true ||
+             (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches);
+    }catch(e){ return false; }
   }
 
   function getBtn(){ return document.getElementById('pwa-install-btn'); }
+
+  function showInstallBtn(){
+    var btn = getBtn();
+    if(btn && !isStandaloneNow()) btn.style.display = 'flex';
+  }
 
   function hideInstallBtn(){
     var btn = getBtn();
@@ -115,40 +123,72 @@
 
   function applyVisibility(){
     if(isStandaloneNow()) hideInstallBtn();
+    else if(promptEvent) showInstallBtn();
   }
 
-  if(isStandaloneNow()){ hideInstallBtn(); return; }
+  function bindInstallButton(){
+    var btn = getBtn();
+    if(!btn || btn.__oaiInstallBound) return;
+    btn.__oaiInstallBound = true;
+    btn.addEventListener('click', function(ev){
+      if(ev && ev.preventDefault) ev.preventDefault();
+      if(ev && ev.stopPropagation) ev.stopPropagation();
+      if(typeof window.triggerPwaInstall === 'function') window.triggerPwaInstall();
+    });
+  }
 
   window.addEventListener('beforeinstallprompt', function(e){
     e.preventDefault();
-    prompt = e;
-    if(!isStandaloneNow()){
-      var btn = getBtn();
-      if(btn) btn.style.display = 'flex';
-    }
+    promptEvent = e;
+    window.__OAI_PWA_DEFERRED_PROMPT__ = e;
+    installing = false;
+    bindInstallButton();
+    showInstallBtn();
   });
 
   window.addEventListener('appinstalled', function(){
+    promptEvent = null;
+    window.__OAI_PWA_DEFERRED_PROMPT__ = null;
+    installing = false;
     hideInstallBtn();
-    prompt = null;
   });
 
   window.triggerPwaInstall = function(){
-    if(!prompt) return;
-    prompt.prompt();
-    prompt.userChoice.then(function(r){
-      if(r.outcome === 'accepted') hideInstallBtn();
-      prompt = null;
+    var p = promptEvent || window.__OAI_PWA_DEFERRED_PROMPT__;
+    if(isStandaloneNow()){
+      hideInstallBtn();
+      return;
+    }
+    if(!p || installing){
+      return;
+    }
+    installing = true;
+    p.prompt();
+    Promise.resolve(p.userChoice).then(function(choice){
+      var accepted = choice && choice.outcome === 'accepted';
+      promptEvent = null;
+      window.__OAI_PWA_DEFERRED_PROMPT__ = null;
+      installing = false;
+      if(accepted) hideInstallBtn();
+      else showInstallBtn();
+    }).catch(function(err){
+      console.warn('[가톨릭길동무]', err);
+      promptEvent = null;
+      window.__OAI_PWA_DEFERRED_PROMPT__ = null;
+      installing = false;
+      showInstallBtn();
     });
   };
 
-  new MutationObserver(applyVisibility)
-    .observe(document.documentElement, {attributes:true, attributeFilter:['class']});
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bindInstallButton, {once:true});
+  else bindInstallButton();
 
   try{
-    window.matchMedia('(display-mode: standalone)').addEventListener('change', applyVisibility);
-  }catch(e){ console.warn("[가톨릭길동무]", e); }
+    var mql = window.matchMedia && window.matchMedia('(display-mode: standalone)');
+    if(mql && mql.addEventListener) mql.addEventListener('change', applyVisibility);
+    else if(mql && mql.addListener) mql.addListener(applyVisibility);
+  }catch(e){ console.warn('[가톨릭길동무]', e); }
 
-  window.addEventListener('load', applyVisibility);
-  window.addEventListener('pageshow', applyVisibility);
+  window.addEventListener('load', function(){ bindInstallButton(); applyVisibility(); });
+  window.addEventListener('pageshow', function(){ bindInstallButton(); applyVisibility(); });
 })();

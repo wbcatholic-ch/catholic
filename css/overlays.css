@@ -142,9 +142,9 @@ html.pr-external-guide-active.oai-stability-veil::after {
   line-height:1.15;
   touch-action:manipulation;
 }
-.route-choice-btn.start{background:#FDE8E5;color:#9F1D18;border-color:#D24B43;box-shadow:none;}
-.route-choice-btn.end{background:#E8F2FF;color:#135BA1;border-color:#2D7DD2;box-shadow:none;}
-.route-choice-btn.cancel{grid-column:1 / -1;background:#EAF7F0;color:#167448;border-color:#35A86B;box-shadow:none;}
+.route-choice-btn.start{background:#FDE8E5;color:#9F1D18;border-color:#D24B43;box-shadow:none;order:1;}
+.route-choice-btn.end{background:#E8F2FF;color:#135BA1;border-color:#2D7DD2;box-shadow:none;order:2;}
+.route-choice-btn.cancel{background:#EAF7F0;color:#167448;border-color:#35A86B;box-shadow:none;order:3;grid-column:1 / -1;}
 .route-choice-btn.keep{background:#EAF7F0;color:#167448;border-color:#35A86B;box-shadow:none;}
 .route-choice-btn.danger{background:#FDE8E5;color:#9F1D18;border-color:#D24B43;box-shadow:none;}
 @media(max-width:420px){
