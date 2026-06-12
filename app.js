@@ -1444,7 +1444,7 @@ function openDioceseView(opts){
       if(!restore) try{ frame.contentWindow && frame.contentWindow.resetDioceseFirstPage && frame.contentWindow.resetDioceseFirstPage(); }catch(e){ console.warn("[가톨릭길동무]", e); }
       if(typeof dioceseLoaded==='function') dioceseLoaded();
     };
-    frame.src='diocese.html?v=V6-22';
+    frame.src='diocese.html?v=V6-23';
     setTimeout(armDioceseOverlayBack, 0);
   }else{
     if(!restore){
@@ -1825,7 +1825,7 @@ const _PARISH_DIOCESE_ASSETS={
 };
 const _PARISH_DIOCESE_LOAD_STATE={};
 const _PARISH_DIOCESE_LOAD_PROMISES={};
-const _PARISH_ASSET_VERSION='V6-22';
+const _PARISH_ASSET_VERSION='V6-23';
 function _getParishDioceseAsset(code){
   return _PARISH_DIOCESE_ASSETS[code] || null;
 }
@@ -1988,7 +1988,7 @@ function _ensureParishDataLoaded(){
 }
 _initParishDataFromGlobal();
 
-const _PRAYER_ASSET_VERSION='V6-22';
+const _PRAYER_ASSET_VERSION='V6-23';
 let _prayerModuleLoadPromise=null;
 function _isPrayerDataReady(){
   return !!(window.PRAYER_DATA && typeof window.PRAYER_DATA === 'object');
@@ -2049,7 +2049,7 @@ try{ window.ensurePrayerModuleLoaded=ensurePrayerModuleLoaded; }catch(e){ consol
 let _RT_RAW = [];
 let _retreatRawLoaded = false;
 let _retreatDataLoadPromise = null;
-const _RETREAT_ASSET_VERSION='V6-22';
+const _RETREAT_ASSET_VERSION='V6-23';
 
 let RETREATS = [];
 function _buildRetreatList(raw){
@@ -2344,7 +2344,7 @@ const _TY={'A':'성지','B':'순례지','C':'순교 사적지'};
 
 let _shrineRawLoaded = false;
 let _shrineDataLoadPromise = null;
-const _SHRINE_ASSET_VERSION='V6-22';
+const _SHRINE_ASSET_VERSION='V6-23';
 let SHRINES = [];
 let JUKRIMGUL_IDX = -1;
 function _decodeShrineHomePage(hp){
@@ -5415,6 +5415,10 @@ function _syncRouteWaypointBoxes(){
   const tools1=$('rs-waypoint-end-tools');
   const tools2=$('rs-waypoint2-end-tools');
   const tools3=$('rs-waypoint3-end-tools');
+  const swap0=$('rs-swap-btn');
+  const swap1=$('rs-swap-waypoint-end-btn');
+  const swap2=$('rs-swap-waypoint2-end-btn');
+  const swap3=$('rs-swap-waypoint3-end-btn');
   const wx1=$('rs-waypoint-x');
   const wx2=$('rs-waypoint2-x');
   const wx3=$('rs-waypoint3-x');
@@ -5445,13 +5449,18 @@ function _syncRouteWaypointBoxes(){
   if(box1) box1.style.display=(!summaryVisible && w1Visible)?'flex':'none';
   if(box2) box2.style.display=(!summaryVisible && w2Visible)?'flex':'none';
   if(box3) box3.style.display=(!summaryVisible && w3Visible)?'flex':'none';
-  if(add1) add1.style.display=(!resultShowing && !w1Visible)?'inline-flex':'none';
+  const showResultAddWaypoint=!!(resultShowing && routeWaypoints.length===0);
+  if(add1) add1.style.display=((!resultShowing && !w1Visible) || showResultAddWaypoint)?'inline-flex':'none';
   if(add2) add2.style.display=(!resultShowing && w1Visible && !w2Visible)?'inline-flex':'none';
   if(add3) add3.style.display=(!resultShowing && w2Visible && !w3Visible)?'inline-flex':'none';
-  if(tools0) tools0.style.display=resultShowing?'none':'block';
+  if(tools0) tools0.style.display=(resultShowing ? (showResultAddWaypoint?'block':'none') : 'block');
   if(tools1) tools1.style.display=(!resultShowing && w1Visible)?'flex':'none';
   if(tools2) tools2.style.display=(!resultShowing && w2Visible)?'flex':'none';
   if(tools3) tools3.style.display=(!resultShowing && w3Visible)?'flex':'none';
+  if(swap0) swap0.style.display=resultShowing?'none':'flex';
+  if(swap1) swap1.style.display=(!resultShowing && w1Visible)?'flex':'none';
+  if(swap2) swap2.style.display=(!resultShowing && w2Visible)?'flex':'none';
+  if(swap3) swap3.style.display=(!resultShowing && w3Visible)?'flex':'none';
   if(wx1) wx1.style.display=(!resultShowing && w1Visible)?'inline-flex':'none';
   if(wx2) wx2.style.display=(!resultShowing && w2Visible)?'inline-flex':'none';
   if(wx3) wx3.style.display=(!resultShowing && w3Visible)?'inline-flex':'none';
