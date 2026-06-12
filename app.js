@@ -1444,7 +1444,7 @@ function openDioceseView(opts){
       if(!restore) try{ frame.contentWindow && frame.contentWindow.resetDioceseFirstPage && frame.contentWindow.resetDioceseFirstPage(); }catch(e){ console.warn("[가톨릭길동무]", e); }
       if(typeof dioceseLoaded==='function') dioceseLoaded();
     };
-    frame.src='diocese.html?v=V6-23';
+    frame.src='diocese.html?v=V6-24';
     setTimeout(armDioceseOverlayBack, 0);
   }else{
     if(!restore){
@@ -1825,7 +1825,7 @@ const _PARISH_DIOCESE_ASSETS={
 };
 const _PARISH_DIOCESE_LOAD_STATE={};
 const _PARISH_DIOCESE_LOAD_PROMISES={};
-const _PARISH_ASSET_VERSION='V6-23';
+const _PARISH_ASSET_VERSION='V6-24';
 function _getParishDioceseAsset(code){
   return _PARISH_DIOCESE_ASSETS[code] || null;
 }
@@ -1988,7 +1988,7 @@ function _ensureParishDataLoaded(){
 }
 _initParishDataFromGlobal();
 
-const _PRAYER_ASSET_VERSION='V6-23';
+const _PRAYER_ASSET_VERSION='V6-24';
 let _prayerModuleLoadPromise=null;
 function _isPrayerDataReady(){
   return !!(window.PRAYER_DATA && typeof window.PRAYER_DATA === 'object');
@@ -2049,7 +2049,7 @@ try{ window.ensurePrayerModuleLoaded=ensurePrayerModuleLoaded; }catch(e){ consol
 let _RT_RAW = [];
 let _retreatRawLoaded = false;
 let _retreatDataLoadPromise = null;
-const _RETREAT_ASSET_VERSION='V6-23';
+const _RETREAT_ASSET_VERSION='V6-24';
 
 let RETREATS = [];
 function _buildRetreatList(raw){
@@ -2344,7 +2344,7 @@ const _TY={'A':'성지','B':'순례지','C':'순교 사적지'};
 
 let _shrineRawLoaded = false;
 let _shrineDataLoadPromise = null;
-const _SHRINE_ASSET_VERSION='V6-23';
+const _SHRINE_ASSET_VERSION='V6-24';
 let SHRINES = [];
 let JUKRIMGUL_IDX = -1;
 function _decodeShrineHomePage(hp){
@@ -5457,7 +5457,7 @@ function _syncRouteWaypointBoxes(){
   if(tools1) tools1.style.display=(!resultShowing && w1Visible)?'flex':'none';
   if(tools2) tools2.style.display=(!resultShowing && w2Visible)?'flex':'none';
   if(tools3) tools3.style.display=(!resultShowing && w3Visible)?'flex':'none';
-  if(swap0) swap0.style.display=resultShowing?'none':'flex';
+  if(swap0) swap0.style.display=(!resultShowing || showResultAddWaypoint)?'flex':'none';
   if(swap1) swap1.style.display=(!resultShowing && w1Visible)?'flex':'none';
   if(swap2) swap2.style.display=(!resultShowing && w2Visible)?'flex':'none';
   if(swap3) swap3.style.display=(!resultShowing && w3Visible)?'flex':'none';
