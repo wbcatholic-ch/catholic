@@ -1444,7 +1444,7 @@ function openDioceseView(opts){
       if(!restore) try{ frame.contentWindow && frame.contentWindow.resetDioceseFirstPage && frame.contentWindow.resetDioceseFirstPage(); }catch(e){ console.warn("[가톨릭길동무]", e); }
       if(typeof dioceseLoaded==='function') dioceseLoaded();
     };
-    frame.src='diocese.html?v=V6-21';
+    frame.src='diocese.html?v=V6-22';
     setTimeout(armDioceseOverlayBack, 0);
   }else{
     if(!restore){
@@ -1825,7 +1825,7 @@ const _PARISH_DIOCESE_ASSETS={
 };
 const _PARISH_DIOCESE_LOAD_STATE={};
 const _PARISH_DIOCESE_LOAD_PROMISES={};
-const _PARISH_ASSET_VERSION='V6-21';
+const _PARISH_ASSET_VERSION='V6-22';
 function _getParishDioceseAsset(code){
   return _PARISH_DIOCESE_ASSETS[code] || null;
 }
@@ -1988,7 +1988,7 @@ function _ensureParishDataLoaded(){
 }
 _initParishDataFromGlobal();
 
-const _PRAYER_ASSET_VERSION='V6-21';
+const _PRAYER_ASSET_VERSION='V6-22';
 let _prayerModuleLoadPromise=null;
 function _isPrayerDataReady(){
   return !!(window.PRAYER_DATA && typeof window.PRAYER_DATA === 'object');
@@ -2049,7 +2049,7 @@ try{ window.ensurePrayerModuleLoaded=ensurePrayerModuleLoaded; }catch(e){ consol
 let _RT_RAW = [];
 let _retreatRawLoaded = false;
 let _retreatDataLoadPromise = null;
-const _RETREAT_ASSET_VERSION='V6-21';
+const _RETREAT_ASSET_VERSION='V6-22';
 
 let RETREATS = [];
 function _buildRetreatList(raw){
@@ -2344,7 +2344,7 @@ const _TY={'A':'성지','B':'순례지','C':'순교 사적지'};
 
 let _shrineRawLoaded = false;
 let _shrineDataLoadPromise = null;
-const _SHRINE_ASSET_VERSION='V6-21';
+const _SHRINE_ASSET_VERSION='V6-22';
 let SHRINES = [];
 let JUKRIMGUL_IDX = -1;
 function _decodeShrineHomePage(hp){
@@ -5394,12 +5394,15 @@ function _syncRouteWaypointBoxes(){
   const stack=$('rs-top') ? $('rs-top').querySelector('.rs-route-stack') : document.querySelector('.rs-route-stack');
   const sheet=$('sheet-route');
   const routeWaypoints=(typeof _getRouteWaypoints==='function') ? _getRouteWaypoints() : [];
-  const w1Visible=!!(_routeWaypointEnabled || (_rW&&_rW.lat&&_rW.lng));
-  const w2Visible=!!(_routeWaypoint2Enabled || (_rW2&&_rW2.lat&&_rW2.lng));
-  const w3Visible=!!(_routeWaypoint3Enabled || (_rW3&&_rW3.lat&&_rW3.lng));
   const resultShowing=!!(_polyline || ($('rs-result') && $('rs-result').style.display !== 'none'));
+  const w1Has=!!(_rW&&_rW.lat&&_rW.lng);
+  const w2Has=!!(_rW2&&_rW2.lat&&_rW2.lng);
+  const w3Has=!!(_rW3&&_rW3.lat&&_rW3.lng);
+  const w1Visible= resultShowing ? w1Has : !!(_routeWaypointEnabled || w1Has);
+  const w2Visible= resultShowing ? w2Has : !!(_routeWaypoint2Enabled || w2Has);
+  const w3Visible= resultShowing ? w3Has : !!(_routeWaypoint3Enabled || w3Has);
   const summaryVisible=!!(resultShowing && routeWaypoints.length);
-  const shouldScrollForMultiWaypoint=!!(!summaryVisible && (w2Visible || w3Visible || routeWaypoints.length >= 2));
+  const shouldScrollForMultiWaypoint=!!(!resultShowing && (w2Visible || w3Visible || routeWaypoints.length >= 2));
   const summaryBox=$('rs-waypoints-summary-box');
   const summaryLbl=$('rs-waypoints-summary-lbl');
   const box1=$('rs-waypoint-box');
@@ -5442,16 +5445,16 @@ function _syncRouteWaypointBoxes(){
   if(box1) box1.style.display=(!summaryVisible && w1Visible)?'flex':'none';
   if(box2) box2.style.display=(!summaryVisible && w2Visible)?'flex':'none';
   if(box3) box3.style.display=(!summaryVisible && w3Visible)?'flex':'none';
-  if(add1) add1.style.display=(!summaryVisible && !w1Visible)?'inline-flex':'none';
-  if(add2) add2.style.display=(!summaryVisible && w1Visible && !w2Visible)?'inline-flex':'none';
-  if(add3) add3.style.display=(!summaryVisible && w2Visible && !w3Visible)?'inline-flex':'none';
-  if(tools0) tools0.style.display=summaryVisible?'none':'block';
-  if(tools1) tools1.style.display=(!summaryVisible && w1Visible)?'flex':'none';
-  if(tools2) tools2.style.display=(!summaryVisible && w2Visible)?'flex':'none';
-  if(tools3) tools3.style.display=(!summaryVisible && w3Visible)?'flex':'none';
-  if(wx1) wx1.style.display=(!summaryVisible && w1Visible)?'inline-flex':'none';
-  if(wx2) wx2.style.display=(!summaryVisible && w2Visible)?'inline-flex':'none';
-  if(wx3) wx3.style.display=(!summaryVisible && w3Visible)?'inline-flex':'none';
+  if(add1) add1.style.display=(!resultShowing && !w1Visible)?'inline-flex':'none';
+  if(add2) add2.style.display=(!resultShowing && w1Visible && !w2Visible)?'inline-flex':'none';
+  if(add3) add3.style.display=(!resultShowing && w2Visible && !w3Visible)?'inline-flex':'none';
+  if(tools0) tools0.style.display=resultShowing?'none':'block';
+  if(tools1) tools1.style.display=(!resultShowing && w1Visible)?'flex':'none';
+  if(tools2) tools2.style.display=(!resultShowing && w2Visible)?'flex':'none';
+  if(tools3) tools3.style.display=(!resultShowing && w3Visible)?'flex':'none';
+  if(wx1) wx1.style.display=(!resultShowing && w1Visible)?'inline-flex':'none';
+  if(wx2) wx2.style.display=(!resultShowing && w2Visible)?'inline-flex':'none';
+  if(wx3) wx3.style.display=(!resultShowing && w3Visible)?'inline-flex':'none';
 }
 function _ensureRouteWaypointBox(role){
   role = role || _nextAvailableWaypointRole() || 'waypoint';
@@ -5496,6 +5499,13 @@ function _updateSearchBtn(){
   if(!btn) return;
   const filled=!!(_rS&&_rS.lat&&_rS.lng&&_rE&&_rE.lat&&_rE.lng);
   btn.style.display=filled?'flex':'none';
+}
+
+function _dropEmptyWaypointInputsForRouteResult(){
+  if(!(_rW&&_rW.lat&&_rW.lng)) _routeWaypointEnabled=false;
+  if(!(_rW2&&_rW2.lat&&_rW2.lng)) _routeWaypoint2Enabled=false;
+  if(!(_rW3&&_rW3.lat&&_rW3.lng)) _routeWaypoint3Enabled=false;
+  _syncRouteWaypointBoxes();
 }
 
 function doSearchRoute(){ document.activeElement&&document.activeElement.blur();
@@ -5838,7 +5848,7 @@ async function _calcRoute(){
   $('rs-time').textContent='…';
   $('rs-result').style.display='block';
   $('rs-hint').style.display='none';
-  _syncRouteWaypointBox();
+  _dropEmptyWaypointInputsForRouteResult();
   const sBtn=$('rs-search-btn');
   if(sBtn) sBtn.style.display='none';
   if(_polyline){_polyline.setMap(null);_polyline=null;}
@@ -6717,23 +6727,23 @@ document.addEventListener('DOMContentLoaded', function bindEvents() {
 
   on('rs-start-box', 'click', function() { if(_returnRouteResultToInputWindow()) return; openSearchModal('start'); });
   on('rs-end-box',   'click', function() { if(_returnRouteResultToInputWindow()) return; openSearchModal('end'); });
-  on('rs-waypoints-summary-box', 'click', function(e) { if(e) e.stopPropagation(); _returnRouteResultToInputWindow(); });
+  on('rs-waypoints-summary-box', 'click', function(e) { if(e){ e.preventDefault(); e.stopPropagation(); } _returnRouteResultToInputWindow(); });
   on('rs-waypoint-box', 'click', function() { openSearchModal('waypoint'); });
   on('rs-waypoint2-box', 'click', function() { openSearchModal('waypoint2'); });
   on('rs-waypoint3-box', 'click', function() { openSearchModal('waypoint3'); });
-  on('rs-add-waypoint-btn', 'click', function(e) { e.stopPropagation(); _beginWaypointAddMode('waypoint'); });
-  on('rs-add-waypoint2-btn', 'click', function(e) { e.stopPropagation(); _beginWaypointAddMode('waypoint2'); });
-  on('rs-add-waypoint3-btn', 'click', function(e) { e.stopPropagation(); _beginWaypointAddMode('waypoint3'); });
-  on('rs-myloc-btn', 'click', function(e) { e.stopPropagation(); setMyLocAsStart(); });
-  on('rs-start-x',   'click', function(e) { e.stopPropagation(); clearRoute('start'); });
-  on('rs-end-x',     'click', function(e) { e.stopPropagation(); clearRoute('end'); });
-  on('rs-waypoint-x','click', function(e) { e.stopPropagation(); clearRoute('waypoint'); });
-  on('rs-waypoint2-x','click', function(e) { e.stopPropagation(); clearRoute('waypoint2'); });
-  on('rs-waypoint3-x','click', function(e) { e.stopPropagation(); clearRoute('waypoint3'); });
-  on('rs-swap-btn',  'click', function() { swapRoute(); });
-  on('rs-swap-waypoint-end-btn', 'click', function() { swapRouteWaypointEnd(); });
-  on('rs-swap-waypoint2-end-btn', 'click', function() { swapRouteWaypoint2End(); });
-  on('rs-swap-waypoint3-end-btn', 'click', function() { swapRouteWaypoint3End(); });
+  on('rs-add-waypoint-btn', 'click', function(e) { if(e){ e.preventDefault(); e.stopPropagation(); } _beginWaypointAddMode('waypoint'); });
+  on('rs-add-waypoint2-btn', 'click', function(e) { if(e){ e.preventDefault(); e.stopPropagation(); } _beginWaypointAddMode('waypoint2'); });
+  on('rs-add-waypoint3-btn', 'click', function(e) { if(e){ e.preventDefault(); e.stopPropagation(); } _beginWaypointAddMode('waypoint3'); });
+  on('rs-myloc-btn', 'click', function(e) { if(e){ e.preventDefault(); e.stopPropagation(); } setMyLocAsStart(); });
+  on('rs-start-x',   'click', function(e) { if(e){ e.preventDefault(); e.stopPropagation(); } clearRoute('start'); });
+  on('rs-end-x',     'click', function(e) { if(e){ e.preventDefault(); e.stopPropagation(); } clearRoute('end'); });
+  on('rs-waypoint-x','click', function(e) { if(e){ e.preventDefault(); e.stopPropagation(); } clearRoute('waypoint'); });
+  on('rs-waypoint2-x','click', function(e) { if(e){ e.preventDefault(); e.stopPropagation(); } clearRoute('waypoint2'); });
+  on('rs-waypoint3-x','click', function(e) { if(e){ e.preventDefault(); e.stopPropagation(); } clearRoute('waypoint3'); });
+  on('rs-swap-btn',  'click', function(e) { if(e){ e.preventDefault(); e.stopPropagation(); } swapRoute(); });
+  on('rs-swap-waypoint-end-btn', 'click', function(e) { if(e){ e.preventDefault(); e.stopPropagation(); } swapRouteWaypointEnd(); });
+  on('rs-swap-waypoint2-end-btn', 'click', function(e) { if(e){ e.preventDefault(); e.stopPropagation(); } swapRouteWaypoint2End(); });
+  on('rs-swap-waypoint3-end-btn', 'click', function(e) { if(e){ e.preventDefault(); e.stopPropagation(); } swapRouteWaypoint3End(); });
   on('rs-search-btn','click', function() { doSearchRoute(); });
   on('rs-kakao-btn', 'click', function() { doKakaoRoute(); });
   on('rs-reset-btn', 'click', function() { resetRoute({ fromButton: true }); });
