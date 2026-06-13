@@ -21,6 +21,7 @@ function isPrayerQuickSource(){
   try{ if(window.__OAI_PRAYER_FROM_QUICK_LOCK__ === true) yes = true; }catch(_e){}
   try{ if(sessionStorage.getItem('oai_prayer_from_quick_lock') === '1') yes = true; }catch(_e){}
   try{ if(typeof window._shouldPrayerQuickReturn === 'function' && window._shouldPrayerQuickReturn()) yes = true; }catch(_e){}
+  try{ if(typeof window._shouldFaithReturnToMassQuick === 'function' && window._shouldFaithReturnToMassQuick()) yes = true; }catch(_e){}
   return !!yes;
 }
 function keepPrayerQuickSource(on){
@@ -80,6 +81,7 @@ function resetPrayerFlags(){
   try{ if(typeof window._setPrayerPopupReturnSource === 'function') window._setPrayerPopupReturnSource(false); }catch(_e){}
   try{ if(typeof window._clearPrayerQuickReturn === 'function') window._clearPrayerQuickReturn(); }catch(_e){}
   try{ if(typeof window._clearMassQuickReturnForReload === 'function') window._clearMassQuickReturnForReload(); }catch(_e){}
+  try{ if(typeof window._clearFaithReturnTarget === 'function') window._clearFaithReturnTarget(); }catch(_e){}
   try{ window.__OAI_PRAYER_FROM_QUICK_LOCK__ = false; }catch(_e){}
   try{ sessionStorage.removeItem('oai_prayer_from_quick_lock'); }catch(_e){}
   try{ window.__OAI_PRAYER_POPUP_COVER_GUARD_UNTIL__ = 0; }catch(_e){}
