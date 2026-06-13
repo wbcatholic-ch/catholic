@@ -1,0 +1,15 @@
+V6-35 정리에서 삭제한 런타임 미사용/누적 파일 목록
+
+- REMOVED_FILES.txt
+- patches.js
+- parishes.js
+- shrines.js.bak
+- entry-cross-gold.png
+- intro-cross-jesus.jpg
+- firebase-firestore-rules-qa-private.rules
+- firestore.rules.sample
+- _config.yml
+
+적용 기준:
+- 전체 압축본을 사용하면 위 파일들은 이미 제거되어 있습니다.
+- 수정 파일만 압축본을 수동 업로드하는 경우, 위 파일들은 저장소/웹뷰 asset에서 직접 삭제해야 합니다.
