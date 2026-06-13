@@ -467,10 +467,10 @@ window.oaiSetMainMapLayerHidden = oaiSetMainMapLayerHidden;
 
 const OAI_FAITH_PORTAL_ORDER = ['bible','hymn','prayer','missa'];
 const OAI_FAITH_PORTAL_ITEMS = {
-  bible:  { label:'성경', icon:'📖', cls:'faith-bible',  url:'https://maria.catholic.or.kr/mobile/bible/read/bible_list.asp' },
-  hymn:   { label:'성가', icon:'🎼', cls:'faith-hymn',   url:'https://maria.catholic.or.kr/mobile/sungga/sungga.asp' },
-  prayer: { label:'기도문', icon:'🙏', cls:'faith-prayer' },
-  missa:  { label:'매일미사', icon:'✝️', cls:'faith-missa' }
+  bible:  { label:'성경', cls:'faith-bible',  url:'https://maria.catholic.or.kr/mobile/bible/read/bible_list.asp' },
+  hymn:   { label:'성가', cls:'faith-hymn',   url:'https://maria.catholic.or.kr/mobile/sungga/sungga.asp' },
+  prayer: { label:'기도문', cls:'faith-prayer' },
+  missa:  { label:'매일미사', cls:'faith-missa' }
 };
 function _getTodayMissaUrl(){
   const today=new Date();
@@ -499,7 +499,7 @@ function _renderFaithBottomNav(current){
       btn.type='button';
       btn.className='faith-bottom-btn '+info.cls;
       btn.dataset.faithTarget=kind;
-      btn.innerHTML='<span>'+info.icon+'</span><strong>'+info.label+'</strong>';
+      btn.innerHTML='<strong>'+info.label+'</strong>';
       btn.addEventListener('click', function(e){
         if(e){ e.preventDefault(); e.stopPropagation(); }
         _goFaithPortal(kind);
@@ -552,7 +552,7 @@ function openFaithPortal(kind){
   if(typeof oaiSetMainMapLayerHidden==='function') oaiSetMainMapLayerHidden(true);
   try{ if(typeof _ensureAppBackTrap==='function') _ensureAppBackTrap('faith-portal-'+kind); }catch(e){ console.warn('[가톨릭길동무]', e); }
   view.dataset.faithCurrent=kind;
-  if(title) title.textContent=info.icon+' '+info.label;
+  if(title) title.textContent=info.label;
   _renderFaithBottomNav(kind);
   view.classList.add('open');
   try{ if(typeof oaiEnterView==='function') oaiEnterView(view); }catch(e){ console.warn('[가톨릭길동무]', e); }
@@ -1516,7 +1516,7 @@ function openDioceseView(opts){
       if(!restore) try{ frame.contentWindow && frame.contentWindow.resetDioceseFirstPage && frame.contentWindow.resetDioceseFirstPage(); }catch(e){ console.warn("[가톨릭길동무]", e); }
       if(typeof dioceseLoaded==='function') dioceseLoaded();
     };
-    frame.src='diocese.html?v=V6-25';
+    frame.src='diocese.html?v=V6-26';
     setTimeout(armDioceseOverlayBack, 0);
   }else{
     if(!restore){
@@ -1897,7 +1897,7 @@ const _PARISH_DIOCESE_ASSETS={
 };
 const _PARISH_DIOCESE_LOAD_STATE={};
 const _PARISH_DIOCESE_LOAD_PROMISES={};
-const _PARISH_ASSET_VERSION='V6-25';
+const _PARISH_ASSET_VERSION='V6-26';
 function _getParishDioceseAsset(code){
   return _PARISH_DIOCESE_ASSETS[code] || null;
 }
@@ -2060,7 +2060,7 @@ function _ensureParishDataLoaded(){
 }
 _initParishDataFromGlobal();
 
-const _PRAYER_ASSET_VERSION='V6-25';
+const _PRAYER_ASSET_VERSION='V6-26';
 let _prayerModuleLoadPromise=null;
 function _isPrayerDataReady(){
   return !!(window.PRAYER_DATA && typeof window.PRAYER_DATA === 'object');
@@ -2121,7 +2121,7 @@ try{ window.ensurePrayerModuleLoaded=ensurePrayerModuleLoaded; }catch(e){ consol
 let _RT_RAW = [];
 let _retreatRawLoaded = false;
 let _retreatDataLoadPromise = null;
-const _RETREAT_ASSET_VERSION='V6-25';
+const _RETREAT_ASSET_VERSION='V6-26';
 
 let RETREATS = [];
 function _buildRetreatList(raw){
@@ -2416,7 +2416,7 @@ const _TY={'A':'성지','B':'순례지','C':'순교 사적지'};
 
 let _shrineRawLoaded = false;
 let _shrineDataLoadPromise = null;
-const _SHRINE_ASSET_VERSION='V6-25';
+const _SHRINE_ASSET_VERSION='V6-26';
 let SHRINES = [];
 let JUKRIMGUL_IDX = -1;
 function _decodeShrineHomePage(hp){
