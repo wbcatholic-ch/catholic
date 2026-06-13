@@ -1,0 +1,41 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /qa_posts/{docId} {
+      // 일반 사용자 앱에서는 문의·건의 목록을 읽지 못하게 합니다.
+      allow read: if false;
+
+      // 새 문의·건의 등록만 허용합니다.
+      allow create: if isValidQaPost();
+
+      // 일반 사용자 앱에서는 수정·삭제를 허용하지 않습니다.
+      allow update, delete: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isValidQaPost() {
+      return request.resource.data.keys().hasOnly([
+          'category', 'title', 'content', 'author', 'date',
+          'visibility', 'source', 'notifyStatus', 'createdAt'
+        ])
+        && request.resource.data.category in ['문의', '수정제안', '개선건의', '칭찬']
+        && request.resource.data.title is string
+        && request.resource.data.title.size() >= 2
+        && request.resource.data.title.size() <= 50
+        && request.resource.data.content is string
+        && request.resource.data.content.size() >= 5
+        && request.resource.data.content.size() <= 500
+        && request.resource.data.author is string
+        && request.resource.data.author.size() <= 20
+        && request.resource.data.date is string
+        && request.resource.data.visibility == 'private'
+        && request.resource.data.source == 'app'
+        && request.resource.data.notifyStatus == 'pending'
+        && request.resource.data.createdAt == request.time;
+    }
+  }
+}
