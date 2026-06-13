@@ -1042,6 +1042,26 @@ function closeMassQuickMenu(opts){
   }
   _ensureCoverBackTrap();
 }
+function _openFaithPortalFromMassQuick(kind, opts){
+  try{ if(typeof _setMassQuickReturn === 'function') _setMassQuickReturn(true); }catch(e){ console.warn('[가톨릭길동무]', e); }
+  var run=function(){
+    try{
+      if(typeof _setMassQuickReturn === 'function') _setMassQuickReturn(true);
+      if(typeof openFaithPortal === 'function') openFaithPortal(kind, opts || null);
+      else if(kind === 'missa' && typeof openMissa === 'function') openMissa();
+      else if(kind === 'hymn' && typeof openCatholicHymn === 'function') openCatholicHymn();
+      else if(kind === 'bible' && typeof openCatholicBible === 'function') openCatholicBible();
+    }catch(e){ console.warn('[가톨릭길동무]', e); }
+  };
+  try{
+    var modal=document.getElementById('mass-quick-modal');
+    if(modal && modal.classList && modal.classList.contains('show') && typeof _hideMassQuickMenuOnly === 'function'){
+      _hideMassQuickMenuOnly(run, {deferHideUntilAfter:true});
+      return;
+    }
+  }catch(e){ console.warn('[가톨릭길동무]', e); }
+  run();
+}
 function openCatholicHymn(){ openFaithPortal('hymn'); }
 function openCatholicBible(){ openFaithPortal('bible'); }
 var _massQuickResumeTimer = null;
@@ -1098,7 +1118,7 @@ window.addEventListener('focus', function(){
 if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function(){ setTimeout(_tryResumeMassQuickSoon, 80); }, {once:true});
 else setTimeout(_tryResumeMassQuickSoon, 80);
 window.addEventListener('load', function(){ setTimeout(_tryResumeMassQuickSoon, 80); }, {once:true});
-try{ window.openFaithPortal=openFaithPortal; window._shouldMassQuickReturn=_shouldMassQuickReturn; window._shouldPrayerQuickReturn=_shouldPrayerQuickReturn; window._setPrayerQuickReturn=_setPrayerQuickReturn; window._clearMassQuickReturnForReload=_clearMassQuickReturnForReload; window._clearPrayerQuickReturn=_clearPrayerQuickReturn; window._returnToMassQuickMenu=_returnToMassQuickMenu; window._closePrayerAndReturn=_closePrayerAndReturn; window._resetCoverExitReady=_resetCoverExitReady; window._clearCoverExitArmed=_clearCoverExitArmed; window._isCoverScreenVisible=_isCoverScreenVisible; window._isAppScreenActive=_isAppScreenActive; window._hasOpenAppSurface=_hasOpenAppSurface; window._ensureCoverBackTrap=_ensureCoverBackTrap; window._ensureAppBackTrap=_ensureAppBackTrap; window._resetAppBackTrap=_resetAppBackTrap; window._pushCoverOverlayBackTrap=_pushCoverOverlayBackTrap; window._hideMassQuickMenuOnly=_hideMassQuickMenuOnly; window._setPrayerPopupReturnSource=_setPrayerPopupReturnSource; window._isPrayerPopupReturnSource=_isPrayerPopupReturnSource; window._forceCoverAfterPrayerQuickPopup=_forceCoverAfterPrayerQuickPopup; window._resetCoverBackTrap=_resetCoverBackTrap; window._consumePrayerCoverNeedsFirstToast=_consumePrayerCoverNeedsFirstToast; window.openMassQuickMenu=openMassQuickMenu; window.closeMassQuickMenu=closeMassQuickMenu; }catch(e){ console.warn('[가톨릭길동무]', e); }
+try{ window.openFaithPortal=openFaithPortal; window._shouldMassQuickReturn=_shouldMassQuickReturn; window._shouldPrayerQuickReturn=_shouldPrayerQuickReturn; window._setPrayerQuickReturn=_setPrayerQuickReturn; window._clearMassQuickReturnForReload=_clearMassQuickReturnForReload; window._clearPrayerQuickReturn=_clearPrayerQuickReturn; window._returnToMassQuickMenu=_returnToMassQuickMenu; window._closePrayerAndReturn=_closePrayerAndReturn; window._resetCoverExitReady=_resetCoverExitReady; window._clearCoverExitArmed=_clearCoverExitArmed; window._isCoverScreenVisible=_isCoverScreenVisible; window._isAppScreenActive=_isAppScreenActive; window._hasOpenAppSurface=_hasOpenAppSurface; window._ensureCoverBackTrap=_ensureCoverBackTrap; window._ensureAppBackTrap=_ensureAppBackTrap; window._resetAppBackTrap=_resetAppBackTrap; window._pushCoverOverlayBackTrap=_pushCoverOverlayBackTrap; window._hideMassQuickMenuOnly=_hideMassQuickMenuOnly; window._setPrayerPopupReturnSource=_setPrayerPopupReturnSource; window._isPrayerPopupReturnSource=_isPrayerPopupReturnSource; window._forceCoverAfterPrayerQuickPopup=_forceCoverAfterPrayerQuickPopup; window._resetCoverBackTrap=_resetCoverBackTrap; window._consumePrayerCoverNeedsFirstToast=_consumePrayerCoverNeedsFirstToast; window.openMassQuickMenu=openMassQuickMenu; window.closeMassQuickMenu=closeMassQuickMenu; window._openFaithPortalFromMassQuick=_openFaithPortalFromMassQuick; }catch(e){ console.warn('[가톨릭길동무]', e); }
 
 function _runRefreshAppFilesOnly(){
   var btn = document.getElementById('cover-update-btn');
@@ -1539,7 +1559,7 @@ function openDioceseView(opts){
       if(!restore) try{ frame.contentWindow && frame.contentWindow.resetDioceseFirstPage && frame.contentWindow.resetDioceseFirstPage(); }catch(e){ console.warn("[가톨릭길동무]", e); }
       if(typeof dioceseLoaded==='function') dioceseLoaded();
     };
-    frame.src='diocese.html?v=V6-30';
+    frame.src='diocese.html?v=V6-31';
     setTimeout(armDioceseOverlayBack, 0);
   }else{
     if(!restore){
@@ -1920,7 +1940,7 @@ const _PARISH_DIOCESE_ASSETS={
 };
 const _PARISH_DIOCESE_LOAD_STATE={};
 const _PARISH_DIOCESE_LOAD_PROMISES={};
-const _PARISH_ASSET_VERSION='V6-30';
+const _PARISH_ASSET_VERSION='V6-31';
 function _getParishDioceseAsset(code){
   return _PARISH_DIOCESE_ASSETS[code] || null;
 }
@@ -2083,7 +2103,7 @@ function _ensureParishDataLoaded(){
 }
 _initParishDataFromGlobal();
 
-const _PRAYER_ASSET_VERSION='V6-30';
+const _PRAYER_ASSET_VERSION='V6-31';
 let _prayerModuleLoadPromise=null;
 function _isPrayerDataReady(){
   return !!(window.PRAYER_DATA && typeof window.PRAYER_DATA === 'object');
@@ -2144,7 +2164,7 @@ try{ window.ensurePrayerModuleLoaded=ensurePrayerModuleLoaded; }catch(e){ consol
 let _RT_RAW = [];
 let _retreatRawLoaded = false;
 let _retreatDataLoadPromise = null;
-const _RETREAT_ASSET_VERSION='V6-30';
+const _RETREAT_ASSET_VERSION='V6-31';
 
 let RETREATS = [];
 function _buildRetreatList(raw){
@@ -2439,7 +2459,7 @@ const _TY={'A':'성지','B':'순례지','C':'순교 사적지'};
 
 let _shrineRawLoaded = false;
 let _shrineDataLoadPromise = null;
-const _SHRINE_ASSET_VERSION='V6-30';
+const _SHRINE_ASSET_VERSION='V6-31';
 let SHRINES = [];
 let JUKRIMGUL_IDX = -1;
 function _decodeShrineHomePage(hp){
@@ -6625,9 +6645,8 @@ document.addEventListener('DOMContentLoaded', function bindEvents() {
   onQ('[data-mass-quick-close]', 'click', function() { closeMassQuickMenu(); });
   on('mass-quick-missa', 'click', function(e) {
     if(e){ e.preventDefault(); e.stopPropagation(); }
-    _setMassQuickReturn(true);
-    if (typeof openFaithPortal === 'function') openFaithPortal('missa', {forceReload:true});
-    else if (typeof openMissa === 'function') openMissa();
+    if (typeof _openFaithPortalFromMassQuick === 'function') _openFaithPortalFromMassQuick('missa', {forceReload:true});
+    else { _setMassQuickReturn(true); if (typeof openFaithPortal === 'function') openFaithPortal('missa', {forceReload:true}); else if (typeof openMissa === 'function') openMissa(); }
   });
   on('mass-quick-prayer', 'click', function() {
     _setPrayerQuickReturn(true);
@@ -6641,13 +6660,15 @@ document.addEventListener('DOMContentLoaded', function bindEvents() {
     if (typeof _hideMassQuickMenuOnly === 'function') _hideMassQuickMenuOnly(openPrayerFromQuick, {deferHideUntilAfter:true});
     else openPrayerFromQuick();
   });
-  on('mass-quick-hymn', 'click', function() {
-    _setMassQuickReturn(true);
-    if (typeof openCatholicHymn === 'function') openCatholicHymn();
+  on('mass-quick-hymn', 'click', function(e) {
+    if(e){ e.preventDefault(); e.stopPropagation(); }
+    if (typeof _openFaithPortalFromMassQuick === 'function') _openFaithPortalFromMassQuick('hymn');
+    else { _setMassQuickReturn(true); if (typeof openCatholicHymn === 'function') openCatholicHymn(); }
   });
-  on('mass-quick-bible', 'click', function() {
-    _setMassQuickReturn(true);
-    if (typeof openCatholicBible === 'function') openCatholicBible();
+  on('mass-quick-bible', 'click', function(e) {
+    if(e){ e.preventDefault(); e.stopPropagation(); }
+    if (typeof _openFaithPortalFromMassQuick === 'function') _openFaithPortalFromMassQuick('bible');
+    else { _setMassQuickReturn(true); if (typeof openCatholicBible === 'function') openCatholicBible(); }
   });
 
   (function bindCoverRefreshPressActions(){
