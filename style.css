@@ -1647,6 +1647,52 @@ html.retreat-mode .ric-hd { background: linear-gradient(135deg, var(--v4-retreat
 .missa-external-desc { font-size: 14px; font-weight: 500; color: var(--v4-text-muted); line-height: 1.7; margin-bottom: 20px; word-break: keep-all; }
 .missa-open-link { display: flex; align-items: center; justify-content: center; width: 100%; height: 48px; border-radius: 12px; background: #0e1535; color: var(--v4-gold); text-decoration: none; font-size: 16px; font-weight: 800; }
 
+#missa-frame { flex: 1 1 auto; min-height: 0; width: 100%; border: 0; background: #fffaf2; }
+.faith-bottom-nav {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 12px calc(env(safe-area-inset-bottom, 0px) + 8px);
+  box-sizing: border-box;
+  background: rgba(255,250,242,.96);
+  border-top: 1px solid rgba(214,176,108,.62);
+  box-shadow: 0 -8px 24px rgba(31,42,68,.10);
+}
+#prayer-view .faith-bottom-nav {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  z-index: 20120;
+}
+#prayer-view:not(.open) .faith-bottom-nav, #missa-view:not(.open) .faith-bottom-nav { display: none; }
+#prayer-list-view { padding-bottom: calc(86px + env(safe-area-inset-bottom, 0px)) !important; }
+#prayer-detail-body { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)) !important; }
+.faith-bottom-btn {
+  flex: 1 1 0;
+  min-width: 0;
+  height: 48px;
+  border: 0;
+  border-radius: 15px;
+  color: #fff;
+  font-family: inherit;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  box-shadow: 0 3px 12px rgba(31,42,68,.16);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+.faith-bottom-btn span { font-size: 17px; line-height: 1; flex: 0 0 auto; }
+.faith-bottom-btn strong { font-size: 13px; line-height: 1; letter-spacing: -.04em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.faith-bottom-btn.faith-bible { background: linear-gradient(180deg,#2563eb 0%,#1d4ed8 100%); }
+.faith-bottom-btn.faith-hymn { background: linear-gradient(180deg,#7c3aed 0%,#6d28d9 100%); }
+.faith-bottom-btn.faith-prayer { background: linear-gradient(180deg,#d97706 0%,#b45309 100%); }
+.faith-bottom-btn.faith-missa { background: linear-gradient(180deg,#166534 0%,#14532d 100%); }
+.faith-bottom-btn:active { transform: translateY(1px); filter: brightness(.95); }
+
 #diocese-view {
   display: none;
   position: fixed;

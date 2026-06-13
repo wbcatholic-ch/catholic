@@ -465,17 +465,100 @@ function oaiSetMainMapLayerHidden(hidden){
 }
 window.oaiSetMainMapLayerHidden = oaiSetMainMapLayerHidden;
 
-function openMissa(){
+const OAI_FAITH_PORTAL_ORDER = ['bible','hymn','prayer','missa'];
+const OAI_FAITH_PORTAL_ITEMS = {
+  bible:  { label:'성경', icon:'📖', cls:'faith-bible',  url:'https://maria.catholic.or.kr/mobile/bible/read/bible_list.asp' },
+  hymn:   { label:'성가', icon:'🎼', cls:'faith-hymn',   url:'https://maria.catholic.or.kr/mobile/sungga/sungga.asp' },
+  prayer: { label:'기도문', icon:'🙏', cls:'faith-prayer' },
+  missa:  { label:'매일미사', icon:'✝️', cls:'faith-missa' }
+};
+function _getTodayMissaUrl(){
   const today=new Date();
   const yyyy=today.getFullYear();
   const mm=String(today.getMonth()+1).padStart(2,'0');
   const dd=String(today.getDate()).padStart(2,'0');
-  const url='https://missa.cbck.or.kr/DailyMissa/'+yyyy+mm+dd;
-  try{ localStorage.setItem('oai_last_missa_url', url); }catch(e){ console.warn("[가톨릭길동무]", e); }
+  return 'https://missa.cbck.or.kr/DailyMissa/'+yyyy+mm+dd;
+}
+function _getFaithPortalInfo(kind){
+  const info=OAI_FAITH_PORTAL_ITEMS[kind];
+  if(!info) return null;
+  if(kind==='missa') return Object.assign({}, info, {url:_getTodayMissaUrl()});
+  return info;
+}
+function _renderFaithBottomNav(current){
+  const ids=['missa-faith-nav','prayer-faith-nav'];
+  ids.forEach(function(id){
+    const nav=$(id);
+    if(!nav) return;
+    nav.dataset.current=current||'';
+    nav.innerHTML='';
+    OAI_FAITH_PORTAL_ORDER.filter(function(kind){ return kind!==current; }).forEach(function(kind){
+      const info=_getFaithPortalInfo(kind);
+      if(!info) return;
+      const btn=document.createElement('button');
+      btn.type='button';
+      btn.className='faith-bottom-btn '+info.cls;
+      btn.dataset.faithTarget=kind;
+      btn.innerHTML='<span>'+info.icon+'</span><strong>'+info.label+'</strong>';
+      btn.addEventListener('click', function(e){
+        if(e){ e.preventDefault(); e.stopPropagation(); }
+        _goFaithPortal(kind);
+      });
+      nav.appendChild(btn);
+    });
+  });
+}
+function _closePrayerSurfaceOnly(){
+  try{
+    const pv=$('prayer-view');
+    const pd=$('prayer-detail');
+    if(pd) pd.classList.remove('show');
+    if(pv){
+      pv.classList.remove('open');
+      try{ delete pv.dataset.quickSource; }catch(_e){}
+    }
+  }catch(e){ console.warn('[가톨릭길동무]', e); }
+}
+function _goFaithPortal(kind){
+  if(kind==='prayer'){
+    const mv=$('missa-view');
+    if(mv) mv.classList.remove('open');
+    const frame=$('missa-frame');
+    if(frame) frame.src='about:blank';
+    if(typeof openPrayerBook==='function') openPrayerBook({fromFaithQuick:true, instant:true});
+    return;
+  }
+  openFaithPortal(kind);
+}
+function openFaithPortal(kind){
+  const info=_getFaithPortalInfo(kind);
+  if(!info || kind==='prayer') return _goFaithPortal('prayer');
+  try{ if(typeof oaiClearMapInfoSelection === 'function') oaiClearMapInfoSelection('faith-portal-'+kind); }catch(e){ console.warn('[가톨릭길동무]', e); }
   try{ if(typeof _resetCoverExitReady==='function') _resetCoverExitReady(); }catch(e){ console.warn("[가톨릭길동무]", e); }
   try{ if(typeof _clearCoverExitArmed==='function') _clearCoverExitArmed(); }catch(e){ console.warn("[가톨릭길동무]", e); }
-  oaiSmoothNavigate(url, 'missa');
+  try{ localStorage.setItem('oai_last_'+kind+'_url', info.url); }catch(e){ console.warn("[가톨릭길동무]", e); }
+  const view=$('missa-view');
+  const frame=$('missa-frame');
+  const title=$('missa-bar-title');
+  if(!view || !frame){
+    oaiSmoothNavigate(info.url, kind);
+    return;
+  }
+  _closePrayerSurfaceOnly();
+  document.querySelectorAll('.module-view.open,#diocese-view.open').forEach(function(v){ v.classList.remove('open'); });
+  const cv=$('cover');
+  if(cv){ cv.style.opacity='0'; cv.style.display='none'; }
+  document.documentElement.classList.add('app-active');
+  if(typeof oaiSetMainMapLayerHidden==='function') oaiSetMainMapLayerHidden(true);
+  try{ if(typeof _ensureAppBackTrap==='function') _ensureAppBackTrap('faith-portal-'+kind); }catch(e){ console.warn('[가톨릭길동무]', e); }
+  view.dataset.faithCurrent=kind;
+  if(title) title.textContent=info.icon+' '+info.label;
+  _renderFaithBottomNav(kind);
+  view.classList.add('open');
+  try{ if(typeof oaiEnterView==='function') oaiEnterView(view); }catch(e){ console.warn('[가톨릭길동무]', e); }
+  if(frame.getAttribute('src')!==info.url) frame.src=info.url;
 }
+function openMissa(){ openFaithPortal('missa'); }
 
 function _setMassQuickReturn(on){
   try{
@@ -936,20 +1019,8 @@ function closeMassQuickMenu(opts){
   }
   _ensureCoverBackTrap();
 }
-function openCatholicHymn(){
-  const url='https://maria.catholic.or.kr/mobile/sungga/sungga.asp';
-  try{ localStorage.setItem('oai_last_hymn_url', url); }catch(e){ console.warn("[가톨릭길동무]", e); }
-  try{ if(typeof _resetCoverExitReady==='function') _resetCoverExitReady(); }catch(e){ console.warn("[가톨릭길동무]", e); }
-  try{ if(typeof _clearCoverExitArmed==='function') _clearCoverExitArmed(); }catch(e){ console.warn("[가톨릭길동무]", e); }
-  oaiSmoothNavigate(url, 'hymn');
-}
-function openCatholicBible(){
-  const url='https://maria.catholic.or.kr/mobile/bible/read/bible_list.asp';
-  try{ localStorage.setItem('oai_last_bible_url', url); }catch(e){ console.warn("[가톨릭길동무]", e); }
-  try{ if(typeof _resetCoverExitReady==='function') _resetCoverExitReady(); }catch(e){ console.warn("[가톨릭길동무]", e); }
-  try{ if(typeof _clearCoverExitArmed==='function') _clearCoverExitArmed(); }catch(e){ console.warn("[가톨릭길동무]", e); }
-  oaiSmoothNavigate(url, 'bible');
-}
+function openCatholicHymn(){ openFaithPortal('hymn'); }
+function openCatholicBible(){ openFaithPortal('bible'); }
 var _massQuickResumeTimer = null;
 var _massQuickResumeBusy = false;
 function _resumeMassQuickReturnIfNeeded(){
@@ -1282,6 +1353,7 @@ function openPrayerBook(opts){
   }catch(e){ console.warn("[가톨릭길동무]", e); }
   if(typeof oaiSetMainMapLayerHidden==='function') oaiSetMainMapLayerHidden(true);
   view.classList.add('open');
+  _renderFaithBottomNav('prayer');
   var restore = !!(opts && opts.restore);
   if(!restore && typeof oaiEnterView==='function') oaiEnterView(view);
   var setupDelay = (opts && opts.instant) ? 0 : 50;
@@ -1444,7 +1516,7 @@ function openDioceseView(opts){
       if(!restore) try{ frame.contentWindow && frame.contentWindow.resetDioceseFirstPage && frame.contentWindow.resetDioceseFirstPage(); }catch(e){ console.warn("[가톨릭길동무]", e); }
       if(typeof dioceseLoaded==='function') dioceseLoaded();
     };
-    frame.src='diocese.html?v=V6-24';
+    frame.src='diocese.html?v=V6-25';
     setTimeout(armDioceseOverlayBack, 0);
   }else{
     if(!restore){
@@ -1825,7 +1897,7 @@ const _PARISH_DIOCESE_ASSETS={
 };
 const _PARISH_DIOCESE_LOAD_STATE={};
 const _PARISH_DIOCESE_LOAD_PROMISES={};
-const _PARISH_ASSET_VERSION='V6-24';
+const _PARISH_ASSET_VERSION='V6-25';
 function _getParishDioceseAsset(code){
   return _PARISH_DIOCESE_ASSETS[code] || null;
 }
@@ -1988,7 +2060,7 @@ function _ensureParishDataLoaded(){
 }
 _initParishDataFromGlobal();
 
-const _PRAYER_ASSET_VERSION='V6-24';
+const _PRAYER_ASSET_VERSION='V6-25';
 let _prayerModuleLoadPromise=null;
 function _isPrayerDataReady(){
   return !!(window.PRAYER_DATA && typeof window.PRAYER_DATA === 'object');
@@ -2049,7 +2121,7 @@ try{ window.ensurePrayerModuleLoaded=ensurePrayerModuleLoaded; }catch(e){ consol
 let _RT_RAW = [];
 let _retreatRawLoaded = false;
 let _retreatDataLoadPromise = null;
-const _RETREAT_ASSET_VERSION='V6-24';
+const _RETREAT_ASSET_VERSION='V6-25';
 
 let RETREATS = [];
 function _buildRetreatList(raw){
@@ -2344,7 +2416,7 @@ const _TY={'A':'성지','B':'순례지','C':'순교 사적지'};
 
 let _shrineRawLoaded = false;
 let _shrineDataLoadPromise = null;
-const _SHRINE_ASSET_VERSION='V6-24';
+const _SHRINE_ASSET_VERSION='V6-25';
 let SHRINES = [];
 let JUKRIMGUL_IDX = -1;
 function _decodeShrineHomePage(hp){
