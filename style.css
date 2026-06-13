@@ -1613,21 +1613,21 @@ html.retreat-mode .ric-hd { background: linear-gradient(135deg, var(--v4-retreat
 }
 #missa-view.open { display: flex; transform: none; transition: none; animation: none; contain: layout paint size; }
 #missa-bar {
-  background: #0e1535;
+  background: #fffaf1;
   padding: env(safe-area-inset-top, 0) 14px 0;
   display: flex;
   align-items: center;
   gap: 12px;
   min-height: calc(52px + env(safe-area-inset-top, 0));
   flex-shrink: 0;
-  border-bottom: 2px solid var(--gold);
+  border-bottom: 1.5px solid #e4d6bf;
 }
-#missa-bar-title { font-size: 16px; font-weight: 700; color: var(--gold); letter-spacing: .05em; }
+#missa-bar-title { font-size: 16px; font-weight: 800; color: #6f4f23; letter-spacing: .02em; }
 #missa-close {
   background: transparent;
   border: none;
   border-radius: 0;
-  color: rgba(212,170,106,.9);
+  color: #8a6a38;
   font-size: 28px;
   font-weight: 900;
   line-height: 1;
