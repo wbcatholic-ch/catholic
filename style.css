@@ -1670,7 +1670,7 @@ html.retreat-mode .ric-hd { background: linear-gradient(135deg, var(--v4-retreat
 .faith-bottom-btn {
   flex: 1 1 0;
   min-width: 0;
-  height: 48px;
+  height: 52px;
   border: 1.6px solid transparent;
   border-radius: 15px;
   font-family: inherit;
@@ -1684,7 +1684,7 @@ html.retreat-mode .ric-hd { background: linear-gradient(135deg, var(--v4-retreat
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
 }
-.faith-bottom-btn strong { font-size: 13.5px; line-height: 1; letter-spacing: -.04em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.faith-bottom-btn strong { font-size: calc(15.5px * var(--app-font-scale, 1)); line-height: 1; letter-spacing: -.04em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .faith-bottom-btn.faith-bible { background: #e8f0ff; border-color: #7aa7ff; color: #1e40af; }
 .faith-bottom-btn.faith-hymn { background: #f1e8ff; border-color: #b794f4; color: #5b21b6; }
 .faith-bottom-btn.faith-prayer { background: #fff3d7; border-color: #f2b84b; color: #8a4b00; }
