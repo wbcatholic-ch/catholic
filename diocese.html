@@ -17,7 +17,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>교구지도</title>
-<link rel="stylesheet" href="css/diocese.css?v=V6-50">
+<link rel="stylesheet" href="css/diocese.css?v=V6-35">
 </head>
 <body>
 <header>
@@ -1988,16 +1988,9 @@ window.addEventListener('pageshow',function(){
         window.parent.localStorage.setItem('catholic_diocese_external_return_v1', payload);
         window.parent.__OAI_DIOCESE_EXTERNAL_LEAVING__ = true;
       }catch(e){}
-      // V6-112: 관구·교구 외부 홈페이지도 부모 앱의 공통 외부사이트 이동 함수만 사용한다.
+      // 관구·교구 외부 홈페이지 복귀 시 부모 앱의 안정막/페이드 효과를 호출하지 않는다.
       document.documentElement.classList.remove('oai-dio-external-stabilize','oai-dio-external-return','oai-dio-returning');
-      try{
-        if(typeof window.parent.oaiOpenExternalSite === 'function'){
-          window.parent.oaiOpenExternalSite(url, {kind:'diocese-external', source:'diocese-frame'});
-        }else{
-          try{ if(typeof window.parent.markExternalReturnStabilize === 'function') window.parent.markExternalReturnStabilize('diocese-external'); }catch(_e){}
-          window.top.location.assign(url);
-        }
-      }
+      try{ window.top.location.assign(url); }
       catch(e){ try{ window.top.location.href = url; }catch(_e){ window.__OAI_DIO_EXTERNAL_LEAVING__ = false; } }
       setTimeout(function(){
         try{
@@ -2006,14 +1999,7 @@ window.addEventListener('pageshow',function(){
       }, 3800);
       return;
     }
-    else {
-      try{ sessionStorage.setItem('oai_diocese_standalone_return',JSON.stringify(state)); }catch(e){}
-      markDioceseStandaloneExternal();
-      try{
-        if(typeof window.oaiOpenExternalSite === 'function') window.oaiOpenExternalSite(url, {kind:'diocese-standalone-external', source:'diocese-standalone'});
-        else location.href=url;
-      }catch(_e){ try{ location.assign(url); }catch(__e){} }
-    }
+    else { try{ sessionStorage.setItem('oai_diocese_standalone_return',JSON.stringify(state)); }catch(e){} markDioceseStandaloneExternal(); try{ location.href=url; }catch(_e){ location.assign(url); } }
   };
   document.addEventListener('click',function(e){
     var t=e.target&&e.target.closest?e.target.closest('[data-dio-url]'):null;

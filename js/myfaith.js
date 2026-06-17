@@ -308,13 +308,11 @@
       try{ document.activeElement && document.activeElement.blur && document.activeElement.blur(); }catch(_e){}
       markMyFaithExternalLink();
       try{
-        if(typeof window.oaiSmoothNavigate === 'function'){
-          window.oaiSmoothNavigate(url, 'my-faith-external');
-          return;
-        }
+        var opened = window.open(url, '_blank', 'noopener,noreferrer');
+        if(opened && typeof opened.focus === 'function') opened.focus();
+        if(opened) return;
       }catch(_e){}
-      try{ if(typeof window.markExternalReturnStabilize === 'function') window.markExternalReturnStabilize('my-faith-external'); }catch(_e){}
-      setTimeout(function(){ try{ location.assign(url); }catch(e){ try{ location.href = url; }catch(_e){} } }, 70);
+      try{ alert('외부 홈페이지는 새 브라우저 창에서 열어 주세요.'); }catch(_e){}
     }
     function bindMyFaithClick(el, fn){
       if(!el || typeof fn !== 'function') return;
@@ -442,7 +440,7 @@
         a.target='_blank';
         a.rel='noopener noreferrer external';
         a.setAttribute('aria-label','외부 브라우저에서 열기');
-        a.addEventListener('click', function(){ markMyFaithExternalLink(); try{ if(typeof window.markExternalReturnStabilize === 'function') window.markExternalReturnStabilize('my-faith-external'); }catch(_e){} }, true);
+        a.addEventListener('click', function(){ markMyFaithExternalLink(); }, true);
         return a;
       }
       function listSection(t,c){ var sec=document.createElement('section'); sec.className='my-faith-section my-faith-list-section '+(c||''); var h=document.createElement('h3'); h.textContent=t; sec.appendChild(h); return sec; }
