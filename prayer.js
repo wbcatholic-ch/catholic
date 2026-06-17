@@ -450,6 +450,10 @@ function prMaybeShowExternalReturnGuide(){
     if(sessionStorage.getItem('oai_prayer_external_return_pending') !== '1') return;
     sessionStorage.removeItem('oai_prayer_external_return_pending');
     sessionStorage.removeItem('oai_prayer_external_return_ts');
+    if(typeof window.oaiHoldStabilityVeil === 'function'){
+      window.oaiHoldStabilityVeil('prayer-external-return', 900);
+      return;
+    }
     prShowExternalGuide('앱으로 돌아오는 중입니다.', 900);
   }catch(e){ console.warn('[가톨릭길동무]', e); }
 }
@@ -493,6 +497,16 @@ function prOpenOfficialPrayer(prayer){
     sessionStorage.setItem('oai_prayer_list_restore', JSON.stringify(window.__oaiPrayerListRestore));
   }catch(e){ console.warn('[가톨릭길동무]', e); }
   prMarkExternalReturnFlag();
+  try{
+    if(typeof window.oaiOpenExternalSite === 'function'){
+      window.oaiOpenExternalSite(url, {kind:'prayer-external'});
+      return;
+    }
+    if(typeof window.oaiSmoothNavigate === 'function'){
+      window.oaiSmoothNavigate(url, 'prayer-external');
+      return;
+    }
+  }catch(e){ console.warn('[가톨릭길동무]', e); }
   prShowExternalGuide('공식 기도문 페이지로 이동합니다.', 0, { hold:true, maxDuration:6500 });
   window.setTimeout(function(){
     try{ window.location.href = url; }
