@@ -60,7 +60,7 @@
     });
   });
   
-  ['missa-view','diocese-view','prayer-view','web-view','trail-view','qna-view'].forEach(function(id){
+  ['missa-view','diocese-view','prayer-view','web-view','trail-view','qna-view','my-diocese-modal'].forEach(function(id){
     var el = document.getElementById(id);
     if(el) observer.observe(el, {attributes:true, attributeFilter:['class']});
   });

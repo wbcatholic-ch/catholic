@@ -151,3 +151,20 @@ html.pr-external-guide-active.oai-stability-veil::after {
   .route-choice-panel{width:calc(100vw - 36px);padding:18px 14px 16px;}
   .route-choice-btn{min-height:56px;font-size:14.5px;}
 }
+
+
+/* V8-1-14-50: 경로검색 선택 모달 하단 버튼 테두리와 글자 크기 보강 */
+.route-choice-btn{
+  min-height:62px!important;
+  font-size:16px!important;
+  font-weight:900!important;
+  border-width:2.5px!important;
+}
+.route-choice-btn.start{border-color:#B91C1C!important;color:#991B1B!important;}
+.route-choice-btn.end{border-color:#1D4ED8!important;color:#1E40AF!important;}
+.route-choice-btn.cancel{border-color:#15803D!important;color:#166534!important;}
+.route-choice-btn.keep{border-color:#15803D!important;color:#166534!important;}
+.route-choice-btn.danger{border-color:#B91C1C!important;color:#991B1B!important;}
+@media(max-width:520px){
+  .route-choice-btn{min-height:60px!important;font-size:15.5px!important;border-width:2.5px!important;}
+}

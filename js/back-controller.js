@@ -8,6 +8,9 @@
 
   var _href = location.href.split('#')[0];
 
+  /* 진단 표시 코드는 V8-1-13에서 제거했습니다. */
+
+
   function armCoverBackTrap(reason, opts){
     try{
       opts = opts || {};
@@ -60,10 +63,43 @@
         if(el && el.classList && el.classList.contains('open')) return true;
       }
       if(document.querySelector('.module-view.open')) return true;
+      if(document.querySelector('#info-card.open,#sheet-route.open,#route-choice-modal.open,#srch-modal.open,.sheet.open,.trail-sheet.open,#shrine-visit-modal.show,#shrine-auto-visit-modal.show,#shrine-visit-detail-view.show,#shrine-visit-cards-modal.show')) return true;
+      try{ if(typeof _activeTab !== 'undefined' && _activeTab) return true; }catch(_e){}
+      try{ if(typeof _routeMode !== 'undefined' && (_routeMode || _rS || _rE)) return true; }catch(_e){}
       var app = $b('app');
-      if(app && document.documentElement.classList.contains('app-active') && !coverVisible()) return true;
+      if(app && document.documentElement.classList.contains('app-active')) return true;
     }catch(e){ console.warn('[가톨릭길동무]', e); }
     return false;
+  }
+
+  function hasVisibleAppLayer(){
+    try{
+      var ids = ['diocese-view','missa-view','prayer-view','qna-view'];
+      for(var i=0;i<ids.length;i++){
+        var el = $b(ids[i]);
+        if(el && el.classList && el.classList.contains('open')) return true;
+      }
+      if(document.querySelector('.module-view.open')) return true;
+      if(document.querySelector('#info-card.open,#sheet-route.open,#route-choice-modal.open,#srch-modal.open,.sheet.open,.trail-sheet.open,#shrine-visit-modal.show,#shrine-auto-visit-modal.show,#shrine-visit-detail-view.show,#shrine-visit-cards-modal.show')) return true;
+      if(isGuideModalOpen()) return true;
+    }catch(e){ console.warn('[가톨릭길동무]', e); }
+    return false;
+  }
+
+  function isCoverOnlyVisible(){
+    try{ return coverVisible() && !hasVisibleAppLayer(); }catch(e){ return false; }
+  }
+
+  function stabilizeCoverFirstBack(reason){
+    try{
+      if(!isCoverOnlyVisible()) return false;
+      if(typeof window._resetCoverExitReady === 'function') window._resetCoverExitReady();
+      if(typeof window._clearCoverExitArmed === 'function') window._clearCoverExitArmed();
+      if(typeof window._clearHardCoverExitFlags === 'function') window._clearHardCoverExitFlags(reason || 'cover-return-stabilize');
+      if(typeof window._forceNextCoverBackToast === 'function') window._forceNextCoverBackToast(reason || 'cover-return-stabilize');
+      armCoverBackTrap(reason || 'cover-return-stabilize', {force:true});
+      return true;
+    }catch(e){ console.warn('[가톨릭길동무]', e); return false; }
   }
 
   function appActive(){
@@ -107,7 +143,7 @@
     }catch(e){ console.warn('[가톨릭길동무]', e); return false; }
   }
   function isGuideModalOpen(){
-    try{ return !!document.querySelector('.guide-modal.show') || !!document.querySelector('.cover-menu-modal.show') || !!document.querySelector('.my-diocese-modal.show') || isRefreshDialogOpen(); }catch(e){ return false; }
+    try{ return !!document.querySelector('.guide-modal.show') || !!document.querySelector('.cover-menu-modal.show') || isRefreshDialogOpen(); }catch(e){ return false; }
   }
   function closeGuideModals(){
     try{
@@ -123,9 +159,6 @@
       }
       var mq = $b('mass-quick-modal');
       if(mq && mq.classList.contains('show') && typeof window.closeMassQuickMenu === 'function'){
-        var fromPrayer = false;
-        try{ fromPrayer = !!(mq.dataset && mq.dataset.returnSource === 'prayer'); }catch(e){}
-        try{ if(typeof window._isPrayerPopupReturnSource === 'function' && window._isPrayerPopupReturnSource()) fromPrayer = true; }catch(e){}
         window.closeMassQuickMenu();
       } else {
         document.querySelectorAll('.guide-modal.show').forEach(function(el){
@@ -135,6 +168,11 @@
       }
       if(typeof window.resetGuideManualScroll === 'function') window.resetGuideManualScroll();
       if(typeof window._resetCoverExitReady === 'function') window._resetCoverExitReady();
+      if(typeof window._clearCoverExitArmed === 'function') window._clearCoverExitArmed();
+      if(typeof window._clearHardCoverExitFlags === 'function') window._clearHardCoverExitFlags('guide-modal-close');
+      if(typeof window._forceNextCoverBackToast === 'function') window._forceNextCoverBackToast('guide-modal-close');
+      if(typeof window._resetCoverBackTrap === 'function') window._resetCoverBackTrap('guide-modal-close');
+      else armCoverBackTrap('guide-modal-close', {force:true});
     }catch(e){ console.warn('[가톨릭길동무]', e); }
   }
 
@@ -154,6 +192,13 @@
         diocese.classList.remove('open');
         callGTC();
       }
+      return true;
+    }
+
+    var myFaith = $b('my-diocese-modal');
+    if(myFaith && myFaith.classList && myFaith.classList.contains('open')){
+      if(typeof window.closeMyFaithLifeModal === 'function') window.closeMyFaithLifeModal();
+      else { myFaith.classList.remove('open','show'); callGTC(); }
       return true;
     }
 
@@ -215,6 +260,35 @@
 
   function closeLayer(){
     var el;
+
+    el = $b('shrine-visit-modal');
+    if(el && el.classList && el.classList.contains('show')){
+      if(typeof window._closeShrineVisitModal === 'function') window._closeShrineVisitModal({fromBackController:true});
+      else { el.classList.remove('show'); el.setAttribute('aria-hidden','true'); }
+      return true;
+    }
+
+    el = $b('shrine-auto-visit-modal');
+    if(el && el.classList && el.classList.contains('show')){
+      if(typeof window._closeShrineAutoVisitModal === 'function') window._closeShrineAutoVisitModal({fromBackController:true});
+      else { el.classList.remove('show'); el.setAttribute('aria-hidden','true'); }
+      return true;
+    }
+
+    el = $b('shrine-visit-detail-view');
+    if(el && el.classList && el.classList.contains('show')){
+      if(typeof window._closeShrineVisitDetail === 'function') window._closeShrineVisitDetail({fromBackController:true});
+      else { el.classList.remove('show'); el.setAttribute('aria-hidden','true'); }
+      return true;
+    }
+
+    el = $b('shrine-visit-cards-modal');
+    if(el && el.classList && el.classList.contains('show')){
+      if(typeof window._closeShrineVisitCardsModal === 'function') window._closeShrineVisitCardsModal({fromBackController:true});
+      else { el.classList.remove('show'); el.setAttribute('aria-hidden','true'); }
+      return true;
+    }
+
     el = $b('exit-dlg');
     if(el && el.classList.contains('open')){ el.classList.remove('open'); return true; }
 
@@ -363,9 +437,9 @@
     try{ history.go(1); }catch(e){ _restoring = false; console.warn("[가톨릭길동무]", e); }
 
     if(typeof window._oaiPrayerBackHandle === 'function' && window._oaiPrayerBackHandle('prayer-popstate')) return;
-    if(closeModuleInnerLayer()) return;
-    if(closeExtOrModule()) return;
-    if(closeLayer()) return;
+    if(closeModuleInnerLayer()){ return; }
+    if(closeExtOrModule()){ return; }
+    if(closeLayer()){ return; }
     callGTC();
   }, false);
 
@@ -388,19 +462,30 @@
       if(typeof window._showBackToast==='function') window._showBackToast();
       return;
     }
-    if(closeModuleInnerLayer()) return;
-    if(closeExtOrModule()) return;
-    if(closeLayer()) return;
+    if(closeModuleInnerLayer()){ return; }
+    if(closeExtOrModule()){ return; }
+    if(closeLayer()){ return; }
     callGTC();
   }, false);
 
   window.addEventListener('pageshow', function(){
     try{
+      if(stabilizeCoverFirstBack('pageshow-cover-return')) return;
       var st = history.state;
       if(st && st._p === 1) return;  // 트랩 유지 중이면 스킵
       if(!appActive()) armCoverBackTrap('pageshow-cover');
       else { history.replaceState({_p:0}, '', _href); history.pushState({_p:1}, '', _href); }
     }catch(e){ console.warn("[가톨릭길동무]", e); }
+  }, true);
+
+  window.addEventListener('focus', function(){
+    try{ setTimeout(function(){ stabilizeCoverFirstBack('focus-cover-return'); }, 40); }catch(e){ console.warn('[가톨릭길동무]', e); }
+  }, true);
+
+  document.addEventListener('visibilitychange', function(){
+    if(document.visibilityState === 'visible'){
+      try{ setTimeout(function(){ stabilizeCoverFirstBack('visible-cover-return'); }, 60); }catch(e){ console.warn('[가톨릭길동무]', e); }
+    }
   }, true);
 
 })();

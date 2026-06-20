@@ -211,18 +211,19 @@ window.prRenderList = function(){
   ul.innerHTML = '';
   const kw = prNorm(prG('prayer-search-inp')?.value||'');
   let data = [];
-  if(prCurCat === 'favorites'){
+  if(kw){
+    // V8-1-13-3: 즐겨찾기 탭에서도 검색어가 있으면 전체 표시 가능 기도문에서 검색한다.
+    PR_CATS.forEach(k=>{ if(k!=='favorites') data = data.concat(PR_DATA[k]||[]); });
+  } else if(prCurCat === 'favorites'){
     PR_CATS.forEach(k=>{ if(k!=='favorites') data = data.concat(PR_DATA[k]||[]); });
     data = data.filter(p=>prFavorites.includes(p.id));
-  } else if(kw){
-    PR_CATS.forEach(k=>{ if(k!=='favorites') data = data.concat(PR_DATA[k]||[]); });
   } else {
     data = PR_DATA[prCurCat] || [];
   }
   const filtered = kw ? data.filter(p=>prNorm(p.title).includes(kw)) : data;
   if(!filtered.length){
     ul.innerHTML = '<li><div class="pr-empty">'+
-      (prCurCat==='favorites'?'즐겨찾기한 기도문이 없습니다.':kw?'검색 결과가 없습니다.':'등록된 기도문이 없습니다.')+
+      (kw?'검색 결과가 없습니다.':prCurCat==='favorites'?'즐겨찾기한 기도문이 없습니다.':'등록된 기도문이 없습니다.')+
       '</div></li>';
     return;
   }
@@ -450,6 +451,10 @@ function prMaybeShowExternalReturnGuide(){
     if(sessionStorage.getItem('oai_prayer_external_return_pending') !== '1') return;
     sessionStorage.removeItem('oai_prayer_external_return_pending');
     sessionStorage.removeItem('oai_prayer_external_return_ts');
+    if(typeof window.oaiHoldStabilityVeil === 'function'){
+      window.oaiHoldStabilityVeil('prayer-external-return', 900);
+      return;
+    }
     prShowExternalGuide('앱으로 돌아오는 중입니다.', 900);
   }catch(e){ console.warn('[가톨릭길동무]', e); }
 }
@@ -493,6 +498,16 @@ function prOpenOfficialPrayer(prayer){
     sessionStorage.setItem('oai_prayer_list_restore', JSON.stringify(window.__oaiPrayerListRestore));
   }catch(e){ console.warn('[가톨릭길동무]', e); }
   prMarkExternalReturnFlag();
+  try{
+    if(typeof window.oaiOpenExternalSite === 'function'){
+      window.oaiOpenExternalSite(url, {kind:'prayer-external'});
+      return;
+    }
+    if(typeof window.oaiSmoothNavigate === 'function'){
+      window.oaiSmoothNavigate(url, 'prayer-external');
+      return;
+    }
+  }catch(e){ console.warn('[가톨릭길동무]', e); }
   prShowExternalGuide('공식 기도문 페이지로 이동합니다.', 0, { hold:true, maxDuration:6500 });
   window.setTimeout(function(){
     try{ window.location.href = url; }
@@ -597,6 +612,91 @@ window.prOpenDetail = prOpenDetail;
 window.prOpenOfficialPrayer = prOpenOfficialPrayer;
 window.prRefreshVisibleCats = function(){ prEnsureCurrentCat(); prBuildTabs(); prRenderList(); };
 window.prCloseDetail = window.prCloseDetail;
+
+
+/* V8-1-13-2: prayer detail back handler
+ * 목적: 주요기도문 본문에서 뒤로가기를 누르면 커버가 아니라 목록으로 먼저 복귀한다.
+ * back-controller 구조는 건드리지 않고, 누락되어 있던 prayer 전용 handler만 연결한다.
+ */
+(function(){
+  'use strict';
+  if(window.__OAI_PRAYER_DETAIL_BACK_V8132__) return;
+  window.__OAI_PRAYER_DETAIL_BACK_V8132__ = true;
+
+  function byId(id){ return document.getElementById(id); }
+  function isPrayerOpen(){
+    var view = byId('prayer-view');
+    return !!(view && view.classList && view.classList.contains('open'));
+  }
+  function isDetailOpen(){
+    var detail = byId('prayer-detail');
+    return !!(detail && detail.classList && detail.classList.contains('show'));
+  }
+  function closeDetailOnly(reason){
+    if(!isDetailOpen()) return false;
+    try{
+      if(typeof window.prCloseDetail === 'function'){
+        window.prCloseDetail({skipTrap:true, reason:reason || 'prayer-back-detail-to-list'});
+      }else{
+        var detail = byId('prayer-detail');
+        if(detail) detail.classList.remove('show');
+        if(typeof window.prRestoreListPosition === 'function') window.prRestoreListPosition();
+      }
+    }catch(e){
+      console.warn('[가톨릭길동무]', e);
+      var fallback = byId('prayer-detail');
+      if(fallback) fallback.classList.remove('show');
+    }
+    try{ if(typeof window.prRestoreListPosition === 'function') window.prRestoreListPosition(); }catch(_e){}
+    return true;
+  }
+  function shouldReturnToQuick(){
+    var view = byId('prayer-view');
+    try{ if(view && view.dataset && view.dataset.quickSource === 'mass') return true; }catch(_e){}
+    try{ if(typeof window._shouldPrayerQuickReturn === 'function' && window._shouldPrayerQuickReturn()) return true; }catch(_e){}
+    return false;
+  }
+  function closePrayerListToQuickOrCover(reason){
+    if(!isPrayerOpen()) return false;
+    if(closeDetailOnly(reason || 'prayer-list-close-detail-first')) return true;
+    try{
+      if(shouldReturnToQuick() && typeof window._returnToMassQuickMenu === 'function'){
+        window._returnToMassQuickMenu('prayer');
+        return true;
+      }
+    }catch(e){ console.warn('[가톨릭길동무]', e); }
+    try{
+      if(typeof window.closePrayerView === 'function') window.closePrayerView();
+      else {
+        var view = byId('prayer-view');
+        if(view) view.classList.remove('open');
+      }
+    }catch(e){ console.warn('[가톨릭길동무]', e); }
+    try{ if(typeof window._clearPrayerQuickReturn === 'function') window._clearPrayerQuickReturn(); }catch(_e){}
+    try{ if(typeof window.goToCover === 'function') window.goToCover(); }catch(e){ console.warn('[가톨릭길동무]', e); }
+    return true;
+  }
+
+  window._oaiPrayerBackHandle = function(reason){
+    if(!isPrayerOpen()) return false;
+    if(closeDetailOnly(reason || 'prayer-back-detail-to-list')) return true;
+    return closePrayerListToQuickOrCover(reason || 'prayer-back-list-close');
+  };
+
+  window._oaiPrayerListToPopupOrCover = function(reason){
+    return closePrayerListToQuickOrCover(reason || 'prayer-list-to-popup-or-cover');
+  };
+
+  window._oaiPrayerResetToCover = function(reason){
+    var detail = byId('prayer-detail');
+    var view = byId('prayer-view');
+    try{ if(detail) detail.classList.remove('show'); }catch(_e){}
+    try{ if(view){ view.classList.remove('open'); delete view.dataset.quickSource; } }catch(_e){}
+    try{ if(typeof window._clearPrayerQuickReturn === 'function') window._clearPrayerQuickReturn(); }catch(_e){}
+    try{ if(typeof window.goToCover === 'function') window.goToCover(); }catch(e){ console.warn('[가톨릭길동무]', e); }
+    return true;
+  };
+})();
 
 (function(){
   var el = document.getElementById('prayer-list-view');

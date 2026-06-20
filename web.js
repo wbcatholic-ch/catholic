@@ -201,7 +201,7 @@
   function wfSave(){ try{ localStorage.setItem(WEB_FAV_KEY, JSON.stringify(webFavs)); }catch(e){ console.warn("[가톨릭길동무]", e); } }
   function wfHas(url){ return webFavs.includes(url); }
   function webDefaultCat(){
-    return webFavs && webFavs.length ? '⭐ 즐겨찾기' : '사제찾기';
+    return webFavs && webFavs.length ? '⭐ 즐겨찾기' : '교구';
   }
   function wfToggle(url){
     const hadFavs = !!(webFavs && webFavs.length);
@@ -249,8 +249,8 @@
   }
   function webCategoryRank(cat){
     var order = {
-      '사제찾기': 0,
-      '교구': 1,
+      '교구': 0,
+      '사제찾기': 1,
       '중앙기구': 2,
       '신앙 포털': 3,
       '미디어': 4,
@@ -475,7 +475,7 @@
 
   function webOrderedCats(){
     const cats = [];
-    const priority = ['사제찾기', '교구', '중앙기구'];
+    const priority = ['교구', '사제찾기', '중앙기구'];
     if(webFavs && webFavs.length) cats.push('⭐ 즐겨찾기');
     priority.forEach(function(cat){
       if(!cats.includes(cat) && WEB_SITES.some(function(s){ return s.cat === cat; })) cats.push(cat);
@@ -487,7 +487,7 @@
   function rebuildWebCats(){
     const wrap = ig$('web-cats');
     if(!wrap) return;
-    if(!(webFavs && webFavs.length) && webState.curCat === '⭐ 즐겨찾기') webState.curCat = '사제찾기';
+    if(!(webFavs && webFavs.length) && webState.curCat === '⭐ 즐겨찾기') webState.curCat = '교구';
     webState.built = false;
     wrap.innerHTML = '';
     initWebModule();

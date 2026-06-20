@@ -230,3 +230,138 @@
   }
 }
 
+
+/* V8-1-13-17: 버튼 바깥 패널은 유지하고, 버튼 내부는 흰색으로 정리 */
+.cover-menu-panel,
+#cover #mass-quick-modal .mass-quick-panel {
+  background:
+    radial-gradient(circle at 18% 18%, rgba(255,235,188,.88) 0%, rgba(255,235,188,.34) 34%, transparent 58%),
+    radial-gradient(circle at 82% 92%, rgba(214,165,48,.26) 0%, rgba(214,165,48,.14) 34%, transparent 62%),
+    linear-gradient(145deg, #FFFDF7 0%, #F8EFD9 55%, #EBD4A8 100%) !important;
+  border: 1.8px solid rgba(196,161,92,.72) !important;
+  box-shadow: 0 24px 54px rgba(58,47,34,.20), inset 0 1px 0 rgba(255,255,255,.92) !important;
+}
+.cover-menu-list,
+#cover #mass-quick-modal .mass-quick-actions {
+  padding: 2px !important;
+  border-radius: 22px !important;
+  background: linear-gradient(180deg, rgba(255,255,255,.22), rgba(255,248,232,.08)) !important;
+}
+.cover-menu-item,
+#cover #mass-quick-modal .mass-quick-btn,
+#cover #mass-quick-modal .mass-quick-primary {
+  border-width: 2.6px !important;
+  color: #172033 !important;
+  box-shadow: 0 8px 18px rgba(74,47,34,.10), inset 0 1px 0 rgba(255,255,255,.94) !important;
+}
+.cover-menu-text,
+#cover #mass-quick-modal .mass-quick-btn strong {
+  color: #172033 !important;
+  font-weight: 950 !important;
+  letter-spacing: -.035em !important;
+}
+#cover-menu-guide-btn,
+#cover #mass-quick-prayer {
+  background: linear-gradient(135deg, #F3FFF8 0%, #D9F5E7 100%) !important;
+  border-color: #26956E !important;
+}
+#cover-menu-privacy-link,
+#cover #mass-quick-hymn {
+  background: linear-gradient(135deg, #FFF6FB 0%, #FBD6E8 100%) !important;
+  border-color: #C45284 !important;
+}
+#cover-menu-qna-btn,
+#cover #mass-quick-missa,
+#cover #mass-quick-modal .mass-quick-primary {
+  background: linear-gradient(135deg, #FFF9E4 0%, #F7E29B 100%) !important;
+  border-color: #D2A10D !important;
+}
+#cover #mass-quick-bible {
+  background: linear-gradient(135deg, #F6FBFF 0%, #DDECFB 100%) !important;
+  border-color: #5E7FA5 !important;
+}
+#cover-menu-guide-btn .cover-menu-text,
+#cover #mass-quick-prayer strong { color: #172B3E !important; }
+#cover-menu-privacy-link .cover-menu-text,
+#cover #mass-quick-hymn strong { color: #172033 !important; }
+#cover-menu-qna-btn .cover-menu-text,
+#cover #mass-quick-missa strong { color: #172033 !important; }
+#cover #mass-quick-bible strong { color: #172033 !important; }
+.cover-menu-icon,
+#cover #mass-quick-modal .mass-quick-btn span {
+  filter: saturate(1.06) contrast(1.03) !important;
+}
+
+/* V8-1-13-17: 메뉴/미사 빠른 사용 팝업 버튼 안쪽은 사진처럼 흰색으로 통일 */
+.cover-menu-item,
+#cover #mass-quick-modal .mass-quick-btn,
+#cover #mass-quick-modal .mass-quick-primary,
+#cover-menu-guide-btn,
+#cover-menu-privacy-link,
+#cover-menu-qna-btn,
+#cover #mass-quick-missa,
+#cover #mass-quick-prayer,
+#cover #mass-quick-hymn,
+#cover #mass-quick-bible {
+  background: #FFFFFF !important;
+  background-image: none !important;
+}
+.cover-menu-item,
+#cover #mass-quick-modal .mass-quick-btn,
+#cover #mass-quick-modal .mass-quick-primary {
+  border-width: 2.6px !important;
+  color: #172033 !important;
+}
+#cover-menu-guide-btn { border-color: #9CC9F5 !important; }
+#cover-menu-privacy-link { border-color: #D7C4F2 !important; }
+#cover-menu-qna-btn { border-color: #A9DDB7 !important; }
+#cover #mass-quick-missa,
+#cover #mass-quick-modal .mass-quick-primary { border-color: #D2A10D !important; }
+#cover #mass-quick-prayer { border-color: #26956E !important; }
+#cover #mass-quick-hymn { border-color: #C45284 !important; }
+#cover #mass-quick-bible { border-color: #5E7FA5 !important; }
+.cover-menu-text,
+#cover #mass-quick-modal .mass-quick-btn strong {
+  color: #172033 !important;
+  font-weight: 950 !important;
+}
+
+
+/* V8-1-14-10-QNA-NOTICE-IN-TEXTAREA: 메뉴/미사 빠른사용 버튼 중립 테두리 유지 */
+#cover-menu-guide-btn,
+#cover-menu-privacy-btn,
+#cover-menu-qna-btn,
+#cover #mass-quick-missa,
+#cover #mass-quick-prayer,
+#cover #mass-quick-hymn,
+#cover #mass-quick-bible {
+  background: #fffdf8 !important;
+  border: 1.7px solid #c9d0dc !important;
+  color: #172033 !important;
+}
+#cover-menu-guide-btn .cover-menu-text,
+#cover-menu-privacy-btn .cover-menu-text,
+#cover-menu-qna-btn .cover-menu-text,
+#cover #mass-quick-missa strong,
+#cover #mass-quick-prayer strong,
+#cover #mass-quick-hymn strong,
+#cover #mass-quick-bible strong { color: #172033 !important; }
+
+/* V8-1-14-10-QNA-NOTICE-IN-TEXTAREA: 매일미사 빠른버튼도 다른 버튼과 같은 중립 테두리로 강제 */
+#cover #mass-quick-modal #mass-quick-missa.mass-quick-btn,
+#cover #mass-quick-modal #mass-quick-missa.mass-quick-primary,
+#cover #mass-quick-modal #mass-quick-prayer.mass-quick-btn,
+#cover #mass-quick-modal #mass-quick-hymn.mass-quick-btn,
+#cover #mass-quick-modal #mass-quick-bible.mass-quick-btn {
+  background:#fffdf8 !important;
+  background-image:none !important;
+  border:1.7px solid #c9d0dc !important;
+  color:#172033 !important;
+}
+#cover #mass-quick-modal #mass-quick-missa.mass-quick-btn strong,
+#cover #mass-quick-modal #mass-quick-missa.mass-quick-primary strong,
+#cover #mass-quick-modal #mass-quick-prayer.mass-quick-btn strong,
+#cover #mass-quick-modal #mass-quick-hymn.mass-quick-btn strong,
+#cover #mass-quick-modal #mass-quick-bible.mass-quick-btn strong {
+  color:#172033 !important;
+}

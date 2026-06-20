@@ -10,6 +10,19 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 
+
+<script>
+/* V8-1-14-6: 문의·건의가 index.html iframe 안에서 열릴 때는 iframe 내부 헤더만 접고, 부모 qna-view 헤더/뒤로가기는 유지한다. */
+(function(){
+  try{
+    var sp = new URLSearchParams(location.search || '');
+    if(sp.get('embedded') === '1' || window.parent !== window){
+      document.documentElement.classList.add('qa-embedded');
+    }
+  }catch(_e){}
+})();
+</script>
+
 <style>
   /* ── 리셋 & 기본 ── */
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -114,6 +127,18 @@
     gap: 4px;
   }
   #write-btn:active { transform: scale(.97); }
+
+  /* V8-1-14-6: embedded iframe에서는 내부 헤더 중복만 제거. 부모 qna-view 헤더와 back 구조는 건드리지 않는다. */
+  html.qa-embedded { --qa-top-gap: 0px; }
+  html.qa-embedded #header{
+    height:0 !important; min-height:0 !important; padding:0 !important;
+    overflow:visible !important; background:transparent !important; box-shadow:none !important;
+    border:0 !important; flex:0 0 0 !important; display:block !important;
+  }
+  html.qa-embedded #qna-cross-icon,
+  html.qa-embedded #header-texts,
+  html.qa-embedded #close-btn{ display:none !important; }
+  html.qa-embedded #write-btn{ display:none !important; }
 
   /* ── 뷰 전환 ── */
   .view { display: none; min-height: 0; padding: 0 0 80px; }
@@ -406,6 +431,25 @@
     font-size: 13px !important;
   }
 
+
+  /* V8-1-14-8: embedded iframe에서는 글쓰기 플로팅 버튼도 숨김 */
+  html.qa-embedded #write-btn{ display:none !important; visibility:hidden !important; pointer-events:none !important; }
+
+
+  /* V8-1-14-10: 상단 개인정보 안내문을 내용 입력칸 placeholder로 이동하고, 내용 박스 테두리를 진하게 표시 */
+  #write-view .qa-private-guide{ display:none !important; }
+  #f-content{
+    border:2px solid #C8B79D !important;
+    background:#fffdf7 !important;
+  }
+  #f-content:focus{ border-color:#B28B57 !important; box-shadow:0 0 0 2px rgba(212,170,106,.16) !important; }
+  #f-content::placeholder{
+    color:#A4AAB4 !important;
+    opacity:1 !important;
+    line-height:1.75 !important;
+    font-weight:500 !important;
+  }
+
 </style>
 
 <style id="oai-touch-ux-standard-20260506">
@@ -443,7 +487,6 @@
 </div>
 
 <div id="write-view" class="view active">
-  <div class="qa-private-guide">문의·건의는 앱 관리자 확인용으로만 저장되며, 다른 사용자에게 공개되지 않습니다.<br>이름, 전화번호, 주소 등 개인정보는 입력하지 말아 주세요.</div>
   <div class="field-group">
     <label class="field-label">분류</label>
     <div class="cat-row" id="cat-row"></div>
@@ -454,7 +497,7 @@
   </div>
   <div class="field-group">
     <label class="field-label">내용</label>
-    <textarea id="f-content" rows="6" placeholder="문의 내용이나 건의사항을 자유롭게 적어주세요.&#10;다른 사용자에게 공개되지 않으며, 개인정보는 입력하지 마세요." maxlength="500"
+    <textarea id="f-content" rows="6" placeholder="문의·건의는 앱 관리자 확인용으로만 저장되며, 다른 사용자에게 공개되지 않습니다.&#10;이름, 전화번호, 주소 등 개인정보는 입력하지 말아 주세요.&#10;&#10;문의 내용이나 건의사항을 자유롭게 적어주세요." maxlength="500"
       oninput="document.getElementById('char-cnt').textContent=this.value.length"></textarea>
     <div class="char-count"><span id="char-cnt">0</span> / 500</div>
   </div>
@@ -917,8 +960,10 @@ function escHtml(str) {
 function oaiPrepareNoReturnEffectToApp(){
   try{
     sessionStorage.setItem('oai_internal_return_no_effect_once','1');
-    sessionStorage.setItem('oai_internal_return_no_effect_until', String((Date.now ? Date.now() : new Date().getTime()) + 7000));
+    sessionStorage.setItem('oai_internal_return_no_effect_until', String((Date.now ? Date.now() : new Date().getTime()) + 1200));
     sessionStorage.setItem('oai_internal_page_nav','qna');
+    sessionStorage.setItem('oai_cover_toast_on_return','qna-return-cover');
+    sessionStorage.setItem('oai_cover_toast_on_return_ts', String(Date.now ? Date.now() : new Date().getTime()));
     sessionStorage.removeItem('oai_external_nav_started_at');
     sessionStorage.removeItem('oai_external_nav_pagehide');
     sessionStorage.removeItem('oai_external_nav_kind');
@@ -931,12 +976,32 @@ function oaiPrepareNoReturnEffectToApp(){
     sessionStorage.removeItem('oai_refresh_veil_visible_until');
   }catch(e){}
 }
+function oaiReturnToAppCover(reason){
+  try{
+    if(window.parent && window.parent !== window && typeof window.parent.closeQnaFrameToCover === 'function'){
+      window.parent.closeQnaFrameToCover(reason || 'qna-embedded-close');
+      return;
+    }
+  }catch(_e){}
+  try{ oaiPrepareNoReturnEffectToApp(); }catch(e){}
+  try{
+    sessionStorage.setItem('oai_cover_toast_on_return', reason || 'qna-return-cover');
+    sessionStorage.setItem('oai_cover_toast_on_return_ts', String(Date.now ? Date.now() : new Date().getTime()));
+  }catch(e){}
+  try{
+    var url = new URL('index.html', location.href);
+    url.searchParams.set('oai_cover_return', reason || 'qna-return-cover');
+    url.searchParams.set('v', 'V8-1-14-61-COMPACT-SHORT-RATIO');
+    location.replace(url.href);
+    return;
+  }catch(e){
+    location.replace('index.html?oai_cover_return=' + encodeURIComponent(reason || 'qna-return-cover') + '&v=V8-1-14-61-COMPACT-SHORT-RATIO');
+  }
+}
 function handleQaBack(){
   if(QA_PRIVATE_MODE){
     try{ document.activeElement && document.activeElement.blur && document.activeElement.blur(); }catch(e){}
-    oaiPrepareNoReturnEffectToApp();
-    if(document.referrer && document.referrer.indexOf(location.hostname)>=0){ history.back(); }
-    else { location.href='index.html'; }
+    oaiReturnToAppCover('qna-return-cover');
     return;
   }
   var active = document.querySelector('.view.active');
@@ -945,12 +1010,7 @@ function handleQaBack(){
     return;
   }
   try{ document.activeElement && document.activeElement.blur && document.activeElement.blur(); }catch(e){}
-  oaiPrepareNoReturnEffectToApp();
-  if(document.referrer && document.referrer.indexOf(location.hostname)>=0){
-    history.back();
-  } else {
-    location.href='index.html';
-  }
+  oaiReturnToAppCover('qna-return-cover');
 }
 
 window.addEventListener('popstate', function(){
@@ -980,10 +1040,10 @@ if (QA_PRIVATE_MODE) {
 }
 </script>
 
-<script id="oai-cache-lifecycle-V6-35">
+<script id="oai-cache-lifecycle-V6-146">
 (function(){
   'use strict';
-  var APP_VERSION = 'V6-35';
+  var APP_VERSION = 'V8-1-14-61-COMPACT-SHORT-RATIO';
   if('serviceWorker' in navigator){
     try{ navigator.serviceWorker.register('./sw.js?v=' + encodeURIComponent(APP_VERSION)).then(function(reg){try{reg.update();}catch(e){}}).catch(function(){}); }catch(e){}
   }

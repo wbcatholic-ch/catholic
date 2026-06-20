@@ -78,3 +78,15 @@
 .my-diocese-option.selected { background:#f6ead5 !important; border-color:rgba(183,121,31,.48) !important; box-shadow:inset 0 0 0 1px rgba(183,121,31,.18), 0 6px 12px rgba(31,42,68,.07) !important; }
 .my-diocese-option.my-diocese-none { color:var(--v4-text-muted) !important; background:#f8fafc !important; border-style:dashed !important; }
 
+
+/* V8-1-14-43: 나의 신앙생활을 다른 카테고리와 같은 module-view 화면으로 사용 */
+.my-diocese-modal.module-view {
+  display: none !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  justify-content: stretch !important;
+}
+.my-diocese-modal.module-view.open,
+.my-diocese-modal.module-view.show {
+  display: flex !important;
+}

@@ -51,8 +51,8 @@
 
 .my-diocese-modal.show,
 .my-diocese-modal.show .my-diocese-panel {
-  height: var(--my-faith-visible-vh, var(--my-faith-vh, 100dvh)) !important;
-  max-height: var(--my-faith-visible-vh, var(--my-faith-vh, 100dvh)) !important;
+  height: var(--my-faith-vh, 100dvh) !important;
+  max-height: var(--my-faith-vh, 100dvh) !important;
   min-height: 0 !important;
 }
 .my-diocese-modal.show #my-diocese-list.my-faith-body {
@@ -300,4 +300,11 @@
 
 .my-faith-edit-status-row.is-static {
   grid-template-columns: minmax(0, 1fr) !important;
+}
+
+.my-diocese-modal.return-settling,
+.my-diocese-modal.return-settling * {
+  transition: none !important;
+  animation: none !important;
+  scroll-behavior: auto !important;
 }
