@@ -991,11 +991,11 @@ function oaiReturnToAppCover(reason){
   try{
     var url = new URL('index.html', location.href);
     url.searchParams.set('oai_cover_return', reason || 'qna-return-cover');
-    url.searchParams.set('v', 'V8-1-14-61-COMPACT-SHORT-RATIO');
+    url.searchParams.set('v', 'V8-1-14-62-SHRINE-BANNER-DAY-RULE');
     location.replace(url.href);
     return;
   }catch(e){
-    location.replace('index.html?oai_cover_return=' + encodeURIComponent(reason || 'qna-return-cover') + '&v=V8-1-14-61-COMPACT-SHORT-RATIO');
+    location.replace('index.html?oai_cover_return=' + encodeURIComponent(reason || 'qna-return-cover') + '&v=V8-1-14-62-SHRINE-BANNER-DAY-RULE');
   }
 }
 function handleQaBack(){
@@ -1043,7 +1043,7 @@ if (QA_PRIVATE_MODE) {
 <script id="oai-cache-lifecycle-V6-146">
 (function(){
   'use strict';
-  var APP_VERSION = 'V8-1-14-61-COMPACT-SHORT-RATIO';
+  var APP_VERSION = 'V8-1-14-62-SHRINE-BANNER-DAY-RULE';
   if('serviceWorker' in navigator){
     try{ navigator.serviceWorker.register('./sw.js?v=' + encodeURIComponent(APP_VERSION)).then(function(reg){try{reg.update();}catch(e){}}).catch(function(){}); }catch(e){}
   }

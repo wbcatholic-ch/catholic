@@ -1,5 +1,5 @@
-const CACHE_VERSION = 'catholic-way-V8-1-14-61-COMPACT-SHORT-RATIO';
-const ASSET_VERSION = 'V8-1-14-61-COMPACT-SHORT-RATIO';
+const CACHE_VERSION = 'catholic-way-V8-1-14-62-SHRINE-BANNER-DAY-RULE';
+const ASSET_VERSION = 'V8-1-14-62-SHRINE-BANNER-DAY-RULE';
 function withVersion(path) {
   return path + '?v=' + ASSET_VERSION;
 }
