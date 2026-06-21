@@ -2662,7 +2662,7 @@ window.addEventListener('load', syncCoverUpdateVersionState, true);
     try{
       var frame=document.getElementById('privacy-policy-frame');
       if(frame){
-        var src=frame.getAttribute('data-src') || ('privacy.html?embedded=1&v=' + encodeURIComponent(window.APP_VERSION || 'V8-1-14-62-SHRINE-BANNER-DAY-RULE'));
+        var src=frame.getAttribute('data-src') || ('privacy.html?embedded=1&v=' + encodeURIComponent(window.APP_VERSION || 'V8-1-14-63-FAST-LOCATION-CACHE'));
         if(frame.getAttribute('src') === 'about:blank' || !frame.getAttribute('src')) frame.setAttribute('src', src);
       }
     }catch(e){ console.warn('[가톨릭길동무]', e); }
@@ -2916,7 +2916,7 @@ function openDioceseView(opts){
       if(!restore) try{ frame.contentWindow && frame.contentWindow.resetDioceseFirstPage && frame.contentWindow.resetDioceseFirstPage(); }catch(e){ console.warn("[가톨릭길동무]", e); }
       if(typeof dioceseLoaded==='function') dioceseLoaded();
     };
-    frame.src='diocese.html?v=V8-1-14-62-SHRINE-BANNER-DAY-RULE';
+    frame.src='diocese.html?v=V8-1-14-63-FAST-LOCATION-CACHE';
     setTimeout(armDioceseOverlayBack, 0);
   }else{
     if(!restore){
@@ -3486,7 +3486,7 @@ function _ensureParishDataLoaded(){
 }
 _initParishDataFromGlobal();
 
-const _PRAYER_ASSET_VERSION='V8-1-14-62-SHRINE-BANNER-DAY-RULE';
+const _PRAYER_ASSET_VERSION='V8-1-14-63-FAST-LOCATION-CACHE';
 let _prayerModuleLoadPromise=null;
 function _isPrayerDataReady(){
   return !!(window.PRAYER_DATA && typeof window.PRAYER_DATA === 'object');
@@ -3831,8 +3831,31 @@ function _navFetch(origin, dest) {
 const $=id=>document.getElementById(id);
 const $$=s=>document.querySelectorAll(s);
 const _GEO=navigator.geolocation;
-const _GO1={enableHighAccuracy:true,timeout:10000};
-const _GO2={enableHighAccuracy:false,timeout:3000,maximumAge:300000};
+const _GO1={enableHighAccuracy:true,timeout:8000,maximumAge:60000};
+const _GO2={enableHighAccuracy:false,timeout:2500,maximumAge:600000};
+const OAI_MYLOC_CACHE_KEY='oai_myloc_cache_v1';
+const OAI_MYLOC_CACHE_MAX_AGE=12*60*60*1000;
+function _cacheMyLoc(lat,lng){
+  try{
+    lat=Number(lat); lng=Number(lng);
+    if(!isFinite(lat)||!isFinite(lng)) return;
+    localStorage.setItem(OAI_MYLOC_CACHE_KEY, JSON.stringify({lat:lat,lng:lng,ts:(Date.now?Date.now():new Date().getTime())}));
+  }catch(_e){}
+}
+function _getCachedMyLoc(maxAge){
+  try{
+    const raw=localStorage.getItem(OAI_MYLOC_CACHE_KEY);
+    if(!raw) return null;
+    const o=JSON.parse(raw);
+    const lat=Number(o&&o.lat), lng=Number(o&&o.lng), ts=Number(o&&o.ts)||0;
+    const age=(Date.now?Date.now():new Date().getTime())-ts;
+    if(!isFinite(lat)||!isFinite(lng)||!ts||age<0||age>(maxAge||OAI_MYLOC_CACHE_MAX_AGE)) return null;
+    return {lat:lat,lng:lng,age:age};
+  }catch(_e){ return null; }
+}
+function _isMeaningfullyDifferentLoc(lat,lng){
+  try{ return !_myLat || !_myLng || Math.abs(Number(lat)-Number(_myLat))>0.00015 || Math.abs(Number(lng)-Number(_myLng))>0.00015; }catch(_e){ return true; }
+}
 const _EC=encodeURIComponent;
 const _NS='xmlns="http://www.w3.org/2000/svg"';
 const _svgUrl=s=>'data:image/svg+xml;charset=utf-8,'+_EC(s);
@@ -6229,27 +6252,28 @@ function _clearParishMarkers(){
 
 function _autoLocate(){
   if(!_GEO) return;
-  _GEO.getCurrentPosition(p=>{
-  _setMyLoc(p.coords.latitude,p.coords.longitude);
-  if(_mode==='shrine'){
-   _map.setLevel(8);
-   if(typeof _setMapCenterByInfoCardStandard==='function') _setMapCenterByInfoCardStandard(new _LL(p.coords.latitude,p.coords.longitude));
-   else _map.setCenter(new _LL(p.coords.latitude,p.coords.longitude));
-  } else if(_mode==='parish'){
-   _map.setLevel(6);
-   if(typeof _focusParishPointAround==='function') _focusParishPointAround(p.coords.latitude,p.coords.longitude,{level:6});
-   else _map.setCenter(new _LL(p.coords.latitude,p.coords.longitude));
-  } else if(_mode==='retreat'){
-   _map.setLevel(9);
-   if(typeof _setMapCenterByInfoCardStandard==='function') _setMapCenterByInfoCardStandard(new _LL(p.coords.latitude,p.coords.longitude));
-   else _map.setCenter(new _LL(p.coords.latitude,p.coords.longitude));
+  function apply(lat,lng,center){
+    _setMyLoc(lat,lng);
+    if(!center) return;
+    if(_mode==='shrine'){
+      _map.setLevel(8);
+      if(typeof _setMapCenterByInfoCardStandard==='function') _setMapCenterByInfoCardStandard(new _LL(lat,lng));
+      else _map.setCenter(new _LL(lat,lng));
+    } else if(_mode==='parish'){
+      _map.setLevel(6);
+      if(typeof _focusParishPointAround==='function') _focusParishPointAround(lat,lng,{level:6});
+      else _map.setCenter(new _LL(lat,lng));
+    } else if(_mode==='retreat'){
+      _map.setLevel(9);
+      if(typeof _setMapCenterByInfoCardStandard==='function') _setMapCenterByInfoCardStandard(new _LL(lat,lng));
+      else _map.setCenter(new _LL(lat,lng));
+    }
   }
-  },()=>{},
-  _GO2);
+  const cached=_getCachedMyLoc();
+  if(cached && !_myLat) apply(cached.lat,cached.lng,true);
+  _GEO.getCurrentPosition(p=>{ apply(p.coords.latitude,p.coords.longitude,true); },()=>{},_GO2);
   setTimeout(()=>{
-  _GEO.getCurrentPosition(p=>{
-   _setMyLoc(p.coords.latitude,p.coords.longitude);
-  },()=>{},{enableHighAccuracy:true,timeout:10000,maximumAge:0});
+    _GEO.getCurrentPosition(p=>{ if(_isMeaningfullyDifferentLoc(p.coords.latitude,p.coords.longitude)) apply(p.coords.latitude,p.coords.longitude,false); },()=>{},_GO1);
   },500);
 }
 
@@ -6293,6 +6317,7 @@ function _raiseMyLocationMarker(){
 }
 function _setMyLoc(lat,lng){
   _myLat=lat;_myLng=lng;
+  _cacheMyLoc(lat,lng);
   if(typeof kakao==='undefined'||!_map) return;  // 지도 미로드 시 무시
   if(_myMkr) _myMkr.setMap(null);
   const svg=`<svg ${_NS} width='28' height='28' viewBox='0 0 28 28'><circle cx='14' cy='14' r='12' fill='#1a73e8' opacity='.18'/><circle cx='14' cy='14' r='7' fill='#1a73e8'/><circle cx='14' cy='14' r='3.5' fill='white'/></svg>`;
@@ -6310,15 +6335,21 @@ function _setMyLoc(lat,lng){
 
 function goMyLoc(){
   if(!_GEO) return alert('위치 정보를 지원하지 않습니다.');
+  function apply(lat,lng){
+    _setMyLoc(lat,lng);
+    _map.setLevel(7);
+    if(typeof _setMapCenterByInfoCardStandard==='function') _setMapCenterByInfoCardStandard(new _LL(lat,lng));
+    else _map.setCenter(new _LL(lat,lng));
+  }
+  const cached=_getCachedMyLoc();
+  if(cached) apply(cached.lat,cached.lng);
   _GEO.getCurrentPosition(p=>{
-  _setMyLoc(p.coords.latitude,p.coords.longitude);
-  _map.setLevel(7);
-  if(typeof _setMapCenterByInfoCardStandard==='function') _setMapCenterByInfoCardStandard(new _LL(p.coords.latitude,p.coords.longitude));
-  else _map.setCenter(new _LL(p.coords.latitude,p.coords.longitude));
+    apply(p.coords.latitude,p.coords.longitude);
   },err=>{
-  if(_mode==='shrine') window.__OAI_SHRINE_NEARBY_LOADING__=false;
-  try{ _updateShrineVisitCardsButtonUI(); }catch(_e){}
-  alert(err.code===1?'위치 권한을 허용해 주세요.':'위치를 가져올 수 없습니다.');
+    if(cached) return;
+    if(_mode==='shrine') window.__OAI_SHRINE_NEARBY_LOADING__=false;
+    try{ _updateShrineVisitCardsButtonUI(); }catch(_e){}
+    alert(err.code===1?'위치 권한을 허용해 주세요.':'위치를 가져올 수 없습니다.');
   },_GO1);
 }
 
@@ -6371,29 +6402,48 @@ function _loadNearby(){
 
   if(_myLat) { go(_myLat,_myLng); return; }
 
-  _GEO.getCurrentPosition(p=>{
-  _setMyLoc(p.coords.latitude,p.coords.longitude);
-  go(p.coords.latitude,p.coords.longitude);
-  },err=>{
-  if(err.code===1){
-    body.innerHTML=`<div style="padding:28px 20px;text-align:center;">
-      <div style="font-size:36px;margin-bottom:12px">📍</div>
-      <div style="font-size:14px;font-weight:700;color:#c0392b;margin-bottom:8px">위치 권한이 거부되어 있습니다</div>
-      <div style="font-size:12px;color:#888;line-height:1.7;margin-bottom:18px">
-        브라우저 주소창 왼쪽의 🔒 아이콘을 탭한 뒤<br>
-        <b>위치</b> 권한을 <b>허용</b>으로 변경하고 새로고침하세요.
-      </div>
-      <button onclick="_loadNearby()" style="background:#0e1535;color:#d4aa6a;border:none;border-radius:20px;padding:10px 22px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">↺ 다시 시도</button>
-    </div>`;
-  } else {
-    body.innerHTML=`<div style="padding:28px 20px;text-align:center;">
-      <div style="font-size:36px;margin-bottom:12px">😔</div>
-      <div style="font-size:14px;font-weight:700;color:#c0392b;margin-bottom:8px">위치를 가져올 수 없습니다</div>
-      <div style="font-size:12px;color:#888;line-height:1.7;margin-bottom:18px">GPS 신호가 약하거나 네트워크 문제일 수 있습니다.<br>잠시 후 다시 시도해보세요.</div>
-      <button onclick="_loadNearby()" style="background:#0e1535;color:#d4aa6a;border:none;border-radius:20px;padding:10px 22px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">↺ 다시 시도</button>
-    </div>`;
+  const cached=_getCachedMyLoc();
+  let usedCached=false;
+  let gotFresh=false;
+  let highRequested=false;
+  function applyFresh(lat,lng){
+    gotFresh=true;
+    _setMyLoc(lat,lng);
+    go(lat,lng);
   }
-  },{enableHighAccuracy:true,timeout:12000,maximumAge:60000});
+  function showError(err){
+    if(gotFresh || usedCached) return;
+    if(err && err.code===1){
+      body.innerHTML=`<div style="padding:28px 20px;text-align:center;">
+        <div style="font-size:36px;margin-bottom:12px">📍</div>
+        <div style="font-size:14px;font-weight:700;color:#c0392b;margin-bottom:8px">위치 권한이 거부되어 있습니다</div>
+        <div style="font-size:12px;color:#888;line-height:1.7;margin-bottom:18px">
+          브라우저 주소창 왼쪽의 🔒 아이콘을 탭한 뒤<br>
+          <b>위치</b> 권한을 <b>허용</b>으로 변경하고 새로고침하세요.
+        </div>
+        <button onclick="_loadNearby()" style="background:#0e1535;color:#d4aa6a;border:none;border-radius:20px;padding:10px 22px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">↺ 다시 시도</button>
+      </div>`;
+    } else {
+      body.innerHTML=`<div style="padding:28px 20px;text-align:center;">
+        <div style="font-size:36px;margin-bottom:12px">😔</div>
+        <div style="font-size:14px;font-weight:700;color:#c0392b;margin-bottom:8px">위치를 가져올 수 없습니다</div>
+        <div style="font-size:12px;color:#888;line-height:1.7;margin-bottom:18px">GPS 신호가 약하거나 네트워크 문제일 수 있습니다.<br>잠시 후 다시 시도해보세요.</div>
+        <button onclick="_loadNearby()" style="background:#0e1535;color:#d4aa6a;border:none;border-radius:20px;padding:10px 22px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">↺ 다시 시도</button>
+      </div>`;
+    }
+  }
+  function requestHigh(){
+    if(highRequested) return;
+    highRequested=true;
+    _GEO.getCurrentPosition(p=>{ applyFresh(p.coords.latitude,p.coords.longitude); },showError,_GO1);
+  }
+  if(cached){
+    usedCached=true;
+    _setMyLoc(cached.lat,cached.lng);
+    go(cached.lat,cached.lng);
+  }
+  _GEO.getCurrentPosition(p=>{ applyFresh(p.coords.latitude,p.coords.longitude); },function(){ requestHigh(); },_GO2);
+  setTimeout(requestHigh,700);
 }
 
 function _loadNearbyWithDist(lat,lng,items,getIdx,getColor,getLabel){
@@ -6898,10 +6948,19 @@ function _ensureCurrentLocationStart(){
     _updateSearchBtn();
     return;
   }
+  const cached=_getCachedMyLoc();
+  if(cached){
+    _setMyLoc(cached.lat,cached.lng);
+    _routeStartMarkerExplicitCurrent=false;
+    _rS={idx:-1,name:'현재 위치',lat:cached.lat,lng:cached.lng,isImplicitCurrentLocation:true};
+    _setRouteLabel('start','');
+    _refreshRouteTmpMarkers();
+    _updateSearchBtn();
+  }
   if(!_GEO) return;
   _GEO.getCurrentPosition(p=>{
     _setMyLoc(p.coords.latitude,p.coords.longitude);
-    if(!_rS){
+    if(!_rS || cached){
       _routeStartMarkerExplicitCurrent=false;
       _rS={idx:-1,name:'현재 위치',lat:p.coords.latitude,lng:p.coords.longitude,isImplicitCurrentLocation:true};
       _setRouteLabel('start','');
@@ -6957,9 +7016,11 @@ function setMyLocAsStart(){
     return;
   }
   if(!_GEO) return alert('위치 정보를 지원하지 않습니다.');
+  const cached=_getCachedMyLoc();
+  if(cached) applyCurrentStart(cached.lat,cached.lng);
   _GEO.getCurrentPosition(p=>{
     applyCurrentStart(p.coords.latitude,p.coords.longitude);
-  },()=>alert('위치를 가져올 수 없습니다.'),_GO1);
+  },()=>{ if(!cached) alert('위치를 가져올 수 없습니다.'); },_GO1);
 }
 
 function _setRouteWaypointEnabled(enabled){
