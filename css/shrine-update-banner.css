@@ -1,4 +1,4 @@
-/* V8-1-14-53: 성지 기능 업데이트 안내 배너
+/* V8-1-14-62: 성지순례 업데이트 안내 배너
    공식 Google Play 배포 전 제거 방법:
    1) index.html의 SHRINE_UPDATE_BANNER_START~END 블록 삭제
    2) css/shrine-update-banner.css 삭제
@@ -99,6 +99,11 @@
   font-weight:900;
   font-family:inherit;
   letter-spacing:-.04em;
+}
+#shrine-update-banner .shrine-update-day{
+  background:#1F2A44;
+  color:#F6D58A;
+  border:1.5px solid #1F2A44;
 }
 #shrine-update-banner .shrine-update-go{
   grid-column:1 / -1;
