@@ -1,5 +1,5 @@
-const CACHE_VERSION = 'catholic-way-V8-1-14-63-FAST-LOCATION-CACHE';
-const ASSET_VERSION = 'V8-1-14-63-FAST-LOCATION-CACHE';
+const CACHE_VERSION = 'catholic-way-V8-1-14-64-IOS-PARISH-KEYBOARD';
+const ASSET_VERSION = 'V8-1-14-64-IOS-PARISH-KEYBOARD';
 function withVersion(path) {
   return path + '?v=' + ASSET_VERSION;
 }

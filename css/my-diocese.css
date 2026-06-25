@@ -90,3 +90,15 @@
 .my-diocese-modal.module-view.show {
   display: flex !important;
 }
+
+
+/* V8-1-14-64: iPhone 키보드가 본당 검색 결과를 가리지 않도록 myfaith visible viewport 우선 */
+.my-diocese-modal.show.keyboard-open,
+.my-diocese-modal.show.keyboard-open .my-diocese-panel {
+  top: var(--my-faith-vv-top, 0px) !important;
+  bottom: auto !important;
+  height: var(--my-faith-visible-vh, var(--my-faith-vh, 100dvh)) !important;
+  min-height: var(--my-faith-visible-vh, var(--my-faith-vh, 100dvh)) !important;
+  max-height: var(--my-faith-visible-vh, var(--my-faith-vh, 100dvh)) !important;
+  overflow: hidden !important;
+}

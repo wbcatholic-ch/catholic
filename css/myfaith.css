@@ -308,3 +308,58 @@
   animation: none !important;
   scroll-behavior: auto !important;
 }
+
+
+/* V8-1-14-64: iPhone 본당 검색 키보드 대응 - 보이는 화면 높이 기준으로 검색창/결과목록을 키보드 위에 고정 */
+.my-diocese-modal.show.keyboard-open,
+.my-diocese-modal.show.keyboard-open .my-diocese-panel {
+  top: var(--my-faith-vv-top, 0px) !important;
+  bottom: auto !important;
+  height: var(--my-faith-visible-vh, var(--my-faith-vh, 100dvh)) !important;
+  min-height: var(--my-faith-visible-vh, var(--my-faith-vh, 100dvh)) !important;
+  max-height: var(--my-faith-visible-vh, var(--my-faith-vh, 100dvh)) !important;
+  overflow: hidden !important;
+}
+.my-diocese-modal.keyboard-open #my-diocese-list.my-faith-body,
+.my-diocese-modal.keyboard-open .my-faith-body {
+  max-height: calc(var(--my-faith-visible-vh, 100dvh) - var(--oai-website-header-h, 70px) - env(safe-area-inset-top, 0px)) !important;
+  overflow-y: auto !important;
+  overscroll-behavior-y: contain !important;
+  -webkit-overflow-scrolling: touch !important;
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 8px) !important;
+}
+.my-diocese-modal.keyboard-open .my-faith-inline-parish-search.keyboard-active,
+.my-diocese-modal.keyboard-open .my-faith-search-section.keyboard-active {
+  flex: 0 1 auto !important;
+  min-height: 0 !important;
+  max-height: calc(var(--my-faith-visible-vh, 100dvh) - var(--oai-website-header-h, 70px) - env(safe-area-inset-top, 0px) - 72px) !important;
+  overflow: hidden !important;
+}
+.my-diocese-modal.keyboard-open .my-faith-inline-search-input,
+.my-diocese-modal.keyboard-open .my-faith-search-input {
+  flex: 0 0 52px !important;
+  height: 52px !important;
+  min-height: 52px !important;
+  margin-top: 8px !important;
+}
+.my-diocese-modal.keyboard-open .my-faith-inline-search-results {
+  flex: 1 1 auto !important;
+  min-height: 120px !important;
+  max-height: max(142px, calc(var(--my-faith-visible-vh, 100dvh) - var(--oai-website-header-h, 70px) - env(safe-area-inset-top, 0px) - 224px)) !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 12px) !important;
+}
+.my-diocese-modal.keyboard-open .my-faith-search-body .my-faith-search-results {
+  flex: 1 1 auto !important;
+  min-height: 150px !important;
+  max-height: max(160px, calc(var(--my-faith-visible-vh, 100dvh) - var(--oai-website-header-h, 70px) - env(safe-area-inset-top, 0px) - 190px)) !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 12px) !important;
+}
+.my-diocese-modal.keyboard-open .my-faith-inline-parish-tools,
+.my-diocese-modal.keyboard-open .my-faith-search-section > .my-faith-tools {
+  flex: 0 0 auto !important;
+  padding-bottom: 6px !important;
+}
