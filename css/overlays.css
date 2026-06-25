@@ -39,7 +39,7 @@
   font-weight: 900;
   line-height: 1;
   text-shadow: 0 2px 8px rgba(184,150,90,.20);
-  animation: prExternalCrossSpin 2.4s linear infinite !important;
+  animation: prExternalCrossSpin 2.8s linear infinite !important;
   animation-delay: 0s !important;
   transform-origin: 50% 50%;
   will-change: transform;
@@ -167,4 +167,47 @@ html.pr-external-guide-active.oai-stability-veil::after {
 .route-choice-btn.danger{border-color:#B91C1C!important;color:#991B1B!important;}
 @media(max-width:520px){
   .route-choice-btn{min-height:60px!important;font-size:15.5px!important;border-width:2.5px!important;}
+}
+
+
+/* V8-1-14-216_my_info_backup_restore_info_card_buttons_unified: Android WebView 하단 여백 상한/최소값 표준화 */
+html:not(.ios-device) .guide-modal{padding-bottom:calc(14px + var(--oai-android-bottom-gap, 10px))!important;}
+html:not(.ios-device) .modal-panel,
+html:not(.ios-device) .guide-panel{max-height:calc(100vh - 96px - var(--oai-android-bottom-gap, 10px))!important;}
+
+
+/* OAI-V67-STAMPBOOK-HEADER-BOTTOM-SAFE-FINAL: Android WebView 하단 여백 표준화 */
+html:not(.ios-device) .guide-modal{padding-bottom:calc(14px + var(--oai-android-bottom-gap, 10px))!important;}
+html:not(.ios-device) .modal-panel,
+html:not(.ios-device) .guide-panel{max-height:calc(100vh - 96px - var(--oai-android-bottom-gap, 10px))!important;}
+
+
+/* V8-1-14-216_my_info_backup_restore_info_card_buttons_unified: 경로검색 선택창 버튼 테두리를 정보카드 버튼과 같은 2.5px로 통일 */
+#route-choice-modal .route-choice-btn{
+  border-width:2.5px!important;
+  box-sizing:border-box!important;
+}
+
+/* V8-1-14-216_my_info_backup_restore_info_card_buttons_unified: 경로검색 선택창도 정보카드와 같은 두께로 두고 색상/테두리를 더 선명하게 조정한다. */
+#route-choice-modal .route-choice-btn{
+  border-width:2.5px!important;
+  box-sizing:border-box!important;
+  font-weight:900!important;
+}
+#route-choice-modal .route-choice-btn.start,
+#route-choice-modal .route-choice-btn.danger{
+  background:linear-gradient(180deg,#fff0ed 0%,#fbd5cf 100%)!important;
+  color:#8f1a16!important;
+  border-color:#bf2f28!important;
+}
+#route-choice-modal .route-choice-btn.end{
+  background:linear-gradient(180deg,#eef5ff 0%,#d5e5f8 100%)!important;
+  color:#1f4f8e!important;
+  border-color:#2f69bd!important;
+}
+#route-choice-modal .route-choice-btn.cancel,
+#route-choice-modal .route-choice-btn.keep{
+  background:linear-gradient(180deg,#edf9f1 0%,#d2eedc 100%)!important;
+  color:#12633b!important;
+  border-color:#269457!important;
 }

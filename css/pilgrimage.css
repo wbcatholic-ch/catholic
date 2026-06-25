@@ -125,3 +125,13 @@
 #trail-view .trail-body { flex: 1; min-height: 0; display: flex; flex-direction: column; width: 100%; }
 
 #trail-view .trail-tab{height:40px!important;min-height:40px!important;padding:0 12px!important;border-radius:10px!important;font-size:15px!important;line-height:1!important;align-items:center!important;box-sizing:border-box!important;}
+
+
+/* V8-1-14-216_my_info_backup_restore_info_card_buttons_unified: Android WebView 하단 여백 상한/최소값 표준화 */
+html:not(.ios-device) .trail-loc-btn{bottom:calc(10px + var(--oai-android-bottom-gap, 10px))!important;}
+html:not(.ios-device) .trail-sheet{padding-bottom:calc(18px + var(--oai-android-bottom-gap, 10px))!important;}
+
+
+/* OAI-V67-STAMPBOOK-HEADER-BOTTOM-SAFE-FINAL: Android WebView 하단 여백 표준화 */
+html:not(.ios-device) .trail-loc-btn{bottom:calc(10px + var(--oai-android-bottom-gap, 10px))!important;}
+html:not(.ios-device) .trail-sheet{padding-bottom:calc(18px + var(--oai-android-bottom-gap, 10px))!important;}

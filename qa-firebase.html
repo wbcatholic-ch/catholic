@@ -450,6 +450,18 @@
     font-weight:500 !important;
   }
 
+
+
+  /* OAI-V72-QNA-TITLE-BORDER-FINAL: 제목 입력칸 테두리를 내용 입력칸과 같은 진한 색으로 통일 */
+  #f-title{
+    border:2px solid #C8B79D !important;
+    background:#fffdf7 !important;
+  }
+  #f-title:focus{
+    border-color:#B28B57 !important;
+    box-shadow:0 0 0 2px rgba(212,170,106,.16) !important;
+  }
+
 </style>
 
 <style id="oai-touch-ux-standard-20260506">
@@ -991,11 +1003,11 @@ function oaiReturnToAppCover(reason){
   try{
     var url = new URL('index.html', location.href);
     url.searchParams.set('oai_cover_return', reason || 'qna-return-cover');
-    url.searchParams.set('v', 'V8-1-14-64-IOS-PARISH-KEYBOARD');
+    url.searchParams.set('v', 'V8-1-14-216_my_info_backup_restore_info_card_buttons_unified');
     location.replace(url.href);
     return;
   }catch(e){
-    location.replace('index.html?oai_cover_return=' + encodeURIComponent(reason || 'qna-return-cover') + '&v=V8-1-14-64-IOS-PARISH-KEYBOARD');
+    location.replace('index.html?oai_cover_return=' + encodeURIComponent(reason || 'qna-return-cover') + '&v=V8-1-14-216_my_info_backup_restore_info_card_buttons_unified');
   }
 }
 function handleQaBack(){
@@ -1043,7 +1055,7 @@ if (QA_PRIVATE_MODE) {
 <script id="oai-cache-lifecycle-V6-146">
 (function(){
   'use strict';
-  var APP_VERSION = 'V8-1-14-64-IOS-PARISH-KEYBOARD';
+  var APP_VERSION = 'V8-1-14-216_my_info_backup_restore_info_card_buttons_unified';
   if('serviceWorker' in navigator){
     try{ navigator.serviceWorker.register('./sw.js?v=' + encodeURIComponent(APP_VERSION)).then(function(reg){try{reg.update();}catch(e){}}).catch(function(){}); }catch(e){}
   }

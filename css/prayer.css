@@ -259,3 +259,11 @@
 
 .qna-body { background: #f8fafc; display: flex; flex-direction: column; }
 
+
+
+/* V8-1-14-216_my_info_backup_restore_info_card_buttons_unified: Android WebView 하단 여백 상한/최소값 표준화 */
+html:not(.ios-device) .pr-list{padding-bottom:calc(18px + var(--oai-android-bottom-gap, 10px))!important;}
+
+
+/* OAI-V67-STAMPBOOK-HEADER-BOTTOM-SAFE-FINAL: Android WebView 하단 여백 표준화 */
+html:not(.ios-device) .pr-list{padding-bottom:calc(18px + var(--oai-android-bottom-gap, 10px))!important;}

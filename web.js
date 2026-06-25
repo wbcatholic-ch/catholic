@@ -74,7 +74,7 @@
    op:"서울대교구 굿뉴스", url:"https://maria.catholic.or.kr/mobile/bible/read/bible_list.asp",
    desc:"가톨릭 성경과 신앙 자료를 모바일에서 확인"},
   {cat:"신앙 포털", ico:"🎼", name:"가톨릭 성가",
-   op:"서울대교구 굿뉴스", url:"https://maria.catholic.or.kr/mobile/sungga/sungga.asp",
+   op:"서울대교구 굿뉴스", url:"https://maria.catholic.or.kr/mobile/sungga/",
    desc:"가톨릭 성가 검색과 악보 자료 제공"},
   {cat:"신앙 포털", ico:"🎵", name:"가톨릭 생활성가",
    op:"서울대교구 굿뉴스", url:"https://maria.catholic.or.kr/mobile/ccm/main.asp",
@@ -307,6 +307,8 @@
     try{ sessionStorage.setItem(RETURN_KEY, JSON.stringify(state)); }catch(e){ console.warn("[가톨릭길동무]", e); }
   }
   function prepareExternalUrl(url){
+    var raw = String(url || '').trim().replace(/^hthttp:\/\//i,'http://').replace(/^http\/\//i,'http://');
+    if(/^http:\/\//i.test(raw)) return raw;
     url = (typeof normalizeCatholicExternalUrl === 'function')
           ? normalizeCatholicExternalUrl(url)
           : String(url || '').trim();
@@ -451,7 +453,14 @@
         return;
       }
     }catch(e){ console.warn('[가톨릭길동무]', e); }
-    setTimeout(restoreIntegratedState, 0);
+    setTimeout(function(){
+      try{
+        if(window.oaiReturnConductorBusy && window.oaiReturnConductorBusy(['category-return','passive'])){ setTimeout(restoreIntegratedState, 380); return; }
+        if(window.oaiReturnConductorRequest) window.oaiReturnConductorRequest('category-return', {ms:900});
+        restoreIntegratedState();
+        setTimeout(function(){ try{ if(window.oaiReturnConductorFinish) window.oaiReturnConductorFinish('category-return'); }catch(_e){} }, 520);
+      }catch(e){ console.warn('[가톨릭길동무]', e); restoreIntegratedState(); }
+    }, 0);
   });
 
   function resetWebTransientState(){
@@ -715,16 +724,11 @@
   function fitTrailMapToBounds(){
     if(!(trailState.map && window.kakao && window.kakao.maps)) return;
     try{
-      const bounds = new kakao.maps.LatLngBounds();
-      TRAIL_ITEMS.forEach(function(d){ bounds.extend(new kakao.maps.LatLng(d.lat, d.lng)); });
-      trailState.map.setBounds(bounds);
-      setTimeout(function(){
-        try{
-          const lv = trailState.map.getLevel();
-          if(Number.isFinite(lv) && lv < 12) trailState.map.setLevel(12);
-          trailState.map.setCenter(new kakao.maps.LatLng(36.10, 127.85));
-        }catch(e){ console.warn("[가톨릭길동무]", e); }
-      }, 60);
+      // V8-1-14-216_my_info_backup_restore_info_card_buttons_unified:
+      // setBounds는 되살리지 않고 중심 이동은 1회만 유지한다.
+      // 순례길 첫 화면이 너무 확대되어 보이지 않도록 기본 줌을 한 단계 넓게 둔다.
+      if(typeof trailState.map.setLevel === "function") trailState.map.setLevel(13);
+      trailState.map.setCenter(new kakao.maps.LatLng(36.10, 127.85));
     }catch(e){ console.warn("[가톨릭길동무]", e); }
   }
 
@@ -772,7 +776,7 @@
       }
       const container = ig$('trail-map');
       if(!container || !(window.kakao && window.kakao.maps)) return;
-      trailState.map = new kakao.maps.Map(container, { center:new kakao.maps.LatLng(36.10,127.85), level:12 });
+      trailState.map = new kakao.maps.Map(container, { center:new kakao.maps.LatLng(36.10,127.85), level:13 });
       trailState.map.addControl(new kakao.maps.ZoomControl(), kakao.maps.ControlPosition.RIGHT);
       if(trailState.restoreCenter && Number.isFinite(Number(trailState.restoreCenter.lat)) && Number.isFinite(Number(trailState.restoreCenter.lng))){
         try{ trailState.map.setCenter(new kakao.maps.LatLng(Number(trailState.restoreCenter.lat), Number(trailState.restoreCenter.lng))); }catch(e){ console.warn("[가톨릭길동무]", e); }
