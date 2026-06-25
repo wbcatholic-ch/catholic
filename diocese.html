@@ -17,7 +17,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>교구지도</title>
-<link rel="stylesheet" href="css/diocese.css?v=V8-1-14-216_my_info_backup_restore_info_card_buttons_unified">
+<link rel="stylesheet" href="css/diocese.css?v=V6-50">
 </head>
 <body>
 <header>
@@ -1870,8 +1870,7 @@ window.addEventListener('pageshow',function(){
     // 탭 click 이벤트를 다시 실행하지 않는다. click 이벤트는 지도 초기화, 카드 닫기,
     // 목록 스크롤 재적용을 동반해 복귀 순간에 흔들림처럼 보일 수 있다.
     try{ window.__OAI_DIO_PARENT_RETURNING__ = true; window.__OAI_DIO_EXTERNAL_LEAVING__ = false; }catch(e){}
-    // V8-1-14-216_my_info_backup_restore_info_card_buttons_unified: 관구·교구 iframe은 부모 외부복귀 보호창 위에 별도 복귀 레이어를 얹지 않는다.
-    try{ document.documentElement.classList.remove('oai-dio-external-stabilize','oai-dio-external-return','oai-dio-returning'); }catch(e){}
+    try{ document.documentElement.classList.remove('oai-dio-external-stabilize','oai-dio-external-return'); document.documentElement.classList.add('oai-dio-returning'); }catch(e){}
     var tab=state.tab||'gwangu';
     setReturnTabSilently(tab);
     if(state.searchValue && document.getElementById('si')){ document.getElementById('si').value=state.searchValue; if(typeof doSearch==='function') doSearch(); }
@@ -1978,9 +1977,8 @@ window.addEventListener('pageshow',function(){
     var state=window.getDioceseReturnState(source||'link', extra || {});
     try{ sessionStorage.setItem('oai_diocese_last_return_state', JSON.stringify(state)); localStorage.setItem('oai_diocese_last_return_state', JSON.stringify(state)); }catch(e){}
     if(window.parent && window.parent!==window){
-      // V8-1-14-216_my_info_backup_restore_info_card_buttons_unified:
-      // 첨부 기준 파일(26.06.20) 방식으로 복원한다.
-      // 관구·교구 외부 홈페이지는 부모 공통 opener/지연/감시 함수를 거치지 않고 top 이동만 사용한다.
+      // iframe 내부 클릭은 부모의 지연 이동에 맡기지 않고, 클릭 흐름 안에서 top을 즉시 이동한다.
+      // 이렇게 해야 웹페이지 카테고리처럼 Android/PWA에서도 외부 교구 홈페이지가 바로 열린다.
       try{
         if(typeof window.parent.prepareExternalUrl === 'function') url = window.parent.prepareExternalUrl(url) || url;
       }catch(e){}
@@ -1990,22 +1988,17 @@ window.addEventListener('pageshow',function(){
         window.parent.localStorage.setItem('catholic_diocese_external_return_v1', payload);
         window.parent.__OAI_DIOCESE_EXTERNAL_LEAVING__ = true;
       }catch(e){}
-      try{
-        if(typeof window.parent.markExternalReturnStabilize === 'function') window.parent.markExternalReturnStabilize('diocese-external');
-      }catch(e){}
+      // V6-112: 관구·교구 외부 홈페이지도 부모 앱의 공통 외부사이트 이동 함수만 사용한다.
       document.documentElement.classList.remove('oai-dio-external-stabilize','oai-dio-external-return','oai-dio-returning');
       try{
-        if(typeof window.parent.oaiShowExternalEntryGuard === 'function') window.parent.oaiShowExternalEntryGuard('diocese-external');
-      }catch(e){}
-      var navDelay = 550;
-      try{
-        var parentDelay = parseInt(window.parent.OAI_EXTERNAL_ENTRY_NAV_DELAY_MS || '0', 10) || 0;
-        if(parentDelay >= 300 && parentDelay <= 1200) navDelay = parentDelay;
-      }catch(e){}
-      setTimeout(function(){
-        try{ window.top.location.assign(url); }
-        catch(e){ try{ window.top.location.href = url; }catch(_e){ window.__OAI_DIO_EXTERNAL_LEAVING__ = false; } }
-      }, navDelay);
+        if(typeof window.parent.oaiOpenExternalSite === 'function'){
+          window.parent.oaiOpenExternalSite(url, {kind:'diocese-external', source:'diocese-frame'});
+        }else{
+          try{ if(typeof window.parent.markExternalReturnStabilize === 'function') window.parent.markExternalReturnStabilize('diocese-external'); }catch(_e){}
+          window.top.location.assign(url);
+        }
+      }
+      catch(e){ try{ window.top.location.href = url; }catch(_e){ window.__OAI_DIO_EXTERNAL_LEAVING__ = false; } }
       setTimeout(function(){
         try{
           if(document.visibilityState !== 'hidden') window.__OAI_DIO_EXTERNAL_LEAVING__ = false;
@@ -2016,7 +2009,10 @@ window.addEventListener('pageshow',function(){
     else {
       try{ sessionStorage.setItem('oai_diocese_standalone_return',JSON.stringify(state)); }catch(e){}
       markDioceseStandaloneExternal();
-      try{ location.href=url; }catch(_e){ try{ location.assign(url); }catch(__e){} }
+      try{
+        if(typeof window.oaiOpenExternalSite === 'function') window.oaiOpenExternalSite(url, {kind:'diocese-standalone-external', source:'diocese-standalone'});
+        else location.href=url;
+      }catch(_e){ try{ location.assign(url); }catch(__e){} }
     }
   };
   document.addEventListener('click',function(e){

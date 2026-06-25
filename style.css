@@ -43,8 +43,8 @@
   --oai-std-gap:       8px;
   --oai-std-icon-sz:   28px;
   --oai-std-close-sz:  40px;
-  --oai-category-enter-ms: 360ms;
-  --oai-popup-enter-ms: 320ms;
+  --oai-category-enter-ms: 700ms;
+  --oai-popup-enter-ms: 500ms;
   --oai-std-hdr-pad:   calc(10px + env(safe-area-inset-top, 0px));
 
   
@@ -395,6 +395,7 @@ html.app-active #app { display: block; }
   background: rgba(255,255,255,.97);
   border-bottom: 1.5px solid var(--gold);
   box-shadow: none;
+  transform: translateZ(0);
 }
 .tab-btn {
   width: 100%;
@@ -580,7 +581,7 @@ html.retreat-mode #tab-list-lbl {
 .sheet.from-right { transform: translateX(100%); transition: none !important; }
 .sheet.from-left  { transform: translateX(-100%) !important; transition: none !important; }
 .sheet.from-right.open,
-.sheet.from-left.open  { transform: translate(0,0) !important; transition: transform .18s cubic-bezier(.22,.61,.36,1); }
+.sheet.from-left.open  { transform: translate(0,0) !important; transition: transform .28s cubic-bezier(.4,0,.2,1); }
 .sheet.exit-left  { transform: translateX(-100%); }
 .sheet.exit-right { transform: translateX(100%); }
 
@@ -1400,10 +1401,7 @@ html.retreat-mode #srch-modal #sm-tab-bar .sm-tab.active {
   box-shadow: none;
 }
 .ic-hp-btn { background: #1b7a3e; color: var(--v4-surface-white); border: none; }
-.ic-guide-btn { background: #fff3c4; color: #6c4a00; border: 1px solid #e1bd59; }
-.ic-goodnews-btn { background: #e8f7ff; color: #075985; border: 1px solid #66bdf2; }
-.ic-kakao-row { display: flex; gap: 7px; padding: 7px 14px 0; align-items: stretch; }
-.ic-kakao-row > * { flex: 1 1 0; min-width: 0; max-width: 100%; box-sizing: border-box; }
+.ic-guide-btn { background: var(--cream); color: #8b6914; border: 1px solid #ddd3b0; }
 .btn-kakao-nav {
   display: flex;
   align-items: center;
@@ -1603,7 +1601,7 @@ html.retreat-mode .ric-hd { background: linear-gradient(135deg, var(--v4-retreat
 .exit-ok { flex: 1; padding: 12px; border-radius: 10px; border: none; background: var(--ink); color: var(--v4-surface-white); font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; }
 
 .map-loading { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; background: var(--navy); height: 100%; }
-.map-loading-icon { font-size: 36px; margin-bottom: 14px; animation: oaiUnifiedLoadingCrossSpin 2.8s linear infinite; }
+.map-loading-icon { font-size: 36px; margin-bottom: 14px; animation: spin 2s linear infinite; }
 .map-loading-txt { font-size: 13px; color: rgba(212,170,106,.8); font-weight: 600; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
@@ -1698,49 +1696,6 @@ html.retreat-mode .ric-hd { background: linear-gradient(135deg, var(--v4-retreat
 .missa-open-link { display: flex; align-items: center; justify-content: center; width: 100%; height: 48px; border-radius: 12px; background: #0e1535; color: var(--v4-gold); text-decoration: none; font-size: 16px; font-weight: 800; }
 
 #missa-frame { flex: 1 1 auto; min-height: 0; width: 100%; border: 0; background: #fffaf2; }
-/* V8-1-14-216_my_info_backup_restore_info_card_buttons_unified: 매일미사·성경 iframe 로딩 십자가는 표시하지 않는다 */
-#missa-loading {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: calc(52px + env(safe-area-inset-top, 0px));
-  bottom: calc(68px + env(safe-area-inset-bottom, 0px));
-  z-index: 3;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  gap: 12px;
-  background: #fffaf2;
-  pointer-events: auto;
-  opacity: 1;
-  visibility: visible;
-}
-#missa-view.oai-faith-frame-loading #missa-loading {
-  display: flex;
-}
-#missa-loading .missa-spinner {
-  width: var(--oai-loading-cross-size, 36px);
-  height: var(--oai-loading-cross-size, 36px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--oai-loading-cross-color, #d4aa6a);
-  font-size: var(--oai-loading-cross-font, 32px);
-  line-height: 1;
-  animation: oaiUnifiedLoadingCrossSpin var(--oai-loading-cross-speed, 2.8s) linear infinite;
-}
-#missa-loading .missa-spinner::before {
-  content: "✝";
-  display: block;
-  font-weight: 900;
-}
-#missa-loading .missa-loading-txt {
-  font-size: 13px;
-  font-weight: 800;
-  color: rgba(111,79,35,.82);
-  letter-spacing: .01em;
-}
 .faith-bottom-nav {
   flex: 0 0 auto;
   display: flex;
@@ -1906,7 +1861,21 @@ html.oai-cover-revealing::before {
   pointer-events: none;
   opacity: 1;
 }
-/* V8-1-14-216_my_info_backup_restore_info_card_buttons_unified: 커버 인트로 ::after는 사진 전용 최종 블록에서만 정의한다. */
+html.oai-cover-booting::after,
+html.oai-cover-revealing::after {
+  content: "✝";
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2147482501;
+  color: #d4aa6a;
+  font-size: 34px;
+  font-weight: 900;
+  line-height: 1;
+  pointer-events: none;
+  opacity: 1;
+}
 html.oai-cover-revealing::before,
 html.oai-cover-revealing::after {
   opacity: 0;
@@ -2497,6 +2466,7 @@ html.app-active #pwa-install-btn { display: none; }
   border: 1px solid #e5ded3;
   box-shadow: 0 26px 76px rgba(31,42,68,.28);
   max-height: min(90dvh, 800px);
+  transform: translateZ(0);
   backface-visibility: hidden;
   contain: layout paint style;
 }
@@ -2724,7 +2694,8 @@ html:not(.ios-device) #ios-safari-guide-modal { display: none; }
   justify-content: center;
   pointer-events: none;
   opacity: 0;
-  transition: opacity .14s cubic-bezier(.22,.61,.36,1);
+  transition: opacity .22s cubic-bezier(.22,.61,.36,1);
+  transform: translateZ(0);
   backface-visibility: hidden;
 }
 html.oai-category-entering #oai-category-entry-veil { display: flex; opacity: 1; }
@@ -2767,8 +2738,8 @@ html.oai-hide-main-map-layer #app { background: #ede8e0; }
 
 html.oai-stability-veil { background: var(--v4-bg-cream) !important; }
 html.oai-stability-veil *, html.oai-external-return-freeze * { transition: none; animation: none; scroll-behavior: auto; }
-html.oai-stability-veil::before { content: ""; position: fixed; inset: 0; z-index: 2147483000; background: var(--v4-bg-cream); pointer-events: none; opacity: 1; animation: oaiStabilityVeilIn .08s ease-out both; }
-html.oai-stability-veil.oai-stability-veil-releasing::before { animation: oaiStabilityVeilOut .12s ease-in both; }
+html.oai-stability-veil::before { content: ""; position: fixed; inset: 0; z-index: 2147483000; background: var(--v4-bg-cream); pointer-events: none; opacity: 1; animation: oaiStabilityVeilIn .12s ease-out both; }
+html.oai-stability-veil.oai-stability-veil-releasing::before { animation: oaiStabilityVeilOut .18s ease-in both; }
 html.oai-stability-veil::after { content: ""; position: fixed; left: 50%; top: 50%; width: 28px; height: 28px; margin: -14px 0 0 -14px; border-radius: 50%; border: 3px solid rgba(31,42,68,.16); border-top-color: var(--v4-header-navy); z-index: 2147483001; pointer-events: none; animation: oaiStabilitySpin .75s linear infinite; }
 @keyframes oaiStabilityVeilIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes oaiStabilityVeilOut { from { opacity: 1; } to { opacity: 0; } }
@@ -2930,7 +2901,6 @@ html.ios-device #app .ic-close-btn { width: 30px; height: 30px; font-size: 20px;
 html.ios-device #app .ic-meta { padding: 0 12px 6px; }
 html.ios-device #app .ic-addr-row { gap: 8px; padding: 0 12px 8px; }
 html.ios-device #app .ic-btn-row { gap: 6px; padding: 8px 12px 0; }
-html.ios-device #app .ic-kakao-row { gap: 6px; padding: 7px 12px 0; }
 html.ios-device #app .ic-tel-btn,
 html.ios-device #app .ic-route-btn,
 html.ios-device #app .ic-link-btn,
@@ -3558,7 +3528,7 @@ html.ios-device #qna-view.open {
 .map-loading-icon {
   color: var(--gold, var(--v4-gold)) !important;
   font-size: 36px !important;
-  animation: oaiUnifiedLoadingCrossSpin 2.8s linear infinite !important;
+  animation: oaiLoadingCrossSpin 2s linear infinite !important;
   transform-origin: 50% 50% !important;
 }
 
@@ -3584,7 +3554,7 @@ html.oai-external-return-freeze::after {
   font-weight: 800 !important;
   line-height: 1 !important;
   transform-origin: 50% 50% !important;
-  animation: oaiUnifiedLoadingCrossSpin 2.8s linear infinite !important;
+  animation: oaiLoadingCrossSpin 2s linear infinite !important;
   pointer-events: none !important;
   z-index: 2147483647 !important;
 }
@@ -3607,7 +3577,7 @@ html.oai-external-return-freeze::after {
   justify-content: center !important;
   margin: 0 0 14px !important;
   color: var(--gold, var(--v4-gold)) !important;
-  animation: oaiUnifiedLoadingCrossSpin 2.8s linear infinite !important;
+  animation: oaiLoadingCrossSpin 2s linear infinite !important;
   transform-origin: 50% 50% !important;
 }
 #diocese-loading .missa-spinner::before {
@@ -3671,7 +3641,12 @@ html.oai-external-return-freeze::after {
   animation-fill-mode: none !important;
 }
 
-/* V8-1-14-216_my_info_backup_restore_info_card_buttons_unified: 사용하지 않는 oai-first-entry-intro 숨김 규칙 제거. */
+html.oai-first-entry-intro::before {
+  content: "" !important;
+  display: none !important;
+  opacity: 0 !important;
+  animation: none !important;
+}
 .map-loading-icon,
 #diocese-loading .missa-spinner {
   width: 28px !important;
@@ -3756,13 +3731,24 @@ html.oai-external-return-freeze::after {
 
 html.oai-stability-veil::after,
 html.oai-external-return-freeze::after,
-#oai-category-entry-veil::after {
+#oai-category-entry-veil::after,
+html.oai-first-entry-intro::before {
   content: "" !important;
   color: transparent !important;
   text-shadow: none !important;
 }
 
-/* V8-1-14-216_my_info_backup_restore_info_card_buttons_unified: 첫 진입 인트로 숨김 잔여 규칙 제거. */
+html.oai-first-entry-intro::before,
+html.oai-first-entry-intro::after,
+html.oai-cover-first-reveal #cover > * {
+  content: "" !important;
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  background-image: none !important;
+  animation: none !important;
+  transition: none !important;
+}
 
 #cover .my-diocese-setup-banner {
   display: none !important;
@@ -4847,14 +4833,9 @@ html.oai-font-global .shrine-visit-stat-item em{font-size:calc(14px * var(--app-
   border-color:#66bb6a!important;
 }
 .shrine-visit-detail-action.detail-guide{
-  background:#fff3c4!important;
-  color:#6c4a00!important;
-  border-color:#e1bd59!important;
-}
-.shrine-visit-detail-action.detail-goodnews{
-  background:#e8f7ff!important;
-  color:#075985!important;
-  border-color:#66bdf2!important;
+  background:#f3e8ff!important;
+  color:#5b21b6!important;
+  border-color:#a855f7!important;
 }
 .shrine-visit-detail-action.detail-tel{
   background:#fff7ed!important;
@@ -5318,14 +5299,9 @@ html.oai-font-global .shrine-visit-cards-tabs button{font-size:calc(13px * var(-
   border:0!important;
 }
 .shrine-visit-detail-action.detail-guide{
-  background:#fff3c4!important;
-  color:#6c4a00!important;
-  border:1px solid #e1bd59!important;
-}
-.shrine-visit-detail-action.detail-goodnews{
-  background:#e8f7ff!important;
-  color:#075985!important;
-  border:1px solid #66bdf2!important;
+  background:var(--cream,#fff8e8)!important;
+  color:#8b6914!important;
+  border:1px solid #ddd3b0!important;
 }
 .shrine-visit-detail-action.detail-kakao{
   grid-column:1 / -1!important;
@@ -5541,8 +5517,7 @@ html:not(.ios-device).oai-screen-compact-short #app #info-card .ic-header{paddin
 html:not(.ios-device).oai-screen-compact-short #app #info-card .ic-meta{padding:0 12px 5px!important;}
 html:not(.ios-device).oai-screen-compact-short #app #info-card .ic-addr-row{padding:0 12px 7px!important;gap:8px!important;}
 html:not(.ios-device).oai-screen-compact-short #app #info-card .ic-btn-row,
-html:not(.ios-device).oai-screen-compact-short #app #info-card .ic-links,
-html:not(.ios-device).oai-screen-compact-short #app #info-card .ic-kakao-row{gap:6px!important;padding:7px 12px 0!important;}
+html:not(.ios-device).oai-screen-compact-short #app #info-card .ic-links{gap:6px!important;padding:7px 12px 0!important;}
 html:not(.ios-device).oai-screen-compact-short #app #info-card .ic-tel-btn,
 html:not(.ios-device).oai-screen-compact-short #app #info-card .ic-route-btn,
 html:not(.ios-device).oai-screen-compact-short #app #info-card .ic-link-btn,
@@ -5606,8 +5581,7 @@ html:not(.ios-device).oai-screen-fold-wide #app #info-card .ic-header{padding:12
 html:not(.ios-device).oai-screen-fold-wide #app #info-card .ic-meta{padding:0 14px 6px!important;}
 html:not(.ios-device).oai-screen-fold-wide #app #info-card .ic-addr-row{padding:0 14px 8px!important;}
 html:not(.ios-device).oai-screen-fold-wide #app #info-card .ic-btn-row,
-html:not(.ios-device).oai-screen-fold-wide #app #info-card .ic-links,
-html:not(.ios-device).oai-screen-fold-wide #app #info-card .ic-kakao-row{padding:8px 14px 0!important;}
+html:not(.ios-device).oai-screen-fold-wide #app #info-card .ic-links{padding:8px 14px 0!important;}
 html:not(.ios-device).oai-screen-fold-wide #app #info-card .ic-tel-btn,
 html:not(.ios-device).oai-screen-fold-wide #app #info-card .ic-route-btn,
 html:not(.ios-device).oai-screen-fold-wide #app #info-card .ic-link-btn,
@@ -6112,9 +6086,48 @@ html.oai-font-global .shrine-visit-floating-list-btn{
   line-height: 1 !important;
 }
 
-/* V8-1-14-216_my_info_backup_restore_info_card_buttons_unified: 오래된 인트로 숨김/금색 십자가 보정 제거. */
+/* V6-161 확인용: 외부사이트에서 앱으로 복귀할 때는 첫 진입 십자가/로딩 십자가를 보이지 않게 한다. */
+html.oai-stability-veil[data-oai-stability-reason*="external"]::after,
+html.oai-stability-veil.oai-external-return-freeze::after,
+html.oai-external-return-freeze::after {
+  content:"" !important;
+  display:none !important;
+  opacity:0 !important;
+  animation:none !important;
+  background:transparent !important;
+  border:0 !important;
+}
+html.oai-external-return-freeze #cover > *,
+html.oai-stability-veil[data-oai-stability-reason*="external"] #cover > * {
+  transition:none !important;
+  animation:none !important;
+}
 
-/* V8-1-14-216_my_info_backup_restore_info_card_buttons_unified: 오래된 인트로 숨김/금색 십자가 보정 제거. */
+/* V6-162 확인용: 앱 첫 진입에서 큰 십자가 다음에 보이던 작은 십자가는 표시하지 않는다. */
+html.oai-cover-booting::after,
+html.oai-cover-revealing::after {
+  content:"" !important;
+  display:none !important;
+  opacity:0 !important;
+  visibility:hidden !important;
+  animation:none !important;
+}
+
+
+/* V6-164 확인용: 앱 첫 시작 때 큰 십자가 이후 다시 보이던 작은 십자가를 모두 숨긴다. */
+html.oai-cover-booting::after,
+html.oai-cover-revealing::after,
+html.oai-stability-veil::after,
+html.oai-external-return-freeze::after {
+  content:"" !important;
+  display:none !important;
+  opacity:0 !important;
+  visibility:hidden !important;
+  animation:none !important;
+  border:0 !important;
+  background:transparent !important;
+}
+
 
 /* V6-165 확인용: 기존 뒤로가기 UI는 숨기고, 닫기는 X 버튼만 사용한다. */
 #shrine-visit-detail-back,
@@ -6154,7 +6167,13 @@ html.oai-font-global .shrine-visit-floating-list-btn{
 #qna-view.open { display: flex; flex-direction: column; }
 
 /* V8-1-14-10-QNA-NOTICE-IN-TEXTAREA: 외부복귀/새로고침 안정막의 금색 로딩 십자가 복원 */
-html.oai-stability-veil::after {
+html.oai-stability-veil::after,
+html.oai-stability-veil[data-oai-stability-reason*="external"]::after,
+html.oai-stability-veil[data-oai-stability-reason*="refresh"]::after,
+html.oai-stability-veil[data-oai-stability-reason*="reload"]::after,
+html.oai-stability-veil[data-oai-stability-reason*="background"]::after,
+html.oai-stability-veil.oai-external-return-freeze::after,
+html.oai-external-return-freeze::after {
   content:"✝" !important;
   position:fixed !important;
   left:50% !important;
@@ -6178,7 +6197,15 @@ html.oai-stability-veil::after {
   visibility:visible !important;
   animation:oaiStabilitySpin 2.8s linear infinite !important;
 }
-/* V8-1-14-216_my_info_backup_restore_info_card_buttons_unified: 오래된 인트로 숨김/금색 십자가 보정 제거. */
+html.oai-cover-booting::after,
+html.oai-cover-revealing::after,
+html.oai-first-entry-intro::after {
+  content:"" !important;
+  display:none !important;
+  opacity:0 !important;
+  visibility:hidden !important;
+  animation:none !important;
+}
 
 /* V8-1-14-47: 성지 지도 상단 필터(전체/순례한 성지/미방문 성지) 글자와 높이 확대 */
 .shrine-visit-map-filter{
@@ -6255,1803 +6282,4 @@ html.oai-font-global #map-wrap #shrine-visit-map-filter > button[data-shrine-vis
   html.oai-font-global #map-wrap #shrine-visit-map-filter > button[data-shrine-visit-filter]{
     min-height:40px!important;height:40px!important;padding:0 12px!important;font-size:15px!important;
   }
-}
-
-
-/* V8-1-14-216_my_info_backup_restore_info_card_buttons_unified: Google 배포용 첫 커버 인트로는 금색 십자가 대신 업로드된 십자가 사진을 사용한다. */
-@keyframes oaiGoogleIntroPhotoDesktop{
-  0%{opacity:.02; transform:translate(-50%,-49%) scale(.94); filter:contrast(1.005) saturate(1.01) drop-shadow(0 4px 12px rgba(80,54,18,.035));}
-  42%{opacity:1; transform:translate(-50%,-50%) scale(1); filter:contrast(1.015) saturate(1.02) drop-shadow(0 6px 16px rgba(80,54,18,.05));}
-  82%{opacity:1; transform:translate(-50%,-50%) scale(1); filter:contrast(1.015) saturate(1.02) drop-shadow(0 6px 16px rgba(80,54,18,.05));}
-  100%{opacity:1; transform:translate(-50%,-50%) scale(1); filter:contrast(1.015) saturate(1.02) drop-shadow(0 6px 16px rgba(80,54,18,.05));}
-}
-@keyframes oaiGoogleIntroPhotoMobile{
-  0%{opacity:.02; transform:scale(.94); filter:contrast(1.005) saturate(1.01);}
-  42%{opacity:1; transform:scale(1); filter:contrast(1.015) saturate(1.02);}
-  82%{opacity:1; transform:scale(1); filter:contrast(1.015) saturate(1.02);}
-  100%{opacity:1; transform:scale(1); filter:contrast(1.015) saturate(1.02);}
-}
-html.oai-cover-booting body,
-html.oai-cover-revealing body{
-  background:#fbf8f1 !important;
-}
-html.oai-cover-booting #cover,
-html.oai-cover-revealing #cover{
-  background-color:#fbf8f1 !important;
-}
-html.oai-cover-booting::before,
-html.oai-cover-revealing::before{
-  content:"" !important;
-  position:fixed !important;
-  inset:0 !important;
-  z-index:2147482500 !important;
-  background:#fbf8f1 !important;
-  pointer-events:none !important;
-  display:block !important;
-  visibility:visible !important;
-  opacity:1 !important;
-}
-html.oai-cover-booting::after,
-html.oai-cover-revealing::after{
-  content:"" !important;
-  position:fixed !important;
-  left:50% !important;
-  top:50% !important;
-  z-index:2147482501 !important;
-  width:min(84vw, 540px) !important;
-  height:min(84vh, 740px) !important;
-  transform:translate(-50%,-50%) scale(.54);
-  background-image:
-    linear-gradient(to right, #fbf8f1 0%, rgba(251,248,241,.96) 5%, rgba(251,248,241,.60) 13%, rgba(251,248,241,.16) 24%, rgba(251,248,241,0) 36%, rgba(251,248,241,0) 64%, rgba(251,248,241,.16) 76%, rgba(251,248,241,.60) 87%, rgba(251,248,241,.96) 95%, #fbf8f1 100%),
-    linear-gradient(to bottom, #fbf8f1 0%, rgba(251,248,241,.90) 6%, rgba(251,248,241,.36) 17%, rgba(251,248,241,0) 30%, rgba(251,248,241,0) 70%, rgba(251,248,241,.36) 83%, rgba(251,248,241,.90) 94%, #fbf8f1 100%),
-    radial-gradient(ellipse 96% 88% at 50% 48%, rgba(251,248,241,0) 50%, rgba(251,248,241,.08) 62%, rgba(251,248,241,.34) 76%, rgba(251,248,241,.76) 90%, rgba(251,248,241,1) 100%),
-    url("intro-cross-jesus.jpg?v=V8-1-14-216_my_info_backup_restore_info_card_buttons_unified") !important;
-  background-position:center center, center center, center center, center center !important;
-  background-size:100% 100%, 100% 100%, 100% 100%, auto 106% !important;
-  background-repeat:no-repeat, no-repeat, no-repeat, no-repeat !important;
-  border-radius:38px !important;
-  background-color:#fbf8f1 !important;
-  box-shadow:
-    0 0 0 999px #fbf8f1,
-    0 8px 18px rgba(80,54,18,.05),
-    inset 0 0 72px rgba(251,248,241,.28),
-    inset 0 0 150px rgba(251,248,241,.18) !important;
-  -webkit-mask-image:
-    linear-gradient(to right, transparent 0%, rgba(0,0,0,.35) 6%, rgba(0,0,0,.82) 15%, #000 28%, #000 72%, rgba(0,0,0,.82) 85%, rgba(0,0,0,.35) 94%, transparent 100%),
-    linear-gradient(to bottom, transparent 0%, rgba(0,0,0,.50) 5%, rgba(0,0,0,.90) 13%, #000 24%, #000 76%, rgba(0,0,0,.90) 87%, rgba(0,0,0,.50) 95%, transparent 100%) !important;
-  -webkit-mask-composite:source-in !important;
-  mask-image:
-    linear-gradient(to right, transparent 0%, rgba(0,0,0,.35) 6%, rgba(0,0,0,.82) 15%, #000 28%, #000 72%, rgba(0,0,0,.82) 85%, rgba(0,0,0,.35) 94%, transparent 100%),
-    linear-gradient(to bottom, transparent 0%, rgba(0,0,0,.50) 5%, rgba(0,0,0,.90) 13%, #000 24%, #000 76%, rgba(0,0,0,.90) 87%, rgba(0,0,0,.50) 95%, transparent 100%) !important;
-  mask-composite:intersect !important;
-  pointer-events:none !important;
-  display:block !important;
-  visibility:visible !important;
-  opacity:1 !important;
-  animation:oaiIntroSmoothPhotoDesktopV85 1.85s cubic-bezier(.22,.61,.36,1) both !important;
-}
-html.oai-cover-revealing::before,
-html.oai-cover-revealing::after{
-  opacity:0 !important;
-  transition:opacity 1.0s ease-out !important;
-}
-@media (max-width: 540px) and (max-aspect-ratio: 3/4){
-  html.oai-cover-booting::after,
-  html.oai-cover-revealing::after{
-    left:0 !important;
-    top:0 !important;
-    width:100vw !important;
-    height:100vh !important;
-    transform:none;
-    border-radius:0 !important;
-    background-size:100% 100%, 100% 100%, 100% 100%, auto 108% !important;
-    -webkit-mask-image:none !important;
-    mask-image:none !important;
-    box-shadow:0 0 0 999px #fbf8f1 !important;
-    animation:oaiIntroSmoothPhotoMobileV85 1.85s cubic-bezier(.22,.61,.36,1) both !important;
-  }
-}
-
-
-/* OAI-V67-STAMPBOOK-HEADER-BOTTOM-SAFE-FINAL
-   V8-1-14-216_my_info_backup_restore_info_card_buttons_unified: 스탬프북 헤더의 status-bar 중복 보정 제거 + Android WebView 하단 안전영역 표준화. */
-html:not(.ios-device){
-  --oai-android-bottom-gap:clamp(10px, env(safe-area-inset-bottom,0px), 18px);
-  --oai-android-bottom-gap-tight:clamp(8px, env(safe-area-inset-bottom,0px), 14px);
-  --oai-android-bottom-gap-roomy:clamp(12px, env(safe-area-inset-bottom,0px), 20px);
-  --v4-list-pad-bottom:calc(72px + var(--oai-android-bottom-gap));
-}
-/* 스탬프북은 body 안 전체 모달이라 module-bar의 safe-area top을 한 번 더 더하면
-   관구·교구/다른 헤더보다 status bar 높이만큼 아래로 밀린다. */
-html:not(.ios-device) #shrine-visit-cards-modal .shrine-visit-cards-panel,
-html:not(.ios-device) .shrine-visit-cards-modal .shrine-visit-cards-panel{
-  padding-top:0!important;
-  padding-bottom:var(--oai-android-bottom-gap)!important;
-}
-html:not(.ios-device) #shrine-visit-cards-modal .shrine-visit-cards-head.module-bar,
-html:not(.ios-device) #shrine-visit-cards-modal .shrine-visit-cards-head,
-html:not(.ios-device) .shrine-visit-cards-modal .shrine-visit-cards-head.module-bar,
-html:not(.ios-device) .shrine-visit-cards-modal .shrine-visit-cards-head,
-html:not(.ios-device).oai-screen-compact-short #shrine-visit-cards-modal .shrine-visit-cards-head.module-bar,
-html:not(.ios-device).oai-screen-compact-short #shrine-visit-cards-modal .shrine-visit-cards-head,
-html:not(.ios-device).oai-screen-tall-phone #shrine-visit-cards-modal .shrine-visit-cards-head.module-bar,
-html:not(.ios-device).oai-screen-tall-phone #shrine-visit-cards-modal .shrine-visit-cards-head,
-html:not(.ios-device).oai-screen-fold-wide #shrine-visit-cards-modal .shrine-visit-cards-head.module-bar,
-html:not(.ios-device).oai-screen-fold-wide #shrine-visit-cards-modal .shrine-visit-cards-head{
-  height:var(--oai-std-header-h)!important;
-  min-height:var(--oai-std-header-h)!important;
-  max-height:var(--oai-std-header-h)!important;
-  padding:10px 16px 10px!important;
-  margin:0!important;
-  margin-left:0!important;
-  margin-right:0!important;
-  width:100%!important;
-  box-sizing:border-box!important;
-  flex-shrink:0!important;
-  align-items:center!important;
-  background:#0e1535!important;
-  border-bottom:2px solid var(--gold)!important;
-  border-radius:0!important;
-}
-html:not(.ios-device).oai-screen-compact-short #shrine-visit-cards-modal .shrine-visit-cards-head.module-bar,
-html:not(.ios-device).oai-screen-compact-short #shrine-visit-cards-modal .shrine-visit-cards-head{
-  padding:8px 14px 8px!important;
-}
-html:not(.ios-device) #cover{
-  --cover-bottom-safe:var(--oai-android-bottom-gap)!important;
-  padding-bottom:calc(var(--cover-note-reserve) + var(--oai-android-bottom-gap))!important;
-}
-html:not(.ios-device) #cover-bottom-note{
-  bottom:var(--oai-android-bottom-gap)!important;
-}
-html:not(.ios-device) #list-body,
-html:not(.ios-device) #nearby-body,
-html:not(.ios-device) #region-body{
-  padding-bottom:calc(18px + var(--oai-android-bottom-gap))!important;
-}
-html:not(.ios-device) .web-list,
-html:not(.ios-device) #trail-list{
-  padding-bottom:calc(72px + var(--oai-android-bottom-gap))!important;
-}
-html:not(.ios-device) #missa-view .faith-bottom-nav,
-html:not(.ios-device) #prayer-view .faith-bottom-nav,
-html:not(.ios-device) .faith-bottom-nav{
-  padding-bottom:calc(5px + var(--oai-android-bottom-gap))!important;
-}
-html:not(.ios-device) #prayer-list-view{
-  padding-bottom:calc(78px + var(--oai-android-bottom-gap))!important;
-}
-html:not(.ios-device) #prayer-detail-body{
-  padding-bottom:calc(86px + var(--oai-android-bottom-gap))!important;
-}
-html:not(.ios-device) #app #info-card,
-html:not(.ios-device) #app #sheet-route{
-  padding-bottom:var(--oai-android-bottom-gap)!important;
-}
-html:not(.ios-device) #app #info-card .ic-body{
-  padding-bottom:calc(8px + var(--oai-android-bottom-gap-tight))!important;
-}
-html:not(.ios-device) #app .guide-modal{
-  padding-bottom:calc(14px + var(--oai-android-bottom-gap))!important;
-}
-html:not(.ios-device) #app .shrine-visit-floating-list-btn{
-  bottom:calc(var(--oai-android-bottom-gap) + 24px)!important;
-}
-html:not(.ios-device) #app #loc-btn{
-  bottom:calc(var(--oai-android-bottom-gap) + 76px)!important;
-}
-@media (max-width:390px){
-  html:not(.ios-device) #app .shrine-visit-floating-list-btn{bottom:calc(var(--oai-android-bottom-gap) + 22px)!important;}
-  html:not(.ios-device) #app #loc-btn{bottom:calc(var(--oai-android-bottom-gap) + 70px)!important;}
-}
-html:not(.ios-device) .shrine-visit-panel,
-html:not(.ios-device) .shrine-auto-visit-panel{
-  padding-bottom:var(--oai-android-bottom-gap-roomy)!important;
-}
-html:not(.ios-device) .shrine-visit-cards-body{
-  padding-bottom:max(46px, calc(34px + var(--oai-android-bottom-gap)))!important;
-}
-html:not(.ios-device) .shrine-visit-cards-body.stats{
-  padding-bottom:max(48px, calc(36px + var(--oai-android-bottom-gap)))!important;
-}
-html:not(.ios-device) .shrine-visit-detail-view{
-  padding-bottom:var(--oai-android-bottom-gap)!important;
-}
-html:not(.ios-device) .shrine-visit-detail-body{
-  padding-bottom:max(44px, calc(32px + var(--oai-android-bottom-gap)))!important;
-}
-
-
-/* OAI-V68-KEYBOARD-BUTTON-POSITION-FINAL
-   V8-1-14-216_my_info_backup_restore_info_card_buttons_unified: 지도/지역검색 키보드 중 나의순례현황 버튼 숨김, 내위치/나의순례현황 버튼 위치 중간 상향. */
-html.oai-map-search-keyboard-lock #app #shrine-visit-floating-list-btn,
-html.oai-map-search-keyboard-lock #app #shrine-visit-floating-list-btn.show,
-html.kb-open #app #shrine-visit-floating-list-btn,
-html.kb-open #app #shrine-visit-floating-list-btn.show{
-  display:none!important;
-  opacity:0!important;
-  visibility:hidden!important;
-  pointer-events:none!important;
-  transform:none!important;
-}
-html:not(.ios-device) #app .shrine-visit-floating-list-btn{
-  bottom:calc(var(--oai-android-bottom-gap, 10px) + 38px)!important;
-}
-html:not(.ios-device) #app #loc-btn{
-  bottom:calc(var(--oai-android-bottom-gap, 10px) + 94px)!important;
-}
-@media (max-width:390px){
-  html:not(.ios-device) #app .shrine-visit-floating-list-btn{
-    bottom:calc(var(--oai-android-bottom-gap, 10px) + 34px)!important;
-  }
-  html:not(.ios-device) #app #loc-btn{
-    bottom:calc(var(--oai-android-bottom-gap, 10px) + 88px)!important;
-  }
-}
-
-
-/* OAI-V69-NO-RELOAD-INTRO-CROSS-FINAL
-   V8-1-14-216_my_info_backup_restore_info_card_buttons_unified: 새로고침/리로드 끝부분에 다시 나타나는 인트로 십자가를 제거한다. */
-html.oai-refresh-no-intro.oai-cover-booting::after,
-html.oai-refresh-no-intro.oai-cover-revealing::after,
-html.oai-stability-veil[data-oai-stability-reason*="refresh"]::after,
-html.oai-stability-veil[data-oai-stability-reason*="reload"]::after,
-html.oai-stability-veil[data-oai-refresh-early-veil="1"]::after{
-  content:""!important;
-  display:none!important;
-  opacity:0!important;
-  visibility:hidden!important;
-  animation:none!important;
-  background-image:none!important;
-}
-
-
-/* OAI-V71-SMOOTH-TIMING-FINAL
-   V8-1-14-216_my_info_backup_restore_info_card_buttons_unified: 인트로는 유지하고, 외부페이지 보호막/성지·성당·피정 전환 체감만 부드럽게 정리한다. */
-html:not(.ios-device){
-  --oai-category-enter-ms:360ms!important;
-  --oai-popup-enter-ms:320ms!important;
-}
-html.oai-category-entering #oai-category-entry-veil{
-  transition:opacity .14s cubic-bezier(.22,.61,.36,1)!important;
-}
-html.oai-category-dissolve.oai-category-dissolving #oai-category-entry-veil{
-  transition:opacity var(--oai-category-enter-ms) ease-out!important;
-}
-#app .sheet.from-right.open,
-#app .sheet.from-left.open{
-  transition:transform .18s cubic-bezier(.22,.61,.36,1)!important;
-}
-html.oai-stability-veil::before{
-  animation-duration:.08s!important;
-}
-html.oai-stability-veil.oai-stability-veil-releasing::before{
-  animation-duration:.12s!important;
-}
-html.oai-external-return-freeze *,
-html.oai-stability-veil[data-oai-stability-reason*="external"] *{
-  scroll-behavior:auto!important;
-}
-#sheet-nearby.open,
-#sheet-list.open,
-#sheet-region.open,
-#sheet-route.open,
-#info-card.open{
-  backface-visibility:hidden!important;
-  transform:translateZ(0)!important;
-}
-
-
-/* V8-1-14-216_my_info_backup_restore_info_card_buttons_unified: 오래된 단계별 인트로 조정 블록 제거. 최종 V85 사진 인트로만 유지한다. */
-
-/* OAI-V74-STAMPBOOK-HEADER-TOP-FIX-FINAL
-   V8-1-14-216_my_info_backup_restore_info_card_buttons_unified: V67에서 스탬프북 헤더의 상단 safe-area를 완전히 빼면서 일부 Android WebView에서 헤더가 위로 잘리는 문제를 보정한다.
-   다른 카테고리 헤더/뒤로가기/보호창/인트로는 건드리지 않고 스탬프북 헤더에만 최소 상단 여유를 준다. */
-html:not(.ios-device){
-  --oai-stampbook-header-top-gap:clamp(16px, env(safe-area-inset-top, 0px), 24px);
-}
-html:not(.ios-device) #shrine-visit-cards-modal .shrine-visit-cards-head.module-bar,
-html:not(.ios-device) #shrine-visit-cards-modal .shrine-visit-cards-head,
-html:not(.ios-device) .shrine-visit-cards-modal .shrine-visit-cards-head.module-bar,
-html:not(.ios-device) .shrine-visit-cards-modal .shrine-visit-cards-head{
-  height:calc(var(--oai-std-header-h) + var(--oai-stampbook-header-top-gap))!important;
-  min-height:calc(var(--oai-std-header-h) + var(--oai-stampbook-header-top-gap))!important;
-  max-height:calc(var(--oai-std-header-h) + var(--oai-stampbook-header-top-gap))!important;
-  padding:calc(10px + var(--oai-stampbook-header-top-gap)) 16px 10px!important;
-  margin:0!important;
-  margin-left:0!important;
-  margin-right:0!important;
-  width:100%!important;
-  box-sizing:border-box!important;
-  flex-shrink:0!important;
-  align-items:center!important;
-  background:#0e1535!important;
-  border-bottom:2px solid var(--gold)!important;
-  border-radius:0!important;
-}
-html:not(.ios-device).oai-screen-compact-short #shrine-visit-cards-modal .shrine-visit-cards-head.module-bar,
-html:not(.ios-device).oai-screen-compact-short #shrine-visit-cards-modal .shrine-visit-cards-head{
-  height:calc(var(--oai-std-header-h) + var(--oai-stampbook-header-top-gap))!important;
-  min-height:calc(var(--oai-std-header-h) + var(--oai-stampbook-header-top-gap))!important;
-  max-height:calc(var(--oai-std-header-h) + var(--oai-stampbook-header-top-gap))!important;
-  padding:calc(8px + var(--oai-stampbook-header-top-gap)) 14px 8px!important;
-}
-
-
-/* V8-1-14-216_my_info_backup_restore_info_card_buttons_unified: 오래된 단계별 인트로 조정 블록 제거. 최종 V85 사진 인트로만 유지한다. */
-
-/* OAI-V77-EXTERNAL-ENTRY-VEIL-FINAL
-   V8-1-14-216_my_info_backup_restore_info_card_buttons_unified: 모든 외부사이트 진입 직전 보호창이 보이도록 external-leave 보호막을 즉시 표시하고 최소 표시 시간을 확보한다. */
-html.oai-stability-veil[data-oai-stability-reason="external-leave"]::before,
-html.oai-stability-veil.oai-external-leaving::before{
-  content:""!important;
-  display:block!important;
-  visibility:visible!important;
-  opacity:1!important;
-  background:#f5f0e8!important;
-  animation:oaiStabilityVeilIn .10s ease-out both!important;
-}
-html.oai-stability-veil[data-oai-stability-reason="external-leave"]::after,
-html.oai-stability-veil.oai-external-leaving::after{
-  content:"✝"!important;
-  display:flex!important;
-  opacity:.82!important;
-  visibility:visible!important;
-  animation:oaiUnifiedLoadingCrossSpin 2.8s linear infinite!important;
-}
-
-
-/* V8-1-14-216_my_info_backup_restore_info_card_buttons_unified: 오래된 단계별 인트로 조정 블록 제거. 최종 V85 사진 인트로만 유지한다. */
-
-/* OAI-V79-STAMPBOOK-HEADER-REPAIR-FINAL
-   V8-1-14-216_my_info_backup_restore_info_card_buttons_unified: V74의 16~24px 상단 여유가 일부 Android WebView에서 부족해 스탬프북 헤더가 계속 잘리는 문제를 재보정한다.
-   관구·교구/다른 헤더는 건드리지 않고, 스탬프북 헤더 내부 여백만 충분히 확보한다. */
-html:not(.ios-device){
-  --oai-stampbook-header-top-gap:clamp(38px, calc(env(safe-area-inset-top, 0px) + 18px), 46px);
-}
-html:not(.ios-device) #shrine-visit-cards-modal .shrine-visit-cards-panel,
-html:not(.ios-device) .shrine-visit-cards-modal .shrine-visit-cards-panel{
-  padding-top:0!important;
-}
-html:not(.ios-device) #shrine-visit-cards-modal .shrine-visit-cards-head.module-bar,
-html:not(.ios-device) #shrine-visit-cards-modal .shrine-visit-cards-head,
-html:not(.ios-device) .shrine-visit-cards-modal .shrine-visit-cards-head.module-bar,
-html:not(.ios-device) .shrine-visit-cards-modal .shrine-visit-cards-head,
-html:not(.ios-device).oai-screen-compact-short #shrine-visit-cards-modal .shrine-visit-cards-head.module-bar,
-html:not(.ios-device).oai-screen-compact-short #shrine-visit-cards-modal .shrine-visit-cards-head,
-html:not(.ios-device).oai-screen-tall-phone #shrine-visit-cards-modal .shrine-visit-cards-head.module-bar,
-html:not(.ios-device).oai-screen-tall-phone #shrine-visit-cards-modal .shrine-visit-cards-head,
-html:not(.ios-device).oai-screen-fold-wide #shrine-visit-cards-modal .shrine-visit-cards-head.module-bar,
-html:not(.ios-device).oai-screen-fold-wide #shrine-visit-cards-modal .shrine-visit-cards-head{
-  height:calc(var(--oai-std-header-h) + var(--oai-stampbook-header-top-gap))!important;
-  min-height:calc(var(--oai-std-header-h) + var(--oai-stampbook-header-top-gap))!important;
-  max-height:calc(var(--oai-std-header-h) + var(--oai-stampbook-header-top-gap))!important;
-  padding:calc(8px + var(--oai-stampbook-header-top-gap)) 16px 10px!important;
-  margin:0!important;
-  margin-left:0!important;
-  margin-right:0!important;
-  width:100%!important;
-  box-sizing:border-box!important;
-  flex-shrink:0!important;
-  align-items:center!important;
-  overflow:visible!important;
-  background:#0e1535!important;
-  border-bottom:2px solid var(--gold)!important;
-  border-radius:0!important;
-}
-html:not(.ios-device).oai-screen-compact-short #shrine-visit-cards-modal .shrine-visit-cards-head.module-bar,
-html:not(.ios-device).oai-screen-compact-short #shrine-visit-cards-modal .shrine-visit-cards-head{
-  padding:calc(6px + var(--oai-stampbook-header-top-gap)) 14px 8px!important;
-}
-html:not(.ios-device) #shrine-visit-cards-modal .shrine-visit-cards-head .module-bar-main,
-html:not(.ios-device) .shrine-visit-cards-modal .shrine-visit-cards-head .module-bar-main{
-  align-items:center!important;
-}
-
-
-/* V8-1-14-216_my_info_backup_restore_info_card_buttons_unified: 오래된 단계별 인트로 조정 블록 제거. 최종 V85 사진 인트로만 유지한다. */
-
-/* OAI-V82-LOCATION-EXTERNAL-STABLE-FINAL
-   V8-1-14-216_my_info_backup_restore_info_card_buttons_unified: 이동 후 이전 위치가 남는 문제를 줄이기 위해 위치 캐시 의존을 낮추고, 외부사이트가 늦게 열릴 때 보호창이 먼저 사라지지 않도록 보강했다. */
-html.oai-stability-veil[data-oai-stability-reason="external-leave"]::before,
-html.oai-stability-veil.oai-external-leaving::before{
-  opacity:1!important;
-}
-html.oai-stability-veil[data-oai-stability-reason="external-leave"]::after,
-html.oai-stability-veil.oai-external-leaving::after{
-  opacity:.86!important;
-}
-
-
-/* V8-1-14-216_my_info_backup_restore_info_card_buttons_unified: 오래된 단계별 인트로 조정 블록 제거. 최종 V85 사진 인트로만 유지한다. */
-
-/* OAI-V85-INTRO-SMOOTH-NO-STUTTER-FINAL
-   V8-1-14-216_my_info_backup_restore_info_card_buttons_unified: 인트로 속도는 유지하고, 중간 끊김처럼 보이던 다단계 확대를 전용 keyframes의 단일 연속 곡선으로 정리한다. */
-@keyframes oaiIntroSmoothPhotoDesktopV85{
-  0%{opacity:.12; transform:translate(-50%,-49%) scale(.84); filter:contrast(1.005) saturate(1.01) drop-shadow(0 4px 12px rgba(80,54,18,.035));}
-  100%{opacity:1; transform:translate(-50%,-50%) scale(1); filter:contrast(1.015) saturate(1.02) drop-shadow(0 6px 16px rgba(80,54,18,.05));}
-}
-@keyframes oaiIntroSmoothPhotoMobileV85{
-  0%{opacity:.12; transform:scale(.84); filter:contrast(1.005) saturate(1.01);}
-  100%{opacity:1; transform:scale(1); filter:contrast(1.015) saturate(1.02);}
-}
-html.oai-cover-booting::after,
-html.oai-cover-revealing::after{
-  animation-name:oaiIntroSmoothPhotoDesktopV85!important;
-  animation-duration:1.85s!important;
-  animation-timing-function:cubic-bezier(.22,.61,.36,1)!important;
-  animation-fill-mode:both!important;
-  will-change:transform,opacity!important;
-  backface-visibility:hidden!important;
-}
-@media (max-width:540px) and (max-aspect-ratio:3/4){
-  html.oai-cover-booting::after,
-  html.oai-cover-revealing::after{
-    animation-name:oaiIntroSmoothPhotoMobileV85!important;
-    animation-duration:1.85s!important;
-    animation-timing-function:cubic-bezier(.22,.61,.36,1)!important;
-    animation-fill-mode:both!important;
-    will-change:transform,opacity!important;
-    backface-visibility:hidden!important;
-  }
-}
-
-
-/* OAI-V86-EXTERNAL-VEIL-STABLE-FINAL
-   V8-1-14-216_my_info_backup_restore_info_card_buttons_unified: 외부사이트 진입 때 CSS pseudo 보호막이 WebView 로딩과 겹치며 사라져 보이는 현상을 줄이기 위해 실제 DOM 보호창을 최상단에 유지한다. */
-#oai-external-entry-guard{
-  position:fixed!important;
-  inset:0!important;
-  z-index:2147483640!important;
-  display:none;
-  align-items:center!important;
-  justify-content:center!important;
-  background:#f5f0e8!important;
-  opacity:0;
-  visibility:hidden;
-  pointer-events:auto!important;
-  transition:none!important;
-  transform:translateZ(0)!important;
-  backface-visibility:hidden!important;
-  contain:layout paint style!important;
-}
-#oai-external-entry-guard.show{
-  display:flex!important;
-  opacity:1!important;
-  visibility:visible!important;
-}
-#oai-external-entry-guard.hide{
-  opacity:0!important;
-  visibility:hidden!important;
-}
-#oai-external-entry-guard .oai-external-entry-cross{
-  width:48px!important;
-  height:48px!important;
-  display:flex!important;
-  align-items:center!important;
-  justify-content:center!important;
-  color:#d4aa6a!important;
-  font-size:42px!important;
-  font-weight:900!important;
-  line-height:1!important;
-  text-shadow:0 3px 14px rgba(80,54,18,.10)!important;
-  animation:oaiUnifiedLoadingCrossSpin 2.8s linear infinite!important;
-  transform-origin:center center!important;
-}
-html.oai-stability-veil[data-oai-stability-reason="external-leave"]::before,
-html.oai-stability-veil.oai-external-leaving::before{
-  opacity:1!important;
-  visibility:visible!important;
-  background:#f5f0e8!important;
-  animation:none!important;
-}
-html.oai-stability-veil[data-oai-stability-reason="external-leave"]::after,
-html.oai-stability-veil.oai-external-leaving::after{
-  opacity:0!important;
-  visibility:hidden!important;
-  animation:none!important;
-}
-
-
-/* OAI-V87-NO-PULL-EXTERNAL-PLAIN-FINAL
-   V8-1-14-216_my_info_backup_restore_info_card_buttons_unified: 커버 당김 새로고침 원형 화살표를 완전히 숨기고, 외부사이트 진입 보호창은 단색 화면만 사용해 검은 화면/원형 표시처럼 보이는 중간 단계를 줄인다. */
-#cv-pull-modern,
-#cv-pull-modern.show,
-#cv-pull-modern.ready,
-#cv-pull-modern.refreshing{
-  display:none!important;
-  opacity:0!important;
-  visibility:hidden!important;
-  pointer-events:none!important;
-  animation:none!important;
-}
-html.oai-external-leaving,
-html.oai-external-leaving body,
-html.oai-stability-veil[data-oai-stability-reason="external-leave"],
-html.oai-stability-veil[data-oai-stability-reason="external-leave"] body{
-  background:#f5f0e8!important;
-  color-scheme:light!important;
-}
-#oai-external-entry-guard{
-  background:#f5f0e8!important;
-  opacity:1!important;
-  visibility:visible!important;
-  transition:none!important;
-}
-#oai-external-entry-guard.show{
-  display:flex!important;
-  opacity:1!important;
-  visibility:visible!important;
-}
-#oai-external-entry-guard::before,
-#oai-external-entry-guard::after,
-#oai-external-entry-guard .oai-external-entry-cross{
-  content:""!important;
-  display:none!important;
-  opacity:0!important;
-  visibility:hidden!important;
-  animation:none!important;
-}
-html.oai-stability-veil[data-oai-stability-reason="external-leave"]::before,
-html.oai-stability-veil.oai-external-leaving::before{
-  background:#f5f0e8!important;
-  opacity:1!important;
-  visibility:visible!important;
-  animation:none!important;
-}
-html.oai-stability-veil[data-oai-stability-reason="external-leave"]::after,
-html.oai-stability-veil.oai-external-leaving::after{
-  content:""!important;
-  display:none!important;
-  opacity:0!important;
-  visibility:hidden!important;
-  animation:none!important;
-}
-
-
-/* OAI-V88-EXTERNAL-VEIL-HOLD-FINAL
-   V8-1-14-216_my_info_backup_restore_info_card_buttons_unified: 외부사이트 진입 보호창이 너무 짧게 느껴지지 않도록, 보호창은 단색 아이보리 상태를 유지하고 이동 전 최소 표시 시간을 app.js에서 늘렸다. */
-#oai-external-entry-guard.show{
-  display:flex!important;
-  opacity:1!important;
-  visibility:visible!important;
-  background:#f5f0e8!important;
-}
-
-
-/* OAI-V89-EXTERNAL-CROSS-RESTORE-FINAL
-   V8-1-14-216_my_info_backup_restore_info_card_buttons_unified: V87에서 제거했던 외부사이트 진입 로딩 십자가를 복구한다. 원형 당김 새로고침 표시는 계속 제거한다. */
-#oai-external-entry-guard.show{
-  display:flex!important;
-  opacity:1!important;
-  visibility:visible!important;
-  background:#f5f0e8!important;
-}
-#oai-external-entry-guard::before,
-#oai-external-entry-guard::after{
-  content:""!important;
-  display:none!important;
-  opacity:0!important;
-  visibility:hidden!important;
-  animation:none!important;
-}
-#oai-external-entry-guard .oai-external-entry-cross{
-  width:56px!important;
-  height:56px!important;
-  display:flex!important;
-  align-items:center!important;
-  justify-content:center!important;
-  color:#d4aa6a!important;
-  font-size:44px!important;
-  font-weight:900!important;
-  line-height:1!important;
-  text-shadow:0 3px 14px rgba(80,54,18,.14)!important;
-  animation:oaiStabilitySpin 1.65s linear infinite!important;
-  transform-origin:center center!important;
-}
-html.oai-stability-veil[data-oai-stability-reason="external-leave"]::before,
-html.oai-stability-veil.oai-external-leaving::before{
-  background:#f5f0e8!important;
-  opacity:1!important;
-  visibility:visible!important;
-  animation:none!important;
-}
-html.oai-stability-veil[data-oai-stability-reason="external-leave"]::after,
-html.oai-stability-veil.oai-external-leaving::after{
-  content:""!important;
-  display:none!important;
-  opacity:0!important;
-  visibility:hidden!important;
-  animation:none!important;
-}
-#cv-pull-modern,
-#cv-pull-modern.show,
-#cv-pull-modern.ready,
-#cv-pull-modern.refreshing{
-  display:none!important;
-  opacity:0!important;
-  visibility:hidden!important;
-  pointer-events:none!important;
-  animation:none!important;
-}
-
-
-/* OAI-V90-EXTERNAL-CROSS-CHROME-SMOOTH-FINAL
-   V8-1-14-216_my_info_backup_restore_info_card_buttons_unified: Chrome 전환 전에 로딩 십자가가 확실히 보이도록 보호창을 더 선명하게 표시한다. */
-#oai-external-entry-guard.show{
-  display:flex!important;
-  opacity:1!important;
-  visibility:visible!important;
-  background:#f5f0e8!important;
-}
-#oai-external-entry-guard .oai-external-entry-cross{
-  width:64px!important;
-  height:64px!important;
-  display:flex!important;
-  align-items:center!important;
-  justify-content:center!important;
-  color:#d4aa6a!important;
-  font-size:52px!important;
-  font-weight:900!important;
-  line-height:1!important;
-  opacity:1!important;
-  visibility:visible!important;
-  text-shadow:0 4px 16px rgba(80,54,18,.16)!important;
-  animation:oaiStabilitySpin 1.9s linear infinite!important;
-  transform-origin:center center!important;
-}
-#oai-external-entry-guard::before,
-#oai-external-entry-guard::after{
-  content:""!important;
-  display:none!important;
-  opacity:0!important;
-  visibility:hidden!important;
-  animation:none!important;
-}
-html.oai-stability-veil[data-oai-stability-reason="external-leave"]::after,
-html.oai-stability-veil.oai-external-leaving::after{
-  content:""!important;
-  display:none!important;
-  opacity:0!important;
-  visibility:hidden!important;
-  animation:none!important;
-}
-
-
-/* V8-1-14-216_my_info_backup_restore_info_card_buttons_unified: 폐기된 background stabilizing veil CSS 제거. */
-
-/* V8-1-14-216_my_info_backup_restore_info_card_buttons_unified: 성지/성당/피정의집 카테고리별 정보 출처 표기 */
-.category-source-note {
-  display: block;
-  flex-shrink: 0;
-  margin: 0;
-  padding: 7px 13px 6px;
-  background: #fffaf0;
-  border-bottom: 1px solid rgba(180, 140, 80, .22);
-  color: #7a5a22;
-  font-size: 11px;
-  font-weight: 750;
-  line-height: 1.35;
-  letter-spacing: -0.03em;
-  text-align: left;
-}
-.category-source-note .source-parish,
-.category-source-note .source-retreat { display: none; }
-html.parish-mode .category-source-note .source-shrine,
-html.parish-mode .category-source-note .source-retreat { display: none; }
-html.parish-mode .category-source-note .source-parish { display: inline; }
-html.retreat-mode .category-source-note .source-shrine,
-html.retreat-mode .category-source-note .source-parish { display: none; }
-html.retreat-mode .category-source-note .source-retreat { display: inline; }
-#sheet-nearby .category-source-note,
-#sheet-list .category-source-note,
-#sheet-region .category-source-note { position: relative; z-index: 2; }
-html.oai-font-global .category-source-note { font-size: calc(11px * var(--app-inner-font-scale,1)); }
-
-/* V8-1-14-105: 성지 상세페이지/굿뉴스 성지안내 버튼 색상 밝게 통일 */
-#app #info-card .ic-guide-btn{background:#fff3c4!important;color:#6c4a00!important;border:1px solid #e1bd59!important;}
-#app #info-card .ic-goodnews-btn{background:#e8f7ff!important;color:#075985!important;border:1px solid #66bdf2!important;}
-#app .shrine-visit-detail-action.detail-guide{background:#fff3c4!important;color:#6c4a00!important;border:1px solid #e1bd59!important;}
-#app .shrine-visit-detail-action.detail-goodnews{background:#e8f7ff!important;color:#075985!important;border:1px solid #66bdf2!important;}
-#app .shrine-visit-detail-action.detail-kakao{width:auto!important;}
-
-/* V8-1-14-106: 정보카드/스탬프북 버튼 폭 통일 */
-#app #info-card .ic-btn-row,
-#app #info-card .ic-links,
-#app #info-card .ic-kakao-row{
-  display:flex!important;
-  align-items:stretch!important;
-  gap:7px!important;
-  padding:7px 14px 0!important;
-}
-#app #info-card .ic-btn-row > *,
-#app #info-card .ic-links > *,
-#app #info-card .ic-kakao-row > *{
-  flex:1 1 0!important;
-  width:0!important;
-  min-width:0!important;
-  max-width:100%!important;
-  box-sizing:border-box!important;
-}
-#app #info-card .ic-tel-btn,
-#app #info-card .ic-route-btn,
-#app #info-card .ic-link-btn,
-#app #info-card .btn-kakao-nav{
-  height:46px!important;
-  min-height:46px!important;
-  border-radius:10px!important;
-  padding:0 8px!important;
-  font-size:16px!important;
-  font-weight:900!important;
-}
-#app #info-card .ic-guide-btn{background:#fff4cc!important;color:#7c5600!important;border:1.5px solid #e6c766!important;}
-#app #info-card .ic-goodnews-btn{background:#eaf7ff!important;color:#075985!important;border:1.5px solid #7ec8f3!important;}
-#app .shrine-visit-detail-action-row{
-  display:flex!important;
-  align-items:stretch!important;
-  gap:7px!important;
-  width:100%!important;
-}
-#app .shrine-visit-detail-action-row > .shrine-visit-detail-action{
-  flex:1 1 0!important;
-  width:0!important;
-  min-width:0!important;
-  max-width:100%!important;
-  box-sizing:border-box!important;
-}
-#app .shrine-visit-detail-action{
-  height:46px!important;
-  min-height:46px!important;
-  border-radius:10px!important;
-  padding:0 8px!important;
-  font-weight:900!important;
-}
-#app .shrine-visit-detail-action.detail-guide{background:#fff4cc!important;color:#7c5600!important;border:1.5px solid #e6c766!important;}
-#app .shrine-visit-detail-action.detail-goodnews{background:#eaf7ff!important;color:#075985!important;border:1.5px solid #7ec8f3!important;}
-#app .shrine-visit-detail-action.detail-kakao{width:0!important;}
-@media (max-width:390px){
-  #app #info-card .ic-btn-row,
-  #app #info-card .ic-links,
-  #app #info-card .ic-kakao-row,
-  #app .shrine-visit-detail-action-row{gap:6px!important;}
-  #app #info-card .ic-tel-btn,
-  #app #info-card .ic-route-btn,
-  #app #info-card .ic-link-btn,
-  #app #info-card .btn-kakao-nav,
-  #app .shrine-visit-detail-action{height:43px!important;min-height:43px!important;font-size:13px!important;padding:0 6px!important;}
-}
-
-/* V8-1-14-109: 정보카드/나의 성지순례 현황 6버튼 색상 통일 */
-#app #info-card .ic-tel-btn,
-#app #info-card .ic-route-btn,
-#app #info-card .ic-hp-btn,
-#app #info-card .ic-guide-btn,
-#app #info-card .ic-goodnews-btn,
-#app #info-card .btn-kakao-nav{
-  background:#fff8e8!important;
-  color:#5b3c00!important;
-  border:1.5px solid #d8c28f!important;
-  box-shadow:0 1px 4px rgba(91,60,0,.08)!important;
-}
-#app #info-card .ic-tel-btn .ic-tel-icon{color:#5b3c00!important;}
-#app #info-card .ic-route-btn,
-#app #info-card .btn-kakao-nav{
-  font-weight:900!important;
-}
-#app #info-card .ic-tel-btn:active,
-#app #info-card .ic-route-btn:active,
-#app #info-card .ic-hp-btn:active,
-#app #info-card .ic-guide-btn:active,
-#app #info-card .ic-goodnews-btn:active,
-#app #info-card .btn-kakao-nav:active{
-  background:#fff0c9!important;
-  filter:none!important;
-  transform:translateY(1px);
-}
-#app .shrine-visit-detail-action.detail-tel,
-#app .shrine-visit-detail-action.detail-route,
-#app .shrine-visit-detail-action.detail-home,
-#app .shrine-visit-detail-action.detail-guide,
-#app .shrine-visit-detail-action.detail-goodnews,
-#app .shrine-visit-detail-action.detail-kakao{
-  background:#fff8e8!important;
-  color:#5b3c00!important;
-  border:1.5px solid #d8c28f!important;
-  box-shadow:0 1px 4px rgba(91,60,0,.08)!important;
-}
-#app .shrine-visit-detail-action.detail-tel:active,
-#app .shrine-visit-detail-action.detail-route:active,
-#app .shrine-visit-detail-action.detail-home:active,
-#app .shrine-visit-detail-action.detail-guide:active,
-#app .shrine-visit-detail-action.detail-goodnews:active,
-#app .shrine-visit-detail-action.detail-kakao:active{
-  background:#fff0c9!important;
-  filter:none!important;
-}
-
-
-/* V8-1-14-216_my_info_backup_restore_info_card_buttons_unified: 성지 정보카드 6개 버튼 색상을 부드러운 아이보리/골드 계열로 정리한다. */
-#app #info-card .ic-btn-row > *,
-#app #info-card .ic-links > *,
-#app #info-card .ic-kakao-row > *,
-#app #info-card a.ic-tel-btn,
-#app #info-card button.ic-route-btn,
-#app #info-card button.ic-home-btn,
-#app #info-card .ic-detail-btn,
-#app #info-card .ic-goodnews-btn,
-#app #info-card .ic-kakao-btn{
-  background:linear-gradient(180deg,#fffdf8 0%,#f8efe0 100%)!important;
-  color:#3b2a16!important;
-  border:1.5px solid #d3bb8d!important;
-  box-shadow:0 2px 7px rgba(64,46,18,.08), inset 0 1px 0 rgba(255,255,255,.85)!important;
-  text-shadow:none!important;
-}
-#app #info-card .ic-btn-row > *:active,
-#app #info-card .ic-links > *:active,
-#app #info-card .ic-kakao-row > *:active,
-#app #info-card a.ic-tel-btn:active,
-#app #info-card button.ic-route-btn:active,
-#app #info-card button.ic-home-btn:active,
-#app #info-card .ic-detail-btn:active,
-#app #info-card .ic-goodnews-btn:active,
-#app #info-card .ic-kakao-btn:active{
-  background:linear-gradient(180deg,#f5e5c6 0%,#ead1a1 100%)!important;
-  border-color:#bd9655!important;
-  transform:translateY(1px)!important;
-}
-#app .shrine-visit-detail-actions .shrine-visit-detail-action,
-#app .shrine-visit-detail-action.detail-home,
-#app .shrine-visit-detail-action.detail-guide,
-#app .shrine-visit-detail-action.detail-goodnews,
-#app .shrine-visit-detail-action.detail-kakao,
-#app .shrine-visit-detail-action.detail-route{
-  background:linear-gradient(180deg,#fffdf8 0%,#f8efe0 100%)!important;
-  color:#3b2a16!important;
-  border:1.5px solid #d3bb8d!important;
-  box-shadow:0 2px 7px rgba(64,46,18,.08), inset 0 1px 0 rgba(255,255,255,.85)!important;
-  text-shadow:none!important;
-}
-#app .shrine-visit-detail-actions .shrine-visit-detail-action:active,
-#app .shrine-visit-detail-action.detail-home:active,
-#app .shrine-visit-detail-action.detail-guide:active,
-#app .shrine-visit-detail-action.detail-goodnews:active,
-#app .shrine-visit-detail-action.detail-kakao:active,
-#app .shrine-visit-detail-action.detail-route:active{
-  background:linear-gradient(180deg,#f5e5c6 0%,#ead1a1 100%)!important;
-  border-color:#bd9655!important;
-  transform:translateY(1px)!important;
-}
-
-
-/* V8-1-14-216_my_info_backup_restore_info_card_buttons_unified: 1안 적용 - 남색 배경 + 금색 테두리 + 아이보리 글자. */
-#app #info-card .ic-btn-row > *,
-#app #info-card .ic-links > *,
-#app #info-card .ic-kakao-row > *,
-#app #info-card a.ic-tel-btn,
-#app #info-card button.ic-route-btn,
-#app #info-card button.ic-home-btn,
-#app #info-card .ic-detail-btn,
-#app #info-card .ic-goodnews-btn,
-#app #info-card .ic-kakao-btn{
-  background:linear-gradient(180deg,#253c63 0%,#172b4d 100%)!important;
-  color:#fff8e6!important;
-  border:1.5px solid #d7b56d!important;
-  box-shadow:0 3px 9px rgba(12,24,48,.18), inset 0 1px 0 rgba(255,255,255,.14)!important;
-  text-shadow:0 1px 1px rgba(0,0,0,.18)!important;
-}
-#app #info-card .ic-btn-row > *:active,
-#app #info-card .ic-links > *:active,
-#app #info-card .ic-kakao-row > *:active,
-#app #info-card a.ic-tel-btn:active,
-#app #info-card button.ic-route-btn:active,
-#app #info-card button.ic-home-btn:active,
-#app #info-card .ic-detail-btn:active,
-#app #info-card .ic-goodnews-btn:active,
-#app #info-card .ic-kakao-btn:active{
-  background:linear-gradient(180deg,#1c3155 0%,#102342 100%)!important;
-  border-color:#e3c47b!important;
-  transform:translateY(1px)!important;
-}
-#app .shrine-visit-detail-actions .shrine-visit-detail-action,
-#app .shrine-visit-detail-action.detail-home,
-#app .shrine-visit-detail-action.detail-guide,
-#app .shrine-visit-detail-action.detail-goodnews,
-#app .shrine-visit-detail-action.detail-kakao,
-#app .shrine-visit-detail-action.detail-route{
-  background:linear-gradient(180deg,#253c63 0%,#172b4d 100%)!important;
-  color:#fff8e6!important;
-  border:1.5px solid #d7b56d!important;
-  box-shadow:0 3px 9px rgba(12,24,48,.18), inset 0 1px 0 rgba(255,255,255,.14)!important;
-  text-shadow:0 1px 1px rgba(0,0,0,.18)!important;
-}
-#app .shrine-visit-detail-actions .shrine-visit-detail-action:active,
-#app .shrine-visit-detail-action.detail-home:active,
-#app .shrine-visit-detail-action.detail-guide:active,
-#app .shrine-visit-detail-action.detail-goodnews:active,
-#app .shrine-visit-detail-action.detail-kakao:active,
-#app .shrine-visit-detail-action.detail-route:active{
-  background:linear-gradient(180deg,#1c3155 0%,#102342 100%)!important;
-  border-color:#e3c47b!important;
-  transform:translateY(1px)!important;
-}
-
-
-/* V8-1-14-216_my_info_backup_restore_info_card_buttons_unified: 실제 버튼 ID/행 클래스에 직접 적용해 이전 색상 최종 오버라이드를 덮는다. */
-#app #info-card #ic-tel-link,
-#app .shrine-visit-detail-action-row.detail-primary-row > .detail-tel{
-  background:linear-gradient(180deg,#f5fbff 0%,#e4f3ff 100%)!important;
-  color:#17456b!important;
-  border:1.5px solid #9cc9ea!important;
-  box-shadow:0 3px 8px rgba(15,35,60,.13), inset 0 1px 0 rgba(255,255,255,.92)!important;
-  text-shadow:none!important;
-}
-#app #info-card #ic-route-btn,
-#app .shrine-visit-detail-action-row.detail-primary-row > .detail-route{
-  background:linear-gradient(180deg,#38557d 0%,#27446f 100%)!important;
-  color:#fff8e6!important;
-  border:1.5px solid #d8bd79!important;
-  box-shadow:0 3px 8px rgba(15,35,60,.18), inset 0 1px 0 rgba(255,255,255,.18)!important;
-  text-shadow:0 1px 1px rgba(0,0,0,.18)!important;
-}
-#app #info-card #ic-hp,
-#app .shrine-visit-detail-action-row.detail-link-row > .detail-home{
-  background:linear-gradient(180deg,#e8f6ff 0%,#cfeaff 100%)!important;
-  color:#123e63!important;
-  border:1.5px solid #82badf!important;
-  box-shadow:0 3px 8px rgba(15,35,60,.13), inset 0 1px 0 rgba(255,255,255,.86)!important;
-  text-shadow:none!important;
-}
-#app #info-card #ic-guide,
-#app .shrine-visit-detail-action-row.detail-link-row > .detail-guide{
-  background:linear-gradient(180deg,#2f4b75 0%,#1d3863 100%)!important;
-  color:#fff8e6!important;
-  border:1.5px solid #d3b46e!important;
-  box-shadow:0 3px 8px rgba(15,35,60,.18), inset 0 1px 0 rgba(255,255,255,.17)!important;
-  text-shadow:0 1px 1px rgba(0,0,0,.18)!important;
-}
-#app #info-card #ic-goodnews,
-#app .shrine-visit-detail-action-row.detail-kakao-row > .detail-goodnews{
-  background:linear-gradient(180deg,#d7efff 0%,#acd7f4 100%)!important;
-  color:#0f385c!important;
-  border:1.5px solid #6facd5!important;
-  box-shadow:0 3px 8px rgba(15,35,60,.13), inset 0 1px 0 rgba(255,255,255,.78)!important;
-  text-shadow:none!important;
-}
-#app #info-card #ic-kakao-nav,
-#app .shrine-visit-detail-action-row.detail-kakao-row > .detail-kakao{
-  background:linear-gradient(180deg,#253c63 0%,#162c4f 100%)!important;
-  color:#fff8e6!important;
-  border:1.5px solid #cda95f!important;
-  box-shadow:0 3px 8px rgba(15,35,60,.20), inset 0 1px 0 rgba(255,255,255,.16)!important;
-  text-shadow:0 1px 1px rgba(0,0,0,.18)!important;
-}
-#app #info-card #ic-tel-link:active,
-#app #info-card #ic-route-btn:active,
-#app #info-card #ic-hp:active,
-#app #info-card #ic-guide:active,
-#app #info-card #ic-goodnews:active,
-#app #info-card #ic-kakao-nav:active,
-#app .shrine-visit-detail-action-row > .shrine-visit-detail-action:active{
-  filter:brightness(.94)!important;
-  transform:translateY(1px)!important;
-}
-
-
-/* V8-1-14-216_my_info_backup_restore_info_card_buttons_unified: 좌우 모두 파스텔 톤으로 맞춘다. 왼쪽은 파스텔 그린, 오른쪽은 파스텔 네이비. */
-#app #info-card #ic-tel-link,
-#app .shrine-visit-detail-action-row.detail-primary-row > .detail-tel{
-  background:linear-gradient(180deg,#f4fbf5 0%,#dff2e5 100%)!important;
-  color:#244f38!important;
-  border:1.5px solid #a8d5b5!important;
-  box-shadow:0 3px 8px rgba(35,78,56,.10), inset 0 1px 0 rgba(255,255,255,.90)!important;
-  text-shadow:none!important;
-}
-#app #info-card #ic-route-btn,
-#app .shrine-visit-detail-action-row.detail-primary-row > .detail-route{
-  background:linear-gradient(180deg,#f4f7fc 0%,#e2eaf6 100%)!important;
-  color:#2e466b!important;
-  border:1.5px solid #a8bbd8!important;
-  box-shadow:0 3px 8px rgba(46,70,107,.10), inset 0 1px 0 rgba(255,255,255,.90)!important;
-  text-shadow:none!important;
-}
-#app #info-card #ic-hp,
-#app .shrine-visit-detail-action-row.detail-link-row > .detail-home{
-  background:linear-gradient(180deg,#eaf7ee 0%,#cfeadb 100%)!important;
-  color:#204a35!important;
-  border:1.5px solid #8fc79f!important;
-  box-shadow:0 3px 8px rgba(35,78,56,.11), inset 0 1px 0 rgba(255,255,255,.84)!important;
-  text-shadow:none!important;
-}
-#app #info-card #ic-guide,
-#app .shrine-visit-detail-action-row.detail-link-row > .detail-guide{
-  background:linear-gradient(180deg,#e8eff8 0%,#cfddf0 100%)!important;
-  color:#283f63!important;
-  border:1.5px solid #8da7cc!important;
-  box-shadow:0 3px 8px rgba(46,70,107,.11), inset 0 1px 0 rgba(255,255,255,.84)!important;
-  text-shadow:none!important;
-}
-#app #info-card #ic-goodnews,
-#app .shrine-visit-detail-action-row.detail-kakao-row > .detail-goodnews{
-  background:linear-gradient(180deg,#def1e5 0%,#bddfc9 100%)!important;
-  color:#1d4630!important;
-  border:1.5px solid #77b98a!important;
-  box-shadow:0 3px 8px rgba(35,78,56,.12), inset 0 1px 0 rgba(255,255,255,.75)!important;
-  text-shadow:none!important;
-}
-#app #info-card #ic-kakao-nav,
-#app .shrine-visit-detail-action-row.detail-kakao-row > .detail-kakao{
-  background:linear-gradient(180deg,#dce7f5 0%,#b9cce7 100%)!important;
-  color:#233b5d!important;
-  border:1.5px solid #7391bd!important;
-  box-shadow:0 3px 8px rgba(46,70,107,.12), inset 0 1px 0 rgba(255,255,255,.75)!important;
-  text-shadow:none!important;
-}
-#app #info-card #ic-tel-link:active,
-#app #info-card #ic-route-btn:active,
-#app #info-card #ic-hp:active,
-#app #info-card #ic-guide:active,
-#app #info-card #ic-goodnews:active,
-#app #info-card #ic-kakao-nav:active,
-#app .shrine-visit-detail-action-row > .shrine-visit-detail-action:active{
-  filter:brightness(.96) saturate(.96)!important;
-  transform:translateY(1px)!important;
-}
-
-
-/* V8-1-14-216_my_info_backup_restore_info_card_buttons_unified: 카카오내비 버튼은 원래 카카오 노란색으로 복원한다. */
-#app #info-card #ic-kakao-nav,
-#app .shrine-visit-detail-action-row.detail-kakao-row > .detail-kakao{
-  background:linear-gradient(180deg,#ffe812 0%,#fee500 100%)!important;
-  color:#3c1e1e!important;
-  border:1.5px solid #e2c900!important;
-  box-shadow:0 3px 8px rgba(60,30,30,.13), inset 0 1px 0 rgba(255,255,255,.45)!important;
-  text-shadow:none!important;
-}
-#app #info-card #ic-kakao-nav:active,
-#app .shrine-visit-detail-action-row.detail-kakao-row > .detail-kakao:active{
-  background:linear-gradient(180deg,#efd700 0%,#dfc900 100%)!important;
-  border-color:#c8b300!important;
-  filter:none!important;
-  transform:translateY(1px)!important;
-}
-
-
-/* V8-1-14-216_my_info_backup_restore_info_card_buttons_unified: 홈페이지/성지 상세페이지는 한 톤 더 진하게, 굿뉴스는 더 굵고 선명하게 조정. */
-#app #info-card #ic-hp,
-#app .shrine-visit-detail-action-row.detail-link-row > .detail-home{
-  background:linear-gradient(180deg,#d9f0e1 0%,#b8dec6 100%)!important;
-  color:#1b432e!important;
-  border:1.5px solid #75b688!important;
-  font-weight:950!important;
-  box-shadow:0 3px 9px rgba(28,94,55,.17), inset 0 1px 0 rgba(255,255,255,.42)!important;
-}
-#app #info-card #ic-guide,
-#app .shrine-visit-detail-action-row.detail-link-row > .detail-guide{
-  background:linear-gradient(180deg,#d5e2f2 0%,#b8cae4 100%)!important;
-  color:#203858!important;
-  border:1.5px solid #6f8fba!important;
-  font-weight:900!important;
-}
-#app #info-card #ic-goodnews,
-#app .shrine-visit-detail-action-row.detail-kakao-row > .detail-goodnews{
-  background:linear-gradient(180deg,#cce8d5 0%,#97caa8 100%)!important;
-  color:#173d29!important;
-  border:2px solid #5ba773!important;
-  font-weight:950!important;
-  box-shadow:0 3px 9px rgba(31,86,54,.16), inset 0 1px 0 rgba(255,255,255,.62)!important;
-}
-
-
-/* V8-1-14-216_my_info_backup_restore_info_card_buttons_unified: V117 기준 유지. V118의 나의 성지순례 현황 성지정보 카드 색상만 적용하고, 흔들림을 만들었던 홈복귀 보호막은 넣지 않는다. */
-#app .shrine-visit-detail-info{
-  background:linear-gradient(180deg,#fbfdff 0%,#fffaf0 100%)!important;
-  border:2px solid #9db7cc!important;
-  box-shadow:0 8px 22px rgba(17,35,60,.08)!important;
-}
-#app .shrine-visit-detail-info .shrine-visit-detail-map-btn{
-  background:#fff8e6!important;
-  color:#5f4515!important;
-  border:1.5px solid #d5b86d!important;
-  box-shadow:0 2px 6px rgba(95,69,21,.08)!important;
-}
-#app #info-card #ic-goodnews,
-#app .shrine-visit-detail-action.detail-goodnews{
-  background:#3f8f7d!important;
-  color:#ffffff!important;
-  border:1.8px solid #2d6f61!important;
-  box-shadow:0 2px 9px rgba(63,143,125,.28)!important;
-  text-shadow:0 1px 1px rgba(0,0,0,.18)!important;
-  font-weight:950!important;
-}
-
-
-/* V8-1-14-216_my_info_backup_restore_info_card_buttons_unified: 버튼 색상은 굿뉴스/홈페이지만 한 톤 진하게 하고, 로딩 십자가는 하나의 규격으로 통일한다. */
-@keyframes oaiUnifiedLoadingCrossSpin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
-#app #info-card #ic-hp,
-#app .shrine-visit-detail-action.detail-home{
-  background:linear-gradient(180deg,#d9f0e1 0%,#b8dec6 100%)!important;
-  color:#1b432e!important;
-  border:1.5px solid #75b688!important;
-  font-weight:950!important;
-  box-shadow:0 3px 9px rgba(28,94,55,.17), inset 0 1px 0 rgba(255,255,255,.42)!important;
-}
-#app #info-card #ic-goodnews,
-#app .shrine-visit-detail-action.detail-goodnews{
-  background:#3f8f7d!important;
-  color:#ffffff!important;
-  border:1.8px solid #2d6f61!important;
-  box-shadow:0 2px 9px rgba(63,143,125,.28)!important;
-  text-shadow:0 1px 1px rgba(0,0,0,.20)!important;
-  font-weight:950!important;
-}
-.map-loading-icon,
-#diocese-loading .missa-spinner,
-#nearby-body .nearby-distance-spinner{
-  width:36px!important;
-  height:36px!important;
-  min-width:36px!important;
-  min-height:36px!important;
-  border:0!important;
-  border-radius:0!important;
-  background:transparent!important;
-  box-shadow:none!important;
-  color:#d4aa6a!important;
-  display:flex!important;
-  align-items:center!important;
-  justify-content:center!important;
-  animation:oaiUnifiedLoadingCrossSpin 2.8s linear infinite!important;
-  transform-origin:50% 50%!important;
-}
-.map-loading-icon::before,
-#diocese-loading .missa-spinner::before,
-#nearby-body .nearby-distance-spinner::before{
-  content:"✝"!important;
-  color:#d4aa6a!important;
-  font-size:32px!important;
-  font-weight:900!important;
-  line-height:1!important;
-  text-shadow:0 2px 8px rgba(212,170,106,.22)!important;
-}
-#oai-category-entry-veil::after,
-html.oai-stability-veil::after,
-html.oai-external-return-freeze::after{
-  content:"✝"!important;
-  position:fixed!important;
-  left:50%!important;
-  top:50%!important;
-  width:36px!important;
-  height:36px!important;
-  margin:-18px 0 0 -18px!important;
-  display:flex!important;
-  align-items:center!important;
-  justify-content:center!important;
-  border:0!important;
-  border-radius:0!important;
-  background:transparent!important;
-  box-shadow:none!important;
-  color:#d4aa6a!important;
-  font-size:32px!important;
-  font-weight:900!important;
-  line-height:1!important;
-  text-shadow:0 2px 8px rgba(212,170,106,.22)!important;
-  animation:oaiUnifiedLoadingCrossSpin 2.8s linear infinite!important;
-  animation-delay:0s!important;
-  animation-fill-mode:none!important;
-  opacity:1!important;
-  visibility:visible!important;
-  transform-origin:50% 50%!important;
-  pointer-events:none!important;
-  z-index:2147483001!important;
-}
-#oai-external-entry-guard .oai-external-entry-cross{
-  width:36px!important;
-  height:36px!important;
-  display:flex!important;
-  align-items:center!important;
-  justify-content:center!important;
-  color:#d4aa6a!important;
-  font-size:32px!important;
-  font-weight:900!important;
-  line-height:1!important;
-  text-shadow:0 2px 8px rgba(212,170,106,.22)!important;
-  animation:oaiUnifiedLoadingCrossSpin 2.8s linear infinite!important;
-  transform-origin:center center!important;
-}
-html.oai-stability-veil[data-oai-stability-reason="external-leave"]::after,
-html.oai-stability-veil.oai-external-leaving::after{
-  content:""!important;
-  display:none!important;
-  opacity:0!important;
-  animation:none!important;
-}
-
-
-/* V8-1-14-216_my_info_backup_restore_info_card_buttons_unified: 홈페이지는 V117 색상으로 되돌리고, 굿뉴스만 더 진한 청록색으로 강조한다. 십자가는 겹치는 구간을 하나로 통일한다. */
-#app #info-card #ic-hp,
-#app .shrine-visit-detail-action.detail-home{
-  background:linear-gradient(180deg,#d9f0e1 0%,#b8dec6 100%)!important;
-  color:#1b432e!important;
-  border:1.5px solid #75b688!important;
-  font-weight:900!important;
-}
-#app #info-card #ic-goodnews,
-#app .shrine-visit-detail-action.detail-goodnews{
-  background:#3f8f7d!important;
-  color:#ffffff!important;
-  border:1.8px solid #2d6f61!important;
-  box-shadow:0 2px 9px rgba(63,143,125,.28)!important;
-  text-shadow:0 1px 1px rgba(0,0,0,.20)!important;
-  font-weight:950!important;
-}
-@keyframes oaiUnifiedLoadingCrossSpin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
-.map-loading-icon,
-#diocese-loading .missa-spinner,
-#nearby-body .nearby-distance-spinner{
-  width:36px!important;
-  height:36px!important;
-  min-width:36px!important;
-  min-height:36px!important;
-  border:0!important;
-  border-radius:0!important;
-  background:transparent!important;
-  box-shadow:none!important;
-  color:#d4aa6a!important;
-  display:flex!important;
-  align-items:center!important;
-  justify-content:center!important;
-  animation:oaiUnifiedLoadingCrossSpin 2.8s linear infinite!important;
-  transform-origin:50% 50%!important;
-}
-.map-loading-icon::before,
-#diocese-loading .missa-spinner::before,
-#nearby-body .nearby-distance-spinner::before{
-  content:"✝"!important;
-  color:#d4aa6a!important;
-  font-size:32px!important;
-  font-weight:900!important;
-  line-height:1!important;
-  text-shadow:0 2px 8px rgba(212,170,106,.22)!important;
-}
-#oai-category-entry-veil::after,
-html.oai-stability-veil::after,
-html.oai-external-return-freeze::after{
-  content:"✝"!important;
-  position:fixed!important;
-  left:50%!important;
-  top:50%!important;
-  width:36px!important;
-  height:36px!important;
-  margin:-18px 0 0 -18px!important;
-  display:flex!important;
-  align-items:center!important;
-  justify-content:center!important;
-  border:0!important;
-  border-radius:0!important;
-  background:transparent!important;
-  box-shadow:none!important;
-  color:#d4aa6a!important;
-  font-size:32px!important;
-  font-weight:900!important;
-  line-height:1!important;
-  text-shadow:0 2px 8px rgba(212,170,106,.22)!important;
-  animation:oaiUnifiedLoadingCrossSpin 2.8s linear infinite!important;
-  animation-delay:0s!important;
-  animation-fill-mode:none!important;
-  opacity:1!important;
-  visibility:visible!important;
-  transform-origin:50% 50%!important;
-  pointer-events:none!important;
-  z-index:2147483001!important;
-}
-#oai-external-entry-guard .oai-external-entry-cross{
-  width:36px!important;
-  height:36px!important;
-  display:flex!important;
-  align-items:center!important;
-  justify-content:center!important;
-  color:#d4aa6a!important;
-  font-size:32px!important;
-  font-weight:900!important;
-  line-height:1!important;
-  text-shadow:0 2px 8px rgba(212,170,106,.22)!important;
-  animation:oaiUnifiedLoadingCrossSpin 2.8s linear infinite!important;
-  transform-origin:center center!important;
-}
-/* 외부사이트 진입 중에는 실제 DOM 보호창 십자가만 사용하고, CSS pseudo 십자가는 숨겨 두 겹을 막는다. */
-html.oai-stability-veil[data-oai-stability-reason="external-leave"]::after,
-html.oai-stability-veil.oai-external-leaving::after{
-  content:""!important;
-  display:none!important;
-  opacity:0!important;
-  animation:none!important;
-}
-/* 외부사이트 복귀 중에는 external-return-freeze 하나의 십자가만 유지한다. */
-html.oai-external-return-freeze::after{
-  content:"✝"!important;
-  display:flex!important;
-  opacity:1!important;
-  visibility:visible!important;
-  animation:oaiUnifiedLoadingCrossSpin 2.8s linear infinite!important;
-}
-
-/* V8-1-14-216_my_info_backup_restore_info_card_buttons_unified: 성지 내주변 거리 계산 중에는 내위치 버튼을 숨기고, 내주변 목록이 준비될 때 함께 표시한다. */
-#app #loc-btn.oai-wait-nearby-list{
-  opacity:0!important;
-  visibility:hidden!important;
-  pointer-events:none!important;
-  transform:translateY(6px)!important;
-}
-
-/* V8-1-14-216_my_info_backup_restore_info_card_buttons_unified: 목적별 보호창은 하나만 사용하고, 로딩 십자가 규격을 하나로 통일한다. */
-@keyframes oaiUnifiedLoadingCrossSpin{to{transform:rotate(360deg)}}
-:root{
-  --oai-loading-cross-size:36px;
-  --oai-loading-cross-font:32px;
-  --oai-loading-cross-color:#d4aa6a;
-  --oai-loading-cross-speed:2.8s;
-  --oai-guard-bg:#f5f0e8;
-}
-html.oai-stability-veil::before{
-  content:""!important;
-  position:fixed!important;
-  inset:0!important;
-  z-index:2147483000!important;
-  background:var(--oai-guard-bg)!important;
-  opacity:1!important;
-  visibility:visible!important;
-  pointer-events:none!important;
-  animation:none!important;
-  transition:none!important;
-}
-html.oai-stability-veil::after,
-html.oai-stability-veil[data-oai-stability-reason*="refresh"]::after,
-html.oai-stability-veil[data-oai-stability-reason*="reload"]::after,
-html.oai-stability-veil[data-oai-refresh-early-veil="1"]::after{
-  content:"✝"!important;
-  position:fixed!important;
-  left:50%!important;
-  top:50%!important;
-  width:var(--oai-loading-cross-size)!important;
-  height:var(--oai-loading-cross-size)!important;
-  margin:calc(var(--oai-loading-cross-size) / -2) 0 0 calc(var(--oai-loading-cross-size) / -2)!important;
-  display:flex!important;
-  align-items:center!important;
-  justify-content:center!important;
-  border:0!important;
-  border-radius:0!important;
-  background:transparent!important;
-  color:var(--oai-loading-cross-color)!important;
-  font-size:var(--oai-loading-cross-font)!important;
-  font-weight:900!important;
-  line-height:1!important;
-  opacity:1!important;
-  visibility:visible!important;
-  z-index:2147483001!important;
-  pointer-events:none!important;
-  transform-origin:center center!important;
-  animation:oaiUnifiedLoadingCrossSpin var(--oai-loading-cross-speed) linear infinite!important;
-  transition:none!important;
-}
-html.oai-external-return-freeze::before{
-  content:""!important;
-  position:fixed!important;
-  inset:0!important;
-  z-index:2147483000!important;
-  background:#fbf8f1!important;
-  opacity:1!important;
-  visibility:visible!important;
-  pointer-events:none!important;
-  animation:none!important;
-  transition:none!important;
-}
-html.oai-external-return-freeze::after{
-  content:"✝"!important;
-  position:fixed!important;
-  left:50%!important;
-  top:50%!important;
-  width:var(--oai-loading-cross-size)!important;
-  height:var(--oai-loading-cross-size)!important;
-  margin:calc(var(--oai-loading-cross-size) / -2) 0 0 calc(var(--oai-loading-cross-size) / -2)!important;
-  display:flex!important;
-  align-items:center!important;
-  justify-content:center!important;
-  border:0!important;
-  border-radius:0!important;
-  background:transparent!important;
-  color:var(--oai-loading-cross-color)!important;
-  font-size:var(--oai-loading-cross-font)!important;
-  font-weight:900!important;
-  line-height:1!important;
-  opacity:1!important;
-  visibility:visible!important;
-  z-index:2147483001!important;
-  pointer-events:none!important;
-  transform-origin:center center!important;
-  animation:oaiUnifiedLoadingCrossSpin var(--oai-loading-cross-speed) linear infinite!important;
-  transition:none!important;
-}
-#oai-external-entry-guard{
-  position:fixed!important;
-  inset:0!important;
-  z-index:2147483640!important;
-  align-items:center!important;
-  justify-content:center!important;
-  background:var(--oai-guard-bg)!important;
-  pointer-events:auto!important;
-  transition:none!important;
-  transform:translateZ(0)!important;
-  backface-visibility:hidden!important;
-}
-#oai-external-entry-guard::before,
-#oai-external-entry-guard::after{
-  content:""!important;
-  display:none!important;
-  opacity:0!important;
-  visibility:hidden!important;
-  animation:none!important;
-}
-#oai-external-entry-guard .oai-external-entry-cross,
-#oai-category-entry-veil::after,
-.map-loading-icon,
-#diocese-loading .missa-spinner,
-#nearby-body .nearby-distance-spinner{
-  width:var(--oai-loading-cross-size)!important;
-  height:var(--oai-loading-cross-size)!important;
-  min-width:var(--oai-loading-cross-size)!important;
-  min-height:var(--oai-loading-cross-size)!important;
-  display:flex!important;
-  align-items:center!important;
-  justify-content:center!important;
-  border:0!important;
-  border-radius:0!important;
-  background:transparent!important;
-  color:var(--oai-loading-cross-color)!important;
-  font-size:var(--oai-loading-cross-font)!important;
-  font-weight:900!important;
-  line-height:1!important;
-  opacity:1!important;
-  visibility:visible!important;
-  transform-origin:center center!important;
-  animation:oaiUnifiedLoadingCrossSpin var(--oai-loading-cross-speed) linear infinite!important;
-  transition:none!important;
-}
-.map-loading-icon::before,
-#diocese-loading .missa-spinner::before,
-#nearby-body .nearby-distance-spinner::before{
-  content:"✝"!important;
-  display:block!important;
-  line-height:1!important;
-}
-#oai-external-entry-guard .oai-external-entry-cross{font-size:var(--oai-loading-cross-font)!important;}
-html.oai-external-return-freeze #oai-external-entry-guard{display:none!important;opacity:0!important;visibility:hidden!important;animation:none!important;}
-
-/* V8-1-14-216_my_info_backup_restore_info_card_buttons_unified: 성지·성당·피정의집 내주변/찾기/지역검색 시트 열림·전환 애니메이션을 제거하고, 시트 내부 좌우 스와이프 전환의 그림자/잔상을 없앤다. */
-#app .sheet{
-  will-change:auto!important;
-}
-#app #sheet-nearby,
-#app #sheet-list,
-#app #sheet-region{
-  box-shadow:none!important;
-  filter:none!important;
-}
-#app #sheet-nearby::before,
-#app #sheet-nearby::after,
-#app #sheet-list::before,
-#app #sheet-list::after,
-#app #sheet-region::before,
-#app #sheet-region::after{
-  content:none!important;
-  display:none!important;
-}
-#app .sheet.open{
-  transform:none!important;
-  transition:none!important;
-}
-#app .sheet.from-right,
-#app .sheet.from-left,
-#app .sheet.from-right.open,
-#app .sheet.from-left.open,
-#app .sheet.exit-left,
-#app .sheet.exit-right{
-  transform:none!important;
-  transition:none!important;
-  animation:none!important;
-}
-#app .sheet:not(.open){
-  transition:transform .14s cubic-bezier(.22,.61,.36,1)!important;
-}
-#oai-swipe-overlay,
-#oai-swipe-overlay.active{
-  display:none!important;
-  opacity:0!important;
-  visibility:hidden!important;
-  animation:none!important;
-}
-
-/* V8-1-14-216_my_info_backup_restore_info_card_buttons_unified: 성지/성당/피정 진입 시 하단 보호창을 쓰지 않고 내위치 안내문구를 먼저 보여준다. */
-#oai-category-entry-veil,
-html.oai-category-entering #oai-category-entry-veil,
-html.oai-category-dissolve #oai-category-entry-veil,
-html.oai-category-dissolve.oai-category-dissolving #oai-category-entry-veil{
-  display:none!important;
-  opacity:0!important;
-  visibility:hidden!important;
-  pointer-events:none!important;
-  animation:none!important;
-  transition:none!important;
-}
-#oai-category-entry-veil::before,
-#oai-category-entry-veil::after{
-  content:""!important;
-  display:none!important;
-  opacity:0!important;
-  visibility:hidden!important;
-  animation:none!important;
-}
-
-
-
-/* V8-1-14-216_my_info_backup_restore_info_card_buttons_unified: 외부사이트 진입/복귀 보호창 단일화 최종 우선순위.
-   진입 십자가는 #oai-external-entry-guard, 복귀 십자가는 oai-external-return-freeze만 표시한다. */
-html.oai-stability-veil[data-oai-stability-reason="external-leave"]::before,
-html.oai-stability-veil[data-oai-stability-reason="external-leave"]::after,
-html.oai-stability-veil[data-oai-stability-reason="external-return"]::before,
-html.oai-stability-veil[data-oai-stability-reason="external-return"]::after{
-  content:""!important;
-  display:none!important;
-  opacity:0!important;
-  visibility:hidden!important;
-  animation:none!important;
-}
-html.oai-external-return-freeze::before{
-  content:""!important;
-  position:fixed!important;
-  inset:0!important;
-  z-index:2147483000!important;
-  background:#fbf8f1!important;
-  opacity:1!important;
-  visibility:visible!important;
-  display:block!important;
-  animation:none!important;
-  transition:none!important;
-  pointer-events:none!important;
-}
-html.oai-external-return-freeze::after{
-  content:"✝"!important;
-  position:fixed!important;
-  left:50%!important;
-  top:50%!important;
-  width:var(--oai-loading-cross-size,36px)!important;
-  height:var(--oai-loading-cross-size,36px)!important;
-  margin:calc(var(--oai-loading-cross-size,36px) / -2) 0 0 calc(var(--oai-loading-cross-size,36px) / -2)!important;
-  display:flex!important;
-  align-items:center!important;
-  justify-content:center!important;
-  color:var(--oai-loading-cross-color,#d4aa6a)!important;
-  font-size:var(--oai-loading-cross-font,32px)!important;
-  font-weight:900!important;
-  line-height:1!important;
-  background:transparent!important;
-  border:0!important;
-  z-index:2147483001!important;
-  opacity:1!important;
-  visibility:visible!important;
-  pointer-events:none!important;
-  transform-origin:center center!important;
-  animation:oaiUnifiedLoadingCrossSpin var(--oai-loading-cross-speed,2.8s) linear infinite!important;
-  transition:none!important;
-}
-
-
-/* V8-1-14-216_my_info_backup_restore_info_card_buttons_unified: 외부사이트 복귀 보호창은 유지하고, 마지막 사라짐만 부드럽게 처리 */
-html.oai-external-return-freeze.oai-external-return-releasing::before,
-html.oai-external-return-freeze.oai-external-return-releasing::after{
-  opacity:0!important;
-  visibility:visible!important;
-  transition:opacity .18s ease-out!important;
-}
-html.oai-external-return-freeze.oai-external-return-releasing::after{
-  animation:none!important;
-}
-
-/* V8-1-14-216_my_info_backup_restore_info_card_buttons_unified: 매일미사·성경 로딩 십자가 강제 비표시 */
-#missa-view.oai-faith-frame-loading #missa-loading{
-  display:none!important;
-  opacity:0!important;
-  visibility:hidden!important;
-  animation:none!important;
-}
-
-
-/* V8-1-14-216_my_info_backup_restore_info_card_buttons_unified: Chrome/외부브라우저 복귀 때 진입 보호창 DOM을 즉시 숨기지 않고 복귀 보호창 위에서 그대로 이어 유지한다. */
-html.oai-external-return-freeze #oai-external-entry-guard.show{
-  display:flex!important;
-  opacity:1!important;
-  visibility:visible!important;
-  background:#f5f0e8!important;
-  pointer-events:auto!important;
-  transition:none!important;
-}
-html.oai-external-return-freeze #oai-external-entry-guard.show .oai-external-entry-cross{
-  display:flex!important;
-  opacity:1!important;
-  visibility:visible!important;
-  animation:oaiUnifiedLoadingCrossSpin var(--oai-loading-cross-speed,2.8s) linear infinite!important;
-}
-html.oai-external-return-freeze #oai-external-entry-guard.hide{
-  display:flex!important;
-  opacity:0!important;
-  visibility:visible!important;
-  background:#f5f0e8!important;
-  transition:opacity .18s ease-out!important;
-}
-html.oai-external-return-freeze #oai-external-entry-guard.hide .oai-external-entry-cross{
-  opacity:0!important;
-  transition:opacity .18s ease-out!important;
-}
-
-
-/* V8-1-14-216_my_info_backup_restore_info_card_buttons_unified: 짧은 복귀 soft veil CSS 제거. */
-
-/* V8-1-14-216_my_info_backup_restore_info_card_buttons_unified: 정보카드 하단 버튼 테두리를 더 굵게 통일 */
-#app #info-card #ic-tel-link,
-#app #info-card #ic-route-btn,
-#app #info-card #ic-hp,
-#app #info-card #ic-guide,
-#app #info-card #ic-goodnews,
-#app #info-card #ic-kakao-nav,
-#app #info-card .ic-btn-row > *,
-#app #info-card .ic-links > *,
-#app #info-card .ic-kakao-row > *{
-  border-width:2.5px!important;
-  box-sizing:border-box!important;
-}
-#app #info-card #ic-tel-link:active,
-#app #info-card #ic-route-btn:active,
-#app #info-card #ic-hp:active,
-#app #info-card #ic-guide:active,
-#app #info-card #ic-goodnews:active,
-#app #info-card #ic-kakao-nav:active{
-  border-width:2.5px!important;
-}
-
-/* V8-1-14-216_my_info_backup_restore_info_card_buttons_unified: 카카오내비 노란색은 유지하고, 정보카드의 나머지 버튼 색상/테두리만 더 선명하게 조정한다. */
-#app #info-card #ic-tel-link,
-#app .shrine-visit-detail-action-row.detail-primary-row > .detail-tel{
-  background:linear-gradient(180deg,#ecfbf1 0%,#cfeeda 100%)!important;
-  color:#16492d!important;
-  border:2.5px solid #63bd7a!important;
-  box-shadow:0 3px 9px rgba(31,112,65,.15), inset 0 1px 0 rgba(255,255,255,.82)!important;
-  text-shadow:none!important;
-}
-#app #info-card #ic-route-btn,
-#app .shrine-visit-detail-action-row.detail-primary-row > .detail-route{
-  background:linear-gradient(180deg,#eef5ff 0%,#d5e5f8 100%)!important;
-  color:#23466e!important;
-  border:2.5px solid #6f93c3!important;
-  box-shadow:0 3px 9px rgba(46,80,125,.15), inset 0 1px 0 rgba(255,255,255,.82)!important;
-  text-shadow:none!important;
-}
-#app #info-card #ic-hp,
-#app .shrine-visit-detail-action-row.detail-link-row > .detail-home{
-  background:linear-gradient(180deg,#dff5e7 0%,#bde3ca 100%)!important;
-  color:#16452d!important;
-  border:2.5px solid #55ad6f!important;
-  box-shadow:0 3px 9px rgba(31,112,65,.17), inset 0 1px 0 rgba(255,255,255,.62)!important;
-  text-shadow:none!important;
-}
-#app #info-card #ic-guide,
-#app .shrine-visit-detail-action-row.detail-link-row > .detail-guide{
-  background:linear-gradient(180deg,#e5eefb 0%,#c6d8f0 100%)!important;
-  color:#203f65!important;
-  border:2.5px solid #5f86b8!important;
-  box-shadow:0 3px 9px rgba(46,80,125,.17), inset 0 1px 0 rgba(255,255,255,.62)!important;
-  text-shadow:none!important;
-}
-#app #info-card #ic-goodnews,
-#app .shrine-visit-detail-action-row.detail-kakao-row > .detail-goodnews{
-  background:linear-gradient(180deg,#d8f1e2 0%,#a9d7b8 100%)!important;
-  color:#153f29!important;
-  border:2.5px solid #45a363!important;
-  box-shadow:0 3px 9px rgba(31,112,65,.18), inset 0 1px 0 rgba(255,255,255,.62)!important;
-  text-shadow:none!important;
-}
-#app #info-card #ic-tel-link:active,
-#app #info-card #ic-route-btn:active,
-#app #info-card #ic-hp:active,
-#app #info-card #ic-guide:active,
-#app #info-card #ic-goodnews:active,
-#app .shrine-visit-detail-action-row.detail-primary-row > .detail-tel:active,
-#app .shrine-visit-detail-action-row.detail-primary-row > .detail-route:active,
-#app .shrine-visit-detail-action-row.detail-link-row > .detail-home:active,
-#app .shrine-visit-detail-action-row.detail-link-row > .detail-guide:active,
-#app .shrine-visit-detail-action-row.detail-kakao-row > .detail-goodnews:active{
-  filter:brightness(.95) saturate(1.05)!important;
-  transform:translateY(1px)!important;
-}
-
-
-/* V8-1-14-214: 정보카드 전화번호/경로검색 버튼을 원색 느낌으로 선명하게 조정.
-   - 전화번호: 선명한 초록 계열
-   - 경로검색: 선명한 파랑 계열
-   - 굿뉴스/카카오내비 등 나머지 버튼은 기존 색상 유지 */
-#app #info-card #ic-tel-link,
-#app .shrine-visit-detail-action-row.detail-primary-row > .detail-tel{
-  background:linear-gradient(180deg,#dcfce7 0%,#86efac 100%)!important;
-  color:#064e3b!important;
-  border:2px solid #22c55e!important;
-  box-shadow:0 3px 10px rgba(34,197,94,.22), inset 0 1px 0 rgba(255,255,255,.65)!important;
-  text-shadow:none!important;
-  font-weight:950!important;
-}
-#app #info-card #ic-tel-link .ic-tel-icon,
-#app .shrine-visit-detail-action-row.detail-primary-row > .detail-tel .detail-tel-icon{
-  color:#064e3b!important;
-}
-#app #info-card #ic-route-btn,
-#app .shrine-visit-detail-action-row.detail-primary-row > .detail-route{
-  background:linear-gradient(180deg,#dbeafe 0%,#93c5fd 100%)!important;
-  color:#123e6f!important;
-  border:2px solid #3b82f6!important;
-  box-shadow:0 3px 10px rgba(59,130,246,.22), inset 0 1px 0 rgba(255,255,255,.65)!important;
-  text-shadow:none!important;
-  font-weight:950!important;
-}
-#app #info-card #ic-tel-link:active,
-#app .shrine-visit-detail-action-row.detail-primary-row > .detail-tel:active{
-  background:linear-gradient(180deg,#bbf7d0 0%,#4ade80 100%)!important;
-  border-color:#16a34a!important;
-  filter:none!important;
-  transform:translateY(1px)!important;
-}
-#app #info-card #ic-route-btn:active,
-#app .shrine-visit-detail-action-row.detail-primary-row > .detail-route:active{
-  background:linear-gradient(180deg,#bfdbfe 0%,#60a5fa 100%)!important;
-  border-color:#2563eb!important;
-  filter:none!important;
-  transform:translateY(1px)!important;
-}
-
-
-/* V8-1-14-216_my_info_backup_restore_info_card_buttons_unified: FINAL_UNIFIED_INFO_CARD_BUTTONS */
-#app #info-card #ic-tel-link,
-#app #info-card #ic-route-btn,
-#app #info-card #ic-hp,
-#app #info-card #ic-guide,
-#app #info-card #ic-goodnews,
-#app #info-card #ic-kakao-nav,
-#app .shrine-visit-detail-action-row.detail-primary-row > .detail-tel,
-#app .shrine-visit-detail-action-row.detail-primary-row > .detail-route,
-#app .shrine-visit-detail-action-row.detail-link-row > .detail-home,
-#app .shrine-visit-detail-action-row.detail-link-row > .detail-guide,
-#app .shrine-visit-detail-action-row.detail-kakao-row > .detail-goodnews,
-#app .shrine-visit-detail-action-row.detail-kakao-row > .detail-kakao{
-  background:linear-gradient(180deg,#fbfdff 0%,#fffaf0 100%)!important;
-  color:#213245!important;
-  border:2.5px solid #9db7cc!important;
-  box-shadow:0 3px 9px rgba(17,35,60,.10), inset 0 1px 0 rgba(255,255,255,.86)!important;
-  text-shadow:none!important;
-  font-weight:950!important;
-}
-#app #info-card #ic-tel-link .ic-tel-icon,
-#app .shrine-visit-detail-action-row.detail-primary-row > .detail-tel .detail-tel-icon{
-  color:#213245!important;
-}
-#app #info-card #ic-tel-link:active,
-#app #info-card #ic-route-btn:active,
-#app #info-card #ic-hp:active,
-#app #info-card #ic-guide:active,
-#app #info-card #ic-goodnews:active,
-#app #info-card #ic-kakao-nav:active,
-#app .shrine-visit-detail-action-row.detail-primary-row > .detail-tel:active,
-#app .shrine-visit-detail-action-row.detail-primary-row > .detail-route:active,
-#app .shrine-visit-detail-action-row.detail-link-row > .detail-home:active,
-#app .shrine-visit-detail-action-row.detail-link-row > .detail-guide:active,
-#app .shrine-visit-detail-action-row.detail-kakao-row > .detail-goodnews:active,
-#app .shrine-visit-detail-action-row.detail-kakao-row > .detail-kakao:active{
-  background:linear-gradient(180deg,#f1f8ff 0%,#fff3d8 100%)!important;
-  border-color:#7f9fba!important;
-  filter:none!important;
-  transform:translateY(1px)!important;
 }

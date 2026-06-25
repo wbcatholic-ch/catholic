@@ -1,183 +1,19 @@
 <!DOCTYPE html>
 <html lang="ko" class="oai-font-global" style="background:#f5f0e8;">
 <head>
-<link rel="preload" href="intro-cross-jesus.jpg?v=V8-1-14-216_my_info_backup_restore_info_card_buttons_unified" as="image" fetchpriority="high">
 <style id="oai-first-entry-bg">html,body{margin:0;width:100%;min-height:100%;background:#f5f0e8;color-scheme:light;}body{background:#f5f0e8;}</style>
-
-<style id="oai-cover-intro-early-photo-style">
-/* V8-1-14-216_my_info_backup_restore_info_card_buttons_unified: 중간 끊김을 줄이기 위해 전용 keyframes 이름을 쓰고, 다단계 확대를 단일 연속 곡선으로 정리한다. */
-@keyframes oaiIntroSmoothPhotoDesktopV85{
-  0%{opacity:.12; transform:translate(-50%,-49%) scale(.84); filter:contrast(1.005) saturate(1.01) drop-shadow(0 4px 12px rgba(80,54,18,.035));}
-  100%{opacity:1; transform:translate(-50%,-50%) scale(1); filter:contrast(1.015) saturate(1.02) drop-shadow(0 6px 16px rgba(80,54,18,.05));}
-}
-@keyframes oaiIntroSmoothPhotoMobileV85{
-  0%{opacity:.12; transform:scale(.84); filter:contrast(1.005) saturate(1.01);}
-  100%{opacity:1; transform:scale(1); filter:contrast(1.015) saturate(1.02);}
-}
-html.oai-cover-booting,html.oai-cover-booting body{background:#fbf8f1!important;}
-html.oai-cover-booting::before{content:"";position:fixed;inset:0;z-index:2147482500;background:#fbf8f1;pointer-events:none;opacity:1;}
-html.oai-cover-booting::after{content:"";position:fixed;left:50%;top:50%;z-index:2147482501;width:min(84vw,540px);height:min(84vh,740px);transform:translate(-50%,-50%) scale(.84);background-image:linear-gradient(to right,#fbf8f1 0%,rgba(251,248,241,.96) 5%,rgba(251,248,241,.60) 13%,rgba(251,248,241,.16) 24%,rgba(251,248,241,0) 36%,rgba(251,248,241,0) 64%,rgba(251,248,241,.16) 76%,rgba(251,248,241,.60) 87%,rgba(251,248,241,.96) 95%,#fbf8f1 100%),linear-gradient(to bottom,#fbf8f1 0%,rgba(251,248,241,.90) 6%,rgba(251,248,241,.36) 17%,rgba(251,248,241,0) 30%,rgba(251,248,241,0) 70%,rgba(251,248,241,.36) 83%,rgba(251,248,241,.90) 94%,#fbf8f1 100%),radial-gradient(ellipse 96% 88% at 50% 48%,rgba(251,248,241,0) 50%,rgba(251,248,241,.08) 62%,rgba(251,248,241,.34) 76%,rgba(251,248,241,.76) 90%,rgba(251,248,241,1) 100%),url("intro-cross-jesus.jpg?v=V8-1-14-216_my_info_backup_restore_info_card_buttons_unified");background-position:center center,center center,center center,center center;background-size:100% 100%,100% 100%,100% 100%,auto 106%;background-repeat:no-repeat,no-repeat,no-repeat,no-repeat;border-radius:38px;background-color:#fbf8f1;box-shadow:0 0 0 999px #fbf8f1,0 8px 18px rgba(80,54,18,.05),inset 0 0 72px rgba(251,248,241,.28),inset 0 0 150px rgba(251,248,241,.18);pointer-events:none;display:block;visibility:visible;opacity:1;animation:oaiIntroSmoothPhotoDesktopV85 1.85s cubic-bezier(.22,.61,.36,1) both;will-change:transform,opacity;backface-visibility:hidden;}
-html.oai-cover-booting #cover>*,html.oai-cover-revealing #cover>*{opacity:0;transition:none;}
-html.oai-refresh-no-intro.oai-cover-booting::before,html.oai-refresh-no-intro.oai-cover-booting::after{content:""!important;display:none!important;opacity:0!important;animation:none!important;background-image:none!important;}
-@media (max-width:540px) and (max-aspect-ratio:3/4){html.oai-cover-booting::after{left:0;top:0;width:100vw;height:100vh;transform:none;border-radius:0;background-size:100% 100%,100% 100%,100% 100%,auto 108%;box-shadow:0 0 0 999px #fbf8f1;animation:oaiIntroSmoothPhotoMobileV85 1.85s cubic-bezier(.22,.61,.36,1) both;will-change:transform,opacity;backface-visibility:hidden;}}
-</style>
-
-<script id="oai-common-return-leader-script">
-(function(){
-  try{
-    if(window.oaiReturnConductor) return;
-    var current = {type:'', reason:'', priority:0, until:0};
-    var timers = {};
-    var PRIORITY = {
-      'refresh':100,
-      'external-return':90,
-      'external-enter':86,
-      'long-background':82,
-      'abnormal-restart':78,
-      'diocese-return':70,
-      'myfaith-return':65,
-      'massquick-return':60,
-      'category-return':58,
-      'qna-return':55,
-      'prayer-return':50,
-      'cover-back':35,
-      'viewport-settle':22,
-      'passive':10
-    };
-    function now(){ return Date.now ? Date.now() : new Date().getTime(); }
-    function normalize(type){
-      var t = String(type || 'passive').toLowerCase();
-      if(t.indexOf('refresh')>=0 || t.indexOf('reload')>=0) return 'refresh';
-      if(t.indexOf('external-enter')>=0 || t.indexOf('external-leave')>=0) return 'external-enter';
-      if(t.indexOf('external')>=0) return 'external-return';
-      if(t.indexOf('long')>=0 || t.indexOf('background')>=0 || t.indexOf('idle')>=0) return 'long-background';
-      if(t.indexOf('abnormal')>=0 || t.indexOf('restart')>=0) return 'abnormal-restart';
-      if(t.indexOf('diocese')>=0) return 'diocese-return';
-      if(t.indexOf('myfaith')>=0 || t.indexOf('my-faith')>=0) return 'myfaith-return';
-      if(t.indexOf('massquick')>=0 || t.indexOf('missa')>=0 || t.indexOf('hymn')>=0 || t.indexOf('bible')>=0) return 'massquick-return';
-      if(t.indexOf('web')>=0 || t.indexOf('trail')>=0 || t.indexOf('route')>=0 || t.indexOf('category')>=0) return 'category-return';
-      if(t.indexOf('qna')>=0 || t.indexOf('privacy')>=0) return 'qna-return';
-      if(t.indexOf('prayer')>=0) return 'prayer-return';
-      if(t.indexOf('cover')>=0 || t.indexOf('back')>=0 || t.indexOf('trap')>=0) return 'cover-back';
-      if(t.indexOf('viewport')>=0 || t.indexOf('resize')>=0 || t.indexOf('settle')>=0) return 'viewport-settle';
-      return t || 'passive';
-    }
-    function priority(type){ return PRIORITY[normalize(type)] || PRIORITY.passive; }
-    function clearIfExpired(){
-      if(current.until && current.until <= now()){
-        current = {type:'', reason:'', priority:0, until:0};
-        try{ document.documentElement.removeAttribute('data-oai-return-leader'); }catch(_e){}
-      }
-    }
-    function request(type, opts){
-      opts = opts || {};
-      clearIfExpired();
-      var nt = normalize(type);
-      var pr = priority(nt);
-      var ms = Math.max(250, opts.ms || opts.hold || 900);
-      var force = !!opts.force;
-      var same = current.type && current.type === nt;
-      var takeover = !current.type || same || force || pr >= current.priority;
-      if(!takeover) return false;
-      current = {type:nt, reason:String(type || nt), priority:pr, until:now()+ms};
-      try{ document.documentElement.setAttribute('data-oai-return-leader', nt); }catch(_e){}
-      clearTimeout(timers[nt]);
-      timers[nt] = setTimeout(function(){ finish(nt); }, ms + 30);
-      return true;
-    }
-    function finish(type, opts){
-      opts = opts || {};
-      clearIfExpired();
-      var nt = normalize(type);
-      if(opts.force || !current.type || current.type === nt){
-        current = {type:'', reason:'', priority:0, until:0};
-        try{ document.documentElement.removeAttribute('data-oai-return-leader'); }catch(_e){}
-        return true;
-      }
-      return false;
-    }
-    function busy(except){
-      clearIfExpired();
-      if(!current.type) return false;
-      if(!except) return true;
-      var arr = Array.isArray(except) ? except : [except];
-      for(var i=0;i<arr.length;i++) if(normalize(arr[i]) === current.type) return false;
-      return true;
-    }
-    function get(){ clearIfExpired(); return {type:current.type, reason:current.reason, priority:current.priority, until:current.until}; }
-    window.oaiReturnConductor = {request:request, finish:finish, busy:busy, current:get, normalize:normalize, priority:priority};
-    window.oaiReturnConductorRequest = request;
-    window.oaiReturnConductorFinish = finish;
-    window.oaiReturnConductorBusy = busy;
-  }catch(_e){}
-})();
-</script>
-
-<script id="oai-cover-intro-early-boot-script">
-(function(){
-  try{
-    var root=document.documentElement;
-    var now=Date.now?Date.now():new Date().getTime();
-    var navEntry=(performance&&performance.getEntriesByType)?performance.getEntriesByType('navigation')[0]:null;
-    var navType=(navEntry&&navEntry.type)||'';
-    function clearStaleInternalNoIntro(){
-      try{
-        sessionStorage.removeItem('oai_internal_return_no_effect_once');
-        sessionStorage.removeItem('oai_internal_return_no_effect_until');
-        sessionStorage.removeItem('oai_internal_return_no_effect_reason');
-        sessionStorage.removeItem('oai_internal_page_nav');
-      }catch(_e){}
-    }
-    function isValidInternalNoIntro(){
-      var internalUntil=parseInt(sessionStorage.getItem('oai_internal_return_no_effect_until')||'0',10)||0;
-      var once=sessionStorage.getItem('oai_internal_return_no_effect_once')==='1';
-      var explicitCoverReturn=/[?&]oai_cover_return=/.test(location.search||'');
-      if(internalUntil&&now<internalUntil) return true;
-      if(once&&(navType==='back_forward'||explicitCoverReturn)) return true;
-      if(once||internalUntil) clearStaleInternalNoIntro();
-      return false;
-    }
-    var internalReturn=isValidInternalNoIntro();
-    var extTs=parseInt(sessionStorage.getItem('oai_external_nav_started_at')||'0',10)||0;
-    var extPending=sessionStorage.getItem('oai_external_nav_pending')==='1'||sessionStorage.getItem('oai_external_nav_pagehide')==='1'||sessionStorage.getItem('oai_external_return_expected')==='1';
-    var extSuppressUntil=parseInt(sessionStorage.getItem('oai_external_return_back_suppress_until')||'0',10)||0;
-    var externalReturn=!!(extPending&&extTs&&(now-extTs)<10*60*1000&&!(extSuppressUntil&&now<extSuppressUntil));
-    if(externalReturn){
-      root.classList.add('oai-external-return-freeze');
-      root.classList.remove('oai-cover-booting','oai-stability-veil','oai-stability-veil-releasing');
-      root.removeAttribute('data-oai-stability-reason');
-      root.setAttribute('data-oai-external-return-early','1');
-      return;
-    }
-    var softRefresh=parseInt(sessionStorage.getItem('oai_soft_refresh_requested')||'0',10)||0;
-    var refreshVeilUntil=parseInt(sessionStorage.getItem('oai_refresh_veil_until')||'0',10)||0;
-    var stableReloadReason=sessionStorage.getItem('oai_stable_auto_reload_reason')||'';
-    if(stableReloadReason&&navType!=='reload'){try{sessionStorage.removeItem('oai_stable_auto_reload_reason');}catch(_e){}}
-    var refreshNoIntro=!!(stableReloadReason&&navType==='reload')||!!(softRefresh&&(now-softRefresh)<120000)||!!(refreshVeilUntil&&refreshVeilUntil>now);
-    if(refreshNoIntro){root.classList.add('oai-refresh-no-intro');return;}
-    if(!internalReturn&&!externalReturn){root.classList.add('oai-cover-booting');window.__OAI_EARLY_COVER_PHOTO_BOOT__=true;}
-  }catch(_e){}
-})();
-</script>
-
 <style id="oai-refresh-veil-early-style">
 /* 새로고침 직후 style.css가 아직 도착하지 않은 첫 페인트도 아이보리 보호막으로 덮는다. */
 html.oai-stability-veil { background:#f5f0e8 !important; }
 html.oai-stability-veil *, html.oai-external-return-freeze * { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
 html.oai-stability-veil::before { content:""; position:fixed; inset:0; z-index:2147483000; background:#f5f0e8; pointer-events:none; opacity:1; animation:oaiStabilityVeilIn .12s ease-out both; }
 html.oai-stability-veil.oai-stability-veil-releasing::before { animation:oaiStabilityVeilOut .18s ease-in both; }
-html.oai-stability-veil::after { content:"✝"; position:fixed; left:50%; top:50%; width:36px; height:36px; margin:-18px 0 0 -18px; display:flex; align-items:center; justify-content:center; border:0; border-radius:0; background:transparent; color:#d4aa6a; font-size:32px; font-weight:900; line-height:1; z-index:2147483001; pointer-events:none; animation:oaiStabilitySpin 2.8s linear infinite; }
+html.oai-stability-veil::after { content:"✝"; position:fixed; left:50%; top:50%; width:34px; height:34px; margin:-17px 0 0 -17px; display:flex; align-items:center; justify-content:center; border:0; border-radius:0; background:transparent; color:#d4aa6a; font-size:30px; font-weight:900; line-height:1; z-index:2147483001; pointer-events:none; animation:oaiStabilitySpin 2.8s linear infinite; }
 html.oai-stability-veil[data-oai-stability-reason*="external"]::after,
 html.oai-external-return-freeze::after { content:"" !important; display:none !important; opacity:0 !important; animation:none !important; }
-/* V8-1-14-107: 외부사이트 복귀 십자가 단일 안정막 */
-html.oai-external-return-freeze::before{content:""!important;position:fixed!important;inset:0!important;z-index:2147483000!important;background:#fbf8f1!important;opacity:1!important;animation:none!important;transition:none!important;pointer-events:none!important;}
-html.oai-external-return-freeze::after{content:"✝"!important;position:fixed!important;left:50%!important;top:50%!important;width:36px!important;height:36px!important;margin:-18px 0 0 -18px!important;display:flex!important;align-items:center!important;justify-content:center!important;background:transparent!important;border:0!important;border-radius:0!important;color:#d4aa6a!important;font-size:32px!important;font-weight:900!important;line-height:1!important;z-index:2147483001!important;opacity:1!important;visibility:visible!important;animation:oaiExternalReturnCrossRotate 2.8s linear infinite!important;transition:none!important;transform-origin:center center!important;pointer-events:none!important;}
-html.oai-external-return-freeze #oai-external-entry-guard{display:none!important;opacity:0!important;visibility:hidden!important;animation:none!important;}
-
 @keyframes oaiStabilityVeilIn { from { opacity:0; } to { opacity:1; } }
 @keyframes oaiStabilityVeilOut { from { opacity:1; } to { opacity:0; } }
 @keyframes oaiStabilitySpin { to { transform:rotate(360deg); } }
-@keyframes oaiExternalReturnCrossRotate { from { transform:rotate(0deg); } to { transform:rotate(360deg); } }
 </style>
 
 <style id="oai-first-entry-intro-style">
@@ -191,7 +27,18 @@ html.oai-internal-no-return-effect #cover > * {
   opacity:1 !important;
   visibility:visible !important;
 }
-/* V8-1-14-216_my_info_backup_restore_info_card_buttons_unified: 첫 진입 인트로는 oai-cover-booting 하나로만 제어한다. */
+/* 첫 진입 십자가 사진/금색 십자가 연출 없이 커버만 안정적으로 표시한다. */
+html.oai-first-entry-intro::before,
+html.oai-first-entry-intro::after,
+html.oai-cover-first-reveal #cover > * {
+  content:"" !important;
+  display:none !important;
+  opacity:0 !important;
+  visibility:hidden !important;
+  background-image:none !important;
+  animation:none !important;
+  transition:none !important;
+}
 </style>
 
 <script>
@@ -203,163 +50,43 @@ html.oai-internal-no-return-effect #cover > * {
   if(isIOS){
     document.documentElement.classList.add('ios-device');
   }
-  // V8-1-14-216_my_info_backup_restore_info_card_buttons_unified: 폐기된 V98/V99 resume freeze/veil 흔적만 정리한다.
-  (function(){
-    var root = document.documentElement;
-    try{
-      if(root && root.classList){
-        root.classList.remove('oai-resume-freeze','oai-resume-return-veil','oai-home-return-soft-veil','oai-home-return-soft-veil-releasing','oai-background-return-stabilizing','oai-background-return-stabilizing-release');
-        root.removeAttribute('data-oai-resume-reason');
-        root.removeAttribute('data-oai-home-return-reason');
-        root.removeAttribute('data-oai-background-return-reason');
-      }
-      sessionStorage.removeItem('oai_resume_return_veil_pending');
-    }catch(_e){}
-  })();
   // iPhone/iPad에서만 iOS 전용 화면 보정을 적용한다.
-  // V8-1-14-216_my_info_backup_restore_info_card_buttons_unified: 짧은 앱 전환 복귀 직후 Android/WebView가 순간적으로 잘못 보고하는 높이값으로 화면 등급이 바뀌지 않게 막는다.
-  var oaiResumeQuietUntil = 0;
-  function oaiNow(){ return Date.now ? Date.now() : new Date().getTime(); }
-  function markResumeQuiet(){
-    oaiResumeQuietUntil = oaiNow() + 900;
-    try{ if(typeof window.__oaiArmResumeFreeze === 'function') window.__oaiArmResumeFreeze('viewport-resume-quiet', 900); }catch(_e){}
-  }
-  try{
-    var _prevOaiIsResumeFreeze = window.__oaiIsResumeFreeze;
-    window.__oaiIsResumeFreeze = function(){
-      try{ if(typeof _prevOaiIsResumeFreeze === 'function' && _prevOaiIsResumeFreeze()) return true; }catch(_e){}
-      try{ if(window.__OAI_BACKGROUND_RESUME_FREEZE_UNTIL__ && oaiNow() < window.__OAI_BACKGROUND_RESUME_FREEZE_UNTIL__) return true; }catch(_e){}
-      return !!(oaiResumeQuietUntil && oaiNow() < oaiResumeQuietUntil);
-    };
-  }catch(_e){}
-
-  /* V8-1-14-216_my_info_backup_restore_info_card_buttons_unified: WebView 화면등급은 상태별 최초 1회 측정값을 저장하고, 이후에는 저장값을 우선 사용한다. */
-  var OAI_VIEWPORT_PROFILE_VERSION = 'V8-1-14-216_my_info_backup_restore_info_card_buttons_unified';
-  var OAI_VIEWPORT_PROFILE_PREFIX = 'oai_webview_viewport_profile_v1_';
-  function oaiIsRefreshCalibration(){
-    try{
-      var navEntry = (performance && performance.getEntriesByType) ? performance.getEntriesByType('navigation')[0] : null;
-      var navType = navEntry && navEntry.type || '';
-      var now = oaiNow();
-      var softRefresh = parseInt(sessionStorage.getItem('oai_soft_refresh_requested') || '0', 10) || 0;
-      var stableReloadReason = sessionStorage.getItem('oai_stable_auto_reload_reason') || '';
-      return navType === 'reload' || !!stableReloadReason || !!(softRefresh && (now - softRefresh) < 120000);
-    }catch(_e){ return false; }
-  }
-  function oaiViewportRaw(){
-    var root = document.documentElement;
-    var vv = window.visualViewport || null;
-    var vvW = Math.round((vv && vv.width) || 0);
-    var vvH = Math.round((vv && vv.height) || 0);
-    var innerW = Math.round(window.innerWidth || root.clientWidth || vvW || screen.width || 0);
-    var innerH = Math.round(window.innerHeight || root.clientHeight || vvH || screen.height || 0);
-    var docH = Math.round(root.clientHeight || 0);
-    var w = Math.round(innerW || vvW || root.clientWidth || screen.width || 0);
-    var h = Math.round(vvH || innerH || docH || screen.height || 0);
-    var active = document.activeElement || null;
-    var inputFocused = !!(active && /^(INPUT|TEXTAREA|SELECT)$/i.test(active.tagName || ''));
-    var keyboardLikely = inputFocused || !!(vvH && innerH && vvH < innerH - 120);
-    return {w:w,h:h,vvW:vvW,vvH:vvH,innerW:innerW,innerH:innerH,docH:docH,keyboardLikely:keyboardLikely};
-  }
-  function oaiViewportStateKey(raw){
-    raw = raw || oaiViewportRaw();
-    var w = raw.w || 0;
-    var h = raw.h || raw.innerH || 0;
-    var fold = w >= 600 ? 'fold_open' : 'fold_closed';
-    var orient = w > h ? 'landscape' : 'portrait';
-    /* V8-1-14-216_my_info_backup_restore_info_card_buttons_unified:
-       Android 하단 내비게이션바/복귀 순간 높이 차이를 새 화면 상태로 보지 않는다.
-       같은 폭·같은 방향이면 저장된 화면 기준을 우선 사용한다. */
-    return [fold, orient].join('|');
-  }
-  function oaiScreenClassFor(raw){
-    var w = raw.w || 0, h = raw.h || raw.innerH || 0;
-    return w >= 600 ? 'oai-screen-fold-wide' : (w <= 410 && h < 790 ? 'oai-screen-compact-short' : 'oai-screen-tall-phone');
-  }
-  function oaiReadViewportProfile(key){
-    try{
-      var raw = localStorage.getItem(OAI_VIEWPORT_PROFILE_PREFIX + key);
-      if(!raw) return null;
-      var p = JSON.parse(raw);
-      if(!p || p.version !== OAI_VIEWPORT_PROFILE_VERSION) return null;
-      if(!p.cls || !(p.w > 240) || !(p.h > 300)) return null;
-      return p;
-    }catch(_e){ return null; }
-  }
-  function oaiSaveViewportProfile(key, raw, cls){
-    try{
-      if(!key || !raw || raw.keyboardLikely) return;
-      var w = Math.round(raw.w || 0), h = Math.round(raw.h || raw.innerH || 0);
-      if(!(w > 240 && w < 1800 && h > 300 && h < 2400)) return;
-      var p = {version:OAI_VIEWPORT_PROFILE_VERSION,key:key,cls:cls || oaiScreenClassFor(raw),w:w,h:h,vh:h*0.01,ts:oaiNow()};
-      localStorage.setItem(OAI_VIEWPORT_PROFILE_PREFIX + key, JSON.stringify(p));
-    }catch(_e){}
-  }
-  function oaiApplyViewportProfile(p){
-    var root = document.documentElement;
-    var classes = ['oai-screen-compact-short','oai-screen-tall-phone','oai-screen-fold-wide'];
-    if(!p || !p.cls) return false;
-    for(var i=0;i<classes.length;i++) root.classList.remove(classes[i]);
-    root.classList.add(p.cls);
-    root.setAttribute('data-oai-layout-profile-key', p.key || '');
-    root.setAttribute('data-oai-vw', String(Math.round(p.w || 0)));
-    root.setAttribute('data-oai-vh', String(Math.round(p.h || 0)));
-    if(p.vh > 3 && p.vh < 20) root.style.setProperty('--cover-vh', p.vh + 'px');
-    return true;
-  }
-  window.__oaiViewportProfile = {raw:oaiViewportRaw,stateKey:oaiViewportStateKey,read:oaiReadViewportProfile,save:oaiSaveViewportProfile,apply:oaiApplyViewportProfile,isRefresh:oaiIsRefreshCalibration,version:OAI_VIEWPORT_PROFILE_VERSION};
-
-  function applyAndroidScreenClass(reason){
+  // V8-1-14-64-IOS-PARISH-KEYBOARD: 키보드가 올라온 동안에는 화면 등급을 다시 바꾸지 않는다.
+  function applyAndroidScreenClass(){
     var root = document.documentElement;
     if(!root || !root.classList) return;
     var classes = ['oai-screen-compact-short','oai-screen-tall-phone','oai-screen-fold-wide'];
     if(isIOS) return;
-    var raw = oaiViewportRaw();
-    if(!raw.w || !raw.h) return;
+    var vv = window.visualViewport;
+    var vvH = Math.round((vv && vv.height) || 0);
+    var innerH = Math.round(window.innerHeight || root.clientHeight || 0);
+    var active = document.activeElement || null;
+    var inputFocused = !!(active && /^(INPUT|TEXTAREA|SELECT)$/i.test(active.tagName || ''));
+    var keyboardLikely = inputFocused || !!(vvH && innerH && vvH < innerH - 120);
     var hasClass = classes.some(function(cls){ return root.classList.contains(cls); });
-    if(raw.keyboardLikely && hasClass) return;
-    var quiet = !!(oaiResumeQuietUntil && oaiNow() < oaiResumeQuietUntil);
-    var freezeActive = false;
-    try{ freezeActive = !!(typeof window.__oaiIsResumeFreeze === 'function' && window.__oaiIsResumeFreeze()); }catch(_e){}
-    var refresh = oaiIsRefreshCalibration() || /refresh|reload|force-remeasure/.test(String(reason || ''));
-    if((quiet || freezeActive) && !/orientation|force-remeasure|refresh|reload/.test(String(reason || ''))) return;
-
-    var key = oaiViewportStateKey(raw);
-    var stored = oaiReadViewportProfile(key);
-    if(stored && !refresh){
-      oaiApplyViewportProfile(stored);
-      return;
-    }
-
-    if(refresh && stored && !/final|force-remeasure/.test(String(reason || ''))){
-      oaiApplyViewportProfile(stored);
-      setTimeout(function(){ applyAndroidScreenClass('refresh-final-force-remeasure'); }, 850);
-      return;
-    }
-
-    var nextClass = oaiScreenClassFor(raw);
-    var oldW = parseInt(root.getAttribute('data-oai-vw') || '0', 10) || 0;
-    var oldH = parseInt(root.getAttribute('data-oai-vh') || '0', 10) || 0;
-    var already = root.classList.contains(nextClass);
-    if(already && oldW && Math.abs(raw.w - oldW) < 2 && oldH && Math.abs(raw.h - oldH) < 2 && stored) return;
+    if(keyboardLikely && hasClass) return;
     for(var i=0;i<classes.length;i++) root.classList.remove(classes[i]);
-    root.setAttribute('data-oai-layout-profile-key', key);
-    root.setAttribute('data-oai-vw', String(raw.w));
-    root.setAttribute('data-oai-vh', String(raw.h));
-    root.classList.add(nextClass);
-    if(!raw.keyboardLikely) oaiSaveViewportProfile(key, raw, nextClass);
+    var w = Math.round(window.innerWidth || root.clientWidth || (vv && vv.width) || screen.width || 0);
+    var h = Math.round((keyboardLikely ? 0 : vvH) || innerH || root.clientHeight || screen.height || 0);
+    if(!w || !h) return;
+    root.setAttribute('data-oai-vw', String(w));
+    root.setAttribute('data-oai-vh', String(h));
+    if(w >= 600){
+      root.classList.add('oai-screen-fold-wide');
+    }else if(w <= 410 && h < 790){
+      root.classList.add('oai-screen-compact-short');
+    }else{
+      root.classList.add('oai-screen-tall-phone');
+    }
   }
-  applyAndroidScreenClass('boot');
-  /* V8-1-14-216_my_info_backup_restore_info_card_buttons_unified:
-     복귀/focus/visible/visualViewport/resize에서 폰 화면 크기와 화면 등급을 다시 계산하지 않는다.
-     저장값을 우선 사용하고, 화면이 비정상이면 사용자가 새로고침해서 다시 측정한다. */
-  window.addEventListener('pageshow', function(){ markResumeQuiet(); }, {passive:true});
-  window.addEventListener('focus', function(){ markResumeQuiet(); }, {passive:true});
-  window.addEventListener('orientationchange', function(){ markResumeQuiet(); }, {passive:true});
-  document.addEventListener('visibilitychange', function(){ if(!document.hidden) markResumeQuiet(); }, {passive:true});
-  /* V8-1-14-216_my_info_backup_restore_info_card_buttons_unified: 현재 WebView/PWA 환경에서 intent://가 ERR_UNKNOWN_URL_SCHEME로 열릴 수 있어 자동 intent 전환을 사용하지 않는다. */
+  applyAndroidScreenClass();
+  window.addEventListener('resize', applyAndroidScreenClass, {passive:true});
+  if(window.visualViewport) window.visualViewport.addEventListener('resize', applyAndroidScreenClass, {passive:true});
+  window.addEventListener('orientationchange', function(){ setTimeout(applyAndroidScreenClass, 80); }, {passive:true});
+  /* Android 카카오톡에서만 Chrome으로 연결합니다. iPhone/iPad/Safari/PWA에서는 실행하지 않습니다. */
   if(isAndroid && isKakao){
-    // Android Kakao에서도 현재 페이지를 그대로 유지한다.
+    var url = location.href;
+    location.href = 'intent://' + url.replace(/https?:\/\//i,'') + '#Intent;scheme=https;package=com.android.chrome;end';
   }
 })();
 </script>
@@ -551,64 +278,23 @@ html.oai-internal-no-return-effect #cover > * {
   var isInternalNoEffectReturn = false;
   var isExternalReturnNoIntro = false;
   try{
-    var internalNow = Date.now ? Date.now() : new Date().getTime();
-    var navEntryForInternal = (performance && performance.getEntriesByType) ? performance.getEntriesByType('navigation')[0] : null;
-    var navTypeForInternal = navEntryForInternal && navEntryForInternal.type || '';
     var internalUntil = parseInt(sessionStorage.getItem('oai_internal_return_no_effect_until') || '0', 10) || 0;
-    var internalOnce = sessionStorage.getItem('oai_internal_return_no_effect_once') === '1';
-    var explicitCoverReturn = /[?&]oai_cover_return=/.test(location.search || '');
-    isInternalNoEffectReturn = !!((internalUntil && internalNow < internalUntil) || (internalOnce && (navTypeForInternal === 'back_forward' || explicitCoverReturn)));
-    if(!isInternalNoEffectReturn && (internalOnce || internalUntil)){
-      try{
-        sessionStorage.removeItem('oai_internal_return_no_effect_once');
-        sessionStorage.removeItem('oai_internal_return_no_effect_until');
-        sessionStorage.removeItem('oai_internal_return_no_effect_reason');
-        sessionStorage.removeItem('oai_internal_page_nav');
-      }catch(_e){}
-    }
+    var internalNow = Date.now ? Date.now() : new Date().getTime();
+    isInternalNoEffectReturn = sessionStorage.getItem('oai_internal_return_no_effect_once') === '1' || (internalUntil && internalNow < internalUntil);
     var extTs = parseInt(sessionStorage.getItem('oai_external_nav_started_at') || '0', 10) || 0;
-    var extPending = sessionStorage.getItem('oai_external_nav_pending') === '1' || sessionStorage.getItem('oai_external_nav_pagehide') === '1' || sessionStorage.getItem('oai_external_return_expected') === '1';
-    var extSuppressUntil = parseInt(sessionStorage.getItem('oai_external_return_back_suppress_until') || '0', 10) || 0;
-    isExternalReturnNoIntro = !!(extPending && extTs && (internalNow - extTs) < 10*60*1000 && !(extSuppressUntil && internalNow < extSuppressUntil));
-    if(isExternalReturnNoIntro){
-      root.classList.add('oai-external-return-freeze');
-      root.classList.remove('oai-cover-booting','oai-cover-revealing','oai-first-entry-intro','oai-background-return-intro','oai-cover-under-intro-reveal','oai-cover-first-reveal','oai-stability-veil','oai-stability-veil-releasing');
-      root.removeAttribute('data-oai-stability-reason');
-      root.setAttribute('data-oai-external-return-early','1');
-    }
+    var extPending = sessionStorage.getItem('oai_external_nav_pending') === '1' || sessionStorage.getItem('oai_external_nav_pagehide') === '1';
+    isExternalReturnNoIntro = !!(extPending && extTs && (internalNow - extTs) < 10 * 60 * 1000);
   }catch(_e){}
   function now(){ return Date.now ? Date.now() : new Date().getTime(); }
-  var isRefreshBootNoIntro = false;
-  try{
-    var navEntry = (performance && performance.getEntriesByType) ? performance.getEntriesByType('navigation')[0] : null;
-    var navType = navEntry && navEntry.type || '';
-    var n = now();
-    var softRefresh = parseInt(sessionStorage.getItem('oai_soft_refresh_requested') || '0', 10) || 0;
-    var refreshVeilUntil = parseInt(sessionStorage.getItem('oai_refresh_veil_until') || '0', 10) || 0;
-    var stableReloadReason = sessionStorage.getItem('oai_stable_auto_reload_reason') || '';
-    if(stableReloadReason && navType !== 'reload'){ try{ sessionStorage.removeItem('oai_stable_auto_reload_reason'); }catch(_e){} }
-    isRefreshBootNoIntro = !!(stableReloadReason && navType === 'reload') || !!(softRefresh && (n - softRefresh) < 120000) || !!(refreshVeilUntil && refreshVeilUntil > n);
-  }catch(_e){}
-  var shouldRunCoverBoot = false;
-  if(!isInternalNoEffectReturn && !isExternalReturnNoIntro && !isRefreshBootNoIntro){
-    shouldRunCoverBoot = true;
+  if(!isInternalNoEffectReturn && !isExternalReturnNoIntro){
     root.classList.add('oai-cover-booting');
   }else{
     root.classList.remove('oai-cover-booting','oai-cover-revealing','oai-first-entry-intro','oai-cover-under-intro-reveal','oai-cover-first-reveal');
-    if(isRefreshBootNoIntro) root.classList.add('oai-refresh-no-intro');
     root.classList.add('oai-internal-no-return-effect');
-    setTimeout(function(){ try{ root.classList.remove('oai-internal-no-return-effect','oai-refresh-no-intro'); }catch(_e){} }, isExternalReturnNoIntro ? 900 : 420);
+    setTimeout(function(){ try{ root.classList.remove('oai-internal-no-return-effect'); }catch(_e){} }, isExternalReturnNoIntro ? 900 : 420);
   }
   function readStored(){
     try{
-      if(window.__oaiViewportProfile){
-        var raw = window.__oaiViewportProfile.raw();
-        var key = window.__oaiViewportProfile.stateKey(raw);
-        var profile = window.__oaiViewportProfile.read(key);
-        if(profile && profile.vh > 3 && profile.vh < 20){
-          return {vh:profile.vh, width:(profile.w > 240 && profile.w < 1800) ? profile.w : 0, profileKey:key};
-        }
-      }
       var v = parseFloat(localStorage.getItem(KEY) || '');
       var w = parseFloat(localStorage.getItem(WIDTH_KEY) || '');
       return {vh:(v > 3 && v < 20) ? v : 0, width:(w > 240 && w < 1600) ? w : 0};
@@ -642,14 +328,6 @@ html.oai-internal-no-return-effect #cover > * {
     try{
       if(v > 3 && v < 20) localStorage.setItem(KEY, String(v));
       if(width > 240 && width < 1600) localStorage.setItem(WIDTH_KEY, String(width));
-      if(window.__oaiViewportProfile && v > 3 && v < 20){
-        var raw = window.__oaiViewportProfile.raw();
-        if(raw && !raw.keyboardLikely){
-          raw.h = Math.round(v * 100);
-          var key = window.__oaiViewportProfile.stateKey(raw);
-          window.__oaiViewportProfile.save(key, raw, null);
-        }
-      }
     }catch(e){}
   }
   function apply(v, shouldSave, width){
@@ -657,6 +335,7 @@ html.oai-internal-no-return-effect #cover > * {
     root.style.setProperty('--cover-vh', v + 'px');
     if(shouldSave) save(v, width || measureWidth());
   }
+  var measured = measure();
   var currentWidth = measureWidth();
   var stored = readStored();
   var softRefreshRecent = false;
@@ -665,9 +344,11 @@ html.oai-internal-no-return-effect #cover > * {
     softRefreshRecent = !!sr && (now() - sr < 120000);
   }catch(e){}
   var widthMatches = !!(stored.width && currentWidth && Math.abs(stored.width - currentWidth) < 24);
-  // V8-1-14-216_my_info_backup_restore_info_card_buttons_unified: 저장값이 맞으면 먼저 적용하고, 새 측정은 저장값이 없거나 새로고침 때만 수행한다.
-  var useStored = !!(stored.vh && !softRefreshRecent && widthMatches);
-  var measured = useStored ? 0 : measure();
+  var storedDiffersFromNow = !!(measured && stored.vh && Math.abs(measured - stored.vh) > 0.55);
+  // 새로고침 직후에는 저장된 커버 높이를 먼저 쓰지 않는다.
+  // 일부 모바일 PWA에서 reload 직후 저장 높이가 실제 보이는 높이보다 크게 남아
+  // 하단 안내문구가 화면 밖으로 밀리는 원인이 되었기 때문이다.
+  var useStored = !!(stored.vh && !softRefreshRecent && widthMatches && !storedDiffersFromNow);
   var firstVh = useStored ? stored.vh : (measured || stored.vh || 8);
   apply(firstVh, !useStored, currentWidth);
   var baseCoverWidth = currentWidth;
@@ -690,10 +371,9 @@ html.oai-internal-no-return-effect #cover > * {
   var settleTimer = 0;
   var bootStartedAt = now();
   var bootReleaseDone = false;
-  var BOOT_MIN_MS = 2100;
+  var BOOT_MIN_MS = 720;
   function releaseBooting(){
     if(bootReleaseDone) return;
-    if(!shouldRunCoverBoot || !root.classList.contains('oai-cover-booting')) return;
     var wait = Math.max(0, BOOT_MIN_MS - (now() - bootStartedAt));
     setTimeout(function(){
       if(bootReleaseDone) return;
@@ -701,7 +381,7 @@ html.oai-internal-no-return-effect #cover > * {
       try{
         root.classList.add('oai-cover-revealing');
         root.classList.remove('oai-cover-booting');
-        setTimeout(function(){ try{ root.classList.remove('oai-cover-revealing'); }catch(_e){} }, 1150);
+        setTimeout(function(){ try{ root.classList.remove('oai-cover-revealing'); }catch(_e){} }, 680);
       }catch(e){}
     }, wait);
   }
@@ -711,34 +391,20 @@ html.oai-internal-no-return-effect #cover > * {
     }else{ fn(); }
   }
   function settleCoverSize(reason){
-    try{
-      if(typeof window.__oaiIsResumeFreeze === 'function' && window.__oaiIsResumeFreeze()){
-        var r0 = String(reason || '');
-        if(!/orientation|force/.test(r0)) return;
-      }
-    }catch(_e){}
     if(!isCoverVisible()) return;
     if(isCoverHeightLockedByOverlay()) return;
     var r = String(reason || '');
-    try{
-      if(window.oaiReturnConductorBusy && window.oaiReturnConductorBusy(['viewport-settle','refresh'])){
-        if(!/orientation|resize|force|refresh|reload/.test(r)) return;
-      }
-    }catch(_e){}
     var width = measureWidth();
     var widthChanged = !!(baseCoverWidth && width && Math.abs(width - baseCoverWidth) >= 24);
     var orientationChanged = r.indexOf('orientation') >= 0;
-    var refreshRecalibrate = softRefreshRecent || /refresh|reload/.test(r);
-    var forceCoverSettle = /force/.test(r) || refreshRecalibrate;
-    // V8-1-14-131: 홈/외부사이트 복귀·focus·visible·visualViewport 흔들림으로는 커버 기준값을 다시 저장하지 않는다.
+    var forceCoverSettle = /cover-return|pageshow|focus|visible|force|visualViewport/.test(r);
+    // 일반 resize는 흔들림 방지를 위해 폭/회전 변화만 반영하되,
+    // 커버 복귀·pageshow 계열은 실제 화면 높이와 스크롤 위치를 다시 고정한다.
     if(!widthChanged && !orientationChanged && !forceCoverSettle) return;
     var next = measure();
     if(!next) return;
     var cur = parseFloat(getComputedStyle(root).getPropertyValue('--cover-vh')) || 0;
-    var diff = cur ? Math.abs(next - cur) : 999;
-    // 짧은 백그라운드 복귀에서는 pageshow/focus/visible이 연속으로 들어와도
-    // 실제 높이 차이가 거의 없으면 --cover-vh를 다시 쓰지 않아 커버 흔들림을 막는다.
-    if(cur && diff < 0.35 && (!widthChanged && !orientationChanged)) return;
+    if(!forceCoverSettle && cur && Math.abs(next - cur) < 0.35) return;
     apply(next, true, width);
     if(width) baseCoverWidth = width;
     try{
@@ -756,13 +422,17 @@ html.oai-internal-no-return-effect #cover > * {
   }
   function scheduleSettle(reason){
     clearTimeout(settleTimer);
-    var wait = 120;
-    settleTimer = setTimeout(function(){ settleCoverSize(reason); }, wait);
-    setTimeout(function(){ settleCoverSize(reason + '-late'); }, wait + 260);
+    settleTimer = setTimeout(function(){ settleCoverSize(reason); }, 120);
+    setTimeout(function(){ settleCoverSize(reason + '-late'); }, 360);
   }
-  /* V8-1-14-216_my_info_backup_restore_info_card_buttons_unified:
-     커버 높이(--cover-vh)는 복귀/resize/visualViewport 이벤트에서 다시 쓰지 않는다.
-     새 기준이 필요하면 사용자가 새로고침한다. */
+  window.addEventListener('orientationchange', function(){ scheduleSettle('orientation'); }, {passive:true});
+  window.addEventListener('resize', function(){ scheduleSettle('resize'); }, {passive:true});
+  if(window.visualViewport){
+    window.visualViewport.addEventListener('resize', function(){ scheduleSettle('visualViewport'); }, {passive:true});
+  }
+  window.addEventListener('pageshow', function(){ scheduleSettle('pageshow'); }, {passive:true});
+  window.addEventListener('focus', function(){ scheduleSettle('focus'); }, {passive:true});
+  document.addEventListener('visibilitychange', function(){ if(!document.hidden) scheduleSettle('visible'); }, {passive:true});
   // 첫 진입 십자가 사진/효과 없이 커버 높이 안정화만 유지한다.
   if(!isInternalNoEffectReturn){
     if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function(){ afterStableFirstPaint(releaseBooting); }, {once:true});
@@ -872,20 +542,15 @@ html.oai-internal-no-return-effect #cover > * {
     setTimeout(function(){ settle(reason + '-final'); }, 720);
   }
 
-  (function(){
-    var bootW = width();
-    var stored = readStored(bootW);
-    var shouldMeasure = false;
-    try{ shouldMeasure = !!(window.__oaiViewportProfile && window.__oaiViewportProfile.isRefresh && window.__oaiViewportProfile.isRefresh()); }catch(_e){}
-    if(stored && !shouldMeasure){
-      applyHeight(stored, bootW, 'boot-stored');
-    }else{
-      applyHeight(Math.max(measureHeight() || 0, stored || 0), bootW, shouldMeasure ? 'boot-refresh-measure' : 'boot-measure');
-    }
-  })();
-  /* V8-1-14-216_my_info_backup_restore_info_card_buttons_unified:
-     iOS/PWA 전체 높이도 pageshow/focus/visible/resize/visualViewport에서 다시 계산하지 않는다.
-     화면이 비정상이면 사용자가 새로고침해서 새 기준을 저장한다. */
+  applyHeight(Math.max(measureHeight() || 0, readStored(width()) || 0), width(), 'boot');
+  window.addEventListener('pageshow', function(){ schedule('pageshow'); }, {passive:true});
+  window.addEventListener('focus', function(){ schedule('focus'); }, {passive:true});
+  window.addEventListener('resize', function(){ schedule('resize'); }, {passive:true});
+  window.addEventListener('orientationchange', function(){ lastWidth = 0; schedule('orientation'); }, {passive:true});
+  document.addEventListener('visibilitychange', function(){ if(!document.hidden) schedule('visible'); }, {passive:true});
+  if(window.visualViewport){
+    window.visualViewport.addEventListener('resize', function(){ schedule('visualViewport'); }, {passive:true});
+  }
   window.oaiSettleIosAppHeight = settle;
 })();
 </script>
@@ -897,18 +562,16 @@ html.oai-internal-no-return-effect #cover > * {
   function now(){ return Date.now ? Date.now() : new Date().getTime(); }
   function hasPendingExternalReturn(){
     try{
-      var n=now();
       var ts=parseInt(sessionStorage.getItem('oai_external_nav_started_at')||'0',10)||0;
-      var pending=sessionStorage.getItem('oai_external_nav_pending')==='1' || sessionStorage.getItem('oai_external_nav_pagehide')==='1' || sessionStorage.getItem('oai_external_return_expected')==='1';
-      var suppressUntil=parseInt(sessionStorage.getItem('oai_external_return_back_suppress_until')||'0',10)||0;
-      return !!(pending && ts && (n-ts) < 10*60*1000 && !(suppressUntil && n<suppressUntil));
+      var pending=sessionStorage.getItem('oai_external_nav_pending')==='1' || sessionStorage.getItem('oai_external_nav_pagehide')==='1';
+      return !!(pending && ts && (now()-ts) < 10*60*1000);
     }catch(e){ return false; }
   }
   function hold(){
     try{
-      document.documentElement.classList.add('oai-external-return-freeze');
-      document.documentElement.classList.remove('oai-stability-veil','oai-stability-veil-releasing');
-      document.documentElement.removeAttribute('data-oai-stability-reason');
+      document.documentElement.classList.add('oai-external-return-freeze','oai-stability-veil');
+      document.documentElement.classList.remove('oai-stability-veil-releasing');
+      document.documentElement.setAttribute('data-oai-stability-reason','external-return-early');
       document.documentElement.setAttribute('data-oai-external-return-early','1');
     }catch(e){}
     setTimeout(function(){
@@ -919,7 +582,7 @@ html.oai-internal-no-return-effect #cover > * {
           document.documentElement.removeAttribute('data-oai-external-return-early');
         }
       }catch(e){}
-    }, 3200);
+    }, 1800);
   }
   if(hasPendingExternalReturn()) hold();
   window.addEventListener('pageshow', function(){ if(hasPendingExternalReturn()) hold(); }, true);
@@ -949,50 +612,44 @@ window.APP_CONFIG = {
 <meta name="application-name" content="가톨릭길동무">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#f5f0e8">
-<meta name="color-scheme" content="light">
-<link rel="manifest" href="manifest.json?v=V8-1-14-216_my_info_backup_restore_info_card_buttons_unified">
-<link rel="apple-touch-icon" sizes="180x180" href="icon-512x512.png?v=V8-1-14-216_my_info_backup_restore_info_card_buttons_unified">
-<link rel="apple-touch-icon-precomposed" sizes="180x180" href="icon-512x512.png?v=V8-1-14-216_my_info_backup_restore_info_card_buttons_unified">
+<link rel="manifest" href="manifest.json?v=V8-1-14-64-IOS-PARISH-KEYBOARD">
+<link rel="apple-touch-icon" sizes="180x180" href="icon-512x512.png?v=V8-1-14-64-IOS-PARISH-KEYBOARD">
+<link rel="apple-touch-icon-precomposed" sizes="180x180" href="icon-512x512.png?v=V8-1-14-64-IOS-PARISH-KEYBOARD">
 <meta name="format-detection" content="telephone=no">
 <meta name="description" content="가톨릭길동무 - 가톨릭 신앙생활 종합 앱">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="가톨릭길동무">
 <meta property="og:title" content="가톨릭길동무">
 <meta property="og:description" content="성지 · 성당 · 기도문 · 순례길 · 가톨릭 웹사이트 안내">
-<meta property="og:image" content="icon-512x512.png?v=V8-1-14-216_my_info_backup_restore_info_card_buttons_unified">
+<meta property="og:image" content="icon-512x512.png?v=V8-1-14-64-IOS-PARISH-KEYBOARD">
 <meta property="og:image:width" content="512">
 <meta property="og:image:height" content="512">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="가톨릭길동무">
 <meta name="twitter:description" content="성지 · 성당 · 기도문 · 순례길 · 가톨릭 웹사이트 안내">
-<meta name="twitter:image" content="icon-512x512.png?v=V8-1-14-216_my_info_backup_restore_info_card_buttons_unified">
+<meta name="twitter:image" content="icon-512x512.png?v=V8-1-14-64-IOS-PARISH-KEYBOARD">
 <title>가톨릭길동무</title>
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192x192.png?v=V8-1-14-216_my_info_backup_restore_info_card_buttons_unified">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192x192.png?v=V8-1-14-64-IOS-PARISH-KEYBOARD">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <style id="oai-initial-bg">html,body{margin:0;width:100%;height:100%;min-height:100%;background:#f5f0e8;overflow:hidden;color-scheme:light;}#cover{background:#f5f0e8;min-height:100%;}#app{background:#f8f6f2;display:none;}</style>
-<link rel="stylesheet" href="style.css?v=V8-1-14-216_my_info_backup_restore_info_card_buttons_unified">
-<link rel="stylesheet" href="css/module-common.css?v=V8-1-14-216_my_info_backup_restore_info_card_buttons_unified">
-<link rel="stylesheet" href="css/prayer.css?v=V8-1-14-216_my_info_backup_restore_info_card_buttons_unified">
-<link rel="stylesheet" href="css/web.css?v=V8-1-14-216_my_info_backup_restore_info_card_buttons_unified">
-<link rel="stylesheet" href="css/pilgrimage.css?v=V8-1-14-216_my_info_backup_restore_info_card_buttons_unified">
-<link rel="stylesheet" href="css/overlays.css?v=V8-1-14-216_my_info_backup_restore_info_card_buttons_unified">
-<link rel="stylesheet" href="css/cover-modals.css?v=V8-1-14-216_my_info_backup_restore_info_card_buttons_unified">
-<link rel="stylesheet" href="css/shrine-update-banner.css?v=V8-1-14-216_my_info_backup_restore_info_card_buttons_unified">
-<link rel="stylesheet" href="css/myfaith.css?v=V8-1-14-216_my_info_backup_restore_info_card_buttons_unified">
-<link rel="stylesheet" href="css/my-diocese.css?v=V8-1-14-216_my_info_backup_restore_info_card_buttons_unified">
+<link rel="stylesheet" href="style.css?v=V8-1-14-64-IOS-PARISH-KEYBOARD">
+<link rel="stylesheet" href="css/module-common.css?v=V8-1-14-64-IOS-PARISH-KEYBOARD">
+<link rel="stylesheet" href="css/prayer.css?v=V8-1-14-64-IOS-PARISH-KEYBOARD">
+<link rel="stylesheet" href="css/web.css?v=V8-1-14-64-IOS-PARISH-KEYBOARD">
+<link rel="stylesheet" href="css/pilgrimage.css?v=V8-1-14-64-IOS-PARISH-KEYBOARD">
+<link rel="stylesheet" href="css/overlays.css?v=V8-1-14-64-IOS-PARISH-KEYBOARD">
+<link rel="stylesheet" href="css/cover-modals.css?v=V8-1-14-64-IOS-PARISH-KEYBOARD">
+<link rel="stylesheet" href="css/myfaith.css?v=V8-1-14-64-IOS-PARISH-KEYBOARD">
+<link rel="stylesheet" href="css/my-diocese.css?v=V8-1-14-64-IOS-PARISH-KEYBOARD">
 </head>
 <body>
 <div id="missa-view" role="dialog" aria-modal="true" aria-label="매일미사">
   <div id="missa-bar">
     <button id="missa-close" aria-label="신앙 포털 닫기"><i class="fa-solid fa-arrow-left"></i></button>
     <span id="missa-bar-title">매일미사</span>
-  </div>
-  <div id="missa-loading" aria-hidden="true">
-    <div class="missa-spinner" aria-hidden="true"></div>
-    <div id="missa-loading-txt" class="missa-loading-txt">불러오는 중…</div>
   </div>
   <iframe id="missa-frame" src="about:blank" title="신앙 포털" loading="eager" referrerpolicy="no-referrer-when-downgrade"></iframe>
   <div id="missa-faith-nav" class="faith-bottom-nav" aria-label="매일미사·기도문·성경·성가 바로가기"></div>
@@ -1014,7 +671,7 @@ window.APP_CONFIG = {
     <div class="missa-spinner"></div>
     <div class="missa-loading-txt">교구 지도를 불러오는 중…</div>
   </div>
-  <iframe id="diocese-frame" src="about:blank" data-src="diocese.html?v=V8-1-14-216_my_info_backup_restore_info_card_buttons_unified" title="관구·교구 지도" loading="eager" referrerpolicy="no-referrer-when-downgrade" style="flex:1;width:100%;border:none;background:#F8F6F2;"></iframe>
+  <iframe id="diocese-frame" src="about:blank" style="flex:1;width:100%;border:none;background:#F8F6F2;"></iframe>
 </div>
 <div id="prayer-view" role="dialog" aria-modal="true" aria-label="기도문">
   <div id="prayer-bar" class="module-bar">
@@ -1061,6 +718,14 @@ window.APP_CONFIG = {
 </div>
 <div id="cover">
 <div id="oai-build-marker" aria-label="수정 단계 표시" style="position:absolute;left:8px;bottom:calc(env(safe-area-inset-bottom,0px) + 6px);z-index:120;display:none;align-items:center;justify-content:center;min-width:46px;height:20px;padding:0 8px;border-radius:999px;background:rgba(31,42,68,.72);color:#fff;font-size:10px;font-weight:800;line-height:1;pointer-events:none;opacity:0;visibility:hidden;"></div>
+  <div id="cv-pull-modern" aria-hidden="true">
+  <div class="cv-pull-ring">
+    <svg viewBox="0 0 24 24" class="cv-pull-icon">
+      <path d="M20 12a8 8 0 1 1-2.34-5.66" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+      <path d="M20 4v6h-6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+</div>
     <div id="cover-font-controls" class="pr-font-ctrl" aria-label="글자 크기 조절">
       <button type="button" id="cover-sm-btn" class="pr-font-btn pr-sm">가</button>
       <div class="pr-font-divider"></div>
@@ -1088,7 +753,7 @@ window.APP_CONFIG = {
     <div id="cover-main-block">
     <div class="cover-header">
         <div class="cover-subtitle">신앙의 모든 여정을 함께합니다.</div>
-        <h1 class="cover-title">가톨릭길동무</h1>
+        <h1 class="cover-title">가톨릭 길동무</h1>
     </div>
       <div class="cover-grid">
           <button id="cc-1" class="cover-card cover-card-wide">
@@ -1120,15 +785,23 @@ window.APP_CONFIG = {
               <span class="cover-name">관구·교구 알아보기</span>
           </button>
       </div>
-      <!-- Google Play 배포용: iPhone Safari 설치 안내 배너 제거 -->
-            <div id="cover-action-row" class="cover-action-single" aria-label="커버 보조 기능">
+      <div id="ios-kakao-safari-banner" class="ios-safari-banner" aria-hidden="true" hidden>
+        <button id="ios-kakao-safari-close" class="ios-safari-banner-x" type="button" aria-label="iPhone 앱 설치 안내 닫기">×</button>
+        <div class="ios-safari-banner-text">
+          <strong>iPhone 앱 설치 안내</strong>
+          <span>카카오톡에서는 Safari로 열어야<br>홈 화면에 추가할 수 있습니다.</span>
+        </div>
+        <button id="ios-kakao-safari-help" type="button">설치 방법 보기</button>
+      </div>
+      
+      <div id="cover-action-row" class="cover-action-single" aria-label="커버 보조 기능">
         <div id="cover-diocese-box">
           <button id="cover-diocese-btn" class="cover-diocese-btn" type="button" aria-label="나의 신앙생활 열기">
             <span class="cover-faith-cross" aria-hidden="true">✞</span><span class="diocese-btn-label">나의 신앙생활</span>
           </button>
         </div>
         <div id="cover-update-box">
-          <button id="cover-update-btn" class="cover-refresh-main-btn" type="button" data-target-version="V8-1-14-216_my_info_backup_restore_info_card_buttons_unified" aria-label="짧게 누르면 새로고침, 더 길게 누르면 앱 캐시 초기화">새로고침</button>
+          <button id="cover-update-btn" class="cover-refresh-main-btn" type="button" data-target-version="V2" aria-label="짧게 누르면 새로고침, 더 길게 누르면 앱 캐시 초기화">새로고침</button>
           <div id="cover-update-hint" aria-live="polite">아래 버전과 다릅니다. 눌러서 최신 파일을 다시 받아 주세요.</div>
         </div>
       </div>
@@ -1141,10 +814,53 @@ window.APP_CONFIG = {
 <div id="cover-bottom-note" aria-label="앱 안내문구">
   본 앱은 가톨릭 신자들의 신앙생활을 돕기 위해 만든 비공식 개인 앱입니다.<br>
   정보는 CBCK, 굿뉴스 및 각 교구 홈페이지를 참고했습니다.<br>
-  <span id="cover-version-label">V8-1-14-216_my_info_backup_restore_info_card_buttons_unified</span>
+  <span id="cover-version-label">V8-1-14-64-IOS-PARISH-KEYBOARD</span>
 </div>
 
-<!-- Google Play 배포용: iPhone Safari 설치 안내 모달 제거 -->
+<div id="ios-safari-guide-modal" class="guide-modal" role="dialog" aria-modal="true" aria-labelledby="ios-safari-guide-title" aria-hidden="true">
+  <div class="guide-backdrop" data-ios-safari-close="1"></div>
+  <div class="guide-panel ios-safari-guide-panel">
+    <button class="guide-x" type="button" data-ios-safari-close="1" aria-label="iPhone 앱 설치 안내 닫기">×</button>
+    <div class="guide-badge">iPhone 앱 설치 안내</div>
+    <h2 id="ios-safari-guide-title">iPhone 앱 설치 안내</h2>
+    <div class="ios-safari-scroll" aria-label="iPhone 앱 설치 단계 안내">
+      <p class="guide-lead">실제 iPhone 화면 순서대로 따라 해 주세요.</p>
+      <div class="ios-safari-steps">
+        <div class="ios-safari-step">
+          <b>1</b>
+          <span>카카오톡 하단 버튼 4개 중 <strong>오른쪽 끝 버튼</strong>을 누르세요.</span>
+          <img data-src="ios-install-step1-kakao-bottom-buttons.png?v=V8-1-14-64-IOS-PARISH-KEYBOARD" alt="카카오톡 오른쪽 아래 버튼 모양" width="945" height="248" loading="lazy" decoding="async">
+        </div>
+        <div class="ios-safari-step">
+          <b>2</b>
+          <span>공유 화면에서 <strong>Safari로 열기</strong>를 누르세요.</span>
+          <img data-src="ios-install-step2-safari-open.png?v=V8-1-14-64-IOS-PARISH-KEYBOARD" alt="Safari로 열기 버튼" width="880" height="755" loading="lazy" decoding="async" fetchpriority="low">
+        </div>
+        <div class="ios-safari-step">
+          <b>3</b>
+          <span>Safari로 열린 뒤, 화면 <strong>오른쪽 아래 ··· 버튼</strong>을 누르세요.</span>
+          <div class="ios-safari-shot ios-safari-shot-more">
+            <img data-src="KakaoTalk_20260514_134255658_04.jpg?v=V8-1-14-64-IOS-PARISH-KEYBOARD" alt="Safari 오른쪽 아래 더보기 버튼" width="960" height="307" loading="lazy" decoding="async">
+            <i class="ios-gold-highlight" aria-hidden="true"></i>
+          </div>
+        </div>
+        <div class="ios-safari-step">
+          <b>4</b>
+          <span>열린 메뉴에서 <strong>공유</strong>를 누르세요.</span>
+          <img data-src="ios-install-step3-share-menu.png?v=V8-1-14-64-IOS-PARISH-KEYBOARD" alt="Safari 공유 버튼" width="750" height="580" loading="lazy" decoding="async" fetchpriority="low">
+        </div>
+        <div class="ios-safari-step">
+          <b>5</b>
+          <span>목록을 아래로 내려 <strong>홈 화면에 추가</strong>를 누르세요.</span>
+          <img data-src="ios-install-step4-home-screen.png?v=V8-1-14-64-IOS-PARISH-KEYBOARD" alt="홈 화면에 추가 버튼" width="865" height="750" loading="lazy" decoding="async" fetchpriority="low">
+        </div>
+      </div>
+    </div>
+    <div class="guide-actions">
+      <button type="button" class="guide-primary" data-ios-safari-close="1">확인</button>
+    </div>
+  </div>
+</div>
 
 <div id="guide-manual-modal" class="guide-modal" role="dialog" aria-modal="true" aria-labelledby="guide-manual-title" aria-hidden="true">
   <div class="guide-backdrop" data-guide-close="manual"></div>
@@ -1225,7 +941,7 @@ window.APP_CONFIG = {
       <div class="guide-badge">가톨릭길동무</div>
       <h2 id="privacy-policy-modal-title">개인정보처리방침</h2>
     </div>
-    <iframe id="privacy-policy-frame" class="privacy-policy-frame" src="about:blank" data-src="privacy.html?embedded=1&v=V8-1-14-216_my_info_backup_restore_info_card_buttons_unified" title="개인정보처리방침" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+    <iframe id="privacy-policy-frame" class="privacy-policy-frame" src="about:blank" data-src="privacy.html?embedded=1&v=V8-1-14-64-IOS-PARISH-KEYBOARD" title="개인정보처리방침" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
     <button id="privacy-policy-ok-btn" type="button" class="guide-primary guide-ok">확인</button>
   </div>
 </div>
@@ -1262,21 +978,21 @@ window.APP_CONFIG = {
   </div>
 </div>
 
-<script src="js/myfaith.js?v=V8-1-14-216_my_info_backup_restore_info_card_buttons_unified"></script>
-<script src="app.js?v=V8-1-14-216_my_info_backup_restore_info_card_buttons_unified"></script>
-<script src="js/cover-common.js?v=V8-1-14-216_my_info_backup_restore_info_card_buttons_unified"></script>
+<script src="js/myfaith.js?v=V8-1-14-64-IOS-PARISH-KEYBOARD"></script>
+<script src="app.js?v=V8-1-14-64-IOS-PARISH-KEYBOARD"></script>
+<script src="js/cover-common.js?v=V8-1-14-64-IOS-PARISH-KEYBOARD"></script>
 <div id="oai-category-entry-veil" aria-hidden="true"></div>
 <div id="app"><div id="tabbar"><button id="tab-btn-nearby" class="tab-btn" data-tab="nearby"><span class="tab-icon">📍</span><span id="tab-nearby-lbl">내주변</span></button><button id="tab-btn-list" class="tab-btn" data-tab="list"><span class="tab-icon">📋</span><span id="tab-list-lbl">목록</span></button><button id="tab-btn-region" class="tab-btn" data-tab="region"><span class="tab-icon">🔍</span>지역검색
     </button><button id="tab-btn-route" class="tab-btn" data-tab="route"><span class="tab-icon">🧭</span>길찾기
-    </button></div><div id="map-wrap"><div id="map"></div><button id="loc-btn">📍<span style="font-size:12px">내위치</span></button><div id="legend"><div class="leg-row"><div class="leg-dot" style="background:var(--shrine)"></div><span>성지</span></div><div class="leg-row"><div class="leg-dot" style="background:var(--pilgrim)"></div><span>순례지</span></div><div class="leg-row"><div class="leg-dot" style="background:var(--martyr)"></div><span>순교사적지</span></div></div><div id="route-guide"></div><button id="map-category-close-btn" class="map-category-close" type="button" aria-label="카테고리 닫고 커버로 이동">×</button></div><div class="sheet" id="sheet-nearby"><div class="sheet-hd"><div class="sheet-title" id="nearby-sheet-title">내주변</div><button class="sheet-x" id="nearby-close-btn" aria-label="내주변 목록 닫기">×</button></div><div class="category-source-note" aria-label="정보 출처"><span class="source-shrine">성지 정보는 CBCK 홈페이지를 참고했습니다.</span><span class="source-parish">성당 정보는 각 교구 홈페이지를 참고했습니다.</span><span class="source-retreat">피정의집 정보는 CBCK 및 각 교구 홈페이지를 참고했습니다.</span></div><div class="sheet-body" id="nearby-body"><div class="empty-msg nearby-distance-loading"><span class="nearby-distance-spinner" aria-hidden="true"></span><span class="nearby-distance-title">📍 내 위치 기준 자동차 거리 계산 중</span><span class="nearby-distance-sub">위치 확인 후 가까운 장소를 준비합니다.</span></div></div></div><div class="sheet" id="sheet-list"><div class="sheet-hd"><div class="sheet-title" id="list-sheet-title">찾기 목록</div><button class="sheet-x" id="list-close-btn" aria-label="찾기 목록 닫기">×</button></div><div class="srch-bar"><div class="srch-inner"><span style="font-size:14px;opacity:.5;margin-right:8px;color:#fff">🔍</span><input type="text" id="list-srch-inp" placeholder="이름, 주소 검색" aria-label="이름, 주소 검색"
-          autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" inputmode="search" enterkeyhint="done"><button class="srch-x" id="list-srch-x" aria-label="검색어 지우기">×</button></div></div><div class="filter-bar" id="list-filter-bar"></div><div class="category-source-note" aria-label="정보 출처"><span class="source-shrine">성지 정보는 CBCK 홈페이지를 참고했습니다.</span><span class="source-parish">성당 정보는 각 교구 홈페이지를 참고했습니다.</span><span class="source-retreat">피정의집 정보는 CBCK 및 각 교구 홈페이지를 참고했습니다.</span></div><div class="sheet-body" id="list-body"></div></div><div class="sheet" id="sheet-region"><div class="sheet-hd"><div class="sheet-title" id="region-sheet-title">지역검색</div><button class="sheet-x" id="region-close-btn" aria-label="지역검색 닫기">×</button></div><div class="region-wrap"><div class="region-row"><div class="srch-inner" style="flex:1"><span style="font-size:14px;opacity:.4;margin-right:8px;color:#fff">🔍</span><input type="text" id="region-inp" aria-label="지역 검색"
+    </button></div><div id="map-wrap"><div id="map"></div><button id="loc-btn">📍<span style="font-size:12px">내위치</span></button><div id="legend"><div class="leg-row"><div class="leg-dot" style="background:var(--shrine)"></div><span>성지</span></div><div class="leg-row"><div class="leg-dot" style="background:var(--pilgrim)"></div><span>순례지</span></div><div class="leg-row"><div class="leg-dot" style="background:var(--martyr)"></div><span>순교사적지</span></div></div><div id="route-guide"></div><button id="map-category-close-btn" class="map-category-close" type="button" aria-label="카테고리 닫고 커버로 이동">×</button></div><div class="sheet" id="sheet-nearby"><div class="sheet-hd"><div class="sheet-title" id="nearby-sheet-title">내주변</div><button class="sheet-x" id="nearby-close-btn" aria-label="내주변 목록 닫기">×</button></div><div class="sheet-body" id="nearby-body"><div class="empty-msg">📍 위치를 확인하는 중...</div></div></div><div class="sheet" id="sheet-list"><div class="sheet-hd"><div class="sheet-title" id="list-sheet-title">찾기 목록</div><button class="sheet-x" id="list-close-btn" aria-label="찾기 목록 닫기">×</button></div><div class="srch-bar"><div class="srch-inner"><span style="font-size:14px;opacity:.5;margin-right:8px;color:#fff">🔍</span><input type="text" id="list-srch-inp" placeholder="이름, 주소 검색" aria-label="이름, 주소 검색"
+          autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" inputmode="search" enterkeyhint="done"><button class="srch-x" id="list-srch-x" aria-label="검색어 지우기">×</button></div></div><div class="filter-bar" id="list-filter-bar"></div><div class="sheet-body" id="list-body"></div></div><div class="sheet" id="sheet-region"><div class="sheet-hd"><div class="sheet-title" id="region-sheet-title">지역검색</div><button class="sheet-x" id="region-close-btn" aria-label="지역검색 닫기">×</button></div><div class="region-wrap"><div class="region-row"><div class="srch-inner" style="flex:1"><span style="font-size:14px;opacity:.4;margin-right:8px;color:#fff">🔍</span><input type="text" id="region-inp" aria-label="지역 검색"
             placeholder="지역명 또는 장소명 입력"
             style="flex:1;background:none;border:none;outline:none;font-size:13px;color:#fff;font-family:inherit"
-            autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" inputmode="search" enterkeyhint="done"></div><button id="region-search-btn" class="region-search-btn">검색</button></div></div><div class="category-source-note" aria-label="정보 출처"><span class="source-shrine">성지 정보는 CBCK 홈페이지를 참고했습니다.</span><span class="source-parish">성당 정보는 각 교구 홈페이지를 참고했습니다.</span><span class="source-retreat">피정의집 정보는 CBCK 및 각 교구 홈페이지를 참고했습니다.</span></div><div class="sheet-body" id="region-body"><div class="empty-msg">
+            autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" inputmode="search" enterkeyhint="done"></div><button id="region-search-btn" class="region-search-btn">검색</button></div></div><div class="sheet-body" id="region-body"><div class="empty-msg">
         📍 여행지나 숙박 지역을 검색하면<br>근처 성지/성당 목록이 나타납니다
       </div></div></div><div class="sheet" id="sheet-route"><button class="route-sheet-x" id="route-close-btn" type="button" aria-label="길찾기 닫기">×</button><div id="rs-top" style="padding:12px 48px 0 14px;flex-shrink:0;"><div class="rs-route-stack"><div id="rs-start-box" class="rs-start-box"><div class="rs-dot" style="background:#1565c0;"></div><span class="rs-lbl empty" id="rs-start-lbl">출발지를 선택하세요</span><button id="rs-myloc-btn" class="rs-myloc" style="flex-shrink:0;">📍 현위치</button><button class="rs-x" id="rs-start-x" style="display:none" aria-label="출발지 지우기">×</button></div><div class="rs-between-tools" id="rs-start-waypoint-tools"><button id="rs-swap-btn" class="rs-swap-btn" aria-label="출발지·도착지 바꾸기">⇅</button><button id="rs-add-waypoint-btn" class="rs-add-waypoint-btn" type="button">+ 경유지</button></div><div id="rs-waypoints-summary-box" class="rs-waypoints-summary-box" style="display:none"><div class="rs-dot rs-waypoints-summary-dot"></div><span class="rs-lbl filled" id="rs-waypoints-summary-lbl">경유지 없음</span></div><div id="rs-waypoint-box" class="rs-waypoint-box" style="display:none"><div class="rs-dot" style="background:#f39c12;"></div><span class="rs-lbl empty" id="rs-waypoint-lbl">경유지1을 선택하세요</span><button class="rs-x" id="rs-waypoint-x" style="display:inline-flex" aria-label="경유지1 지우기">×</button></div><div id="rs-waypoint-end-tools" class="rs-between-tools rs-waypoint-end-tools" style="display:none"><button id="rs-swap-waypoint-end-btn" class="rs-swap-btn rs-swap-waypoint-end-btn" type="button" aria-label="경유지1·다음 지점 바꾸기">⇅</button><button id="rs-add-waypoint2-btn" class="rs-add-waypoint-btn rs-add-waypoint2-btn" type="button">+ 경유지</button></div><div id="rs-waypoint2-box" class="rs-waypoint-box rs-waypoint2-box" style="display:none"><div class="rs-dot" style="background:#d97706;"></div><span class="rs-lbl empty" id="rs-waypoint2-lbl">경유지2를 선택하세요</span><button class="rs-x" id="rs-waypoint2-x" style="display:inline-flex" aria-label="경유지2 지우기">×</button></div><div id="rs-waypoint2-end-tools" class="rs-between-tools rs-waypoint2-end-tools" style="display:none"><button id="rs-swap-waypoint2-end-btn" class="rs-swap-btn rs-swap-waypoint2-end-btn" type="button" aria-label="경유지2·다음 지점 바꾸기">⇅</button><button id="rs-add-waypoint3-btn" class="rs-add-waypoint-btn rs-add-waypoint3-btn" type="button">+ 경유지</button></div><div id="rs-waypoint3-box" class="rs-waypoint-box rs-waypoint3-box" style="display:none"><div class="rs-dot" style="background:#b45309;"></div><span class="rs-lbl empty" id="rs-waypoint3-lbl">경유지3을 선택하세요</span><button class="rs-x" id="rs-waypoint3-x" style="display:inline-flex" aria-label="경유지3 지우기">×</button></div><div id="rs-waypoint3-end-tools" class="rs-between-tools rs-waypoint3-end-tools" style="display:none"><button id="rs-swap-waypoint3-end-btn" class="rs-swap-btn rs-swap-waypoint3-end-btn" type="button" aria-label="경유지3·도착지 바꾸기">⇅</button></div><div id="rs-end-box" class="rs-end-box"><div class="rs-dot" style="background:#e53935;"></div><span class="rs-lbl empty" id="rs-end-lbl">도착지를 선택하세요</span><button class="rs-x" id="rs-end-x" style="display:none" aria-label="도착지 지우기">×</button></div></div><button id="rs-search-btn">
         🔍 경로 검색
-      </button></div><div id="rs-bottom" style="padding:10px 14px 14px;"><div id="rs-result" style="display:none;"><div class="rs-result"><div class="rs-stats"><div class="rs-stat"><div class="rs-stat-lbl">🛣 도로 거리</div><div class="rs-stat-val"><span id="rs-km">—</span><span class="rs-stat-unit"> km</span></div></div><div class="rs-stat"><div class="rs-stat-lbl">🚗 소요시간</div><div class="rs-stat-val"><span id="rs-time">—</span></div></div></div><div class="rs-note" id="rs-note"></div><div class="route-btns"><button id="rs-kakao-btn" class="btn-kakao-route">🗺 카카오내비</button><button id="rs-reset-btn" class="btn-route-reset">↩ 다시선택</button></div></div></div><div class="rs-hint" id="rs-hint">출발·도착을 탭하거나<br>지도에서 마커를 직접 탭하세요</div></div></div><div id="info-card"><div class="ic-header"><div class="ic-name" id="ic-name"></div><span class="ic-type-badge" id="ic-type"></span><button id="ic-close-btn" class="ic-close-btn" aria-label="닫기">×</button></div><div class="ic-body"><div class="ic-meta"><span class="ic-sub" id="ic-sub"></span><div class="ic-dist-col" id="ic-dist-col"><div class="ic-dist-lbl">내 위치에서</div><div class="ic-dist-box" id="ic-dist"></div></div></div><div class="ic-addr-row"><div class="ic-addr-left"><div class="ic-addr-lbl"></div><div class="ic-addr-val" id="ic-addr"></div></div></div><div class="ic-btn-row"><a class="ic-tel-btn" id="ic-tel-link" href="#" style="display:none"><span class="ic-tel-icon">📞</span><span class="ic-tel" id="ic-tel"></span></a><button id="ic-route-btn" class="ic-route-btn">경로검색</button></div><div class="ic-links" id="ic-links-row" style="display:none;padding:7px 14px 0;"><a class="ic-link-btn ic-hp-btn" id="ic-hp" href="#" target="_blank" style="display:none">홈페이지</a><button class="ic-link-btn ic-guide-btn" id="ic-guide" style="display:none">성지 상세페이지</button></div><div class="ic-kakao-row" id="ic-kakao-row"><button class="ic-link-btn ic-goodnews-btn" id="ic-goodnews" style="display:none;background:linear-gradient(180deg,#fbfdff 0%,#fffaf0 100%)!important;color:#213245!important;border:2.5px solid #9db7cc!important;box-shadow:0 3px 9px rgba(17,35,60,.10), inset 0 1px 0 rgba(255,255,255,.86)!important;text-shadow:none!important;font-weight:950!important;">굿뉴스 성지안내</button><button class="btn-kakao-nav" id="ic-kakao-nav">카카오내비</button></div></div></div><div id="route-choice-modal" role="dialog" aria-modal="true" aria-label="경로검색 선택"><div id="route-choice-backdrop" class="route-choice-backdrop"></div><div class="route-choice-panel"><div class="route-choice-title" id="route-choice-name"></div><div class="route-choice-desc">이 장소를 길찾기에 어떻게 사용할까요?</div><div class="route-choice-actions"><button type="button" id="route-choice-start" class="route-choice-btn start">출발지로 설정</button><button type="button" id="route-choice-end" class="route-choice-btn end">도착지로 설정</button><button type="button" id="route-choice-cancel" class="route-choice-btn cancel">취소</button></div></div></div><div id="srch-modal" role="dialog" aria-modal="true" aria-label="장소 검색"><div class="sm-inner"><div class="sm-hd"><span class="sm-title" id="sm-title">성지 검색</span><button id="sm-close-btn" class="sm-x" aria-label="검색 닫기">×</button></div><div class="sm-filter" id="sm-filter-bar"></div><div class="sm-srch"><div class="sm-si"><span>🔍</span><input type="text" id="sm-inp" placeholder="이름 또는 장소 입력" aria-label="장소 이름 입력"
+      </button></div><div id="rs-bottom" style="padding:10px 14px 14px;"><div id="rs-result" style="display:none;"><div class="rs-result"><div class="rs-stats"><div class="rs-stat"><div class="rs-stat-lbl">🛣 도로 거리</div><div class="rs-stat-val"><span id="rs-km">—</span><span class="rs-stat-unit"> km</span></div></div><div class="rs-stat"><div class="rs-stat-lbl">🚗 소요시간</div><div class="rs-stat-val"><span id="rs-time">—</span></div></div></div><div class="rs-note" id="rs-note"></div><div class="route-btns"><button id="rs-kakao-btn" class="btn-kakao-route">🗺 카카오내비</button><button id="rs-reset-btn" class="btn-route-reset">↩ 다시선택</button></div></div></div><div class="rs-hint" id="rs-hint">출발·도착을 탭하거나<br>지도에서 마커를 직접 탭하세요</div></div></div><div id="info-card"><div class="ic-header"><div class="ic-name" id="ic-name"></div><span class="ic-type-badge" id="ic-type"></span><button id="ic-close-btn" class="ic-close-btn" aria-label="닫기">×</button></div><div class="ic-body"><div class="ic-meta"><span class="ic-sub" id="ic-sub"></span><div class="ic-dist-col" id="ic-dist-col"><div class="ic-dist-lbl">내 위치에서</div><div class="ic-dist-box" id="ic-dist"></div></div></div><div class="ic-addr-row"><div class="ic-addr-left"><div class="ic-addr-lbl"></div><div class="ic-addr-val" id="ic-addr"></div></div></div><div class="ic-btn-row"><a class="ic-tel-btn" id="ic-tel-link" href="#" style="display:none"><span class="ic-tel-icon">📞</span><span class="ic-tel" id="ic-tel"></span></a><button id="ic-route-btn" class="ic-route-btn">경로검색</button></div><div class="ic-links" id="ic-links-row" style="display:none;padding:7px 14px 0;"><a class="ic-link-btn ic-hp-btn" id="ic-hp" href="#" target="_blank" style="display:none">홈페이지</a><button class="ic-link-btn ic-guide-btn" id="ic-guide" style="display:none">성지 상세페이지</button></div><div style="padding:7px 14px 0;"><button class="btn-kakao-nav" id="ic-kakao-nav">카카오내비</button></div></div></div><div id="route-choice-modal" role="dialog" aria-modal="true" aria-label="경로검색 선택"><div id="route-choice-backdrop" class="route-choice-backdrop"></div><div class="route-choice-panel"><div class="route-choice-title" id="route-choice-name"></div><div class="route-choice-desc">이 장소를 길찾기에 어떻게 사용할까요?</div><div class="route-choice-actions"><button type="button" id="route-choice-start" class="route-choice-btn start">출발지로 설정</button><button type="button" id="route-choice-end" class="route-choice-btn end">도착지로 설정</button><button type="button" id="route-choice-cancel" class="route-choice-btn cancel">취소</button></div></div></div><div id="srch-modal" role="dialog" aria-modal="true" aria-label="장소 검색"><div class="sm-inner"><div class="sm-hd"><span class="sm-title" id="sm-title">성지 검색</span><button id="sm-close-btn" class="sm-x" aria-label="검색 닫기">×</button></div><div class="sm-filter" id="sm-filter-bar"></div><div class="sm-srch"><div class="sm-si"><span>🔍</span><input type="text" id="sm-inp" placeholder="이름 또는 장소 입력" aria-label="장소 이름 입력"
             autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" inputmode="search" enterkeyhint="done"></div><button type="button" id="sm-map-select-btn" class="sm-map-select-btn">지도에서 선택</button></div><div style="display:flex;border-bottom:1px solid #eee;flex-shrink:0;background:#f8f9fc;" id="sm-tab-bar"><button class="sm-tab active" id="sm-tab-cat">성지/성당/피정</button><button class="sm-tab" id="sm-tab-place">일반장소</button></div><div class="sm-body" id="sm-body"></div><div class="sm-body" id="sm-body-place" style="display:none;"></div></div></div></div>
 <div id="my-diocese-modal" class="my-diocese-modal module-view myfaith-view" role="dialog" aria-modal="true" aria-hidden="true">
   <div class="my-diocese-backdrop" data-my-diocese-close="true"></div>
@@ -1357,7 +1073,7 @@ window.APP_CONFIG = {
     </div>
   </div>
 </div>
-<script src="web.js?v=V8-1-14-216_my_info_backup_restore_info_card_buttons_unified"></script>
+<script src="web.js?v=V8-1-14-64-IOS-PARISH-KEYBOARD"></script>
 
 <div id="qna-view" role="dialog" aria-modal="true" aria-label="문의·건의" class="module-view">
   <div class="module-bar qna">
@@ -1370,18 +1086,18 @@ window.APP_CONFIG = {
     </div>
     <button id="qna-close-btn" class="module-close" aria-label="문의·건의 닫기">×</button>
   </div>
-  <iframe id="qna-frame" class="qna-frame" src="about:blank" data-src="qa-firebase.html?embedded=1&v=V8-1-14-216_my_info_backup_restore_info_card_buttons_unified" title="문의·건의" loading="eager" referrerpolicy="no-referrer-when-downgrade"></iframe>
+  <iframe id="qna-frame" class="qna-frame" src="about:blank" data-src="qa-firebase.html?embedded=1&v=V8-1-14-64-IOS-PARISH-KEYBOARD" title="문의·건의" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
 </div>
 
-<script src="js/touch-ux.js?v=V8-1-14-216_my_info_backup_restore_info_card_buttons_unified"></script>
-<script src="js/prayer-ui.js?v=V8-1-14-216_my_info_backup_restore_info_card_buttons_unified"></script>
-<script src="js/cover-refresh.js?v=V8-1-14-216_my_info_backup_restore_info_card_buttons_unified"></script>
-<script src="js/app-state-guards.js?v=V8-1-14-216_my_info_backup_restore_info_card_buttons_unified"></script>
+<script src="js/touch-ux.js?v=V8-1-14-64-IOS-PARISH-KEYBOARD"></script>
+<script src="js/prayer-ui.js?v=V8-1-14-64-IOS-PARISH-KEYBOARD"></script>
+<script src="js/cover-refresh.js?v=V8-1-14-64-IOS-PARISH-KEYBOARD"></script>
+<script src="js/app-state-guards.js?v=V8-1-14-64-IOS-PARISH-KEYBOARD"></script>
 
-<script src="js/route-web-guards.js?v=V8-1-14-216_my_info_backup_restore_info_card_buttons_unified"></script>
+<script src="js/route-web-guards.js?v=V8-1-14-64-IOS-PARISH-KEYBOARD"></script>
 
 
-<script src="js/back-controller.js?v=V8-1-14-216_my_info_backup_restore_info_card_buttons_unified"></script>
+<script src="js/back-controller.js?v=V8-1-14-64-IOS-PARISH-KEYBOARD"></script>
 <script>
 /* V8-1-12: 문의·건의에서 커버로 복귀한 직후, back-controller가 로드된 뒤 커버 뒤로가기 상태를 한 번 더 재등록한다. */
 (function(){
@@ -1409,8 +1125,7 @@ window.APP_CONFIG = {
   setTimeout(function(){ rearmQnaCoverReturn('700'); },700);
 })();
 </script>
-<script src="js/shrine-update-banner.js?v=V8-1-14-216_my_info_backup_restore_info_card_buttons_unified"></script>
-<script src="sw-update.js?v=V8-1-14-216_my_info_backup_restore_info_card_buttons_unified"></script>
+<script src="sw-update.js?v=V8-1-14-64-IOS-PARISH-KEYBOARD"></script>
 
 </body>
 </html>

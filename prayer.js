@@ -517,18 +517,8 @@ function prOpenOfficialPrayer(prayer){
 
 if(!window.__OAI_PRAYER_EXTERNAL_RETURN_GUIDE__){
   window.__OAI_PRAYER_EXTERNAL_RETURN_GUIDE__ = true;
-  function prScheduleExternalReturnGuide(delay){
-    window.setTimeout(function(){
-      try{
-        if(window.oaiReturnConductorBusy && window.oaiReturnConductorBusy(['prayer-return','external-return'])){ prScheduleExternalReturnGuide(420); return; }
-        if(window.oaiReturnConductorRequest && !window.oaiReturnConductorRequest('prayer-return', {ms:900})) return;
-        prMaybeShowExternalReturnGuide();
-        setTimeout(function(){ try{ if(window.oaiReturnConductorFinish) window.oaiReturnConductorFinish('prayer-return'); }catch(_e){} }, 520);
-      }catch(e){ console.warn('[가톨릭길동무]', e); }
-    }, delay || 80);
-  }
-  window.addEventListener('pageshow', function(){ prScheduleExternalReturnGuide(80); });
-  document.addEventListener('visibilitychange', function(){ if(!document.hidden) prScheduleExternalReturnGuide(120); });
+  window.addEventListener('pageshow', function(){ window.setTimeout(prMaybeShowExternalReturnGuide, 80); });
+  document.addEventListener('visibilitychange', function(){ if(!document.hidden) window.setTimeout(prMaybeShowExternalReturnGuide, 120); });
 }
 
 function prOpenDetail(prayer){
