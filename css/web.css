@@ -146,3 +146,9 @@ html.oai-font-global .web-card-name{font-size:calc(17px * var(--app-inner-font-s
 
 html.oai-font-global .web-card-desc{font-size:calc(15px * var(--app-inner-font-scale,1))!important}
 
+html:not(.ios-device).oai-screen-compact-short #web-view .web-cat-btn .cnt{
+  min-width:22px!important;height:22px!important;padding:0 6px!important;
+}
+html:not(.ios-device).oai-screen-compact-short #web-close-btn{
+  width:34px!important;height:34px!important;min-width:34px!important;flex-basis:34px!important;
+}

@@ -15,21 +15,15 @@
   margin-right: 0;
 }
 
-#prayer-tabs .pr-tab.on[data-cat="favorites"] { background: var(--v4-header-navy); }
-#prayer-tabs .pr-tab.on[data-cat="aim"]       { background: #1565c0; }
-#prayer-tabs .pr-tab.on[data-cat="basic"]     { background: #1e40af; }
-#prayer-tabs .pr-tab.on[data-cat="special"]   { background: #be185d; }
-#prayer-tabs .pr-tab.on[data-cat="etc"]       { background: #15803d; }
-#prayer-tabs .pr-tab.on[data-cat="bong1"]     { background: #475569; }
-#prayer-tabs .pr-tab.on[data-cat="bong2"]     { background: #7e22ce; }
-#prayer-tabs .pr-tab.on[data-cat="bong3"]     { background: #c2410c; }
-#prayer-tabs .pr-tab.on[data-cat="fasting"]   { background: #6b48ad; }
-#prayer-tabs .pr-tab.on[data-cat="liturgy"]   { background: #7b2d8b; }
-#prayer-tabs .pr-tab.on[data-cat="season"]    { background: #2e7d32; }
-#prayer-tabs .pr-tab.on[data-cat="mary"]      { background: #ad1457; }
-#prayer-tabs .pr-tab.on[data-cat="saints"]    { background: #c17900; }
-#prayer-tabs .pr-tab.on[data-cat="funeral"]   { background: #546e7a; }
-#prayer-tabs .pr-tab.on[data-cat="novena"]    { background: #1565c0; }
+#prayer-tabs .pr-tab.on,
+#prayer-tabs .pr-tab.active,
+#prayer-tabs .pr-tab.on[data-cat],
+#prayer-tabs .pr-tab.active[data-cat] {
+  background: var(--v4-header-navy) !important;
+  color: var(--v4-surface-white) !important;
+  border-color: transparent !important;
+  font-weight: 800 !important;
+}
 
 #prayer-view {
   display: none;
@@ -59,48 +53,8 @@
 #prayer-bar-ico { width: 44px; height: 44px; border-radius: 14px; background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.22); display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
 #prayer-bar-ttl { font-size: 20px; font-weight: 800; color: var(--v4-surface-white); letter-spacing: -.02em; }
 #prayer-bar-sub { font-size: 11px; color: rgba(255,255,255,.6); margin-top: 1px; }
-#prayer-tabs {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  overflow-x: auto;
-  scrollbar-width: none;
-  height: 55px;
-  min-height: 55px;
-  max-height: 55px;
-  padding: 0 10px;
-  box-sizing: border-box;
-  background: var(--v4-bg-ivory);
-  border-bottom: 1px solid #d8d0c8;
-  flex-shrink: 0;
-  overscroll-behavior-x: contain;
-  -webkit-overflow-scrolling: touch;
-  touch-action: auto;
-}
-#prayer-tabs::-webkit-scrollbar { display: none; }
-.pr-tab {
-  flex: 0 0 auto;
-  height: 40px;
-  min-height: 40px;
-  padding: 0 12px;
-  border-radius: 10px;
-  border: 1.5px solid transparent;
-  font-size: 15px;
-  line-height: 1;
-  box-sizing: border-box;
-  font-weight: 700;
-  font-family: inherit;
-  white-space: nowrap;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: #fffbf2;
-  border-bottom: 1px solid #ddd5c8;
-  flex-shrink: 0;
-  scroll-margin-inline: 18px;
-  transition: background .16s, color .16s, border-color .16s;
-}
+#prayer-tabs { overscroll-behavior-x: contain; }
+#prayer-tabs .pr-tab { flex: 0 0 auto; }
 #prayer-search-bar {
   display: flex;
   align-items: center;
@@ -258,4 +212,13 @@
 #goodnews-prayer-btn:active { opacity: .82; transform: scale(.97); }
 
 .qna-body { background: #f8fafc; display: flex; flex-direction: column; }
+html:not(.ios-device) .pr-list{padding-bottom:calc(18px + var(--oai-android-bottom-gap, 10px))!important;}
 
+html:not(.ios-device).oai-screen-compact-short #prayer-close,
+html:not(.ios-device).oai-screen-compact-short #prayer-bar .module-close{
+  width:34px!important;height:34px!important;min-width:34px!important;flex-basis:34px!important;
+}
+html:not(.ios-device).oai-screen-compact-short #prayer-quickbar .prayer-quick-btn,
+html:not(.ios-device).oai-screen-compact-short .prayer-quick-btn{
+  height:42px!important;min-height:42px!important;border-radius:14px!important;
+}

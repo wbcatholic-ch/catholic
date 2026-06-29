@@ -6,6 +6,24 @@
   var ua=(navigator.userAgent||'').toLowerCase();
   var isIOS=/iphone|ipad|ipod/.test(ua) || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1);
   if(isIOS){ document.documentElement.classList.add('ios-device'); }
+  function applyOaiScreenClass(){
+    try{
+      var root=document.documentElement;
+      var vv=window.visualViewport||null;
+      var w=Math.round((vv&&vv.width)||window.innerWidth||root.clientWidth||screen.width||0);
+      var h=Math.round((vv&&vv.height)||window.innerHeight||root.clientHeight||screen.height||0);
+      var ua=String(navigator.userAgent||'');
+      var foldUa=/SM-F\d{3}|Galaxy\s*Z?\s*Fold|Galaxy\s*Fold|Fold/i.test(ua);
+      var ratio=h/Math.max(w,1);
+      var foldCoverLike=(w<600)&&((foldUa&&w<=390&&ratio>=1.85)||(w<=370&&h>=800&&ratio>=2.18));
+      var cls=w>=600?'oai-screen-fold-wide':(foldCoverLike?'oai-screen-tall-phone':(w<=370?'oai-screen-compact-short':'oai-screen-tall-phone'));
+      root.classList.remove('oai-screen-compact-short','oai-screen-tall-phone','oai-screen-fold-wide');
+      root.classList.add(cls);
+    }catch(_e){}
+  }
+  applyOaiScreenClass();
+  try{ window.addEventListener('resize', applyOaiScreenClass, {passive:true}); }catch(_e){}
+  try{ if(window.visualViewport) window.visualViewport.addEventListener('resize', applyOaiScreenClass, {passive:true}); }catch(_e){}
 })();
 </script>
 <meta charset="UTF-8">
@@ -17,7 +35,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>교구지도</title>
-<link rel="stylesheet" href="css/diocese.css?v=V6-50">
+<link rel="stylesheet" href="css/diocese.css?v=V8-1-14-305">
 </head>
 <body>
 <header>
@@ -27,6 +45,7 @@
   <div class="tab on" data-tab="gwangu">관구별 보기</div>
   <div class="tab" data-tab="list">목록</div>
   <div class="tab" data-tab="search">지역 검색</div>
+  <div class="tab" data-tab="province-info">관구란?</div>
 </div>
 <div id="main">
   <div id="map-view" class="on">
@@ -134,6 +153,30 @@
   </div>
   <div id="list-view">
     <div id="list-content"></div>
+  </div>
+  <div id="province-info-view" aria-label="관구 설명">
+    <section class="province-info-card province-info-main">
+      <div class="province-info-kicker">관구란?</div>
+      <h2>공동 사목 활동과 주교들의 상호 관계를 위한 교회 구역</h2>
+      <p>지리적으로 가까운 교구들이 공동 사목 활동 증진과 교구장 주교들의 상호 관계 강화를 위하여 결합한 교회 구역(교회법 제431조 참조).</p>
+    </section>
+
+    <section class="province-info-card">
+      <h3>관구의 구성과 한국 천주교 관구</h3>
+      <div class="province-chip-wrap" aria-label="한국 천주교 관구 목록">
+        <span class="province-chip seoul">서울관구</span>
+        <span class="province-chip daegu">대구관구</span>
+        <span class="province-chip gwangju">광주관구</span>
+      </div>
+      <p>하나의 대교구와 하나 이상의 교구로 구성된다. 우리나라는 1962년 서울, 광주, 대구 대목구들이 대교구로 승격되어 서울, 광주, 대구 관구가 생겼다.</p>
+    </section>
+
+    <section class="province-info-card">
+      <h3>수도회에서 쓰는 관구</h3>
+      <p>또 관구는 한 수도회의 장상(관구장)이 통할하는 여러 수도원으로 구성된 일정한 관할 지역, 곧 수도회 관구를 말하기도 한다.</p>
+    </section>
+
+    <div class="province-info-source">출처 : [천주교용어자료집]</div>
   </div>
 </div>
 
@@ -1088,6 +1131,8 @@ document.querySelectorAll('.tab').forEach(function(t){
     document.getElementById('map-view').classList.toggle('on',tab==='gwangu');
     document.getElementById('search-view').classList.toggle('on',tab==='search');
     document.getElementById('list-view').classList.toggle('on',tab==='list');
+    var provinceInfoView=document.getElementById('province-info-view');
+    if(provinceInfoView) provinceInfoView.classList.toggle('on',tab==='province-info');
     if(tab==='search'){
       var si=document.getElementById('si');
       if(si){
@@ -1746,7 +1791,7 @@ window.addEventListener('pageshow',function(){
 });
 /* ── 스와이프 탭 전환: 목록에서 관구별 지도로 복귀 가능, 지도 화면 자체에는 스와이프 없음 ── */
 (function(){
-  var SWIPE_TABS=['gwangu','list','search'];
+  var SWIPE_TABS=['gwangu','list','search','province-info'];
   var sx=0,sy=0,sMoving=false,sLocked=false;
   var THRESHOLD=60;
   function addSwipe(el){
@@ -1777,6 +1822,7 @@ window.addEventListener('pageshow',function(){
   }
   addSwipe(document.getElementById('list-view'));
   addSwipe(document.getElementById('search-view'));
+  addSwipe(document.getElementById('province-info-view'));
 })();
 
 </script>
@@ -1800,6 +1846,7 @@ window.addEventListener('pageshow',function(){
       tab:activeTab(),
       listScroll:(document.getElementById('list-view')||{}).scrollTop||0,
       searchScroll:(document.getElementById('search-view')||{}).scrollTop||0,
+      provinceInfoScroll:(document.getElementById('province-info-view')||{}).scrollTop||0,
       searchValue:(document.getElementById('si')||{}).value||'',
       gw:(g&&g.dataset?g.dataset.gw:''),
       cardDiocese:cardOpen?cardName:'',
@@ -1825,6 +1872,13 @@ window.addEventListener('pageshow',function(){
         if(isNaN(saved)) saved=0;
         return Math.abs((lv.scrollTop||0)-saved) <= 24;
       }
+      if(tab === 'province-info'){
+        var pv=document.getElementById('province-info-view');
+        if(!pv) return false;
+        var savedP=Number(state.provinceInfoScroll||0);
+        if(isNaN(savedP)) savedP=0;
+        return Math.abs((pv.scrollTop||0)-savedP) <= 24;
+      }
       if(tab === 'search'){
         var sv=document.getElementById('search-view');
         if(!sv) return false;
@@ -1847,9 +1901,11 @@ window.addEventListener('pageshow',function(){
         var map=document.getElementById('map-view');
         var search=document.getElementById('search-view');
         var list=document.getElementById('list-view');
+        var provinceInfo=document.getElementById('province-info-view');
         if(map) map.classList.toggle('on',tab==='gwangu');
         if(search) search.classList.toggle('on',tab==='search');
         if(list) list.classList.toggle('on',tab==='list');
+        if(provinceInfo) provinceInfo.classList.toggle('on',tab==='province-info');
         var gw=document.getElementById('gw-bar');
         if(gw) gw.style.display=tab==='gwangu'?'flex':'none';
       }
@@ -1870,7 +1926,8 @@ window.addEventListener('pageshow',function(){
     // 탭 click 이벤트를 다시 실행하지 않는다. click 이벤트는 지도 초기화, 카드 닫기,
     // 목록 스크롤 재적용을 동반해 복귀 순간에 흔들림처럼 보일 수 있다.
     try{ window.__OAI_DIO_PARENT_RETURNING__ = true; window.__OAI_DIO_EXTERNAL_LEAVING__ = false; }catch(e){}
-    try{ document.documentElement.classList.remove('oai-dio-external-stabilize','oai-dio-external-return'); document.documentElement.classList.add('oai-dio-returning'); }catch(e){}
+    // V8-1-14-305: 관구·교구 iframe은 부모 외부복귀 보호창 위에 별도 복귀 레이어를 얹지 않는다.
+    try{ document.documentElement.classList.remove('oai-dio-external-stabilize','oai-dio-external-return','oai-dio-returning'); }catch(e){}
     var tab=state.tab||'gwangu';
     setReturnTabSilently(tab);
     if(state.searchValue && document.getElementById('si')){ document.getElementById('si').value=state.searchValue; if(typeof doSearch==='function') doSearch(); }
@@ -1902,6 +1959,7 @@ window.addEventListener('pageshow',function(){
         }
       }catch(e){}
       try{ var sv=document.getElementById('search-view'); if(sv && state.tab==='search') sv.scrollTop=Number(state.searchScroll||0); }catch(e){}
+      try{ var pv=document.getElementById('province-info-view'); if(pv && state.tab==='province-info') pv.scrollTop=Number(state.provinceInfoScroll||0); }catch(e){}
     }
     restoreScrollQuietly();
     requestAnimationFrame(function(){ restoreScrollQuietly(); restoreOpenCard(); });
@@ -1915,6 +1973,7 @@ window.addEventListener('pageshow',function(){
     var sres=document.getElementById('sres'); if(sres) sres.innerHTML='';
     var lv=document.getElementById('list-view'); if(lv) lv.scrollTop=0;
     var sv=document.getElementById('search-view'); if(sv) sv.scrollTop=0;
+    var pv=document.getElementById('province-info-view'); if(pv) pv.scrollTop=0;
     var btn=document.querySelector('.tab[data-tab="gwangu"]'); if(btn) btn.click();
   };
   function markDioceseStandaloneExternal(){
@@ -1977,8 +2036,9 @@ window.addEventListener('pageshow',function(){
     var state=window.getDioceseReturnState(source||'link', extra || {});
     try{ sessionStorage.setItem('oai_diocese_last_return_state', JSON.stringify(state)); localStorage.setItem('oai_diocese_last_return_state', JSON.stringify(state)); }catch(e){}
     if(window.parent && window.parent!==window){
-      // iframe 내부 클릭은 부모의 지연 이동에 맡기지 않고, 클릭 흐름 안에서 top을 즉시 이동한다.
-      // 이렇게 해야 웹페이지 카테고리처럼 Android/PWA에서도 외부 교구 홈페이지가 바로 열린다.
+      // V8-1-14-305:
+      // 첨부 기준 파일(26.06.20) 방식으로 복원한다.
+      // 관구·교구 외부 홈페이지는 부모 공통 opener/지연/감시 함수를 거치지 않고 top 이동만 사용한다.
       try{
         if(typeof window.parent.prepareExternalUrl === 'function') url = window.parent.prepareExternalUrl(url) || url;
       }catch(e){}
@@ -1988,17 +2048,22 @@ window.addEventListener('pageshow',function(){
         window.parent.localStorage.setItem('catholic_diocese_external_return_v1', payload);
         window.parent.__OAI_DIOCESE_EXTERNAL_LEAVING__ = true;
       }catch(e){}
-      // V6-112: 관구·교구 외부 홈페이지도 부모 앱의 공통 외부사이트 이동 함수만 사용한다.
+      try{
+        if(typeof window.parent.markExternalReturnStabilize === 'function') window.parent.markExternalReturnStabilize('diocese-external');
+      }catch(e){}
       document.documentElement.classList.remove('oai-dio-external-stabilize','oai-dio-external-return','oai-dio-returning');
       try{
-        if(typeof window.parent.oaiOpenExternalSite === 'function'){
-          window.parent.oaiOpenExternalSite(url, {kind:'diocese-external', source:'diocese-frame'});
-        }else{
-          try{ if(typeof window.parent.markExternalReturnStabilize === 'function') window.parent.markExternalReturnStabilize('diocese-external'); }catch(_e){}
-          window.top.location.assign(url);
-        }
-      }
-      catch(e){ try{ window.top.location.href = url; }catch(_e){ window.__OAI_DIO_EXTERNAL_LEAVING__ = false; } }
+        if(typeof window.parent.oaiShowExternalEntryGuard === 'function') window.parent.oaiShowExternalEntryGuard('diocese-external');
+      }catch(e){}
+      var navDelay = 550;
+      try{
+        var parentDelay = parseInt(window.parent.OAI_EXTERNAL_ENTRY_NAV_DELAY_MS || '0', 10) || 0;
+        if(parentDelay >= 300 && parentDelay <= 1200) navDelay = parentDelay;
+      }catch(e){}
+      setTimeout(function(){
+        try{ window.top.location.assign(url); }
+        catch(e){ try{ window.top.location.href = url; }catch(_e){ window.__OAI_DIO_EXTERNAL_LEAVING__ = false; } }
+      }, navDelay);
       setTimeout(function(){
         try{
           if(document.visibilityState !== 'hidden') window.__OAI_DIO_EXTERNAL_LEAVING__ = false;
@@ -2009,10 +2074,7 @@ window.addEventListener('pageshow',function(){
     else {
       try{ sessionStorage.setItem('oai_diocese_standalone_return',JSON.stringify(state)); }catch(e){}
       markDioceseStandaloneExternal();
-      try{
-        if(typeof window.oaiOpenExternalSite === 'function') window.oaiOpenExternalSite(url, {kind:'diocese-standalone-external', source:'diocese-standalone'});
-        else location.href=url;
-      }catch(_e){ try{ location.assign(url); }catch(__e){} }
+      try{ location.href=url; }catch(_e){ try{ location.assign(url); }catch(__e){} }
     }
   };
   document.addEventListener('click',function(e){
