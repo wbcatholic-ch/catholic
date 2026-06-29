@@ -1,39 +1,34 @@
-
-#cover #shrine-update-banner{
-  position:absolute;
-  left:14px;
-  right:14px;
-  top:50%;
-  transform:translateY(-50%);
-  z-index:33;
+/* V8-1-14-62: 성지순례 업데이트 안내 배너
+   공식 Google Play 배포 전 제거 방법:
+   1) index.html의 SHRINE_UPDATE_BANNER_START~END 블록 삭제
+   2) css/shrine-update-banner.css 삭제
+   3) js/shrine-update-banner.js 삭제 */
+#shrine-update-banner{
+  position:fixed;
+  inset:0;
+  z-index:10090;
   display:none;
+  align-items:center;
+  justify-content:center;
   box-sizing:border-box;
-  padding:0;
-  background:transparent;
+  padding:calc(env(safe-area-inset-top,0px) + 18px) 14px calc(env(safe-area-inset-bottom,0px) + 18px);
+  background:rgba(15,23,42,.18);
+  backdrop-filter:blur(5px);
+  -webkit-backdrop-filter:blur(5px);
   pointer-events:auto;
-  font-family:'Noto Sans KR','Apple SD Gothic Neo',sans-serif;
 }
-#cover #shrine-update-banner.show{display:block;}
-#cover.my-diocese-setup-active #shrine-update-banner,
-#cover.my-diocese-setup-active #shrine-update-banner.show{display:none!important;}
-#cover.shrine-update-cover-active .cover-header,
-#cover.shrine-update-cover-active .cover-grid,
-#cover.shrine-update-cover-active #cover-action-row,
-#cover.shrine-update-cover-active #cover-menu-btn,
-#cover.shrine-update-cover-active #cover-font-controls{
-  filter:blur(3.5px)!important;
-  opacity:.46!important;
-  transition:filter .18s ease, opacity .18s ease!important;
-}
-#cover #shrine-update-banner .shrine-update-card{
-  width:100%;
-  border-radius:22px;
+#shrine-update-banner.show{display:flex;}
+#shrine-update-banner .shrine-update-card{
+  pointer-events:auto;
+  width:min(520px,100%);
+  border-radius:18px;
   border:2px solid rgba(31,42,68,.24);
   background:#FFFDF7;
-  box-shadow:0 18px 34px rgba(15,23,42,.23),0 4px 12px rgba(0,0,0,.10),inset 0 1px 0 rgba(255,255,255,.95);
+  box-shadow:0 12px 34px rgba(15,23,42,.22),0 3px 10px rgba(0,0,0,.10);
   overflow:hidden;
+  font-family:'Noto Sans KR','Apple SD Gothic Neo',sans-serif;
 }
-#cover #shrine-update-banner .shrine-update-head{
+#shrine-update-banner .shrine-update-head{
   display:flex;
   align-items:center;
   gap:10px;
@@ -41,7 +36,7 @@
   background:linear-gradient(135deg,#FFF8E7,#F7FBFF);
   border-bottom:1px solid rgba(31,42,68,.10);
 }
-#cover #shrine-update-banner .shrine-update-icon{
+#shrine-update-banner .shrine-update-icon{
   width:38px;
   height:38px;
   flex:0 0 38px;
@@ -54,7 +49,7 @@
   font-size:20px;
   font-weight:900;
 }
-#cover #shrine-update-banner .shrine-update-title{
+#shrine-update-banner .shrine-update-title{
   min-width:0;
   color:#111827;
   font-size:17px;
@@ -62,7 +57,7 @@
   line-height:1.28;
   letter-spacing:-.04em;
 }
-#cover #shrine-update-banner .shrine-update-x{
+#shrine-update-banner .shrine-update-x{
   margin-left:auto;
   width:32px;
   height:32px;
@@ -74,7 +69,7 @@
   font-weight:900;
   line-height:1;
 }
-#cover #shrine-update-banner .shrine-update-body{
+#shrine-update-banner .shrine-update-body{
   padding:12px 15px 13px;
   color:#374151;
   font-size:14px;
@@ -82,22 +77,22 @@
   line-height:1.58;
   letter-spacing:-.035em;
 }
-#cover #shrine-update-banner .shrine-update-body b{color:#111827;font-weight:900;}
-#cover #shrine-update-banner .shrine-update-list{
+#shrine-update-banner .shrine-update-body b{color:#111827;font-weight:900;}
+#shrine-update-banner .shrine-update-list{
   margin:8px 0 0;
   padding:10px 12px;
   border-radius:14px;
   background:#F8FAFC;
   border:1.5px solid #E2E8F0;
 }
-#cover #shrine-update-banner .shrine-update-list div{margin:2px 0;}
-#cover #shrine-update-banner .shrine-update-actions{
+#shrine-update-banner .shrine-update-list div{margin:2px 0;}
+#shrine-update-banner .shrine-update-actions{
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:8px;
   padding:0 15px 14px;
 }
-#cover #shrine-update-banner .shrine-update-actions button{
+#shrine-update-banner .shrine-update-actions button{
   min-height:42px;
   border-radius:12px;
   font-size:14px;
@@ -105,22 +100,30 @@
   font-family:inherit;
   letter-spacing:-.04em;
 }
-#cover #shrine-update-banner .shrine-update-go{
+#shrine-update-banner .shrine-update-day{
+  background:#1F2A44;
+  color:#F6D58A;
+  border:1.5px solid #1F2A44;
+}
+#shrine-update-banner .shrine-update-go{
   grid-column:1 / -1;
   background:#1F2A44;
   color:#F6D58A;
   border:1.5px solid #1F2A44;
 }
-#cover #shrine-update-banner .shrine-update-later{
+#shrine-update-banner .shrine-update-never{
   background:#FFF8E7;
   color:#6B4E16;
   border:1.5px solid #D4AA6A;
 }
-#cover #shrine-update-banner .shrine-update-close{
+#shrine-update-banner .shrine-update-close{
   background:#F8FAFC;
   color:#334155;
   border:1.5px solid #CBD5E1;
 }
-html:not(.ios-device).oai-screen-compact-short #cover #shrine-update-banner{left:10px;right:10px;}
-html:not(.ios-device).oai-screen-compact-short #cover #shrine-update-banner .shrine-update-card{border-radius:20px;}
-html:not(.ios-device).oai-screen-compact-short #cover #shrine-update-banner .shrine-update-body{line-height:1.5;}
+@media(max-width:390px){
+  #shrine-update-banner{padding:calc(env(safe-area-inset-top,0px) + 14px) 10px calc(env(safe-area-inset-bottom,0px) + 14px);}
+  #shrine-update-banner .shrine-update-title{font-size:16px;}
+  #shrine-update-banner .shrine-update-body{font-size:13.5px;}
+  #shrine-update-banner .shrine-update-actions button{font-size:13.5px;}
+}

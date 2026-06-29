@@ -23,29 +23,6 @@
 })();
 </script>
 
-<script>
-(function(){
-  function applyOaiScreenClass(){
-    try{
-      var root=document.documentElement;
-      var vv=window.visualViewport||null;
-      var w=Math.round((vv&&vv.width)||window.innerWidth||root.clientWidth||screen.width||0);
-      var h=Math.round((vv&&vv.height)||window.innerHeight||root.clientHeight||screen.height||0);
-      var ua=String(navigator.userAgent||'');
-      var foldUa=/SM-F\d{3}|Galaxy\s*Z?\s*Fold|Galaxy\s*Fold|Fold/i.test(ua);
-      var ratio=h/Math.max(w,1);
-      var foldCoverLike=(w<600)&&((foldUa&&w<=390&&ratio>=1.85)||(w<=370&&h>=800&&ratio>=2.18));
-      var cls=w>=600?'oai-screen-fold-wide':(foldCoverLike?'oai-screen-tall-phone':(w<=370?'oai-screen-compact-short':'oai-screen-tall-phone'));
-      root.classList.remove('oai-screen-compact-short','oai-screen-tall-phone','oai-screen-fold-wide');
-      root.classList.add(cls);
-    }catch(_e){}
-  }
-  applyOaiScreenClass();
-  try{ window.addEventListener('resize', applyOaiScreenClass, {passive:true}); }catch(_e){}
-  try{ if(window.visualViewport) window.visualViewport.addEventListener('resize', applyOaiScreenClass, {passive:true}); }catch(_e){}
-})();
-</script>
-
 <style>
   /* ── 리셋 & 기본 ── */
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -69,12 +46,12 @@
     --bdr:#DDD5C8;
     --tab-h:55px;
     --tab-btn-h:40px;
-    --icon-size:42px;
+    --icon-size:35px;
     --icon-r:12px;
-    --icon-fs:0px;
-    --fs-header:20px;
+    --icon-fs:15px;
+    --fs-header:22px;
     --fs-tab:15px;
-    --fs-sub:11px;
+    --fs-sub:10px;
     --qa-top-gap: env(safe-area-inset-top, 0px);
   }
   html, body { height: 100%; overflow: hidden; }
@@ -99,7 +76,7 @@
     height: calc(var(--header-h,70px) + var(--qa-top-gap)); min-height: calc(var(--header-h,70px) + var(--qa-top-gap)); padding: var(--qa-top-gap) 16px 0;
     display: flex; align-items: center; gap: 10px; flex: 0 0 auto;
     position: relative; top: auto; z-index: 100;
-    border-radius: 0; border-bottom: 2px solid var(--gold); box-shadow: 0 4px 16px rgba(14,21,53,.22);
+    border-radius: 0; border-bottom: none; box-shadow: none;
   }
   #qna-cross-icon {
     width: var(--icon-size); height: var(--icon-size); min-width: var(--icon-size); flex: 0 0 var(--icon-size);
@@ -139,7 +116,7 @@
     border: none;
     color: #fff;
     font-family: 'Noto Sans KR', sans-serif;
-    font-size: 16px;
+    font-size: 13px;
     font-weight: 700;
     line-height: 1;
     cursor: pointer;
@@ -202,11 +179,11 @@
     flex: 1 0 auto; min-width: 62px; height: var(--tab-btn-h); min-height: var(--tab-btn-h);
     border: 1.5px solid var(--d); border-radius: 10px;
     padding: 0 8px; font-size: var(--fs-tab); background: var(--card-sub); color: var(--d);
-    cursor: pointer; font-weight: 700; font-family: inherit; transition: opacity .15s,transform .12s,box-shadow .15s;
+    cursor: pointer; font-weight: 600; font-family: inherit; transition: opacity .15s,transform .12s,box-shadow .15s;
     display: flex; align-items: center; justify-content: center; gap: 4px; line-height: 1; white-space: nowrap; letter-spacing: -.02em;
     box-shadow: none;
   }
-  .filter-btn.active { background: var(--d); color: #fff; border-color: transparent; font-weight: 800; box-shadow: 0 2px 8px rgba(31,42,68,.28); }
+  .filter-btn.active { background: var(--d); color: #fff; border-color: transparent; font-weight: 700; box-shadow: 0 2px 8px rgba(31,42,68,.28); }
   .filter-btn:active { transform: scale(.992); }
   .filter-btn.active,.filter-btn.active:active { transform: none!important; }
 
@@ -226,7 +203,7 @@
   .list-limit-note {
     flex: 0 0 auto;
     padding: 8px 14px 6px;
-    font-size: 16px;
+    font-size: 12px;
     line-height: 1.35;
     color: #64748B;
     background: var(--card);
@@ -244,7 +221,7 @@
     border-radius: 999px;
     background: #fffaf2;
     color: var(--d);
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 700;
     font-family: inherit;
     box-shadow: 0 2px 8px rgba(0,0,0,.06);
@@ -254,7 +231,7 @@
   .qa-more-status {
     padding: 10px 12px 2px;
     color: #94A3B8;
-    font-size: 16px;
+    font-size: 14px;
     line-height: 1.45;
   }
   .card {
@@ -330,7 +307,7 @@
     background: #FFF7E7;
     border: 1px solid #E7D5B3;
     color: #5B4630;
-    font-size: 16px;
+    font-size: 14px;
     line-height: 1.65;
     font-weight: 600;
   }
@@ -379,6 +356,9 @@
   @media (min-width: 720px) {
     #write-btn { right: calc((100vw - 680px)/2 + 18px); }
   }
+  @media (max-width: 380px) {
+    #header-texts .title { font-size: 18px; }
+  }
   @media (max-height: 720px) {
     .field-group { margin-bottom: 12px; }
     #write-view { padding-top: 12px; }
@@ -410,7 +390,7 @@
     min-height: 40px !important;
     padding: 0 16px !important;
     border-radius: 20px !important;
-    font-size: 16px !important;
+    font-size: 14px !important;
     font-weight: 800 !important;
     background: var(--blue) !important;
     color: #fff !important;
@@ -433,74 +413,24 @@
   }
   .cat-opt {
     padding: 6px 11px !important;
-    font-size: 16px !important;
+    font-size: 15px !important;
     letter-spacing: -.04em !important;
   }
   #f-title::placeholder,
   #f-content::placeholder {
-    font-size: 16px !important;
+    font-size: 14px !important;
     color: var(--gray-400) !important;
     opacity: 1 !important;
   }
   .notice-txt {
-    font-size: 16px !important;
+    font-size: 13px !important;
     line-height: 1.55 !important;
     color: var(--gray-400) !important;
   }
   .char-count {
-    font-size: 16px !important;
+    font-size: 13px !important;
   }
 
-
-
-
-  /* V8-1-14-305: compact 문의·건의는 글자 크기 유지, 공간만 축소 */
-  html.oai-screen-compact-short {
-    --tab-h: 50px;
-    --tab-btn-h: 36px;
-  }
-  html.oai-screen-compact-short #filter-bar {
-    padding-left: 7px !important;
-    padding-right: 7px !important;
-    gap: 4px !important;
-  }
-  html.oai-screen-compact-short #list-scroll {
-    padding: 3px 12px calc(84px + env(safe-area-inset-bottom, 0px)) !important;
-  }
-  html.oai-screen-compact-short .notice-box {
-    padding: 9px 12px 5px !important;
-  }
-  html.oai-screen-compact-short .card {
-    padding: 12px 14px !important;
-  }
-  html.oai-screen-compact-short #detail-view,
-  html.oai-screen-compact-short #write-view {
-    padding: 13px !important;
-  }
-  html.oai-screen-compact-short #write-btn {
-    height: 38px !important;
-    min-height: 38px !important;
-    padding: 0 14px !important;
-  }
-  html.oai-screen-compact-short .cat-row {
-    gap: 5px !important;
-  }
-  html.oai-screen-compact-short .cat-opt {
-    padding: 6px 10px !important;
-  }
-  html.oai-screen-compact-short input,
-  html.oai-screen-compact-short textarea {
-    padding: 10px 12px !important;
-  }
-  html.oai-screen-compact-short textarea {
-    min-height: 110px !important;
-  }
-  html.oai-screen-compact-short .submit-btn,
-  html.oai-screen-compact-short .cancel-btn {
-    min-height: 44px !important;
-    padding-top: 10px !important;
-    padding-bottom: 10px !important;
-  }
 
   /* V8-1-14-8: embedded iframe에서는 글쓰기 플로팅 버튼도 숨김 */
   html.qa-embedded #write-btn{ display:none !important; visibility:hidden !important; pointer-events:none !important; }
@@ -518,18 +448,6 @@
     opacity:1 !important;
     line-height:1.75 !important;
     font-weight:500 !important;
-  }
-
-
-
-  /* OAI-V72-QNA-TITLE-BORDER-FINAL: 제목 입력칸 테두리를 내용 입력칸과 같은 진한 색으로 통일 */
-  #f-title{
-    border:2px solid #C8B79D !important;
-    background:#fffdf7 !important;
-  }
-  #f-title:focus{
-    border-color:#B28B57 !important;
-    box-shadow:0 0 0 2px rgba(212,170,106,.16) !important;
   }
 
 </style>
@@ -1073,11 +991,11 @@ function oaiReturnToAppCover(reason){
   try{
     var url = new URL('index.html', location.href);
     url.searchParams.set('oai_cover_return', reason || 'qna-return-cover');
-    url.searchParams.set('v', 'V8-1-14-305');
+    url.searchParams.set('v', 'V8-1-14-64-IOS-PARISH-KEYBOARD');
     location.replace(url.href);
     return;
   }catch(e){
-    location.replace('index.html?oai_cover_return=' + encodeURIComponent(reason || 'qna-return-cover') + '&v=V8-1-14-305');
+    location.replace('index.html?oai_cover_return=' + encodeURIComponent(reason || 'qna-return-cover') + '&v=V8-1-14-64-IOS-PARISH-KEYBOARD');
   }
 }
 function handleQaBack(){
@@ -1122,10 +1040,10 @@ if (QA_PRIVATE_MODE) {
 }
 </script>
 
-<script id="oai-cache-lifecycle-V8-1-14-305">
+<script id="oai-cache-lifecycle-V6-146">
 (function(){
   'use strict';
-  var APP_VERSION = 'V8-1-14-305';
+  var APP_VERSION = 'V8-1-14-64-IOS-PARISH-KEYBOARD';
   if('serviceWorker' in navigator){
     try{ navigator.serviceWorker.register('./sw.js?v=' + encodeURIComponent(APP_VERSION)).then(function(reg){try{reg.update();}catch(e){}}).catch(function(){}); }catch(e){}
   }

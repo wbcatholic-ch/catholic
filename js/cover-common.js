@@ -3,7 +3,7 @@
 (function(){
   if(window.__APP_FONT_SCALE_GUARD__) return;
   window.__APP_FONT_SCALE_GUARD__=true;
-  var QA_URL="qa-firebase.html?embedded=1&v=V8-1-14-305";
+  var QA_URL="qa-firebase.html?v=V8-1-14-64-IOS-PARISH-KEYBOARD";
   var FONT_KEY='prayer_font_size';
   var BASE=16;
   var FONT_SIZES=[13,14,15,16,17,18,19,20,21,22,24,26,28,30];
@@ -63,14 +63,9 @@
   }
   function scheduleCoverToastOnReturnCheck(){
     try{
-      if(window.oaiReturnConductorBusy && window.oaiReturnConductorBusy(['cover-back','qna-return'])){
-        setTimeout(scheduleCoverToastOnReturnCheck, 520);
-        return;
-      }
-      try{ if(window.oaiReturnConductorRequest) window.oaiReturnConductorRequest('cover-back', {ms:780}); }catch(_e){}
       consumeCoverToastOnReturn();
       setTimeout(consumeCoverToastOnReturn, 120);
-      setTimeout(function(){ try{ consumeCoverToastOnReturn(); if(window.oaiReturnConductorFinish) window.oaiReturnConductorFinish('cover-back'); }catch(_e){} }, 420);
+      setTimeout(consumeCoverToastOnReturn, 420);
     }catch(e){ console.warn('[가톨릭길동무]', e); }
   }
   window.oaiPrepareCoverToastOnReturn = markCoverToastOnReturn;
@@ -148,32 +143,6 @@
     var frame=el('qna-frame');
     if(frame && !frame.getAttribute('data-src')) frame.setAttribute('data-src', QA_URL);
   }
-  function getQnaFrameSrc(frame){
-    return (frame && frame.getAttribute('data-src')) || QA_URL;
-  }
-  function isQnaFrameBlank(frame){
-    if(!frame) return true;
-    var src = frame.getAttribute('src') || '';
-    return !src || src === 'about:blank';
-  }
-  function preloadQnaFrame(reason){
-    try{
-      configureQna();
-      var frame=el('qna-frame');
-      if(!frame) return;
-      if(isQnaFrameBlank(frame)) frame.setAttribute('src', getQnaFrameSrc(frame));
-      frame.setAttribute('data-oai-preloaded', reason || 'preload');
-    }catch(e){ console.warn('[가톨릭길동무]', e); }
-  }
-  function scheduleQnaPreload(){
-    try{
-      if(window.__OAI_QNA_PRELOAD_SCHEDULED__) return;
-      window.__OAI_QNA_PRELOAD_SCHEDULED__ = true;
-      var run=function(){ preloadQnaFrame('idle'); };
-      if('requestIdleCallback' in window) window.requestIdleCallback(run,{timeout:1800});
-      else setTimeout(run,900);
-    }catch(e){ console.warn('[가톨릭길동무]', e); }
-  }
   function wireQnaButton(){var btn=el('qna-cover-btn');if(btn)btn.onclick=function(ev){if(ev)ev.preventDefault();window.openQnaView();};}
   function closeQnaFrameToCover(reason){
     try{
@@ -199,20 +168,21 @@
       if(!view || !frame){ location.href=QA_URL; return; }
       document.querySelectorAll('.module-view.open,#diocese-view.open,#missa-view.open,#prayer-view.open').forEach(function(v){ if(v!==view) v.classList.remove('open'); });
       var cover=el('cover');
+      if(cover){ cover.style.opacity='0'; cover.style.display='none'; }
       document.documentElement.classList.add('app-active');
       if(typeof window.oaiSetMainMapLayerHidden === 'function') window.oaiSetMainMapLayerHidden(true);
       if(typeof window._ensureAppBackTrap === 'function') window._ensureAppBackTrap('qna-frame-open');
+      var src=frame.getAttribute('data-src') || QA_URL;
+      if(frame.getAttribute('src') === 'about:blank' || !frame.getAttribute('src')) frame.setAttribute('src', src);
       view.classList.add('open');
       if(typeof window.oaiEnterView === 'function') window.oaiEnterView(view);
-      if(cover){ cover.style.opacity='0'; cover.style.display='none'; }
-      preloadQnaFrame('open');
     }catch(e){ console.warn('[가톨릭길동무]', e); }
   }
   window.openQnaView=function(){ goQnaWithLoading(); };
   window.goQaFirebase=function(){ goQnaWithLoading(); };
   window.closeQnaFrameToCover=function(reason){ closeQnaFrameToCover(reason); };
   window.qnaShowTab=function(){ configureQna(); };
-  function boot(){ensureCoverControls();setEmojiIcons();configureQna();wireQnaButton();applyScale();scheduleCoverToastOnReturnCheck();scheduleQnaPreload();}
+  function boot(){ensureCoverControls();setEmojiIcons();configureQna();wireQnaButton();applyScale();scheduleCoverToastOnReturnCheck();}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();window.addEventListener('load',function(){boot();setTimeout(boot,250);setTimeout(boot,900);},{once:true});window.addEventListener('pageshow',boot);
 })();
 

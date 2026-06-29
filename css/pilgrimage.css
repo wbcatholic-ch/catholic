@@ -124,10 +124,4 @@
 
 #trail-view .trail-body { flex: 1; min-height: 0; display: flex; flex-direction: column; width: 100%; }
 
-html:not(.ios-device) .trail-loc-btn{bottom:calc(10px + var(--oai-android-bottom-gap, 10px))!important;}
-html:not(.ios-device) .trail-sheet{padding-bottom:calc(18px + var(--oai-android-bottom-gap, 10px))!important;}
-
-html:not(.ios-device).oai-screen-compact-short #trail-close-btn,
-html:not(.ios-device).oai-screen-compact-short .trail-sh-close{
-  width:34px!important;height:34px!important;min-width:34px!important;flex-basis:34px!important;
-}
+#trail-view .trail-tab{height:40px!important;min-height:40px!important;padding:0 12px!important;border-radius:10px!important;font-size:15px!important;line-height:1!important;align-items:center!important;box-sizing:border-box!important;}

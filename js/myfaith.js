@@ -115,857 +115,6 @@
       else renderHome();
     }
     function safeText(x){ return String(x || '').replace(/[&<>"']/g, function(c){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c] || c); }); }
-    var DATA_BACKUP_TYPE = 'catholic-gildongmu-user-data-backup';
-    var DATA_BACKUP_BUILD = 'V8-1-14-305';
-    var DATA_BACKUP_LAST_TIME_KEY = 'oai_data_backup_last_exported_at_v1';
-    var myFaithInfoManagementOpen = false;
-    var myFaithInfoManagementLayer = null;
-    var myFaithInfoActionTimer = null;
-    var DATA_BACKUP_KEYS = [
-      {key:'oai_my_diocese_name', label:'나의 교구'},
-      {key:'oai_my_parish_data', label:'나의 본당'},
-      {key:'oai_shrine_visits_v1', label:'순례현황'},
-      {key:'pr_favorites', label:'기도문 즐겨찾기'},
-      {key:'web_favorites_v1', label:'가톨릭 정보 즐겨찾기'},
-      {key:'prayer_font_size', label:'글자 크기'},
-      {key:'oai_shrine_update_banner_v91_hidden_forever', label:'성지 업데이트 다시 보지 않기'},
-      {key:'oai_shrine_update_banner_v91_hide_until', label:'성지 업데이트 하루 동안 안 보기'},
-      {key:'oai_shrine_update_banner_v91_first_date', label:'성지 업데이트 첫 표시일'},
-      {key:'oai_shrine_auto_visit_prompt_v1', label:'자동 순례등록 안내 상태'}
-    ];
-    function dataBackupTodayName(){
-      var d=new Date();
-      function pad(n){ return String(n).padStart(2,'0'); }
-      return d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate())+'-'+pad(d.getHours())+pad(d.getMinutes());
-    }
-    function collectUserDataBackup(){
-      var items={};
-      DATA_BACKUP_KEYS.forEach(function(entry){
-        try{
-          var value=localStorage.getItem(entry.key);
-          if(value !== null) items[entry.key]=value;
-        }catch(_e){}
-      });
-      return {
-        type: DATA_BACKUP_TYPE,
-        app: '가톨릭길동무',
-        build: DATA_BACKUP_BUILD,
-        version: 1,
-        exportedAt: new Date().toISOString(),
-        items: items
-      };
-    }
-    function summarizeBackupPayload(payload){
-      var items = payload && payload.items && typeof payload.items === 'object' ? payload.items : {};
-      var summary=[];
-      try{
-        if(items.oai_my_diocese_name) summary.push('나의 교구');
-        if(items.oai_my_parish_data) summary.push('나의 본당');
-        var visits=items.oai_shrine_visits_v1 ? JSON.parse(items.oai_shrine_visits_v1) : null;
-        var shrineCount=0, visitCount=0;
-        if(visits && typeof visits === 'object'){
-          Object.keys(visits).forEach(function(k){
-            var rec=visits[k];
-            var arr=rec && Array.isArray(rec.visits) ? rec.visits : [];
-            if(arr.length){ shrineCount++; visitCount += arr.length; }
-          });
-        }
-        if(shrineCount) summary.push('순례현황 '+shrineCount+'곳/'+visitCount+'회');
-      }catch(_e){}
-      try{
-        var pr=items.pr_favorites ? JSON.parse(items.pr_favorites) : [];
-        if(Array.isArray(pr) && pr.length) summary.push('기도문 즐겨찾기 '+pr.length+'개');
-      }catch(_e){}
-      try{
-        var web=items.web_favorites_v1 ? JSON.parse(items.web_favorites_v1) : [];
-        if(Array.isArray(web) && web.length) summary.push('가톨릭 정보 즐겨찾기 '+web.length+'개');
-      }catch(_e){}
-      return summary.length ? summary.join('\n') : '저장된 사용자 정보가 거의 없습니다.';
-    }
-    function dataBackupFileName(){ return 'catholic-gildongmu-backup-'+dataBackupTodayName()+'.json'; }
-    function buildUserDataBackupFile(){
-      var payload=collectUserDataBackup();
-      var text=JSON.stringify(payload,null,2);
-      var name=dataBackupFileName();
-      var blob=new Blob([text], {type:'application/json;charset=utf-8'});
-      return {payload:payload, text:text, name:name, blob:blob};
-    }
-    function encodeTextBase64Url(text){
-      var bin='';
-      text=String(text || '');
-      try{
-        if(typeof TextEncoder !== 'undefined'){
-          var bytes=new TextEncoder().encode(text);
-          for(var i=0;i<bytes.length;i+=0x8000){
-            var chunk=bytes.subarray(i, i+0x8000);
-            bin += String.fromCharCode.apply(null, Array.prototype.slice.call(chunk));
-          }
-        }else{
-          bin=unescape(encodeURIComponent(text));
-        }
-      }catch(_e){
-        bin=unescape(encodeURIComponent(text));
-      }
-      return btoa(bin).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
-    }
-    function decodeTextBase64Url(code){
-      code=String(code || '').trim().replace(/-/g,'+').replace(/_/g,'/');
-      while(code.length % 4) code += '=';
-      var bin=atob(code);
-      try{
-        if(typeof TextDecoder !== 'undefined'){
-          var bytes=new Uint8Array(bin.length);
-          for(var i=0;i<bin.length;i++) bytes[i]=bin.charCodeAt(i);
-          return new TextDecoder('utf-8').decode(bytes);
-        }
-      }catch(_e){}
-      return decodeURIComponent(escape(bin));
-    }
-    function buildUserDataBackupCode(){
-      var payload=collectUserDataBackup();
-      var compact=JSON.stringify(payload);
-      var code='CGM-BACKUP-V1:'+encodeTextBase64Url(compact);
-      var text=code;
-      return {payload:payload, code:code, text:text};
-    }
-    function extractUserDataBackupCode(text){
-      text=String(text || '').trim();
-      var m=text.match(/CGM-BACKUP-V1:([A-Za-z0-9_-]+)/);
-      if(m && m[1]) return m[1];
-      var compact=text.replace(/\s+/g,'');
-      if(compact.indexOf('CGM-BACKUP-V1:') === 0) return compact.slice('CGM-BACKUP-V1:'.length);
-      if(/^[A-Za-z0-9_-]+$/.test(compact)) return compact;
-      return '';
-    }
-    function parseUserDataBackupCode(text){
-      var code=extractUserDataBackupCode(text);
-      if(!code) return null;
-      var json=decodeTextBase64Url(code);
-      return normalizeRestorePayload(JSON.parse(json));
-    }
-    function copyTextToClipboard(text){
-      text=String(text || '');
-      function fallback(){
-        return new Promise(function(resolve,reject){
-          try{
-            var ta=document.createElement('textarea');
-            ta.value=text;
-            ta.setAttribute('readonly','readonly');
-            ta.style.position='fixed';
-            ta.style.left='-9999px';
-            ta.style.top='0';
-            document.body.appendChild(ta);
-            ta.focus();
-            ta.select();
-            ta.setSelectionRange(0, ta.value.length);
-            var ok=false;
-            try{ ok=document.execCommand && document.execCommand('copy'); }catch(_e){ ok=false; }
-            setTimeout(function(){ try{ ta.remove(); }catch(_e){} }, 80);
-            if(ok) resolve();
-            else reject(new Error('copy-failed'));
-          }catch(e){ reject(e); }
-        });
-      }
-      try{
-        if(navigator && navigator.clipboard && navigator.clipboard.writeText){
-          return navigator.clipboard.writeText(text).catch(function(){ return fallback(); });
-        }
-      }catch(_e){}
-      return fallback();
-    }
-    function recordUserDataBackupTime(){
-      try{ localStorage.setItem(DATA_BACKUP_LAST_TIME_KEY, new Date().toISOString()); }catch(_e){}
-    }
-    function formatDataBackupTime(iso){
-      try{
-        if(!iso) return '';
-        var d=new Date(iso);
-        if(!isFinite(d.getTime())) return '';
-        function pad(n){ return String(n).padStart(2,'0'); }
-        return d.getFullYear()+'.'+pad(d.getMonth()+1)+'.'+pad(d.getDate())+' '+pad(d.getHours())+':'+pad(d.getMinutes());
-      }catch(_e){ return ''; }
-    }
-    function getLastDataBackupTimeText(){
-      try{ return formatDataBackupTime(localStorage.getItem(DATA_BACKUP_LAST_TIME_KEY)); }catch(_e){ return ''; }
-    }
-    function setMyInfoActionStatus(message, kind, busy){
-      try{
-        var el=document.getElementById('my-faith-info-action-status');
-        if(!el) return;
-        var text=String(message || '').trim();
-        if(!text){
-          el.hidden=true;
-          el.textContent='';
-          el.className='my-faith-info-action-status';
-          return;
-        }
-        if(myFaithInfoActionTimer){ try{ clearTimeout(myFaithInfoActionTimer); }catch(_e){} myFaithInfoActionTimer=null; }
-        el.hidden=false;
-        el.textContent=text;
-        el.className='my-faith-info-action-status '+(busy?'is-busy ':'')+(kind?('is-'+kind):'');
-      }catch(_e){}
-    }
-    function setMyInfoActionStatusLater(message, kind, busy, delay){
-      try{
-        if(myFaithInfoActionTimer){ try{ clearTimeout(myFaithInfoActionTimer); }catch(_e){} myFaithInfoActionTimer=null; }
-        myFaithInfoActionTimer=setTimeout(function(){
-          myFaithInfoActionTimer=null;
-          setMyInfoActionStatus(message, kind, busy);
-        }, Math.max(0, Number(delay)||0));
-      }catch(_e){}
-    }
-    function setMyInfoActionButtonsDisabled(disabled){
-      try{
-        var layer=document.getElementById('my-faith-info-management-layer');
-        if(!layer) return;
-        Array.prototype.forEach.call(layer.querySelectorAll('.my-faith-data-btn, .my-faith-code-btn'), function(btn){
-          try{ btn.disabled=!!disabled; }catch(_e){}
-          try{ btn.classList.toggle('is-disabled', !!disabled); }catch(_e){}
-          try{ btn.setAttribute('aria-disabled', disabled ? 'true' : 'false'); }catch(_e){}
-        });
-      }catch(_e){}
-    }
-    function refreshMyFaithDataPanelAfterBackup(){
-      try{
-        if(!myFaithInfoManagementOpen) return;
-        setTimeout(function(){
-          try{ updateMyInfoManagementLastBackupText(); }catch(_e){}
-        }, 120);
-      }catch(_e){}
-    }
-    function saveBlobAsDownload(fileInfo, silent){
-      var url=URL.createObjectURL(fileInfo.blob);
-      var a=document.createElement('a');
-      a.href=url;
-      a.download=fileInfo.name;
-      a.style.display='none';
-      document.body.appendChild(a);
-      a.click();
-      setTimeout(function(){ try{ URL.revokeObjectURL(url); a.remove(); }catch(_e){} }, 1200);
-      recordUserDataBackupTime();
-      refreshMyFaithDataPanelAfterBackup();
-      if(!silent){
-        try{ alert('백업이 완료되었습니다.\n\n'+summarizeBackupPayload(fileInfo.payload)); }catch(_e){}
-      }
-    }
-    function downloadUserDataBackup(){
-      try{
-        setMyInfoActionButtonsDisabled(true);
-        setMyInfoActionStatus('내 정보 백업 파일을 만드는 중입니다...', 'busy', true);
-        setTimeout(function(){
-          try{
-            var fileInfo=buildUserDataBackupFile();
-            saveBlobAsDownload(fileInfo, false);
-            setMyInfoActionStatus('백업이 완료되었습니다.', 'ok', false);
-          }catch(e){
-            console.warn('[가톨릭길동무]', e);
-            setMyInfoActionStatus('백업 파일을 만들지 못했습니다. 저장 권한을 확인해 주세요.', 'error', false);
-            try{ alert('백업 파일을 만들지 못했습니다. 브라우저 저장 권한을 확인해 주세요.'); }catch(_e){}
-          }finally{
-            setMyInfoActionButtonsDisabled(false);
-          }
-        }, 80);
-      }catch(e){
-        console.warn('[가톨릭길동무]', e);
-        setMyInfoActionButtonsDisabled(false);
-        setMyInfoActionStatus('백업 파일을 만들지 못했습니다. 저장 권한을 확인해 주세요.', 'error', false);
-        try{ alert('백업 파일을 만들지 못했습니다. 브라우저 저장 권한을 확인해 주세요.'); }catch(_e){}
-      }
-    }
-    function shareUserDataBackup(){
-      try{
-        setMyInfoActionButtonsDisabled(true);
-        setMyInfoActionStatus('백업 파일 공유창을 여는 중입니다...', 'busy', true);
-        setTimeout(function(){
-          try{
-            var fileInfo=buildUserDataBackupFile();
-            var file=null;
-            try{ file=new File([fileInfo.blob], fileInfo.name, {type:'application/json'}); }catch(_e){ file=null; }
-            var canShareFile=!!(navigator && navigator.share && file && (!navigator.canShare || navigator.canShare({files:[file]})));
-            if(canShareFile){
-              navigator.share({
-                title:'가톨릭길동무 백업 파일',
-                text:'기기 변경 시 복원할 가톨릭길동무 백업 파일입니다.',
-                files:[file]
-              }).then(function(){
-                recordUserDataBackupTime();
-                refreshMyFaithDataPanelAfterBackup();
-                setMyInfoActionStatus('공유창을 열었습니다. 카카오톡 나에게 보내기 등에 보관해 주세요.', 'ok', false);
-                setMyInfoActionButtonsDisabled(false);
-              }).catch(function(err){
-                setMyInfoActionButtonsDisabled(false);
-                if(err && (err.name === 'AbortError' || err.name === 'NotAllowedError')){
-                  setMyInfoActionStatus('공유를 취소했습니다.', 'warn', false);
-                  return;
-                }
-                console.warn('[가톨릭길동무]', err);
-                setMyInfoActionStatus('공유창을 열지 못해 백업 파일을 저장했습니다. 저장된 파일을 카카오톡 등에 보관해 주세요.', 'warn', false);
-                try{ alert('이 기기에서는 파일 공유가 원활하지 않아 백업 파일을 저장합니다. 저장된 파일을 카카오톡 나에게 보내기 등에 보관해 주세요.'); }catch(_e){}
-                saveBlobAsDownload(fileInfo, true);
-              });
-              return;
-            }
-            setMyInfoActionStatus('이 기기에서는 공유창을 열 수 없어 백업 파일을 저장했습니다. 저장된 파일을 카카오톡 등에 보관해 주세요.', 'warn', false);
-            try{ alert('이 기기에서는 백업 파일 공유하기를 사용할 수 없어 백업 파일을 저장합니다. 저장된 파일을 카카오톡 나에게 보내기, Google Drive, 이메일 등에 보관해 주세요.'); }catch(_e){}
-            saveBlobAsDownload(fileInfo, true);
-            setMyInfoActionButtonsDisabled(false);
-          }catch(e){
-            console.warn('[가톨릭길동무]', e);
-            setMyInfoActionButtonsDisabled(false);
-            setMyInfoActionStatus('백업 파일 공유하기를 실행하지 못했습니다. 내 정보 백업으로 파일을 저장해 주세요.', 'error', false);
-            try{ alert('백업 파일 공유하기를 실행하지 못했습니다. 내 정보 백업으로 파일을 저장한 뒤 카카오톡 등에 보관해 주세요.'); }catch(_e){}
-          }
-        }, 80);
-      }catch(e){
-        console.warn('[가톨릭길동무]', e);
-        setMyInfoActionButtonsDisabled(false);
-        setMyInfoActionStatus('백업 파일 공유하기를 실행하지 못했습니다.', 'error', false);
-      }
-    }
-    function showBackupCodeManualBox(text){
-      try{
-        var box=document.getElementById('my-faith-info-code-copy-box');
-        var ta=document.getElementById('my-faith-info-code-copy-text');
-        if(!box || !ta) return;
-        box.hidden=false;
-        ta.value=String(text || '');
-        setTimeout(function(){ try{ ta.focus(); ta.select(); ta.setSelectionRange(0, ta.value.length); }catch(_e){} }, 60);
-      }catch(_e){}
-    }
-    function hideBackupCodeBoxes(which){
-      try{
-        if(!which || which === 'copy'){
-          var copyBox=document.getElementById('my-faith-info-code-copy-box');
-          if(copyBox) copyBox.hidden=true;
-        }
-        if(!which || which === 'restore'){
-          var restoreBox=document.getElementById('my-faith-info-code-restore-box');
-          if(restoreBox){
-            restoreBox.hidden=true;
-            var group=restoreBox.closest ? restoreBox.closest('.my-faith-data-action-group') : null;
-            var list=group ? group.querySelector('.my-faith-data-actions') : null;
-            if(list) list.hidden=false;
-            if(group) group.classList.remove('is-code-restore-open');
-          }
-        }
-      }catch(_e){}
-    }
-    function copyUserDataBackupCode(){
-      try{
-        setMyInfoActionButtonsDisabled(true);
-        hideBackupCodeBoxes();
-        setMyInfoActionStatus('백업 코드를 만드는 중입니다...', 'busy', true);
-        setTimeout(function(){
-          var codeInfo=null;
-          try{
-            codeInfo=buildUserDataBackupCode();
-            copyTextToClipboard(codeInfo.text).then(function(){
-              recordUserDataBackupTime();
-              refreshMyFaithDataPanelAfterBackup();
-              setMyInfoActionStatus('백업 코드를 복사했습니다. 카카오톡 나에게 보내기에 붙여넣어 보관하세요.', 'ok', false);
-              try{ alert('백업 코드가 복사되었습니다.\n\n카카오톡 나에게 보내기 방에 붙여넣어 보관하세요.\n\n'+summarizeBackupPayload(codeInfo.payload)); }catch(_e){}
-              setMyInfoActionButtonsDisabled(false);
-            }).catch(function(err){
-              console.warn('[가톨릭길동무]', err);
-              showBackupCodeManualBox(codeInfo ? codeInfo.text : '');
-              setMyInfoActionStatus('자동 복사가 안 되었습니다. 아래 백업 코드를 길게 눌러 복사해 주세요.', 'warn', false);
-              setMyInfoActionButtonsDisabled(false);
-            });
-          }catch(e){
-            console.warn('[가톨릭길동무]', e);
-            setMyInfoActionStatus('백업 코드를 만들지 못했습니다.', 'error', false);
-            try{ alert('백업 코드를 만들지 못했습니다.'); }catch(_e){}
-            setMyInfoActionButtonsDisabled(false);
-          }
-        }, 80);
-      }catch(e){
-        console.warn('[가톨릭길동무]', e);
-        setMyInfoActionButtonsDisabled(false);
-        setMyInfoActionStatus('백업 코드를 만들지 못했습니다.', 'error', false);
-      }
-    }
-    function scrollUserDataRestoreBoxUp(){
-      try{
-        var box=document.getElementById('my-faith-info-code-restore-box');
-        var content=box && box.closest ? box.closest('.my-faith-info-content') : null;
-        if(!box || !content) return;
-        var top=Math.max(0, box.offsetTop - 6);
-        content.scrollTop=top;
-      }catch(_e){}
-    }
-    function openUserDataCodeRestoreBox(){
-      try{
-        hideBackupCodeBoxes('copy');
-        var box=document.getElementById('my-faith-info-code-restore-box');
-        var ta=document.getElementById('my-faith-info-code-restore-text');
-        var group=box && box.closest ? box.closest('.my-faith-data-action-group') : null;
-        var list=group ? group.querySelector('.my-faith-data-actions') : null;
-        if(!box || !ta){
-          setMyInfoActionStatus('백업 코드 입력창을 열지 못했습니다.', 'error', false);
-          return;
-        }
-        /* V8-1-14-305:
-           복원 입력 영역을 위쪽에 보여 주되, 아래의 백업 코드 복사/복원 버튼 묶음은
-           함께 숨겨 중복 화면처럼 보이지 않게 한다. */
-        try{ if(group && list && box.previousElementSibling !== list) group.insertBefore(box, list); }catch(_e){}
-        try{ if(group) group.classList.add('is-code-restore-open'); }catch(_e){}
-        try{ var dialog=box.closest ? box.closest('.my-faith-info-dialog') : null; if(dialog) dialog.classList.add('is-code-restore-active'); }catch(_e){}
-        try{ if(list) list.hidden=true; }catch(_e){}
-        box.hidden=false;
-        try{
-          ta.readOnly=false;
-          ta.removeAttribute('readonly');
-          ta.setAttribute('inputmode','text');
-          ta.blur && ta.blur();
-        }catch(_e){}
-        setMyInfoActionStatus('입력칸을 길게 눌러 백업 코드를 붙여넣은 뒤 복원 실행을 누르세요.', 'ok', false);
-        setTimeout(scrollUserDataRestoreBoxUp, 40);
-        setTimeout(scrollUserDataRestoreBoxUp, 180);
-      }catch(e){
-        console.warn('[가톨릭길동무]', e);
-        setMyInfoActionStatus('백업 코드 입력창을 열지 못했습니다.', 'error', false);
-      }
-    }
-    function cancelUserDataCodeRestore(){
-      try{
-        setMyInfoActionButtonsDisabled(false);
-        var ta=document.getElementById('my-faith-info-code-restore-text');
-        try{ var dialog=ta && ta.closest ? ta.closest('.my-faith-info-dialog') : null; if(dialog) dialog.classList.remove('is-code-restore-active'); }catch(_e){}
-        if(ta) ta.value='';
-        hideBackupCodeBoxes('restore');
-        setMyInfoActionStatus('백업 코드 복원창을 닫았습니다.', 'ok', false);
-      }catch(e){ console.warn('[가톨릭길동무]', e); }
-    }
-    function restoreUserDataBackupFromCodeText(text){
-      try{
-        text=String(text || '').trim();
-        if(!text){
-          setMyInfoActionStatus('붙여넣은 백업 코드가 없습니다.', 'warn', false);
-          return;
-        }
-        setMyInfoActionButtonsDisabled(true);
-        setMyInfoActionStatus('백업 코드를 확인하는 중입니다...', 'busy', true);
-        setTimeout(function(){
-          try{
-            var payload=parseUserDataBackupCode(text);
-            if(!payload){
-              setMyInfoActionButtonsDisabled(false);
-              setMyInfoActionStatus('가톨릭길동무 백업 코드가 아닙니다.', 'error', false);
-              try{ alert('가톨릭길동무 백업 코드가 아닙니다.'); }catch(_e){}
-              return;
-            }
-            var msg='복원하면 현재 저장된 즐겨찾기, 순례현황, 나의 설정이 백업 코드 내용으로 바뀝니다.\n\n'+summarizeBackupPayload(payload)+'\n\n계속할까요?';
-            if(!window.confirm(msg)){
-              setMyInfoActionButtonsDisabled(false);
-              setMyInfoActionStatus('복원을 취소했습니다.', 'warn', false);
-              return;
-            }
-            setMyInfoActionStatus('내 정보를 복원하는 중입니다...', 'busy', true);
-            setTimeout(function(){
-              try{
-                var restored=applyUserDataBackup(payload);
-                setMyInfoActionStatus('복원이 완료되었습니다. 화면을 새로고침합니다...', 'ok', true);
-                try{ alert('복원 완료: '+(restored.length?restored.join(', '):'복원할 항목 없음')+'\n\n화면을 새로고침합니다.'); }catch(_e){}
-                setTimeout(function(){ try{ location.reload(); }catch(_e){} }, 300);
-              }catch(e){
-                console.warn('[가톨릭길동무]', e);
-                setMyInfoActionButtonsDisabled(false);
-                setMyInfoActionStatus('복원 중 오류가 발생했습니다.', 'error', false);
-                try{ alert('복원 중 오류가 발생했습니다.'); }catch(_e){}
-              }
-            }, 120);
-          }catch(e){
-            console.warn('[가톨릭길동무]', e);
-            setMyInfoActionButtonsDisabled(false);
-            setMyInfoActionStatus('백업 코드를 읽지 못했습니다. 복사한 내용을 확인해 주세요.', 'error', false);
-            try{ alert('백업 코드를 읽지 못했습니다. 카카오톡에 저장한 코드를 다시 복사해 주세요.'); }catch(_e){}
-          }
-        }, 90);
-      }catch(e){
-        console.warn('[가톨릭길동무]', e);
-        setMyInfoActionButtonsDisabled(false);
-        setMyInfoActionStatus('백업 코드를 읽지 못했습니다.', 'error', false);
-      }
-    }
-    function executeUserDataCodeRestore(e){
-      try{
-        if(e){
-          if(e.preventDefault) e.preventDefault();
-          if(e.stopPropagation) e.stopPropagation();
-        }
-        var ta=document.getElementById('my-faith-info-code-restore-text');
-        var text=ta ? ta.value : '';
-        try{ if(ta && ta.blur) ta.blur(); }catch(_e){}
-        try{ document.activeElement && document.activeElement.blur && document.activeElement.blur(); }catch(_e){}
-        restoreUserDataBackupFromCodeText(text);
-      }catch(e){
-        console.warn('[가톨릭길동무]', e);
-        setMyInfoActionStatus('백업 코드 복원을 실행하지 못했습니다.', 'error', false);
-      }
-    }
-
-    function normalizeRestorePayload(payload){
-      if(!payload || typeof payload !== 'object') return null;
-      if(payload.type !== DATA_BACKUP_TYPE) return null;
-      if(!payload.items || typeof payload.items !== 'object') return null;
-      return payload;
-    }
-    function applyUserDataBackup(payload){
-      var restored=[];
-      var items=payload.items || {};
-      DATA_BACKUP_KEYS.forEach(function(entry){
-        if(!Object.prototype.hasOwnProperty.call(items, entry.key)) return;
-        var value=items[entry.key];
-        try{
-          if(value === null || typeof value === 'undefined') localStorage.removeItem(entry.key);
-          else localStorage.setItem(entry.key, String(value));
-          restored.push(entry.label);
-        }catch(e){ console.warn('[가톨릭길동무]', e); }
-      });
-      return restored;
-    }
-    function restoreUserDataBackupFromFile(file){
-      if(!file){ setMyInfoActionStatus('백업 파일을 선택하지 않아 복원하지 않았습니다.', 'warn', false); return; }
-      if(typeof FileReader === 'undefined'){
-        setMyInfoActionStatus('이 기기에서는 파일 복원을 사용할 수 없습니다.', 'error', false);
-        try{ alert('이 기기에서는 파일 복원을 사용할 수 없습니다.'); }catch(_e){}
-        return;
-      }
-      setMyInfoActionButtonsDisabled(true);
-      setMyInfoActionStatus('백업 파일을 읽는 중입니다...', 'busy', true);
-      var reader=new FileReader();
-      reader.onload=function(){
-        try{
-          setMyInfoActionStatus('백업 파일을 확인하는 중입니다...', 'busy', true);
-          var payload=normalizeRestorePayload(JSON.parse(String(reader.result||'')));
-          if(!payload){
-            setMyInfoActionButtonsDisabled(false);
-            setMyInfoActionStatus('가톨릭길동무 백업 파일이 아닙니다.', 'error', false);
-            try{ alert('가톨릭길동무 백업 파일이 아닙니다.'); }catch(_e){}
-            return;
-          }
-          var msg='복원하면 현재 저장된 즐겨찾기, 순례현황, 나의 설정이 백업 파일 내용으로 바뀝니다.\n\n'+summarizeBackupPayload(payload)+'\n\n계속할까요?';
-          if(!window.confirm(msg)){
-            setMyInfoActionButtonsDisabled(false);
-            setMyInfoActionStatus('복원을 취소했습니다.', 'warn', false);
-            return;
-          }
-          setMyInfoActionStatus('내 정보를 복원하는 중입니다...', 'busy', true);
-          setTimeout(function(){
-            try{
-              var restored=applyUserDataBackup(payload);
-              setMyInfoActionStatus('백업 파일 복원이 완료되었습니다. 화면을 새로고침합니다...', 'ok', true);
-              try{ alert('백업 파일 복원이 완료되었습니다.\n\n화면을 새로고침합니다.'); }catch(_e){}
-              setTimeout(function(){ try{ location.reload(); }catch(_e){} }, 300);
-            }catch(e){
-              console.warn('[가톨릭길동무]', e);
-              setMyInfoActionButtonsDisabled(false);
-              setMyInfoActionStatus('복원 중 오류가 발생했습니다.', 'error', false);
-              try{ alert('복원 중 오류가 발생했습니다.'); }catch(_e){}
-            }
-          }, 120);
-        }catch(e){
-          console.warn('[가톨릭길동무]', e);
-          setMyInfoActionButtonsDisabled(false);
-          setMyInfoActionStatus('백업 파일을 읽지 못했습니다. 파일 형식을 확인해 주세요.', 'error', false);
-          try{ alert('백업 파일을 읽지 못했습니다. 파일이 손상되었거나 형식이 다릅니다.'); }catch(_e){}
-        }
-      };
-      reader.onerror=function(){
-        setMyInfoActionButtonsDisabled(false);
-        setMyInfoActionStatus('백업 파일을 읽지 못했습니다.', 'error', false);
-        try{ alert('백업 파일을 읽지 못했습니다.'); }catch(_e){}
-      };
-      reader.readAsText(file, 'utf-8');
-    }
-    function openUserDataRestorePicker(){
-      try{
-        /* V8-1-14-305:
-           Android/WebView와 일부 모바일 브라우저는 파일 선택창(input.click)을
-           사용자 터치 흐름 안에서 바로 실행해야 한다. setTimeout 뒤에 실행하면
-           사용자 선택 동작으로 인정되지 않아 파일 선택이 실패하거나 취소처럼 보일 수 있다. */
-        setMyInfoActionButtonsDisabled(false);
-        hideBackupCodeBoxes();
-        setMyInfoActionStatus('백업 파일 선택창을 엽니다. 파일을 선택하면 복원이 시작됩니다.', 'ok', false);
-        var input=document.createElement('input');
-        input.type='file';
-        input.accept='application/json,.json';
-        input.style.position='fixed';
-        input.style.left='-9999px';
-        input.style.top='0';
-        input.style.width='1px';
-        input.style.height='1px';
-        input.style.opacity='0';
-        input.setAttribute('aria-hidden','true');
-        var cleaned=false;
-        function cleanupInput(){
-          if(cleaned) return;
-          cleaned=true;
-          setTimeout(function(){ try{ input.remove(); }catch(_e){} }, 700);
-        }
-        input.addEventListener('change', function(){
-          var file=input.files && input.files[0];
-          if(!file){
-            setMyInfoActionStatus('백업 파일을 선택하지 않아 복원하지 않았습니다.', 'warn', false);
-            cleanupInput();
-            return;
-          }
-          restoreUserDataBackupFromFile(file);
-          cleanupInput();
-        });
-        try{
-          input.addEventListener('cancel', function(){
-            setMyInfoActionStatus('백업 파일을 선택하지 않아 복원하지 않았습니다.', 'warn', false);
-            cleanupInput();
-          });
-        }catch(_e){}
-        document.body.appendChild(input);
-        try{ input.click(); }
-        catch(_e){
-          cleanupInput();
-          setMyInfoActionStatus('백업 파일 선택창을 열지 못했습니다. 백업 코드 복원을 사용해 주세요.', 'error', false);
-        }
-      }catch(e){
-        console.warn('[가톨릭길동무]', e);
-        setMyInfoActionButtonsDisabled(false);
-        setMyInfoActionStatus('백업 파일 선택창을 열지 못했습니다. 백업 코드 복원을 사용해 주세요.', 'error', false);
-        try{ alert('백업 파일 선택창을 열지 못했습니다. 백업 코드 복원을 사용해 주세요.'); }catch(_e){}
-      }
-    }
-    function updateMyInfoManagementLastBackupText(){
-      try{
-        var el=document.getElementById('my-faith-info-last-backup');
-        if(!el) return;
-        var lastText=getLastDataBackupTimeText();
-        if(lastText){
-          el.hidden=false;
-          el.textContent='마지막 백업: '+lastText;
-        }else{
-          el.hidden=true;
-          el.textContent='';
-        }
-      }catch(_e){}
-    }
-    function closeMyInfoManagementModal(){
-      try{
-        myFaithInfoManagementOpen=false;
-        if(modal && modal.classList) modal.classList.remove('my-faith-info-modal-open');
-        var layer=myFaithInfoManagementLayer || document.getElementById('my-faith-info-management-layer');
-        myFaithInfoManagementLayer=null;
-        if(layer){
-          layer.classList.remove('show');
-          layer.setAttribute('aria-hidden','true');
-          setTimeout(function(){ try{ if(layer && layer.parentNode) layer.parentNode.removeChild(layer); }catch(_e){} }, 90);
-        }
-      }catch(e){ console.warn('[가톨릭길동무]', e); }
-    }
-    function buildMyInfoManagementModal(){
-      var layer=document.createElement('div');
-      layer.id='my-faith-info-management-layer';
-      layer.className='my-faith-info-layer show';
-      layer.setAttribute('aria-hidden','false');
-
-      var backdrop=document.createElement('div');
-      backdrop.className='my-faith-info-backdrop';
-      backdrop.setAttribute('data-my-info-close','true');
-      layer.appendChild(backdrop);
-
-      var dialog=document.createElement('section');
-      dialog.className='my-faith-info-dialog';
-      dialog.setAttribute('role','dialog');
-      dialog.setAttribute('aria-modal','true');
-      dialog.setAttribute('aria-labelledby','my-faith-info-title');
-      dialog.tabIndex=-1;
-
-      var head=document.createElement('div');
-      head.className='my-faith-info-head';
-      var h=document.createElement('h3');
-      h.id='my-faith-info-title';
-      h.textContent='내 정보 백업·복원';
-      var close=document.createElement('button');
-      close.type='button';
-      close.className='my-faith-info-close';
-      close.setAttribute('aria-label','내 정보 백업·복원 닫기');
-      close.textContent='×';
-      bindMyFaithClick(close, closeMyInfoManagementModal);
-      head.appendChild(h);
-      head.appendChild(close);
-      dialog.appendChild(head);
-
-      var content=document.createElement('div');
-      content.className='my-faith-info-content';
-      var desc=document.createElement('p');
-      desc.className='my-faith-data-desc';
-      desc.textContent='앱을 삭제하거나 기기를 변경할 때는 백업 코드를 복사해 카카오톡 나에게 보내기에 보관하세요. 즐겨찾기·순례 스탬프·나의 신앙생활 정보가 저장됩니다.';
-      content.appendChild(desc);
-
-      function makeActionItem(btn, noteText){
-        var item=document.createElement('div');
-        item.className='my-faith-data-action-item';
-        item.appendChild(btn);
-        if(noteText){
-          var note=document.createElement('p');
-          note.className='my-faith-data-btn-note';
-          note.textContent=noteText;
-          item.appendChild(note);
-        }
-        return item;
-      }
-      function makeActionGroup(titleText, guideText, extraClass){
-        var group=document.createElement('section');
-        group.className='my-faith-data-action-group' + (extraClass ? (' ' + extraClass) : '');
-        var title=document.createElement('h4');
-        title.className='my-faith-data-group-title';
-        title.textContent=titleText;
-        group.appendChild(title);
-        if(guideText){
-          var guide=document.createElement('p');
-          guide.className='my-faith-data-group-guide';
-          guide.textContent=guideText;
-          group.appendChild(guide);
-        }
-        var list=document.createElement('div');
-        list.className='my-faith-data-actions';
-        group.appendChild(list);
-        group._myFaithActionList=list;
-        return group;
-      }
-
-      var codeGroup=makeActionGroup('백업 코드 관리', '', 'is-code-backup is-code-only');
-
-      var codeCopyBtn=document.createElement('button');
-      codeCopyBtn.type='button';
-      codeCopyBtn.className='my-faith-data-btn my-faith-data-code-backup-btn';
-      codeCopyBtn.textContent='백업 코드 복사';
-      bindMyFaithClick(codeCopyBtn, copyUserDataBackupCode);
-      var codeRestoreBtn=document.createElement('button');
-      codeRestoreBtn.type='button';
-      codeRestoreBtn.className='my-faith-data-btn my-faith-data-code-restore-btn';
-      codeRestoreBtn.textContent='백업 코드 복원';
-      bindMyFaithClick(codeRestoreBtn, openUserDataCodeRestoreBox);
-      codeGroup._myFaithActionList.appendChild(makeActionItem(codeCopyBtn, '코드를 복사해 카카오톡 나에게 보내기에 보관합니다.'));
-      codeGroup._myFaithActionList.appendChild(makeActionItem(codeRestoreBtn, '보관한 코드를 붙여넣어 정보를 복원합니다.'));
-
-      var copyBox=document.createElement('div');
-      copyBox.id='my-faith-info-code-copy-box';
-      copyBox.className='my-faith-code-box';
-      copyBox.hidden=true;
-      var copyNote=document.createElement('p');
-      copyNote.className='my-faith-code-box-note';
-      copyNote.textContent='자동 복사가 안 되면 아래 코드를 복사해 카카오톡에 보관하세요.';
-      var copyText=document.createElement('textarea');
-      copyText.id='my-faith-info-code-copy-text';
-      copyText.className='my-faith-code-textarea';
-      copyText.readOnly=true;
-      copyText.setAttribute('aria-label','백업 코드');
-      copyBox.appendChild(copyNote);
-      copyBox.appendChild(copyText);
-      codeGroup.appendChild(copyBox);
-
-      var restoreBox=document.createElement('div');
-      restoreBox.id='my-faith-info-code-restore-box';
-      restoreBox.className='my-faith-code-box';
-      restoreBox.hidden=true;
-      var restoreCodeNote=document.createElement('p');
-      restoreCodeNote.className='my-faith-code-box-note';
-      restoreCodeNote.textContent='카카오톡 나에게 보내기에 보관한 백업 코드를 입력칸에 길게 눌러 붙여넣으세요.';
-      var restoreText=document.createElement('textarea');
-      restoreText.id='my-faith-info-code-restore-text';
-      restoreText.className='my-faith-code-textarea';
-      restoreText.placeholder='백업 코드를 붙여넣으세요.';
-      restoreText.setAttribute('aria-label','복원할 백업 코드');
-      restoreText.readOnly=false;
-      restoreText.setAttribute('inputmode','text');
-      try{ restoreText.addEventListener('focus', function(){ setTimeout(scrollUserDataRestoreBoxUp, 80); setTimeout(scrollUserDataRestoreBoxUp, 260); }, false); }catch(_e){}
-      var restoreRow=document.createElement('div');
-      restoreRow.className='my-faith-code-row';
-      var restoreRun=document.createElement('button');
-      restoreRun.type='button';
-      restoreRun.className='my-faith-code-btn my-faith-code-run-btn';
-      restoreRun.textContent='복원 실행';
-      bindMyFaithImmediateClick(restoreRun, executeUserDataCodeRestore);
-      var restoreCancel=document.createElement('button');
-      restoreCancel.type='button';
-      restoreCancel.className='my-faith-code-btn my-faith-code-cancel-btn';
-      restoreCancel.textContent='취소';
-      (function(){
-        var lastCancelAt=0;
-        function runCancel(e){
-          try{
-            if(e){
-              if(e.preventDefault) e.preventDefault();
-              if(e.stopPropagation) e.stopPropagation();
-              if(e.stopImmediatePropagation) e.stopImmediatePropagation();
-            }
-            var now=Date.now ? Date.now() : new Date().getTime();
-            if(now-lastCancelAt<260) return false;
-            lastCancelAt=now;
-            cancelUserDataCodeRestore();
-          }catch(_e){}
-          return false;
-        }
-        try{ restoreCancel.addEventListener('pointerdown', runCancel, true); }catch(_e){}
-        try{ restoreCancel.addEventListener('touchstart', runCancel, {capture:true, passive:false}); }catch(_e){}
-        try{ restoreCancel.addEventListener('click', runCancel, true); }catch(_e){}
-      })();
-      restoreRow.appendChild(restoreRun);
-      restoreRow.appendChild(restoreCancel);
-      restoreBox.appendChild(restoreCodeNote);
-      restoreBox.appendChild(restoreText);
-      restoreBox.appendChild(restoreRow);
-      codeGroup.appendChild(restoreBox);
-      content.appendChild(codeGroup);
-
-      var last=document.createElement('p');
-      last.id='my-faith-info-last-backup';
-      last.className='my-faith-data-last';
-      content.appendChild(last);
-
-      var status=document.createElement('p');
-      status.id='my-faith-info-action-status';
-      status.className='my-faith-info-action-status';
-      status.hidden=true;
-      content.appendChild(status);
-
-      dialog.appendChild(content);
-      layer.appendChild(dialog);
-      layer.addEventListener('click', function(e){
-        try{
-          if(e && e.target && e.target.getAttribute && e.target.getAttribute('data-my-info-close') === 'true') closeMyInfoManagementModal();
-        }catch(_e){}
-      });
-      return layer;
-    }
-    function openMyInfoManagementModal(){
-      try{
-        if(myFaithInfoManagementOpen && myFaithInfoManagementLayer) return;
-        myFaithInfoManagementOpen=true;
-        if(modal && modal.classList) modal.classList.add('my-faith-info-modal-open');
-        var old=document.getElementById('my-faith-info-management-layer');
-        if(old && old.parentNode) old.parentNode.removeChild(old);
-        myFaithInfoManagementLayer=buildMyInfoManagementModal();
-        modal.appendChild(myFaithInfoManagementLayer);
-        updateMyInfoManagementLastBackupText();
-        setTimeout(function(){ try{ var d=myFaithInfoManagementLayer && myFaithInfoManagementLayer.querySelector('.my-faith-info-dialog'); if(d && d.focus) d.focus(); }catch(_e){} }, 40);
-      }catch(e){ console.warn('[가톨릭길동무]', e); }
-    }
-    function appendDataBackupSection(rerender){
-      var sec=document.createElement('section');
-      sec.className='my-faith-section my-faith-data-section is-closed';
-      var toggle=document.createElement('button');
-      toggle.type='button';
-      toggle.className='my-faith-data-toggle-btn';
-      toggle.textContent='내 정보 백업·복원';
-      toggle.setAttribute('aria-haspopup','dialog');
-      toggle.setAttribute('aria-expanded','false');
-      bindMyFaithClick(toggle, openMyInfoManagementModal);
-      sec.appendChild(toggle);
-      var note=document.createElement('p');
-      note.className='my-faith-data-toggle-note';
-      note.textContent='앱 삭제·기기 변경 시 백업 코드를 보관하세요.';
-      sec.appendChild(note);
-      return sec;
-    }
     function setHeader(main, sub){ if(title){ title.textContent = main || '나의 신앙생활'; try{ title.setAttribute('data-myfaith-title', title.textContent); }catch(_e){} } if(subtitle) subtitle.textContent = sub || ''; }
     function setBodyMode(name){ body.className = name || 'my-faith-body'; body.innerHTML = ''; }
     function isElementVisibleForSetup(el){
@@ -1064,10 +213,57 @@
         }
         var keyboardLikely = focusedInput || !!(myFaithStableHeight && visibleH && visibleH < myFaithStableHeight - 120) || !!(vv && Math.round(vv.offsetTop || 0) > 0);
         var modalH = myFaithStableHeight || stableCandidateH || visibleH || 0;
+        var vvTop = Math.max(0, Math.round((vv && vv.offsetTop) || 0));
+        var keyboardGap = Math.max(0, (modalH || stableCandidateH || visibleH || 0) - visibleH - vvTop);
         if(modalH > 0) modal.style.setProperty('--my-faith-vh', modalH + 'px');
         if(visibleH > 0) modal.style.setProperty('--my-faith-visible-vh', visibleH + 'px');
+        modal.style.setProperty('--my-faith-vv-top', vvTop + 'px');
+        modal.style.setProperty('--my-faith-keyboard-gap', keyboardGap + 'px');
         modal.classList.toggle('keyboard-open', keyboardLikely);
       }catch(e){ console.warn('[가톨릭길동무]', e); }
+    }
+
+    function getMyFaithFocusedField(){
+      try{
+        var active = document.activeElement || null;
+        if(active && modal && modal.contains(active) && /^(INPUT|TEXTAREA|SELECT)$/i.test(active.tagName || '')) return active;
+      }catch(_e){}
+      return null;
+    }
+    function markMyFaithKeyboardSearch(input){
+      try{
+        if(!input) return;
+        modal.classList.add('keyboard-open','parish-keyboard-active');
+        var wrap = input.closest && input.closest('.my-faith-inline-parish-search,.my-faith-search-section');
+        if(wrap) wrap.classList.add('keyboard-active');
+        updateMyFaithViewport();
+        function settle(){
+          try{
+            updateMyFaithViewport();
+            var scroller = body || document.getElementById('my-diocese-list');
+            if(!scroller || !input || !scroller.contains(input)) return;
+            var sr = scroller.getBoundingClientRect();
+            var ir = input.getBoundingClientRect();
+            var target = scroller.scrollTop + (ir.top - sr.top) - 10;
+            if(target < 0) target = 0;
+            if(Math.abs(scroller.scrollTop - target) > 4) scroller.scrollTo({top:target, behavior:'auto'});
+          }catch(_e){}
+        }
+        setTimeout(settle, 60);
+        setTimeout(settle, 220);
+        setTimeout(settle, 480);
+      }catch(e){ console.warn('[가톨릭길동무]', e); }
+    }
+    function releaseMyFaithKeyboardSearch(){
+      setTimeout(function(){
+        try{
+          updateMyFaithViewport();
+          if(getMyFaithFocusedField()) return;
+          modal.classList.remove('parish-keyboard-active');
+          var activeWraps = modal.querySelectorAll('.keyboard-active');
+          activeWraps.forEach(function(el){ el.classList.remove('keyboard-active'); });
+        }catch(_e){}
+      }, 180);
     }
 
     /* V8-1-14-44: 나의 신앙생활은 이제 module-view 카테고리로 동작한다.
@@ -1085,7 +281,6 @@
 
     function closeModal(){
       var reason = 'my-faith-category-close';
-      closeMyInfoManagementModal();
       cancelMyFaithPendingEdit();
       modal.classList.remove('show','open','keyboard-open','return-settling');
       modal.setAttribute('aria-hidden','true');
@@ -1133,10 +328,7 @@
       setTimeout(updateMyFaithViewport, opts.fromExternal ? 180 : 80);
     }
     window.isMyFaithLifeModalOpen = function(){ try{ return !!(modal && modal.classList && (modal.classList.contains('show') || modal.classList.contains('open'))); }catch(_e){ return false; } };
-    window.isMyFaithInfoManagementOpen = function(){ return !!myFaithInfoManagementOpen; };
-    window.openMyFaithLifeModal = function(opts){ openModal(opts || {}); };
-    window.openMyFaithInfoManagementModal = function(){ openModal({restore:true}); setTimeout(function(){ try{ openMyInfoManagementModal(); }catch(_e){} }, 70); };
-    window.closeMyFaithLifeModal = function(){ if(myFaithInfoManagementOpen){ closeMyInfoManagementModal(); return; } closeModal(); };
+    window.closeMyFaithLifeModal = function(){ closeModal(); };
     function normalizeMyFaithExternalUrl(url){
       url = String(url || '').trim();
       if(!url) return '';
@@ -1173,11 +365,8 @@
     function stabilizeCoverAfterMyFaithExternal(reason){
       if(!hasRecentMyFaithExternalLink()) return;
       try{
-        if(window.oaiReturnConductorBusy && window.oaiReturnConductorBusy(['myfaith-return','external-return'])) return;
-        if(window.oaiReturnConductorRequest && !window.oaiReturnConductorRequest('myfaith-return', {ms:1300})) return;
         openModal({keepContent:false, fromExternal:true});
         markMyFaithExternalSettling(900);
-        setTimeout(function(){ try{ if(window.oaiReturnConductorFinish) window.oaiReturnConductorFinish('myfaith-return'); }catch(_e){} }, 950);
       }catch(e){ console.warn('[가톨릭길동무]', e); }
     }
     function goExternal(url){
@@ -1197,7 +386,7 @@
           return;
         }
       }catch(_e){}
-      setTimeout(function(){ try{ location.assign(url); }catch(e){ try{ location.href = url; }catch(_e){} } }, 220);
+      setTimeout(function(){ try{ location.assign(url); }catch(e){ try{ location.href = url; }catch(_e){} } }, 70);
     }
     function bindMyFaithClick(el, fn){
       if(!el || typeof fn !== 'function') return;
@@ -1208,28 +397,6 @@
         fn();
         return false;
       }, false);
-    }
-    function bindMyFaithImmediateClick(el, fn){
-      if(!el || typeof fn !== 'function') return;
-      var lastRunAt=0;
-      function run(e){
-        try{
-          if(e){
-            if(e.preventDefault) e.preventDefault();
-            if(e.stopPropagation) e.stopPropagation();
-            if(e.stopImmediatePropagation) e.stopImmediatePropagation();
-          }
-          if(el.disabled || el.getAttribute('aria-disabled') === 'true') return false;
-          var now=Date.now ? Date.now() : new Date().getTime();
-          if(now-lastRunAt<520) return false;
-          lastRunAt=now;
-          fn(e);
-        }catch(err){ console.warn('[가톨릭길동무]', err); }
-        return false;
-      }
-      try{ el.addEventListener('pointerdown', run, true); }catch(_e){}
-      try{ el.addEventListener('touchstart', run, {capture:true, passive:false}); }catch(_e){}
-      try{ el.addEventListener('click', run, true); }catch(_e){}
     }
     function smallButton(label, fn){
       var b=document.createElement('button');
@@ -1319,8 +486,8 @@
         });
       }
       input.addEventListener('input', draw);
-      input.addEventListener('focus', function(){ try{ modal.classList.add('keyboard-open'); updateMyFaithViewport(); }catch(_e){} });
-      input.addEventListener('blur', function(){ setTimeout(function(){ try{ updateMyFaithViewport(); }catch(_e){} },180); });
+      input.addEventListener('focus', function(){ markMyFaithKeyboardSearch(input); });
+      input.addEventListener('blur', function(){ releaseMyFaithKeyboardSearch(); });
       var selectedDioCode=getSelectedDioceseCode();
       if(selectedDioCode && typeof _ensureParishDioceseDataLoaded === 'function'){
         results.innerHTML='<div class="my-faith-empty">'+safeText(getMyFaithEditName())+' 본당 정보를 불러오는 중입니다...</div>';
@@ -1420,12 +587,10 @@
           renderHome();
           return 'stay';
         });
-        body.appendChild(appendDataBackupSection(renderSettingsEdit));
         appendMyFaithPrivacyNote();
         settleMyFaithHomeScroll();
       }
       myFaithRenderSettingsEdit = renderSettingsEdit;
-      window.openMyFaithSettingsEdit = function(){ openModal({restore:true, keepContent:true}); beginMyFaithPendingEdit(); renderSettingsEdit(); };
       if(name){
         var quick=listSection('내 교구·본당 정보','my-faith-quick-section');
         appendExternalRow(quick, name+' 홈페이지','', '', '열기', info&&info.home, !(info&&info.home), 'my-faith-row-btn-open');
@@ -1456,7 +621,7 @@
         renderSettingsEdit();
         return;
       }
-      appendMyFaithConfirmButton(); body.appendChild(appendDataBackupSection(renderHome)); appendMyFaithPrivacyNote(); settleMyFaithHomeScroll();
+      appendMyFaithConfirmButton(); appendMyFaithPrivacyNote(); settleMyFaithHomeScroll();
     }
     function renderDioceseList(){
       var current=getMyFaithEditName(); setHeader('나의 교구 선택','확인을 눌러야 저장됩니다'); setBodyMode('my-diocese-list');
@@ -1481,7 +646,7 @@
         if(!items.length){ results.innerHTML='<div class="my-faith-empty">검색 결과가 없습니다.</div>'; return; }
         items.forEach(function(p){ var card=document.createElement('button'); card.type='button'; card.className='my-faith-parish-result'; card.innerHTML='<strong>'+safeText(p.name)+'</strong><span>'+safeText(p.diocese||'')+(p.addr?' · '+safeText(p.addr):'')+'</span>'; bindMyFaithClick(card, function(){ setMyFaithEditParish(p); returnToMyFaithSettingsEdit(); }); results.appendChild(card); });
       }
-      input.addEventListener('input', draw); input.addEventListener('focus', function(){ try{ modal.classList.add('keyboard-open'); updateMyFaithViewport(); }catch(_e){} }); input.addEventListener('blur', function(){ setTimeout(function(){ try{ updateMyFaithViewport(); }catch(_e){} },180); });
+      input.addEventListener('input', draw); input.addEventListener('focus', function(){ markMyFaithKeyboardSearch(input); }); input.addEventListener('blur', function(){ releaseMyFaithKeyboardSearch(); });
       var selectedDioCode=getSelectedDioceseCode();
       if(selectedDioCode && typeof _ensureParishDioceseDataLoaded === 'function'){
         results.innerHTML='<div class="my-faith-empty">'+safeText(selectedName())+' 본당 정보를 불러오는 중입니다...</div>';
@@ -1492,7 +657,7 @@
       }else{ draw(); }
       setTimeout(updateMyFaithViewport,80);
     }
-    if(window.visualViewport){ window.visualViewport.addEventListener('resize', function(){ if(modal.classList.contains('show')) updateMyFaithViewport(); }, {passive:true}); }
+    if(window.visualViewport){ window.visualViewport.addEventListener('resize', function(){ if(modal.classList.contains('show')){ updateMyFaithViewport(); var f=getMyFaithFocusedField(); if(f) markMyFaithKeyboardSearch(f); } }, {passive:true}); }
     window.addEventListener('resize', function(){ if(modal.classList.contains('show')) updateMyFaithViewport(); }, {passive:true});
     window.addEventListener('pageshow', function(){ if(modal.classList.contains('show')) updateMyFaithViewport(); }, true);
     document.addEventListener('visibilitychange', function(){ if(document.visibilityState === 'visible' && modal.classList.contains('show')) updateMyFaithViewport(); }, true);
@@ -1519,6 +684,6 @@
     if(menuBtn) on(menuBtn, 'click', openFromButton);
     on('my-diocese-close','click', function(e){ if(e&&e.preventDefault)e.preventDefault(); closeModal(); });
     modal.addEventListener('click', function(e){ if(e && e.target && e.target.getAttribute && e.target.getAttribute('data-my-diocese-close') === 'true') closeModal(); });
-    document.addEventListener('keydown', function(e){ if(e && e.key === 'Escape' && modal.classList.contains('show')){ if(myFaithInfoManagementOpen) closeMyInfoManagementModal(); else closeModal(); } });
+    document.addEventListener('keydown', function(e){ if(e && e.key === 'Escape' && modal.classList.contains('show')) closeModal(); });
   };
 })();

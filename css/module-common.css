@@ -62,10 +62,10 @@
   min-width: 0;
 }
 .module-bar-ico {
-  width: 42px;
-  height: 42px;
-  min-width: 42px;
-  flex: 0 0 42px;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  flex: 0 0 44px;
   border-radius: 12px;
   background: rgba(255,255,255,.12);
   border: 1px solid rgba(255,255,255,.2);
@@ -272,34 +272,3 @@
 #trail-list::-webkit-scrollbar, .web-list::-webkit-scrollbar { display: none; }
 
 #trail-view .trail-tabs, #qna-view .qna-tabs { -webkit-overflow-scrolling: touch; touch-action: auto; }
-
-html:not(.ios-device).oai-screen-compact-short #prayer-tabs,
-html:not(.ios-device).oai-screen-compact-short #web-view .web-cats,
-html:not(.ios-device).oai-screen-compact-short #trail-view .trail-tabs,
-html:not(.ios-device).oai-screen-compact-short #qna-view .qna-tabs{
-  height:var(--oai-std-tabbar-h,46px)!important;
-  min-height:var(--oai-std-tabbar-h,46px)!important;
-  max-height:var(--oai-std-tabbar-h,46px)!important;
-  padding:0 8px!important;
-  gap:5px!important;
-}
-html:not(.ios-device).oai-screen-compact-short #prayer-tabs .pr-tab,
-html:not(.ios-device).oai-screen-compact-short #web-view .web-cat-btn,
-html:not(.ios-device).oai-screen-compact-short #trail-view .trail-tab,
-html:not(.ios-device).oai-screen-compact-short #qna-view .qna-tab{
-  height:var(--oai-std-tab-h,33px)!important;
-  min-height:var(--oai-std-tab-h,33px)!important;
-  padding:0 10px!important;
-  border-radius:10px!important;
-  line-height:1!important;
-  gap:4px!important;
-}
-html:not(.ios-device).oai-screen-compact-short .module-close,
-html:not(.ios-device).oai-screen-compact-short #prayer-close{
-  width:34px!important;
-  height:34px!important;
-  min-width:34px!important;
-  flex:0 0 34px!important;
-  
-  line-height:1!important;
-}
