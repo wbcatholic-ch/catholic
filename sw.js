@@ -1,5 +1,5 @@
-const CACHE_VERSION = 'catholic-way-V8-1-14-64-IOS-PARISH-KEYBOARD';
-const ASSET_VERSION = 'V8-1-14-64-IOS-PARISH-KEYBOARD';
+const CACHE_VERSION = 'catholic-way-V8-1-14-65-ANDROID-PLAY-BANNER';
+const ASSET_VERSION = 'V8-1-14-65-ANDROID-PLAY-BANNER';
 function withVersion(path) {
   return path + '?v=' + ASSET_VERSION;
 }
