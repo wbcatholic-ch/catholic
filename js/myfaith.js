@@ -130,7 +130,8 @@
     function isInstallGuideVisible(){
       try{
         return isElementVisibleForSetup(document.getElementById('pwa-install-btn')) ||
-               isElementVisibleForSetup(document.getElementById('ios-kakao-safari-banner'));
+               isElementVisibleForSetup(document.getElementById('ios-kakao-safari-banner')) ||
+               isElementVisibleForSetup(document.getElementById('android-play-required-layer'));
       }catch(_e){ return false; }
     }
     var setupBannerRefreshTimer = null;
@@ -145,7 +146,7 @@
     }
     function bindSetupBannerVisibilityWatch(){
       try{
-        ['pwa-install-btn','ios-kakao-safari-banner'].forEach(function(id){
+        ['pwa-install-btn','ios-kakao-safari-banner','android-play-required-layer'].forEach(function(id){
           var el = document.getElementById(id);
           if(!el || el.__myDioceseSetupWatchBound) return;
           el.__myDioceseSetupWatchBound = true;
