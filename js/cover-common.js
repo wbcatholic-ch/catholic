@@ -193,16 +193,6 @@
 
   var promptEvent = null;
   var installing = false;
-  var PLAY_URL = 'https://play.google.com/store/apps/details?id=kr.catholic.gildonmu';
-  var PLAY_INTENT = 'intent://details?id=kr.catholic.gildonmu#Intent;scheme=market;package=com.android.vending;S.browser_fallback_url=' + encodeURIComponent(PLAY_URL) + ';end';
-
-  function ua(){ return String(navigator.userAgent || '').toLowerCase(); }
-  function isAndroid(){ return ua().indexOf('android') > -1; }
-  function isAndroidWebView(){
-    var u = ua();
-    return isAndroid() && (u.indexOf('; wv') > -1 || /version\/\d+(?:\.\d+)*.*chrome\/\d+(?:\.\d+)*.*mobile safari/.test(u));
-  }
-  function mustUseGooglePlay(){ return isAndroid() && !isAndroidWebView(); }
 
   function isStandaloneNow(){
     try{
@@ -215,7 +205,6 @@
 
   function showInstallBtn(){
     var btn = getBtn();
-    if(mustUseGooglePlay()){ hideInstallBtn(); return; }
     if(btn && !isStandaloneNow()) btn.style.display = 'flex';
   }
 
@@ -225,67 +214,8 @@
   }
 
   function applyVisibility(){
-    applyAndroidPlayRequired();
-    if(mustUseGooglePlay()) hideInstallBtn();
-    else if(isStandaloneNow()) hideInstallBtn();
+    if(isStandaloneNow()) hideInstallBtn();
     else if(promptEvent) showInstallBtn();
-  }
-
-  function openGooglePlay(){
-    try{ location.href = PLAY_INTENT; }catch(e){ console.warn('[가톨릭길동무]', e); location.href = PLAY_URL; }
-    setTimeout(function(){ try{ if(document.visibilityState !== 'hidden') location.href = PLAY_URL; }catch(_e){} }, 900);
-  }
-
-  function applyAndroidPlayRequired(){
-    var required = mustUseGooglePlay();
-    var root = document.documentElement;
-    var banner = document.getElementById('android-play-required-banner');
-    var btn = document.getElementById('android-play-open-btn');
-    if(root && root.classList) root.classList.toggle('oai-android-play-required', required);
-    hideInstallBtn();
-    if(banner){
-      banner.hidden = !required;
-      banner.setAttribute('aria-hidden', required ? 'false' : 'true');
-    }
-    if(required){
-      try{
-        var cover = document.getElementById('cover');
-        if(cover){ cover.classList.remove('hidden'); cover.style.display = ''; cover.style.opacity = ''; }
-        document.querySelectorAll('.module-view.open,#diocese-view.open,#missa-view.open,#prayer-view.open,#web-view.open,#qna-view.open').forEach(function(v){ v.classList.remove('open'); });
-        if(root && root.classList) root.classList.remove('app-active');
-      }catch(e){ console.warn('[가톨릭길동무]', e); }
-    }
-    if(btn && !btn.__androidPlayOpenBound){
-      btn.__androidPlayOpenBound = true;
-      btn.addEventListener('click', function(ev){
-        if(ev && ev.preventDefault) ev.preventDefault();
-        if(ev && ev.stopPropagation) ev.stopPropagation();
-        openGooglePlay();
-      }, true);
-    }
-  }
-
-  function isInsideAndroidPlayBanner(target){
-    var banner = document.getElementById('android-play-required-banner');
-    return !!(banner && target && (target === banner || banner.contains(target)));
-  }
-
-  function blockAndroidPlayBackgroundEvent(ev){
-    if(!mustUseGooglePlay()) return;
-    if(isInsideAndroidPlayBanner(ev && ev.target)) return;
-    try{ applyAndroidPlayRequired(); }catch(_e){}
-    if(ev && ev.cancelable && ev.preventDefault) ev.preventDefault();
-    if(ev && ev.stopPropagation) ev.stopPropagation();
-    if(ev && ev.stopImmediatePropagation) ev.stopImmediatePropagation();
-    return false;
-  }
-
-  function bindAndroidPlayBlocker(){
-    if(document.__oaiAndroidPlayBlockerBound) return;
-    document.__oaiAndroidPlayBlockerBound = true;
-    ['pointerdown','pointerup','touchstart','touchend','mousedown','mouseup','click'].forEach(function(type){
-      document.addEventListener(type, blockAndroidPlayBackgroundEvent, true);
-    });
   }
 
   function bindInstallButton(){
@@ -301,13 +231,6 @@
 
   window.addEventListener('beforeinstallprompt', function(e){
     e.preventDefault();
-    if(mustUseGooglePlay()){
-      promptEvent = null;
-      window.__OAI_PWA_DEFERRED_PROMPT__ = null;
-      installing = false;
-      applyAndroidPlayRequired();
-      return;
-    }
     promptEvent = e;
     window.__OAI_PWA_DEFERRED_PROMPT__ = e;
     installing = false;
@@ -324,11 +247,6 @@
 
   window.triggerPwaInstall = function(){
     var p = promptEvent || window.__OAI_PWA_DEFERRED_PROMPT__;
-    if(mustUseGooglePlay()){
-      applyAndroidPlayRequired();
-      openGooglePlay();
-      return;
-    }
     if(isStandaloneNow()){
       hideInstallBtn();
       return;
@@ -354,8 +272,8 @@
     });
   };
 
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function(){ bindInstallButton(); bindAndroidPlayBlocker(); applyAndroidPlayRequired(); }, {once:true});
-  else { bindInstallButton(); bindAndroidPlayBlocker(); applyAndroidPlayRequired(); }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bindInstallButton, {once:true});
+  else bindInstallButton();
 
   try{
     var mql = window.matchMedia && window.matchMedia('(display-mode: standalone)');
@@ -363,7 +281,6 @@
     else if(mql && mql.addListener) mql.addListener(applyVisibility);
   }catch(e){ console.warn('[가톨릭길동무]', e); }
 
-  window.addEventListener('load', function(){ bindInstallButton(); bindAndroidPlayBlocker(); applyVisibility(); });
-  window.addEventListener('pageshow', function(){ bindInstallButton(); bindAndroidPlayBlocker(); applyVisibility(); });
-  window.addEventListener('resize', function(){ applyVisibility(); }, {passive:true});
+  window.addEventListener('load', function(){ bindInstallButton(); applyVisibility(); });
+  window.addEventListener('pageshow', function(){ bindInstallButton(); applyVisibility(); });
 })();
