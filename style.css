@@ -6284,7 +6284,7 @@ html.oai-font-global #map-wrap #shrine-visit-map-filter > button[data-shrine-vis
   }
 }
 
-/* V8-1-14-67: Android 차단막은 배경만 덮고 Google Play 안내 배너는 항상 위에 표시 */
+/* V8-1-14-68: Android Google Play 안내 배너 위치/레이어 재정리 - 배경은 막고 배너는 최상단 고정 */
 #cover .android-play-required-banner { display: none; }
 html.oai-android-play-required,
 html.oai-android-play-required body {
@@ -6303,15 +6303,28 @@ html.oai-android-play-required.oai-cover-revealing::after {
   display: none !important;
 }
 html.oai-android-play-required #cover {
+  position: fixed !important;
+  inset: 0 !important;
   display: flex !important;
+  width: 100vw !important;
+  height: 100svh !important;
+  min-height: 100svh !important;
   opacity: 1 !important;
-  z-index: 10000 !important;
+  z-index: 2147483000 !important;
+  overflow: hidden !important;
+  isolation: isolate;
+}
+@supports (height: 100dvh) {
+  html.oai-android-play-required #cover {
+    height: 100dvh !important;
+    min-height: 100dvh !important;
+  }
 }
 html.oai-android-play-required #cover::before {
   content: "" !important;
   position: fixed;
   inset: 0;
-  z-index: 10080;
+  z-index: 2147483200;
   display: block !important;
   background: rgba(245,240,232,.88);
   backdrop-filter: blur(2px);
@@ -6320,13 +6333,16 @@ html.oai-android-play-required #cover::before {
   touch-action: none;
 }
 html.oai-android-play-required #cover .android-play-required-banner {
-  position: fixed;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 10090;
-  display: flex;
+  position: fixed !important;
+  left: 50% !important;
+  top: calc(env(safe-area-inset-top, 0px) + 42svh) !important;
+  transform: translate(-50%, -50%) !important;
+  z-index: 2147483600 !important;
+  display: flex !important;
   width: min(386px, calc(100vw - 34px));
+  max-height: calc(100svh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 34px);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   box-sizing: border-box;
   padding: 26px 20px 22px;
   border-radius: 28px;
@@ -6337,14 +6353,21 @@ html.oai-android-play-required #cover .android-play-required-banner {
   align-items: center;
   gap: 14px;
   text-align: center;
-  pointer-events: auto;
+  pointer-events: auto !important;
+  touch-action: manipulation;
+}
+@supports (height: 100dvh) {
+  html.oai-android-play-required #cover .android-play-required-banner {
+    top: calc(env(safe-area-inset-top, 0px) + 42dvh) !important;
+    max-height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 34px);
+  }
 }
 #cover .android-play-required-banner[hidden],
-html.oai-android-play-required #cover .android-play-required-banner[hidden] { display: none; }
+html.oai-android-play-required #cover .android-play-required-banner[hidden] { display: none !important; }
 html.oai-android-play-required #pwa-install-btn,
 html.oai-android-play-required #ios-kakao-safari-banner,
 html.oai-android-play-required #my-diocese-setup-banner { display: none !important; }
-html.oai-android-play-required.app-active #cover { display: flex !important; opacity: 1 !important; z-index: 10000 !important; }
+html.oai-android-play-required.app-active #cover { display: flex !important; opacity: 1 !important; z-index: 2147483000 !important; }
 
 html.oai-android-play-required #cover > :not(.android-play-required-banner) {
   pointer-events: none !important;
@@ -6355,7 +6378,7 @@ html.oai-android-play-required #cover .android-play-required-banner {
 }
 html.oai-android-play-required #cover .android-play-required-banner,
 html.oai-android-play-required #cover .android-play-required-banner * {
-  pointer-events: auto;
+  pointer-events: auto !important;
 }
 #cover .android-play-required-icon {
   width: 48px;
@@ -6375,7 +6398,7 @@ html.oai-android-play-required #cover .android-play-required-banner * {
 #cover .android-play-required-text span { color:rgba(31,42,68,.76); font-size:calc(15.5px * var(--app-font-scale, 1)); line-height:1.45; font-weight:850; letter-spacing:-.04em; }
 #cover .android-play-open-btn {
   width: 100%;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
   min-height: 54px;
   border: 0;
   border-radius: 18px;
@@ -6391,11 +6414,11 @@ html.oai-android-play-required #cover .android-play-required-banner * {
 }
 #cover .android-play-open-btn:active { transform: scale(.985); }
 #cover .android-play-required-note {
-  margin-top: 4px;
+  margin-top: 8px;
   padding: 10px 12px;
   border-radius: 15px;
-  border: 1.2px solid rgba(179,70,44,.26);
-  background: rgba(179,70,44,.12);
+  border: 1.2px solid rgba(179,70,44,.30);
+  background: rgba(179,70,44,.14);
   color: #a84226;
   font-size:calc(13.2px * var(--app-font-scale, 1));
   line-height:1.38;
@@ -6407,3 +6430,11 @@ html.oai-android-play-required #cover .android-play-required-banner * {
   #cover .android-play-required-text strong { font-size:calc(20px * var(--app-font-scale, 1)); }
   #cover .android-play-required-text span { font-size:calc(14px * var(--app-font-scale, 1)); }
 }
+@media (max-height: 640px){
+  html.oai-android-play-required #cover .android-play-required-banner {
+    top: calc(env(safe-area-inset-top, 0px) + 45svh) !important;
+    padding-top: 20px;
+    padding-bottom: 18px;
+  }
+}
+
