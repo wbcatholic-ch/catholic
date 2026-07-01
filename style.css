@@ -6284,7 +6284,7 @@ html.oai-font-global #map-wrap #shrine-visit-map-filter > button[data-shrine-vis
   }
 }
 
-/* V8-1-14-68: Android Google Play 안내 배너 위치/레이어 재정리 - 배경은 막고 배너는 최상단 고정 */
+/* V8-1-14-69: Android Google Play 안내는 Android 브라우저/PWA에서만 상단 고정. iPhone/iPad는 영향 없음. */
 #cover .android-play-required-banner { display: none; }
 html.oai-android-play-required,
 html.oai-android-play-required body {
@@ -6302,13 +6302,24 @@ html.oai-android-play-required.oai-cover-revealing::after {
   content: none !important;
   display: none !important;
 }
+html.oai-android-play-required #app,
+html.oai-android-play-required .module-view,
+html.oai-android-play-required #diocese-view,
+html.oai-android-play-required #missa-view,
+html.oai-android-play-required #prayer-view,
+html.oai-android-play-required #web-view,
+html.oai-android-play-required #qna-view {
+  pointer-events: none !important;
+}
 html.oai-android-play-required #cover {
   position: fixed !important;
   inset: 0 !important;
-  display: flex !important;
+  display: block !important;
   width: 100vw !important;
   height: 100svh !important;
   min-height: 100svh !important;
+  padding: 0 !important;
+  margin: 0 !important;
   opacity: 1 !important;
   z-index: 2147483000 !important;
   overflow: hidden !important;
@@ -6326,25 +6337,29 @@ html.oai-android-play-required #cover::before {
   inset: 0;
   z-index: 2147483200;
   display: block !important;
-  background: rgba(245,240,232,.88);
+  background: rgba(245,240,232,.90);
   backdrop-filter: blur(2px);
   -webkit-backdrop-filter: blur(2px);
   pointer-events: auto;
   touch-action: none;
 }
+html.oai-android-play-required #cover > :not(.android-play-required-banner) {
+  pointer-events: none !important;
+}
 html.oai-android-play-required #cover .android-play-required-banner {
   position: fixed !important;
   left: 50% !important;
-  top: calc(env(safe-area-inset-top, 0px) + 42svh) !important;
-  transform: translate(-50%, -50%) !important;
+  top: calc(env(safe-area-inset-top, 0px) + 76px) !important;
+  bottom: auto !important;
+  transform: translateX(-50%) !important;
   z-index: 2147483600 !important;
   display: flex !important;
   width: min(386px, calc(100vw - 34px));
-  max-height: calc(100svh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 34px);
+  max-height: calc(100svh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 92px);
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   box-sizing: border-box;
-  padding: 26px 20px 22px;
+  padding: 24px 20px 22px;
   border-radius: 28px;
   border: 1.5px solid rgba(212,170,106,.72);
   background: #fffaf1;
@@ -6353,13 +6368,14 @@ html.oai-android-play-required #cover .android-play-required-banner {
   align-items: center;
   gap: 14px;
   text-align: center;
+  opacity: 1 !important;
+  visibility: visible !important;
   pointer-events: auto !important;
   touch-action: manipulation;
 }
 @supports (height: 100dvh) {
   html.oai-android-play-required #cover .android-play-required-banner {
-    top: calc(env(safe-area-inset-top, 0px) + 42dvh) !important;
-    max-height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 34px);
+    max-height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 92px);
   }
 }
 #cover .android-play-required-banner[hidden],
@@ -6367,15 +6383,7 @@ html.oai-android-play-required #cover .android-play-required-banner[hidden] { di
 html.oai-android-play-required #pwa-install-btn,
 html.oai-android-play-required #ios-kakao-safari-banner,
 html.oai-android-play-required #my-diocese-setup-banner { display: none !important; }
-html.oai-android-play-required.app-active #cover { display: flex !important; opacity: 1 !important; z-index: 2147483000 !important; }
-
-html.oai-android-play-required #cover > :not(.android-play-required-banner) {
-  pointer-events: none !important;
-}
-html.oai-android-play-required #cover .android-play-required-banner {
-  opacity: 1 !important;
-  visibility: visible !important;
-}
+html.oai-android-play-required.app-active #cover { display: block !important; opacity: 1 !important; z-index: 2147483000 !important; }
 html.oai-android-play-required #cover .android-play-required-banner,
 html.oai-android-play-required #cover .android-play-required-banner * {
   pointer-events: auto !important;
@@ -6398,7 +6406,7 @@ html.oai-android-play-required #cover .android-play-required-banner * {
 #cover .android-play-required-text span { color:rgba(31,42,68,.76); font-size:calc(15.5px * var(--app-font-scale, 1)); line-height:1.45; font-weight:850; letter-spacing:-.04em; }
 #cover .android-play-open-btn {
   width: 100%;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
   min-height: 54px;
   border: 0;
   border-radius: 18px;
@@ -6414,11 +6422,11 @@ html.oai-android-play-required #cover .android-play-required-banner * {
 }
 #cover .android-play-open-btn:active { transform: scale(.985); }
 #cover .android-play-required-note {
-  margin-top: 8px;
-  padding: 10px 12px;
+  margin-top: 12px;
+  padding: 11px 12px;
   border-radius: 15px;
-  border: 1.2px solid rgba(179,70,44,.30);
-  background: rgba(179,70,44,.14);
+  border: 1.2px solid rgba(179,70,44,.34);
+  background: rgba(179,70,44,.16);
   color: #a84226;
   font-size:calc(13.2px * var(--app-font-scale, 1));
   line-height:1.38;
@@ -6426,15 +6434,16 @@ html.oai-android-play-required #cover .android-play-required-banner * {
   word-break:keep-all;
 }
 @media (max-width: 360px){
-  html.oai-android-play-required #cover .android-play-required-banner { padding:22px 16px 18px; border-radius:24px; gap:12px; }
+  html.oai-android-play-required #cover .android-play-required-banner { top: calc(env(safe-area-inset-top, 0px) + 54px) !important; padding:22px 16px 18px; border-radius:24px; gap:12px; }
   #cover .android-play-required-text strong { font-size:calc(20px * var(--app-font-scale, 1)); }
   #cover .android-play-required-text span { font-size:calc(14px * var(--app-font-scale, 1)); }
 }
 @media (max-height: 640px){
   html.oai-android-play-required #cover .android-play-required-banner {
-    top: calc(env(safe-area-inset-top, 0px) + 45svh) !important;
-    padding-top: 20px;
-    padding-bottom: 18px;
+    top: calc(env(safe-area-inset-top, 0px) + 28px) !important;
+    max-height: calc(100svh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 42px);
+    padding-top: 18px;
+    padding-bottom: 16px;
   }
 }
 
