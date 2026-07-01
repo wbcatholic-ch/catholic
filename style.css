@@ -6284,7 +6284,7 @@ html.oai-font-global #map-wrap #shrine-visit-map-filter > button[data-shrine-vis
   }
 }
 
-/* V8-1-14-66: Android 브라우저/PWA 전체 차단 및 Google Play 설치 안내 */
+/* V8-1-14-67: Android 차단막은 배경만 덮고 Google Play 안내 배너는 항상 위에 표시 */
 #cover .android-play-required-banner { display: none; }
 html.oai-android-play-required,
 html.oai-android-play-required body {
@@ -6294,12 +6294,25 @@ html.oai-android-play-required body {
   overscroll-behavior: none;
   touch-action: none;
 }
-html.oai-android-play-required body::before {
-  content: "";
+html.oai-android-play-required body::before,
+html.oai-android-play-required.oai-cover-booting::before,
+html.oai-android-play-required.oai-cover-booting::after,
+html.oai-android-play-required.oai-cover-revealing::before,
+html.oai-android-play-required.oai-cover-revealing::after {
+  content: none !important;
+  display: none !important;
+}
+html.oai-android-play-required #cover {
+  display: flex !important;
+  opacity: 1 !important;
+  z-index: 10000 !important;
+}
+html.oai-android-play-required #cover::before {
+  content: "" !important;
   position: fixed;
   inset: 0;
   z-index: 10080;
-  display: block;
+  display: block !important;
   background: rgba(245,240,232,.88);
   backdrop-filter: blur(2px);
   -webkit-backdrop-filter: blur(2px);
@@ -6331,10 +6344,14 @@ html.oai-android-play-required #cover .android-play-required-banner[hidden] { di
 html.oai-android-play-required #pwa-install-btn,
 html.oai-android-play-required #ios-kakao-safari-banner,
 html.oai-android-play-required #my-diocese-setup-banner { display: none !important; }
-html.oai-android-play-required.app-active #cover { display: block !important; opacity: 1 !important; }
+html.oai-android-play-required.app-active #cover { display: flex !important; opacity: 1 !important; z-index: 10000 !important; }
 
 html.oai-android-play-required #cover > :not(.android-play-required-banner) {
   pointer-events: none !important;
+}
+html.oai-android-play-required #cover .android-play-required-banner {
+  opacity: 1 !important;
+  visibility: visible !important;
 }
 html.oai-android-play-required #cover .android-play-required-banner,
 html.oai-android-play-required #cover .android-play-required-banner * {
