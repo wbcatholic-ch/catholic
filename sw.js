@@ -1,5 +1,5 @@
-const CACHE_VERSION = 'catholic-way-V8-1-14-65-ANDROID-PLAY-BANNER';
-const ASSET_VERSION = 'V8-1-14-65-ANDROID-PLAY-BANNER';
+const CACHE_VERSION = 'catholic-way-V8-1-14-66-ANDROID-PLAY-GATE';
+const ASSET_VERSION = 'V8-1-14-66-ANDROID-PLAY-GATE';
 function withVersion(path) {
   return path + '?v=' + ASSET_VERSION;
 }

@@ -265,6 +265,29 @@
     }
   }
 
+  function isInsideAndroidPlayBanner(target){
+    var banner = document.getElementById('android-play-required-banner');
+    return !!(banner && target && (target === banner || banner.contains(target)));
+  }
+
+  function blockAndroidPlayBackgroundEvent(ev){
+    if(!mustUseGooglePlay()) return;
+    if(isInsideAndroidPlayBanner(ev && ev.target)) return;
+    try{ applyAndroidPlayRequired(); }catch(_e){}
+    if(ev && ev.cancelable && ev.preventDefault) ev.preventDefault();
+    if(ev && ev.stopPropagation) ev.stopPropagation();
+    if(ev && ev.stopImmediatePropagation) ev.stopImmediatePropagation();
+    return false;
+  }
+
+  function bindAndroidPlayBlocker(){
+    if(document.__oaiAndroidPlayBlockerBound) return;
+    document.__oaiAndroidPlayBlockerBound = true;
+    ['pointerdown','pointerup','touchstart','touchend','mousedown','mouseup','click'].forEach(function(type){
+      document.addEventListener(type, blockAndroidPlayBackgroundEvent, true);
+    });
+  }
+
   function bindInstallButton(){
     var btn = getBtn();
     if(!btn || btn.__oaiInstallBound) return;
@@ -331,8 +354,8 @@
     });
   };
 
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function(){ bindInstallButton(); applyAndroidPlayRequired(); }, {once:true});
-  else { bindInstallButton(); applyAndroidPlayRequired(); }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function(){ bindInstallButton(); bindAndroidPlayBlocker(); applyAndroidPlayRequired(); }, {once:true});
+  else { bindInstallButton(); bindAndroidPlayBlocker(); applyAndroidPlayRequired(); }
 
   try{
     var mql = window.matchMedia && window.matchMedia('(display-mode: standalone)');
@@ -340,7 +363,7 @@
     else if(mql && mql.addListener) mql.addListener(applyVisibility);
   }catch(e){ console.warn('[가톨릭길동무]', e); }
 
-  window.addEventListener('load', function(){ bindInstallButton(); applyVisibility(); });
-  window.addEventListener('pageshow', function(){ bindInstallButton(); applyVisibility(); });
+  window.addEventListener('load', function(){ bindInstallButton(); bindAndroidPlayBlocker(); applyVisibility(); });
+  window.addEventListener('pageshow', function(){ bindInstallButton(); bindAndroidPlayBlocker(); applyVisibility(); });
   window.addEventListener('resize', function(){ applyVisibility(); }, {passive:true});
 })();

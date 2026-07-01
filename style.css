@@ -6284,9 +6284,28 @@ html.oai-font-global #map-wrap #shrine-visit-map-filter > button[data-shrine-vis
   }
 }
 
-/* V8-1-14-65: Android 브라우저/PWA 사용 중단 및 Google Play 설치 안내 */
+/* V8-1-14-66: Android 브라우저/PWA 전체 차단 및 Google Play 설치 안내 */
 #cover .android-play-required-banner { display: none; }
-html.oai-android-play-required body { overflow: hidden; }
+html.oai-android-play-required,
+html.oai-android-play-required body {
+  width: 100%;
+  min-height: 100%;
+  overflow: hidden !important;
+  overscroll-behavior: none;
+  touch-action: none;
+}
+html.oai-android-play-required body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 10080;
+  display: block;
+  background: rgba(245,240,232,.88);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  pointer-events: auto;
+  touch-action: none;
+}
 html.oai-android-play-required #cover .android-play-required-banner {
   position: fixed;
   left: 50%;
@@ -6300,7 +6319,7 @@ html.oai-android-play-required #cover .android-play-required-banner {
   border-radius: 28px;
   border: 1.5px solid rgba(212,170,106,.72);
   background: #fffaf1;
-  box-shadow: 0 0 0 100vmax rgba(245,240,232,.82), 0 28px 80px rgba(31,42,68,.32);
+  box-shadow: 0 28px 80px rgba(31,42,68,.32);
   flex-direction: column;
   align-items: center;
   gap: 14px;
@@ -6313,6 +6332,14 @@ html.oai-android-play-required #pwa-install-btn,
 html.oai-android-play-required #ios-kakao-safari-banner,
 html.oai-android-play-required #my-diocese-setup-banner { display: none !important; }
 html.oai-android-play-required.app-active #cover { display: block !important; opacity: 1 !important; }
+
+html.oai-android-play-required #cover > :not(.android-play-required-banner) {
+  pointer-events: none !important;
+}
+html.oai-android-play-required #cover .android-play-required-banner,
+html.oai-android-play-required #cover .android-play-required-banner * {
+  pointer-events: auto;
+}
 #cover .android-play-required-icon {
   width: 48px;
   height: 48px;
@@ -6331,6 +6358,7 @@ html.oai-android-play-required.app-active #cover { display: block !important; op
 #cover .android-play-required-text span { color:rgba(31,42,68,.76); font-size:calc(15.5px * var(--app-font-scale, 1)); line-height:1.45; font-weight:850; letter-spacing:-.04em; }
 #cover .android-play-open-btn {
   width: 100%;
+  margin-bottom: 8px;
   min-height: 54px;
   border: 0;
   border-radius: 18px;
@@ -6345,7 +6373,18 @@ html.oai-android-play-required.app-active #cover { display: block !important; op
   -webkit-tap-highlight-color: transparent;
 }
 #cover .android-play-open-btn:active { transform: scale(.985); }
-#cover .android-play-required-note { color:rgba(31,42,68,.66); font-size:calc(12.6px * var(--app-font-scale, 1)); line-height:1.35; font-weight:800; word-break:keep-all; }
+#cover .android-play-required-note {
+  margin-top: 4px;
+  padding: 10px 12px;
+  border-radius: 15px;
+  border: 1.2px solid rgba(179,70,44,.26);
+  background: rgba(179,70,44,.12);
+  color: #a84226;
+  font-size:calc(13.2px * var(--app-font-scale, 1));
+  line-height:1.38;
+  font-weight:900;
+  word-break:keep-all;
+}
 @media (max-width: 360px){
   html.oai-android-play-required #cover .android-play-required-banner { padding:22px 16px 18px; border-radius:24px; gap:12px; }
   #cover .android-play-required-text strong { font-size:calc(20px * var(--app-font-scale, 1)); }
